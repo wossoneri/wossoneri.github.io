@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="iOS,Design pattern," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="最近开始看设计模式，做一些笔记">
+<meta name="keywords" content="iOS,Design pattern">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[设计模式]之一:简单工厂模式">
+<meta property="og:url" content="http://wossoneri.github.io/2016/05/13/[Design-Pattern]Simple-Factory/index.html">
+<meta property="og:site_name" content="Wossoneri`s Blog">
+<meta property="og:description" content="最近开始看设计模式，做一些笔记">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/UML-simple-factory.png?raw=true">
+<meta property="og:updated_time" content="2016-05-23T15:36:38.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[设计模式]之一:简单工厂模式">
+<meta name="twitter:description" content="最近开始看设计模式，做一些笔记">
+<meta name="twitter:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/UML-simple-factory.png?raw=true">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '6234852363740382000',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wossoneri.github.io/2016/05/13/[Design-Pattern]Simple-Factory/"/>
+
+
+
+
+
+  <title>[设计模式]之一:简单工厂模式 | Wossoneri`s Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-70716047-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wossoneri`s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2016/05/13/[Design-Pattern]Simple-Factory/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wossoneri">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wossoneri`s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[设计模式]之一:简单工厂模式</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-13T00:30:27+08:00">
+                2016-05-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/设计模式/" itemprop="url" rel="index">
+                    <span itemprop="name">设计模式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2016/05/13/[Design-Pattern]Simple-Factory/" class="leancloud_visitors" data-flag-title="[设计模式]之一:简单工厂模式">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  最近开始看设计模式，做一些笔记
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><strong><a href="http://www.wossoneri.com/2016/05/13/[Design-Pattern]Simple-Factory/#23_u79CD_u8BBE_u8BA1_u6A21_u5F0F" target="_blank" rel="external">设计模式系列目录</a></strong></p>
+<h3 id="系列前言"><a href="#系列前言" class="headerlink" title="系列前言"></a>系列前言</h3><p>最近思考了一下这两年的工作：做Android的时候一直看Android知识，做iOS的时候一直学iOS的东西。其实看起来感觉这样没什么问题，但仔细想想，我发现自己一直忽略了一大片知识点，那就是软件工程。不同的语言，不同的开发方向的确在代码上有千差万别，但是回到软件架构上来看，所有的编程思想都是相通的，比如说算法，再比如说设计模式。算法这点可能在移动开发中用得较少，但设计模式是必不可少的。我回想了一下，虽说写了不少代码，也考虑过一些关于模块代码结构的设计，但还是缺乏对这一块的系统了解。所以就找了一本众人推荐的书——《大话设计模式》来看。这本书写的的确好，通俗易懂，所以在这里我也推荐一下。这本书看了几个章节我就有一种受人点拨的感觉，明显感觉到如果我把这本书吃透，编码水平肯定能提高一个level。想到我的读书列表还有几本受到程序员追捧的大作要看，突然有种迫不及待就要一本一本读下去的感觉。不过读书可不是读一遍就完事的，关键就在于悟。进步也不能急，一点一点来吧。加油！</p>
+<hr>
+<h3 id="23种设计模式"><a href="#23种设计模式" class="headerlink" title="23种设计模式"></a>23种设计模式</h3><p>关于设计模式最好的书应该是GoF的《设计模式》了，其中列出了23种设计模式，这里先列出来，后面写完对应博客会把这里改为文章链接方便查看。</p>
+<ol>
+<li><a href="http://www.wossoneri.com/2016/05/23/[Design-Pattern]Singleton/" target="_blank" rel="external">Singleton 单例模式</a></li>
+<li><a href="http://www.wossoneri.com/" target="_blank" rel="external">Abstract Factory 抽象工厂模式</a></li>
+<li><a href="http://www.wossoneri.com/" target="_blank" rel="external">Builder 生成器模式</a></li>
+<li><a href="http://www.wossoneri.com/" target="_blank" rel="external">Factory Method 工厂方法模式</a></li>
+<li><a href="http://www.wossoneri.com/" target="_blank" rel="external">Prototype 原型模式</a></li>
+<li><a href="http://www.wossoneri.com/" target="_blank" rel="external">Adapter 适配器模式</a></li>
+<li><a href="http://www.wossoneri.com/" target="_blank" rel="external">Bridge 桥接模式</a></li>
+<li><a href="http://www.wossoneri.com/" target="_blank" rel="external">Composite 组合模式</a></li>
+<li><a href="http://www.wossoneri.com/" target="_blank" rel="external">Decorator 装饰模式</a></li>
+<li><a href="http://www.wossoneri.com/" target="_blank" rel="external">Facade 外观模式</a></li>
+<li><a href="http://www.wossoneri.com/" target="_blank" rel="external">Flyweight 享元模式</a></li>
+<li><a href="http://www.wossoneri.com/" target="_blank" rel="external">Proxy 代理模式</a></li>
+<li><a href="http://www.wossoneri.com/" target="_blank" rel="external">Template Method模板方法</a></li>
+<li><a href="http://www.wossoneri.com/" target="_blank" rel="external">Command 命令模式</a></li>
+<li><a href="http://www.wossoneri.com/" target="_blank" rel="external">Interpreter 解释器模式</a></li>
+<li><a href="http://www.wossoneri.com/" target="_blank" rel="external">Mediator 中介者模式</a></li>
+<li><a href="http://www.wossoneri.com/" target="_blank" rel="external">Iterator 迭代器模式</a></li>
+<li><a href="http://www.wossoneri.com/" target="_blank" rel="external">Observer 观察者模式</a></li>
+<li><a href="http://www.wossoneri.com/" target="_blank" rel="external">Chain Of Responsibility 职责链模式</a></li>
+<li><a href="http://www.wossoneri.com/" target="_blank" rel="external">Memento 备忘录模式</a></li>
+<li><a href="http://www.wossoneri.com/" target="_blank" rel="external">State 状态模式</a></li>
+<li><a href="http://www.wossoneri.com/2016/05/15/[Design-Pattern]Strategy/" target="_blank" rel="external">Strategy 策略模式</a></li>
+<li><a href="http://www.wossoneri.com/" target="_blank" rel="external">Visitor 访问者模式</a></li>
+<li><a href="http://www.wossoneri.com/2016/05/16/[Design-Pattern]Principles/" target="_blank" rel="external">Design Principles 设计原则</a></li>
+</ol>
+<hr>
+<h3 id="实现四则运算"><a href="#实现四则运算" class="headerlink" title="实现四则运算"></a>实现四则运算</h3><p>下面直接先上代码，因为一开始就说太多概念容易让人看不下去。<br>对于四则运算，也就是简单的加减乘除，实现起来并不难，但我们要用面向对象的角度去思考代码。加减乘除属于四种不同且独立的功能，所以应该分别地实现与封装，这样修改代码的时候也会方便一些，不会误改其他功能的代码。<br>另外，对于这四种运算都有一个相同点，那就是运算都需要两个数字来完成，考虑到这一点，就可以设计一个基类，在基类中定义两个用于计算的变量，再声明一个获取计算结果的方法。之后，四则运算分别继承这个基类，各自实现返回结果的方法。</p>
+<figure class="highlight objectivec"><table><tr><td class="code"><pre><div class="line"><span class="comment">///Operation.h</span></div><div class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Operation</span> : <span class="title">NSObject</span></span></div><div class="line"></div><div class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) <span class="built_in">CGFloat</span> number1;</div><div class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) <span class="built_in">CGFloat</span> number2;</div><div class="line"></div><div class="line">- (<span class="built_in">CGFloat</span>)getResult;</div><div class="line"></div><div class="line"><span class="keyword">@end</span></div><div class="line"><span class="comment">///Operation.m</span></div><div class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Operation</span> : <span class="title">NSObject</span></span></div><div class="line"></div><div class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) <span class="built_in">CGFloat</span> number1;</div><div class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) <span class="built_in">CGFloat</span> number2;</div><div class="line"></div><div class="line">- (<span class="built_in">CGFloat</span>)getResult;</div><div class="line"></div><div class="line"><span class="keyword">@end</span></div><div class="line"><span class="comment">///OpAdd.h</span></div><div class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">OpAdd</span> : <span class="title">Operation</span></span></div><div class="line"></div><div class="line"><span class="keyword">@end</span></div><div class="line"><span class="comment">///OpAdd.m</span></div><div class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">OpAdd</span></span></div><div class="line"></div><div class="line">- (<span class="built_in">CGFloat</span>)getResult &#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">self</span>.number1 + <span class="keyword">self</span>.number2;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">@end</span></div><div class="line"><span class="comment">///OpMns.m</span></div><div class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">OpMns</span></span></div><div class="line"></div><div class="line">- (<span class="built_in">CGFloat</span>)getResult &#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">self</span>.number1 - <span class="keyword">self</span>.number2;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">@end</span></div><div class="line"><span class="comment">///OpMul.m</span></div><div class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">OpMul</span></span></div><div class="line"></div><div class="line">- (<span class="built_in">CGFloat</span>)getResult &#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">self</span>.number1 * <span class="keyword">self</span>.number2;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">@end</span></div><div class="line"><span class="comment">///OpDiv.m</span></div><div class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">OpDiv</span></span></div><div class="line"></div><div class="line">- (<span class="built_in">CGFloat</span>)getResult &#123;</div><div class="line">    <span class="keyword">if</span> (<span class="keyword">self</span>.number2 == <span class="number">0</span>) &#123;</div><div class="line">        <span class="built_in">NSLog</span>(<span class="string">@"除数不能为零"</span>);</div><div class="line">        <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">    &#125; <span class="keyword">else</span> &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">self</span>.number1 / <span class="keyword">self</span>.number2;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">@end</span></div></pre></td></tr></table></figure>
+<p>好了，功能封装完毕，下面就可以直接用这些写好的功能了，比如我要做加法<br><figure class="highlight objectivec"><table><tr><td class="code"><pre><div class="line">Operation *operation = [OpAdd new];</div><div class="line">operation.number1 = <span class="number">1</span>;</div><div class="line">operation.number2 = <span class="number">2</span>;</div><div class="line"><span class="built_in">NSLog</span>(<span class="string">@"operation result: %f"</span>, [operation getResult]);</div></pre></td></tr></table></figure></p>
+<p>但这样做的话我每次做运算时都需要知道我到底要实例化谁。为了方便起见，可以设计一个工厂类，专门用来做这个实例化的过程，这就是简单工厂模式。</p>
+<figure class="highlight objectivec"><table><tr><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="built_in">NS_ENUM</span>(<span class="keyword">int</span>, TYPE_OPERATION) &#123;</div><div class="line">    OPERATION_ADD = <span class="number">0</span>,</div><div class="line">    OPERATION_MNS,</div><div class="line">    OPERATION_MUL,</div><div class="line">    OPERATION_DIV</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">OperationSimpleFactory</span> : <span class="title">NSObject</span></span></div><div class="line"></div><div class="line">+ (Operation *)CreateOperationWithType:(<span class="keyword">enum</span> TYPE_OPERATION)type;</div><div class="line"></div><div class="line"><span class="keyword">@end</span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">OperationSimpleFactory</span></span></div><div class="line"></div><div class="line">+ (Operation *)CreateOperationWithType:(<span class="keyword">enum</span> TYPE_OPERATION)type &#123;</div><div class="line">    </div><div class="line">    Operation *op = <span class="literal">nil</span>;</div><div class="line">    <span class="keyword">switch</span> (type) &#123;</div><div class="line">        <span class="keyword">case</span> OPERATION_ADD:</div><div class="line">            op = [OpAdd new];</div><div class="line">            <span class="keyword">break</span>;</div><div class="line">        <span class="keyword">case</span> OPERATION_MNS:</div><div class="line">            op = [OpMns new];</div><div class="line">            <span class="keyword">break</span>;</div><div class="line">        <span class="keyword">case</span> OPERATION_MUL:</div><div class="line">            op = [OpMul new];</div><div class="line">            <span class="keyword">break</span>;</div><div class="line">        <span class="keyword">case</span> OPERATION_DIV:</div><div class="line">            op = [OpDiv new];</div><div class="line">            <span class="keyword">break</span>;</div><div class="line">        <span class="keyword">default</span>:</div><div class="line">            <span class="keyword">break</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> op;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">@end</span></div></pre></td></tr></table></figure>
+<p>设计好工厂就可以直接使用工厂类实例化合适的对象，通过多态，返回父类的方式实现运算。<br><figure class="highlight objectivec"><table><tr><td class="code"><pre><div class="line"><span class="keyword">int</span> main(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span> * argv[]) &#123;</div><div class="line">    <span class="keyword">@autoreleasepool</span> &#123;</div><div class="line">        <span class="comment">// insert code here...</span></div><div class="line">        Operation *op = [OperationSimpleFactory CreateOperationWithType:OPERATION_ADD];</div><div class="line">        op.number1 = <span class="number">10</span>;</div><div class="line">        op.number2 = <span class="number">20</span>;</div><div class="line">        <span class="built_in">NSLog</span>(<span class="string">@"operation result: %f"</span>, [op getResult]);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这里工厂类的<code>CreateOperationWithType:</code>方法是类方法，所以使用的时候不需要实例化工厂类，直接使用该方法传入参数就能够获得对应的运算实例。</p>
+<p>但对于这段代码，如果我想要增加一个新的计算方法，比如用两个数字取log，这样我就需要首先创建一个计算log的功能类，然后修改工厂类的代码，增加一个switch分支。但是修改工厂类并不符合<strong>开放封闭原则</strong>，这里可以使用<strong>反射机制</strong>进行处理。</p>
+<figure class="highlight objectivec"><table><tr><td class="code"><pre><div class="line"><span class="keyword">static</span> <span class="built_in">NSString</span> *kOperationAdd = <span class="string">@"OpAdd"</span>;</div><div class="line"><span class="keyword">static</span> <span class="built_in">NSString</span> *kOperationMns = <span class="string">@"OpMns"</span>;</div><div class="line"><span class="keyword">static</span> <span class="built_in">NSString</span> *kOperationMul = <span class="string">@"OpMul"</span>;</div><div class="line"><span class="keyword">static</span> <span class="built_in">NSString</span> *kOperationDiv = <span class="string">@"OpDiv"</span>;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">OperationSimpleFactory</span> : <span class="title">NSObject</span></span></div><div class="line"></div><div class="line">+ (Operation *)CreateOperationWithType:(<span class="built_in">NSString</span> *)type;</div><div class="line"></div><div class="line"><span class="keyword">@end</span></div><div class="line"></div><div class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">OperationSimpleFactory</span></span></div><div class="line"></div><div class="line">+ (Operation *)CreateOperationWithType:(<span class="built_in">NSString</span> *)type &#123;</div><div class="line">      <span class="keyword">return</span> [<span class="built_in">NSClassFromString</span>(type) new]; </div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">@end</span></div></pre></td></tr></table></figure>
+<p>这里定义几个字符串常量，字符串内容和功能类名保持一致，将字符串作为参数即可。</p>
+<h3 id="简单工厂模式"><a href="#简单工厂模式" class="headerlink" title="简单工厂模式"></a>简单工厂模式</h3><p>简单工厂模式中定义一个抽象类，抽象类中声明公共的特征及属性，抽象子类继承自抽象类，去实现具体的操作。工厂类根据外界需求，在工厂类中创建对应的抽象子类实例并传给外界，而对象的创建是由外界决定的。外界只需要知道抽象子类对应的参数即可，而不需要知道抽象子类的创建过程，在外界使用时甚至不用引入抽象子类。</p>
+<p>简单工厂模式将操作对象的创建，和关于操作对象相关的业务逻辑分离开，降低操作对象的耦合度。由于工厂类只是为外界创建对象，所以并不需要实例化工厂类对象，只需要为外界提供类方法即可。外界需要什么类型的抽象子类，只需要传递对应的参数即可。</p>
+<h3 id="UML类图"><a href="#UML类图" class="headerlink" title="UML类图"></a>UML类图</h3><p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/UML-simple-factory.png?raw=true" alt="UML"></p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>在简单工厂模式中，一个工厂类负责所有产品对象的创建，这个工厂类的职责大大增加，可能客户端对于某些产品的创建方式会有不同的要求，这样的话，就要不断的修改工厂类，增加相应的逻辑，不利于后期的代码维护。<br>另外，由于简单工厂模式使用静态方法创建，这就导致静态方法无法被继承。<br>所以，简单工厂模式适用于创建的对象比较少或简单的情况。</p>
+<h3 id="Swift代码"><a href="#Swift代码" class="headerlink" title="Swift代码"></a>Swift代码</h3><p>因为最近也在看Swift，所以会用Swift做一些练习练习<br><figure class="highlight swift"><table><tr><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Operation</span> </span>&#123;</div><div class="line">    <span class="keyword">var</span> number1: <span class="type">CGFloat</span> = <span class="number">0.0</span></div><div class="line">    <span class="keyword">var</span> number2: <span class="type">CGFloat</span> = <span class="number">0.0</span></div><div class="line">    </div><div class="line">    <span class="function"><span class="keyword">func</span> <span class="title">getResult</span><span class="params">()</span></span> -&gt; <span class="type">CGFloat</span> &#123;</div><div class="line">        <span class="keyword">return</span> <span class="number">0</span></div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">OpAdd</span>: <span class="title">Operation</span> </span>&#123;</div><div class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">getResult</span><span class="params">()</span></span> -&gt; <span class="type">CGFloat</span> &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">self</span>.number1 + <span class="keyword">self</span>.number2</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">OpMns</span>: <span class="title">Operation</span> </span>&#123;</div><div class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">getResult</span><span class="params">()</span></span> -&gt; <span class="type">CGFloat</span> &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">self</span>.number1 - <span class="keyword">self</span>.number2</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">OpMul</span>: <span class="title">Operation</span> </span>&#123;</div><div class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">getResult</span><span class="params">()</span></span> -&gt; <span class="type">CGFloat</span> &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">self</span>.number1 * <span class="keyword">self</span>.number2</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">OpDiv</span>: <span class="title">Operation</span> </span>&#123;</div><div class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">getResult</span><span class="params">()</span></span> -&gt; <span class="type">CGFloat</span> &#123;</div><div class="line">        <span class="keyword">if</span> <span class="keyword">self</span>.number2 == <span class="number">0</span> &#123;</div><div class="line">            <span class="built_in">print</span>(<span class="string">"除数不得为零"</span>)</div><div class="line">            <span class="keyword">return</span> <span class="number">0</span></div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">self</span>.number1 / <span class="keyword">self</span>.number2</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">enum</span> <span class="title">OperationType</span> </span>&#123;</div><div class="line">    <span class="keyword">case</span> <span class="type">OperationAdd</span></div><div class="line">    <span class="keyword">case</span> <span class="type">OperationMns</span></div><div class="line">    <span class="keyword">case</span> <span class="type">OperationMul</span></div><div class="line">    <span class="keyword">case</span> <span class="type">OperationDiv</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">OperationSimpleFactory</span> </span>&#123;</div><div class="line">    <span class="keyword">static</span> <span class="function"><span class="keyword">func</span> <span class="title">CreateOperationWithType</span><span class="params">(type: OperationType)</span></span> -&gt; <span class="type">Operation</span> &#123;</div><div class="line">        <span class="keyword">var</span> operation: <span class="type">Operation</span></div><div class="line">        <span class="keyword">switch</span> type &#123;</div><div class="line">        <span class="keyword">case</span> .<span class="type">OperationAdd</span>:</div><div class="line">            operation = <span class="type">OpAdd</span>()</div><div class="line">        <span class="keyword">case</span> .<span class="type">OperationMns</span>:</div><div class="line">            operation = <span class="type">OpMns</span>()</div><div class="line">        <span class="keyword">case</span> .<span class="type">OperationMul</span>:</div><div class="line">            operation = <span class="type">OpMul</span>()</div><div class="line">        <span class="keyword">case</span> .<span class="type">OperationDiv</span>:</div><div class="line">            operation = <span class="type">OpDiv</span>()</div><div class="line">        &#125;</div><div class="line">        </div><div class="line">        <span class="keyword">return</span> operation</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">let</span> op: <span class="type">Operation</span> = <span class="type">OperationSimpleFactory</span>.<span class="type">CreateOperationWithType</span>(<span class="type">OperationType</span>.<span class="type">OperationAdd</span>)</div><div class="line">op.number1 = <span class="number">10</span></div><div class="line">op.number2 = <span class="number">20</span></div><div class="line"><span class="built_in">print</span>(<span class="string">"result by Add is"</span>, op.getResult())</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      Wossoneri
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="http://wossoneri.github.io/2016/05/13/[Design-Pattern]Simple-Factory/" title="[设计模式]之一:简单工厂模式">http://wossoneri.github.io/2016/05/13/[Design-Pattern]Simple-Factory/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS/" rel="tag"># iOS</a>
+          
+            <a href="/tags/Design-pattern/" rel="tag"># Design pattern</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/05/05/[iOS]WSHorizontalPickerView/" rel="next" title="[iOS] WSHorizontalPickerView 图片水平滚动封装">
+                <i class="fa fa-chevron-left"></i> [iOS] WSHorizontalPickerView 图片水平滚动封装
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/05/15/[Design-Pattern]Strategy/" rel="prev" title="[设计模式]之二:策略模式">
+                [设计模式]之二:策略模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460"
+               alt="Wossoneri" />
+          <p class="site-author-name" itemprop="name">Wossoneri</p>
+           
+              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+            </a>
+          </div>
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#系列前言"><span class="nav-number">1.</span> <span class="nav-text">系列前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#23种设计模式"><span class="nav-number">2.</span> <span class="nav-text">23种设计模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现四则运算"><span class="nav-number">3.</span> <span class="nav-text">实现四则运算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#简单工厂模式"><span class="nav-number">4.</span> <span class="nav-text">简单工厂模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UML类图"><span class="nav-number">5.</span> <span class="nav-text">UML类图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#小结"><span class="nav-number">6.</span> <span class="nav-text">小结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Swift代码"><span class="nav-number">7.</span> <span class="nav-text">Swift代码</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("RHlsmdBRQUmQMHNOl3U1ocam-gzGzoHsz", "RU2vFPiDzi68XGHCgJXtBAqo");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

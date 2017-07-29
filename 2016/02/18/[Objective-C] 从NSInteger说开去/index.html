@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Objective-C,数据类型," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="在iOS开发过程中，我一直习惯于使用C语法里的基本类型，而很少用（除非必须使用）Foundation的数据类型。最近看了一些资料，发现自己这样写可能有风险，虽然目前没遇到过相关的问题，但这是非常需要注意的一点。">
+<meta name="keywords" content="Objective-C,数据类型">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Objective-C] 从NSInteger说开去">
+<meta property="og:url" content="http://wossoneri.github.io/2016/02/18/[Objective-C] 从NSInteger说开去/index.html">
+<meta property="og:site_name" content="Wossoneri`s Blog">
+<meta property="og:description" content="在iOS开发过程中，我一直习惯于使用C语法里的基本类型，而很少用（除非必须使用）Foundation的数据类型。最近看了一些资料，发现自己这样写可能有风险，虽然目前没遇到过相关的问题，但这是非常需要注意的一点。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2016-02-27T17:46:15.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[Objective-C] 从NSInteger说开去">
+<meta name="twitter:description" content="在iOS开发过程中，我一直习惯于使用C语法里的基本类型，而很少用（除非必须使用）Foundation的数据类型。最近看了一些资料，发现自己这样写可能有风险，虽然目前没遇到过相关的问题，但这是非常需要注意的一点。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '6234852363740382000',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wossoneri.github.io/2016/02/18/[Objective-C] 从NSInteger说开去/"/>
+
+
+
+
+
+  <title>[Objective-C] 从NSInteger说开去 | Wossoneri`s Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-70716047-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wossoneri`s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2016/02/18/[Objective-C] 从NSInteger说开去/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wossoneri">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wossoneri`s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[Objective-C] 从NSInteger说开去</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-02-18T22:31:19+08:00">
+                2016-02-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Syntax/" itemprop="url" rel="index">
+                    <span itemprop="name">Syntax</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2016/02/18/[Objective-C] 从NSInteger说开去/" class="leancloud_visitors" data-flag-title="[Objective-C] 从NSInteger说开去">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  在iOS开发过程中，我一直习惯于使用C语法里的基本类型，而很少用（除非必须使用）Foundation的数据类型。最近看了一些资料，发现自己这样写可能有风险，虽然目前没遇到过相关的问题，但这是非常需要注意的一点。
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="坏习惯的开端"><a href="#坏习惯的开端" class="headerlink" title="坏习惯的开端"></a>坏习惯的开端</h2><p>初写iOS时，我做的是把原项目从<code>Android</code>端移植到<code>iOS</code>端。因为涉及到不同语言，又因为不熟悉<code>iOS</code>，加上还要与用<code>C</code>写的网络库进行纠缠，我小心翼翼的用了基本数据类型完成大多数编码。能用<code>int</code>就坚决不用<code>NSInteger</code>，能用<code>float</code>就坚决不用<code>CGFloat</code>。你可能会问，虽然这个过程用到的语言很杂，写<code>Objective-C</code>的时候就大胆的用<code>Foundation</code>的数据类型呗。想法很好，只是当时我看不懂我们网络库实现原因不敢乱改代码，怕伤着哪个地方的逻辑，最后代码移着移着，我的<code>.m</code>文件就变成了<code>.mm</code>文件——对，变成<code>Objective-C</code>和<code>C++</code>混编代码了。当时就索性一股脑的用<code>C</code>语言的基本数据类型去做了。现在想想我入门<code>iOS</code>的过程真是坎坷呢，留下了一堆烂毛病。</p>
+<p>不过好在我现在开始拼命的多看资料，一点点把走的弯路走回来。</p>
+<h2 id="一次突然的疑问"><a href="#一次突然的疑问" class="headerlink" title="一次突然的疑问"></a>一次突然的疑问</h2><p>平时也会看<code>Github</code>上面的一些代码，发现代码里用到<code>int</code>的比较少，用<code>NSInteger</code>的比较多，于是就考虑了一下这个问题：这两种类型有啥区别？</p>
+<blockquote>
+<p>这里不得不吐槽一下<objectice-c程序设计>这本书，当初就是看这本书了解O-C语法的，可书上的介绍与代码全是<code>int</code>的，完全没见<code>NSInteger</code>的影子。可见学习这事不能只靠一本书，毕竟书的内容覆盖面有限。</objectice-c程序设计></p>
+</blockquote>
+<h2 id="关于NSInteger和int的优劣"><a href="#关于NSInteger和int的优劣" class="headerlink" title="关于NSInteger和int的优劣"></a>关于NSInteger和int的优劣</h2><p>从查看头文件可以看到其实这样定义的：</p>
+<figure class="highlight objectivec"><table><tr><td class="code"><pre><div class="line"><span class="meta">#if __LP64__ || (TARGET_OS_EMBEDDED &amp;&amp; !TARGET_OS_IPHONE) || TARGET_OS_WIN32 || NS_BUILD_32_LIKE_64</span></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">long</span> <span class="built_in">NSInteger</span>;</div><div class="line"><span class="keyword">typedef</span> <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="built_in">NSUInteger</span>;</div><div class="line"><span class="meta">#else</span></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">int</span> <span class="built_in">NSInteger</span>;</div><div class="line"><span class="keyword">typedef</span> <span class="keyword">unsigned</span> <span class="keyword">int</span> <span class="built_in">NSUInteger</span>;</div><div class="line"><span class="meta">#endif</span></div></pre></td></tr></table></figure>
+<p>这段定义是说如果程序是在64位系统下运行的，<code>NSInteger</code>就代表<code>long</code>，如果是32位的就代表<code>int</code>。<br>也就是说，如果你不知道程序将要在什么系统环境下运行时，最好使用<code>NSInteger</code>，这样可以保证数据很大时不出现问题。简而言之，就是如果你并不考虑位数对程序的影响或者说你觉得并不能游刃有余的操作<code>int</code>和<code>long</code>，那么<code>NSInteger</code>是一个很安全的选择。</p>
+<p>那么是不是说有了<code>NSInteger</code>就可以不用<code>int</code>了呢？</p>
+<p>当然不，以上的前提都是基于一个很大范围数字变量所要考虑的。当你的变量值的范围在一个你可控的范围内，使用<code>int</code>反而更合适，比如说，你要保存一张手机照片的尺寸，那么几千的值是绝对够了的，于是用<code>int</code>也不会产生任何问题，而用<code>NSInteger</code>反而增加代码阅读难度。毕竟<code>int</code>作为通用的基本类型很直观，相反的是<code>NSInteger</code>的代码往其他地方移植也会对别人产生困扰（是不是想太多了: D），而且，从效率上来讲，直接用<code>int</code>的效率还是略微要高一些的。</p>
+<h2 id="什么时候用NSInteger"><a href="#什么时候用NSInteger" class="headerlink" title="什么时候用NSInteger"></a>什么时候用NSInteger</h2><p>其实在Apple的文档或者示例代码里，<code>int</code>和<code>NSInteger</code>都会存在，大多数出现<code>NSInteger</code>是在函数的返回值上。因为函数的返回值是根据参数而不断变化的，范围是不可控的，所以就会使用<code>NSInteger</code>作为返回值。</p>
+<p>所以，简单说来，凡是API用到了<code>NSInteger</code>，那就别用<code>int</code>了。一般情况代码计数不会出现很大的值，毕竟32位的<code>int</code>范围可达到-2147483648～2147483647。</p>
+<h2 id="然后说开去，说什么"><a href="#然后说开去，说什么" class="headerlink" title="然后说开去，说什么"></a>然后说开去，说什么</h2><p>与<code>NSInteger</code>类似，<code>Foundation</code>数据类型里也有类似于与<code>float</code>对应的<code>CGFloat</code></p>
+<figure class="highlight objectivec"><table><tr><td class="code"><pre><div class="line"><span class="comment">/* Definition of `CGFLOAT_TYPE', `CGFLOAT_IS_DOUBLE', `CGFLOAT_MIN', and</span></div><div class="line"><span class="comment">   `CGFLOAT_MAX'. */</span></div><div class="line"></div><div class="line"><span class="meta">#if defined(__LP64__) &amp;&amp; __LP64__</span></div><div class="line"><span class="meta"># define CGFLOAT_TYPE double</span></div><div class="line"><span class="meta"># define CGFLOAT_IS_DOUBLE 1</span></div><div class="line"><span class="meta"># define CGFLOAT_MIN DBL_MIN</span></div><div class="line"><span class="meta"># define CGFLOAT_MAX DBL_MAX</span></div><div class="line"><span class="meta">#else</span></div><div class="line"><span class="meta"># define CGFLOAT_TYPE float</span></div><div class="line"><span class="meta"># define CGFLOAT_IS_DOUBLE 0</span></div><div class="line"><span class="meta"># define CGFLOAT_MIN FLT_MIN</span></div><div class="line"><span class="meta"># define CGFLOAT_MAX FLT_MAX</span></div><div class="line"><span class="meta">#endif</span></div><div class="line"></div><div class="line"><span class="comment">/* Definition of the `CGFloat' type and `CGFLOAT_DEFINED'. */</span></div><div class="line"></div><div class="line"><span class="keyword">typedef</span> <span class="built_in">CGFLOAT_TYPE</span> <span class="built_in">CGFloat</span>;</div><div class="line"><span class="meta">#define CGFLOAT_DEFINED 1</span></div></pre></td></tr></table></figure>
+<p>看完定义就明白，<code>CGFloat</code>也是对于不同位的系统的容错。<br>最后至于<code>NSString</code>和<code>std::string</code>那区别就没那么简单了。<br>对于常用的数据类型，就这些了。</p>
+<p>对于这些数据类型的格式化，可以参考这部分文档：<a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/Strings/Articles/formatSpecifiers.html#//apple_ref/doc/uid/TP40004265-SW5" target="_blank" rel="external">formatSpecifiers</a></p>
+<h2 id="你觉得我这就说完了"><a href="#你觉得我这就说完了" class="headerlink" title="你觉得我这就说完了"></a>你觉得我这就说完了</h2><p>起初遇到这个问题时，我就简单的上网查了一下，感觉没什么区别。不过最近看博客，发现有个大神这样讲</p>
+<blockquote>
+<p>应避免使用基本类型，建议使用 Foundation 数据类型</p>
+</blockquote>
+<p>当时我就一惊，我的代码用的都是<code>int</code>，压根就没打算用<code>NSInteger</code>，我突然觉得自己养成了一个很差的编码习惯，而且我的代码可能会对我以后求职有影响。</p>
+<p>惊诈之余我就上网找起资料，认真阅读不同人的不同说法，然后得到一个我自己的结论：写<code>int</code>并无大碍，而且用基本数据类型并没什么明显缺陷，毕竟我也是知道什么时候用<code>int</code>啊，<code>long</code>啊，’float’啊这些的。虚惊一场。</p>
+<p>但这事还是有教训的，那就是了解一个新东西一定要多了解一些，像我当初就对这个问题不以为意，突然提起来了心就虚了。<br>另外有一个收获就是多看别人写的博客多关注一些细微的知识点总是能学到新东西的。像今天这个问题一样，对我已经写好的代码影响虽然不大，但我再写这块代码时的确是更安心了对吧。</p>
+<blockquote>
+<p>reference<br><a href="http://stackoverflow.com/questions/4445173/when-to-use-nsinteger-vs-int" target="_blank" rel="external">When to use NSInteger vs. int</a></p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      Wossoneri
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="http://wossoneri.github.io/2016/02/18/[Objective-C] 从NSInteger说开去/" title="[Objective-C] 从NSInteger说开去">http://wossoneri.github.io/2016/02/18/[Objective-C] 从NSInteger说开去/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Objective-C/" rel="tag"># Objective-C</a>
+          
+            <a href="/tags/数据类型/" rel="tag"># 数据类型</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/02/18/[iOS] 输入框高度随输入内容变化/" rel="next" title="[iOS] 输入框高度随输入内容变化">
+                <i class="fa fa-chevron-left"></i> [iOS] 输入框高度随输入内容变化
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/02/20/[Objective-C] Block实现回调和简单的学习思考/" rel="prev" title="[Objective-C] Block实现回调和简单的学习思考">
+                [Objective-C] Block实现回调和简单的学习思考 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460"
+               alt="Wossoneri" />
+          <p class="site-author-name" itemprop="name">Wossoneri</p>
+           
+              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+            </a>
+          </div>
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#坏习惯的开端"><span class="nav-number">1.</span> <span class="nav-text">坏习惯的开端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一次突然的疑问"><span class="nav-number">2.</span> <span class="nav-text">一次突然的疑问</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于NSInteger和int的优劣"><span class="nav-number">3.</span> <span class="nav-text">关于NSInteger和int的优劣</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么时候用NSInteger"><span class="nav-number">4.</span> <span class="nav-text">什么时候用NSInteger</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#然后说开去，说什么"><span class="nav-number">5.</span> <span class="nav-text">然后说开去，说什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#你觉得我这就说完了"><span class="nav-number">6.</span> <span class="nav-text">你觉得我这就说完了</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("RHlsmdBRQUmQMHNOl3U1ocam-gzGzoHsz", "RU2vFPiDzi68XGHCgJXtBAqo");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

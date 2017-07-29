@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="java,Multithread," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="最近复习java，发现一本很好的资料，《J​a​v​a​2​参​考​大​全​ ​(​第​五​版​)​》 ​ ​H​e​r​b​e​r​t​.Schildt。书比较老了，06年的，一些内容有些旧了，翻译也不是太好，但这本书的知识覆盖面还是非常全面，讲述也是由浅入深，很值得参考的一本口碑非常好的书。我把一些内容加以整理，再配合着《think in Java》，把知识点梳理一遍。因为这本书的结构很好，所">
+<meta name="keywords" content="java,Multithread">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Java] 多线程编程">
+<meta property="og:url" content="http://wossoneri.github.io/2015/09/29/[Java] 多线程编程/index.html">
+<meta property="og:site_name" content="Wossoneri`s Blog">
+<meta property="og:description" content="最近复习java，发现一本很好的资料，《J​a​v​a​2​参​考​大​全​ ​(​第​五​版​)​》 ​ ​H​e​r​b​e​r​t​.Schildt。书比较老了，06年的，一些内容有些旧了，翻译也不是太好，但这本书的知识覆盖面还是非常全面，讲述也是由浅入深，很值得参考的一本口碑非常好的书。我把一些内容加以整理，再配合着《think in Java》，把知识点梳理一遍。因为这本书的结构很好，所">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2016-05-30T15:12:43.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[Java] 多线程编程">
+<meta name="twitter:description" content="最近复习java，发现一本很好的资料，《J​a​v​a​2​参​考​大​全​ ​(​第​五​版​)​》 ​ ​H​e​r​b​e​r​t​.Schildt。书比较老了，06年的，一些内容有些旧了，翻译也不是太好，但这本书的知识覆盖面还是非常全面，讲述也是由浅入深，很值得参考的一本口碑非常好的书。我把一些内容加以整理，再配合着《think in Java》，把知识点梳理一遍。因为这本书的结构很好，所">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '6234852363740382000',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wossoneri.github.io/2015/09/29/[Java] 多线程编程/"/>
+
+
+
+
+
+  <title>[Java] 多线程编程 | Wossoneri`s Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-70716047-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wossoneri`s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2015/09/29/[Java] 多线程编程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wossoneri">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wossoneri`s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[Java] 多线程编程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-09-29T11:35:42+08:00">
+                2015-09-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Syntax/" itemprop="url" rel="index">
+                    <span itemprop="name">Syntax</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2015/09/29/[Java] 多线程编程/" class="leancloud_visitors" data-flag-title="[Java] 多线程编程">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  最近复习java，发现一本很好的资料，《J​a​v​a​2​参​考​大​全​ ​(​第​五​版​)​》 ​ ​H​e​r​b​e​r​t​.Schildt。书比较老了，06年的，一些内容有些旧了，翻译也不是太好，但这本书的知识覆盖面还是非常全面，讲述也是由浅入深，很值得参考的一本口碑非常好的书。我把一些内容加以整理，再配合着《think in Java》，把知识点梳理一遍。因为这本书的结构很好，所以目录就以这本书为主。后面看到更好的资料或有使用心得后会不断更新此文章。
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="线程的概念"><a href="#线程的概念" class="headerlink" title="线程的概念"></a>线程的概念</h2><p>和其他多数计算机语言不同，Java内置支持<code>多线程编程（multithreaded programming）</code>。</p>
+<p>多线程程序包含两条或两条以上并发运行的部分。程序中每个这样的部分都叫一个<code>线程（thread）</code>，每个线程都有独立的执行路径。因此，多线程是多任务处理的一种特殊形式。</p>
+<p>你一定知道多任务处理，因为它实际上被所有的现代操作系统所支持。然而，多任务处理有两种截然不同的类型：基于<strong>进程</strong>的和基于<strong>线程</strong>的。认识两者的不同是十分重要的。</p>
+<p><code>进程(process)</code>本质上是一个执行的程序。因此，<strong><code>基于进程(process-based)</code>的多任务处理的特点是允许你的计算机同时运行两个或更多的程序</strong>。举例来说，基于进程的多任务处理使你在运用文本编辑器的时候可以同时运行Java编译器。在基于进程的多任务处理中，程序是调度程序所分派的最小代码单位。</p>
+<p>在<code>基于线程(thread-based)</code> 的多任务处理环境中，线程是最小的执行单位。这意味着<strong>一个程序可以同时执行两个或者多个任务的功能</strong>。例如，一个文本编辑器可以在打印的同时格式化文本。</p>
+<p>所以，多进程程序处理“大图片”，而多线程程序处理细节问题。</p>
+<p><strong>多线程程序比多进程程序需要更少的管理费用</strong>。进程是重量级的任务，需要分配它们自己独立的地址空间。进程间通信是昂贵和受限的。进程间的转换也是很需要花费的。另一方面，线程是轻量级的选手。它们共享相同的地址空间并且共同分享同一个进程。线程间通信是便宜的，线程间的转换也是低成本的。当Java程序使用多进程任务处理环境时，多进程程序不受Java的控制，而多线程则受Java控制。</p>
+<p>多线程帮助你写出CPU最大利用率的高效程序，因为空闲时间保持最低。这对Java运行的交互式的网络互连环境是至关重要的，因为空闲时间是公共的。举个例子来说，网络的数据传输速率远低于计算机处理能力，本地文件系统资源的读写速度远低于CPU的处理能力，当然，用户输入也比计算机慢很多。在传统的单线程环境中，你的程序必须等待每一个这样的任务完成以后才能执行下一步——尽管CPU有很多空闲时间。多线程使你能够获得并充分利用这些空闲时间。</p>
+<hr>
+<h2 id="线程模型"><a href="#线程模型" class="headerlink" title="线程模型"></a>线程模型</h2><p>Java运行系统在很多方面依赖于线程，所有的类库设计都考虑到多线程。实际上，Java使用线程来使整个环境异步。这有利于通过防止CPU循环的浪费来减少无效部分。</p>
+<p>为更好的理解多线程环境的优势可以将它与它的对照物相比较。单线程系统的处理途径是使用一种叫作轮询的事件循环方法。在该模型中，单线程控制在一无限循环中运行，轮询一个事件序列来决定下一步做什么。一旦轮询装置返回信号表明，已准备好读取网络文件，事件循环调度控制管理到适当的事件处理程序。直到事件处理程序返回，系统中没有其他事件发生。这就浪费了CPU时间。这导致了程序的一部分独占了系统，阻止了其他事件的执行。总的来说，单线程环境，当一个线程因为等待资源时阻塞（block，挂起执行），整个程序停止运行。</p>
+<p>Java多线程的优点在于取消了主循环/轮询机制。一个线程可以暂停而不影响程序的其他部分。例如，当一个线程从网络读取数据或等待用户输入时产生的空闲时间可以被利用到其他地方。多线程允许活的循环在每一帧间隙中沉睡一秒而不暂停整个系统。在Java程序中出现线程阻塞，仅有一个线程暂停，其他线程继续运行。</p>
+<p>线程存在于好几种状态。线程可以正在运行（running）。只要获得CPU时间它就可以运行。运行的线程可以被挂起（suspend），并临时中断它的执行。一个挂起的线程可以被恢复（resume），允许它从停止的地方继续运行。一个线程可以在等待资源时被阻塞（block）。<strong><font color="brown">在任何时候，线程可以终止（terminate），这立即中断了它的运行。一旦终止，线程不能被恢复。</font></strong></p>
+<h3 id="线程优先级"><a href="#线程优先级" class="headerlink" title="线程优先级"></a>线程优先级</h3><p>Java给每个线程安排优先级以决定与其他线程比较时该如何对待该线程。线程优先级是详细说明线程间优先关系的整数。作为绝对值，优先级是毫无意义的；当只有一个线程时，优先级高的线程并不比优先权低的线程运行的快。相反，线程的优先级是用来决定何时从一个运行的线程切换到另一个。这叫“上下文转换”(context switch)。决定上下文转换发生的规则很简单：</p>
+<ul>
+<li>线程可以自动放弃控制。在I/O未决定的情况下，睡眠或阻塞由明确的让步来完成。在这种假定下，所有其他的线程被检测，准备运行的最高优先级线程被授予CPU。</li>
+<li>线程可以被高优先级的线程抢占。在这种情况下，低优先级线程不主动放弃，处理器只是被先占——无论它正在干什么——处理器被高优先级的线程占据。基本上，一旦高优先级线程要运行，它就执行。这叫做有优先权的多任务处理。</li>
+</ul>
+<blockquote>
+<p>当两个相同优先级的线程竞争CPU周期时，情形有一点复杂。具体与操作系统有关。</p>
+<p>不同的操作系统下等优先级线程的上下文转换可能会产生错误。</p>
+</blockquote>
+<h3 id="同步性"><a href="#同步性" class="headerlink" title="同步性"></a>同步性</h3><p>因为多线程在你的程序中引入了一个异步行为，所以在你需要的时候必须有加强同步性的方法。举例来说，如果你希望两个线程相互通信并共享一个复杂的数据结构，例如链表序列，你需要某些方法来确保它们没有相互冲突。也就是说，你必须防止一个线程写入数据而另一个线程正在读取链表中的数据。为此目的，Java在进程间同步性的老模式基础上实行了另一种方法：<code>管程（monitor）</code>。管程是一种由C.A.R.Hoare首先定义的控制机制。</p>
+<p>你可以把管程想象成一个仅控制一个线程的小盒子。一旦线程进入管程，所有线程必须等待直到该线程退出了管程。用这种方法，管程可以用来防止共享的资源被多个线程操纵。</p>
+<p>很多多线程系统把管程作为程序必须明确的引用和操作的对象。Java提供一个清晰的解决方案。没有“Monitor”类；相反，每个对象都拥有自己的隐式管程，当对象的同步方法被调用时管程自动载入。一旦一个线程包含在一个同步方法中，没有其他线程可以调用相同对象的同步方法。这就使你可以编写非常清晰和简洁的多线程代码，因为同步支持是语言内置的。</p>
+<h3 id="消息传递"><a href="#消息传递" class="headerlink" title="消息传递"></a>消息传递</h3><p>在你把程序分成若干线程后，你就要定义各线程之间的联系。用大多数其他语言规划时，你必须依赖于操作系统来确立线程间通信。这样当然增加花费。然而，Java提供了多线程间谈话清洁的、低成本的途径——通过调用所有对象都有的预先确定的方法。Java的消息传递系统允许一个线程进入一个对象的一个同步方法，然后在那里等待，直到其他线程明确通知它出来。</p>
+<h3 id="Thread-类和Runnable-接口"><a href="#Thread-类和Runnable-接口" class="headerlink" title="Thread 类和Runnable 接口"></a>Thread 类和Runnable 接口</h3><p>Java的多线程系统建立于Thread类，它的方法，它的共伴接口Runnable基础上。Thread类封装了线程的执行。既然你不能直接引用运行着的线程的状态，你要通过它的代理处理它，于是Thread 实例产生了。为创建一个新的线程，你的程序必须扩展Thread 或实现Runnable接口。</p>
+<p>Thread类定义了好几种方法来帮助管理线程。本章用到的方法如下表所示：</p>
+<p></p><p align="center">管理线程的方法</p><br>| 方法    |意义     |<br>| ——- | ——-  |<br>| getName   | 获得线程名称                 |<br>| getPriority | 获得线程优先级                 |<br>| isAlive       | 判定线程是否仍在运行             |<br>| join           | 等待一个线程终止                 |<br>| run           | 线程的入口点             |<br>| sleep         | 在一段时间内挂起线程             |<br>| start       | 通过调用运行方法来启动线程 |<br>（博客园markdown不支持表格显示？）<p></p>
+<hr>
+<h2 id="主线程"><a href="#主线程" class="headerlink" title="主线程"></a>主线程</h2><p>当Java程序启动时，一个线程立刻运行，该线程通常叫做程序的<code>主线程（main thread）</code>，因为它是程序开始时就执行的。主线程的重要性体现在两方面：</p>
+<ul>
+<li>它是产生其他子线程的线程</li>
+<li>通常它必须最后完成执行，因为它执行各种关闭动作</li>
+</ul>
+<p>尽管主线程在程序启动时自动创建，但它可以由一个Thread对象控制。为此，你必须调用方法currentThread()获得它的一个引用，currentThread()是Thread类的公有的静态方法。它的通常形式如下：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">static</span> Thread <span class="title">currentThread</span><span class="params">( )</span></span></div></pre></td></tr></table></figure></p>
+<p>该方法返回一个调用它的线程的引用。一旦你获得主线程的引用，你就可以像控制其他线程那样控制主线程。</p>
+<p>让我们从复习下面例题开始：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CurrentThreadDemo</span> </span>&#123;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> </span>&#123;</div><div class="line">		Thread t = Thread.currentThread();</div><div class="line">		System.out.println(<span class="string">"Current thread: "</span> + t);</div><div class="line">		<span class="comment">// change the name of the thread</span></div><div class="line">		t.setName(<span class="string">"My Thread"</span>);</div><div class="line">		System.out.println(<span class="string">"After name change: "</span> + t);</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> n = <span class="number">5</span>; n &gt; <span class="number">0</span>; n--) &#123;</div><div class="line">				System.out.println(n);</div><div class="line">				Thread.sleep(<span class="number">1000</span>);</div><div class="line">			&#125;</div><div class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">			System.out.println(<span class="string">"Main thread interrupted"</span>);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在本程序中，当前线程（自然是主线程）的引用通过调用currentThread()获得，该引用保存在局部变量t中。然后，程序显示了线程的信息。接着程序调用setName()改变线程的内部名称。线程信息又被显示。然后，一个循环数从5开始递减，每数一次暂停一秒。暂停是由sleep()方法来完成的。Sleep()语句明确规定延迟时间是1毫秒。注意循环外的try/catch块。</p>
+<p>Thread类的sleep()方法可能引发一个InterruptedException异常。这种情形会在其他线程想要打搅沉睡线程时发生。本例只是打印了它是否被打断的消息。在实际的程序中，你必须灵活处理此类问题。下面是本程序的输出：</p>
+<blockquote>
+<p>Current thread: Thread[main,5,main]<br>After name change: Thread[My Thread,5,main]<br>5<br>4<br>3<br>2<br>1</p>
+</blockquote>
+<p>注意<code>t</code>作为语句println()中参数运用时输出的产生。该显示顺序：线程名称，优先级以及组的名称。默认情况下，主线程的名称是main。它的优先级是5，这也是默认值，main也是所属线程组的名称。一个<code>线程组（thread group）</code>是一种将线程作为一个整体集合的状态控制的数据结构。这个过程由专有的运行时环境来处理，在此就不赘述了。线程名改变后，t又被输出。这次，显示了新的线程名。</p>
+<p>让我们更仔细的研究程序中Thread类定义的方法。sleep()方法按照毫秒级的时间指示使线程从被调用到挂起。它的通常形式如下：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sleep</span><span class="params">(<span class="keyword">long</span> milliseconds)</span> <span class="keyword">throws</span> InterruptedException</span></div></pre></td></tr></table></figure></p>
+<p>挂起的时间被明确定义为毫秒。该方法可能引发InterruptedException异常。</p>
+<p>sleep()方法还有第二种形式，显示如下，该方法允许你指定时间是以毫秒还是以纳秒为周期。<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sleep</span><span class="params">(<span class="keyword">long</span> milliseconds, <span class="keyword">int</span> nanoseconds)</span> <span class="keyword">throws</span> InterruptedException</span></div></pre></td></tr></table></figure></p>
+<p>第二种形式仅当允许以纳秒为时间周期时可用。如上述程序所示，你可以用setName()设置线程名称，用getName()来获得线程名称（该过程在程序中没有体现）。这些方法都是Thread 类的成员，声明如下：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String threadName)</span></span></div><div class="line"><span class="function"><span class="keyword">final</span> String <span class="title">getName</span><span class="params">( )</span></span></div></pre></td></tr></table></figure></p>
+<p>这里，threadName 特指线程名称。</p>
+<hr>
+<h2 id="创建线程"><a href="#创建线程" class="headerlink" title="创建线程"></a>创建线程</h2><p>大多数情况，通过实例化一个Thread对象来创建一个线程。Java定义了两种方式：</p>
+<ul>
+<li>实现Runnable 接口</li>
+<li>可以继承Thread类</li>
+</ul>
+<h3 id="实现Runnable接口"><a href="#实现Runnable接口" class="headerlink" title="实现Runnable接口"></a>实现Runnable接口</h3><p><font color="brown"><strong>创建线程的最简单的方法就是创建一个实现Runnable 接口的类。</strong></font>Runnable抽象了一个执行代码单元。你可以通过实现Runnable接口的方法创建每一个对象的线程。为实现Runnable 接口，一个类仅需实现一个run()的简单方法，该方法声明如下：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">( )</span></span></div></pre></td></tr></table></figure></p>
+<p>在run()中可以定义代码来构建新的线程。理解下面内容是至关重要的：run()方法能够像主线程那样调用其他方法，引用其他类，声明变量。仅有的不同是run()在程序中确立另一个并发的线程执行入口。当run()返回时，该线程结束。</p>
+<p>在你已经创建了实现Runnable接口的类以后，你要在类内部实例化一个Thread类的对象。Thread 类定义了好几种构造函数。我们会用到的如下：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line">Thread(Runnable threadOb, String threadName)</div></pre></td></tr></table></figure></p>
+<p>该构造函数中，threadOb是一个实现Runnable接口类的实例。这定义了线程执行的起点。新线程的名称由threadName定义。</p>
+<p>建立新的线程后，它并不运行直到调用了它的start()方法，该方法在Thread 类中定义。本质上，start() 执行的是一个对run()的调用。Start()方法声明如下：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">start</span><span class="params">( )</span></span></div></pre></td></tr></table></figure></p>
+<p>下面的例子是创建一个新的线程并启动它运行：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="comment">// Create a second thread.</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">NewThread</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</div><div class="line">	Thread t;</div><div class="line"></div><div class="line">	NewThread() &#123;</div><div class="line">		<span class="comment">// Create a new, second thread</span></div><div class="line">		t = <span class="keyword">new</span> Thread(<span class="keyword">this</span>, <span class="string">"Demo Thread"</span>);</div><div class="line">		System.out.println(<span class="string">"Child thread: "</span> + t);</div><div class="line">		t.start(); <span class="comment">// Start the thread</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// This is the entry point for the second thread.</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">5</span>; i &gt; <span class="number">0</span>; i--) &#123;</div><div class="line">				System.out.println(<span class="string">"Child Thread: "</span> + i);</div><div class="line">				Thread.sleep(<span class="number">500</span>);</div><div class="line">			&#125;</div><div class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">			System.out.println(<span class="string">"Child interrupted."</span>);</div><div class="line">		&#125;</div><div class="line">		System.out.println(<span class="string">"Exiting child thread."</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo</span> </span>&#123;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> </span>&#123;</div><div class="line">		<span class="keyword">new</span> NewThread(); <span class="comment">// create a new thread</span></div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">5</span>; i &gt; <span class="number">0</span>; i--) &#123;</div><div class="line">				System.out.println(<span class="string">"Main Thread: "</span> + i);</div><div class="line">				Thread.sleep(<span class="number">1000</span>);</div><div class="line">			&#125;</div><div class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">			System.out.println(<span class="string">"Main thread interrupted."</span>);</div><div class="line">		&#125;</div><div class="line">		System.out.println(<span class="string">"Main thread exiting."</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在NewThread 构造函数中，新的Thread对象由下面的语句创建：:<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line">t = <span class="keyword">new</span> Thread(<span class="keyword">this</span>, <span class="string">"Demo Thread"</span>);</div></pre></td></tr></table></figure></p>
+<p>通过前面的语句this 表明在this对象中你想要新的线程调用run()方法。然后，start() 被调用，以run()方法为开始启动了线程的执行。这使子线程for 循环开始执行。调用start()之后，NewThread 的构造函数返回到main()。当主线程被恢复，它到达for 循环。两个线程继续运行，共享CPU，直到它们的循环结束。该程序的输出如下：</p>
+<blockquote>
+<p>Child thread: Thread[Demo Thread,5,main]<br>Main Thread: 5<br>Child Thread: 5<br>Child Thread: 4<br>Main Thread: 4<br>Child Thread: 3<br>Child Thread: 2<br>Main Thread: 3<br>Child Thread: 1<br>Exiting child thread.<br>Main Thread: 2<br>Main Thread: 1<br>Main thread exiting.</p>
+</blockquote>
+<p>如前面提到的，在多线程程序中，通常主线程必须是结束运行的最后一个线程。实际上，一些老的JVM，如果主线程先于子线程结束，Java的运行时间系统就可能“挂起”。前述程序保证了主线程最后结束，因为主线程沉睡周期1000毫秒，而子线程仅为500毫秒。这就使子线程在主线程结束之前先结束。简而言之，你将看到等待线程结束的更好途径。</p>
+<h3 id="扩展Thread"><a href="#扩展Thread" class="headerlink" title="扩展Thread"></a>扩展Thread</h3><p><font color="brown"><strong>创建线程的另一个途径是创建一个新类来扩展Thread类，然后创建该类的实例。</strong></font>当一个类继承Thread时，它必须重载run()方法，这个run()方法是新线程的入口。它也必须调用start()方法去启动新线程执行。下面用扩展thread类重写前面的程序：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="comment">// Create a second thread by extending Thread</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">NewThread</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</div><div class="line">	NewThread() &#123;</div><div class="line">		<span class="comment">// Create a new, second thread</span></div><div class="line">		<span class="keyword">super</span>(<span class="string">"Demo Thread"</span>);</div><div class="line">		System.out.println(<span class="string">"Child thread: "</span> + <span class="keyword">this</span>);</div><div class="line">		start(); <span class="comment">// Start the thread</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// This is the entry point for the second thread.</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">5</span>; i &gt; <span class="number">0</span>; i--) &#123;</div><div class="line">				System.out.println(<span class="string">"Child Thread: "</span> + i);</div><div class="line">				Thread.sleep(<span class="number">500</span>);</div><div class="line">			&#125;</div><div class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">			System.out.println(<span class="string">"Child interrupted."</span>);</div><div class="line">		&#125;</div><div class="line">		System.out.println(<span class="string">"Exiting child thread."</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo</span> </span>&#123;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> </span>&#123;</div><div class="line">		<span class="keyword">new</span> NewThread(); <span class="comment">// create a new thread</span></div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">5</span>; i &gt; <span class="number">0</span>; i--) &#123;</div><div class="line">				System.out.println(<span class="string">"Main Thread: "</span> + i);</div><div class="line">				Thread.sleep(<span class="number">1000</span>);</div><div class="line">			&#125;</div><div class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">			System.out.println(<span class="string">"Main thread interrupted."</span>);</div><div class="line">		&#125;</div><div class="line">		System.out.println(<span class="string">"Main thread exiting."</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>该程序生成和前述版本相同的输出。子线程是由实例化NewThread对象生成的，该对象从Thread类派生。注意NewThread 中super()的调用。该方法调用了下列形式的Thread构造函数：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="title">Thread</span><span class="params">(String threadName)</span></span></div></pre></td></tr></table></figure></p>
+<p>这里，threadName指定线程名称。</p>
+<blockquote>
+<p>Thread类定义了多种方法可以被派生类复写。对于所有的方法，惟一的必须被复写的是run()方法。这当然是实现Runnable接口所需的同样的方法。很多Java程序员认为类仅在它们被加强或修改时应该被扩展。因此，如果你不复写Thread的其他方法时，最好只实现Runnable 接口。这当然由你决定。然而，在本章的其他部分，我们应用实现runnable接口的类来创建线程。</p>
+</blockquote>
+<hr>
+<h2 id="创建多线程"><a href="#创建多线程" class="headerlink" title="创建多线程"></a>创建多线程</h2><p>到目前为止，我们仅用到两个线程：主线程和一个子线程。然而，你的程序可以创建所需的更多线程。例如，下面的程序创建了三个子线程：<br>到目前为止，我们仅用到两个线程：主线程和一个子线程。然而，你的程序可以创建所需的更多线程。例如，下面的程序创建了三个子线程：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="comment">// Create multiple threads.</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">NewThread</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</div><div class="line">	String name; <span class="comment">// name of thread</span></div><div class="line">	Thread t;</div><div class="line"></div><div class="line">	NewThread(String threadname) &#123;</div><div class="line">		name = threadname;</div><div class="line">		t = <span class="keyword">new</span> Thread(<span class="keyword">this</span>, name);</div><div class="line">		System.out.println(<span class="string">"New thread: "</span> + t);</div><div class="line">		t.start(); <span class="comment">// Start the thread</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// This is the entry point for thread.</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">5</span>; i &gt; <span class="number">0</span>; i--) &#123;</div><div class="line">				System.out.println(name + <span class="string">": "</span> + i);</div><div class="line">				Thread.sleep(<span class="number">1000</span>);</div><div class="line">			&#125;</div><div class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">			System.out.println(name + <span class="string">"Interrupted"</span>);</div><div class="line">		&#125;</div><div class="line">		System.out.println(name + <span class="string">" exiting."</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo</span> </span>&#123;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> </span>&#123;</div><div class="line">		<span class="keyword">new</span> NewThread(<span class="string">"One"</span>); <span class="comment">// start threads</span></div><div class="line">		<span class="keyword">new</span> NewThread(<span class="string">"Two"</span>);</div><div class="line">		<span class="keyword">new</span> NewThread(<span class="string">"Three"</span>);</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			<span class="comment">// wait for other threads to end</span></div><div class="line">			Thread.sleep(<span class="number">10000</span>);</div><div class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">			System.out.println(<span class="string">"Main thread Interrupted"</span>);</div><div class="line">		&#125;</div><div class="line">		System.out.println(<span class="string">"Main thread exiting."</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>程序输出：</p>
+<blockquote>
+<p>New thread: Thread[One,5,main]<br>New thread: Thread[Two,5,main]<br>One: 5<br>New thread: Thread[Three,5,main]<br>Two: 5<br>Three: 5<br>One: 4<br>Three: 4<br>Two: 4<br>Two: 3<br>Three: 3<br>One: 3<br>Two: 2<br>One: 2<br>Three: 2<br>Two: 1<br>Three: 1<br>One: 1<br>One exiting.<br>Two exiting.<br>Three exiting.<br>Main thread exiting.</p>
+</blockquote>
+<p>如你所见，一旦启动，所有三个子线程共享CPU。注意main()中对sleep(10000)的调用。这使主线程沉睡十秒确保它最后结束。</p>
+<hr>
+<h2 id="使用-isAlive-和-join"><a href="#使用-isAlive-和-join" class="headerlink" title="使用 isAlive() 和 join()"></a>使用 isAlive() 和 join()</h2><p>如前所述，通常你希望主线程最后结束。在前面的例子中，这点是通过在main()中调用sleep()来实现的，经过足够长时间的延迟以确保所有子线程都先于主线程结束。然而，这不是一个令人满意的解决方法，它也带来一个大问题：一个线程如何知道另一线程已经结束？幸运的是，Thread类提供了回答此问题的方法。</p>
+<p>有两种方法可以判定一个线程是否结束。第一，可以在线程中调用isAlive()。这种方法由Thread定义，它的通常形式如下：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">isAlive</span><span class="params">( )</span></span></div></pre></td></tr></table></figure></p>
+<p>如果所调用线程仍在运行，isAlive()方法返回true，如果不是则返回false。但isAlive（）很少用到，等待线程结束的更常用的方法是调用join()，描述如下：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">join</span><span class="params">( )</span> <span class="keyword">throws</span> InterruptedException</span></div></pre></td></tr></table></figure></p>
+<p>该方法等待所调用线程结束。该名字来自于要求线程等待直到指定线程参与的概念。join()的附加形式允许给等待指定线程结束定义一个最大时间。下面是前面例子的改进版本。运用join()以确保主线程最后结束。同样，它也演示了isAlive()方法。<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="comment">// Using join() to wait for threads to finish.</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">NewThread</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</div><div class="line">	String name; <span class="comment">// name of thread</span></div><div class="line">	Thread t;</div><div class="line"></div><div class="line">	NewThread(String threadname) &#123;</div><div class="line">		name = threadname;</div><div class="line">		t = <span class="keyword">new</span> Thread(<span class="keyword">this</span>, name);</div><div class="line">		System.out.println(<span class="string">"New thread: "</span> + t);</div><div class="line">		t.start(); <span class="comment">// Start the thread</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// This is the entry point for thread.</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">5</span>; i &gt; <span class="number">0</span>; i--) &#123;</div><div class="line">				System.out.println(name + <span class="string">": "</span> + i);</div><div class="line">				Thread.sleep(<span class="number">1000</span>);</div><div class="line">			&#125;</div><div class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">			System.out.println(name + <span class="string">" interrupted."</span>);</div><div class="line">		&#125;</div><div class="line">		System.out.println(name + <span class="string">" exiting."</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">DemoJoin</span> </span>&#123;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> </span>&#123;</div><div class="line">		NewThread ob1 = <span class="keyword">new</span> NewThread(<span class="string">"One"</span>);</div><div class="line">		NewThread ob2 = <span class="keyword">new</span> NewThread(<span class="string">"Two"</span>);</div><div class="line">		NewThread ob3 = <span class="keyword">new</span> NewThread(<span class="string">"Three"</span>);</div><div class="line">		System.out.println(<span class="string">"Thread One is alive: "</span> + ob1.t.isAlive());</div><div class="line">		System.out.println(<span class="string">"Thread Two is alive: "</span> + ob2.t.isAlive());</div><div class="line">		System.out.println(<span class="string">"Thread Three is alive: "</span> + ob3.t.isAlive());</div><div class="line">		<span class="comment">// wait for threads to finish</span></div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			System.out.println(<span class="string">"Waiting for threads to finish."</span>);</div><div class="line">			ob1.t.join();</div><div class="line">			ob2.t.join();</div><div class="line">			ob3.t.join();</div><div class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">			System.out.println(<span class="string">"Main thread Interrupted"</span>);</div><div class="line">		&#125;</div><div class="line">		System.out.println(<span class="string">"Thread One is alive: "</span> + ob1.t.isAlive());</div><div class="line">		System.out.println(<span class="string">"Thread Two is alive: "</span> + ob2.t.isAlive());</div><div class="line">		System.out.println(<span class="string">"Thread Three is alive: "</span> + ob3.t.isAlive());</div><div class="line">		System.out.println(<span class="string">"Main thread exiting."</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>运行结果：</p>
+<blockquote>
+<p>New thread: Thread[One,5,main]<br>New thread: Thread[Two,5,main]<br>One: 5<br>New thread: Thread[Three,5,main]<br>Two: 5<br>Thread One is alive: true<br>Thread Two is alive: true<br>Three: 5<br>Thread Three is alive: true<br>Waiting for threads to finish.<br>Two: 4<br>Three: 4<br>One: 4<br>One: 3<br>Two: 3<br>Three: 3<br>Two: 2<br>Three: 2<br>One: 2<br>Two: 1<br>One: 1<br>Three: 1<br>Three exiting.<br>Two exiting.<br>One exiting.<br>Thread One is alive: false<br>Thread Two is alive: false<br>Thread Three is alive: false<br>Main thread exiting.</p>
+</blockquote>
+<p>如你所见，调用join()后返回，线程终止执行。</p>
+<hr>
+<h2 id="线程优先级-1"><a href="#线程优先级-1" class="headerlink" title="线程优先级"></a>线程优先级</h2><p>线程优先级<strong>被线程调度</strong>用来<strong>判定何时每个线程允许运行</strong>。理论上，优先级高的线程比优先级低的线程获得更多的CPU时间。实际上，线程获得的CPU时间通常由包括优先级在内的多个因素决定（例如，一个实行多任务处理的操作系统如何更有效的利用CPU时间）。一个优先级高的线程自然比优先级低的线程优先。举例来说，当低优先级线程正在运行，而一个高优先级的线程被恢复（例如从沉睡中或等待I/O中），它将抢占低优先级线程所使用的CPU。</p>
+<p>理论上，等优先级线程有同等的权利使用CPU。但你必须小心了。记住，Java是被设计成能在很多环境下工作的。一些环境下实现多任务处理从本质上与其他环境不同。为安全起见，等优先级线程偶尔也受控制。这保证了所有线程在无优先级的操作系统下都有机会运行。实际上，在无优先级的环境下，多数线程仍然有机会运行，因为很多线程不可避免的会遭遇阻塞，例如等待输入输出。遇到这种情形，阻塞的线程挂起，其他线程运行。但是如果你希望多线程执行的顺利的话，最好不要采用这种方法。同样，有些类型的任务是占CPU的。对于这些支配CPU类型的线程，有时你希望能够支配它们，以便使其他线程可以运行。</p>
+<p>设置线程的优先级，用setPriority()方法，该方法也是Tread 的成员。它的通常形式为：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">setPriority</span><span class="params">(<span class="keyword">int</span> level)</span></span></div></pre></td></tr></table></figure></p>
+<p>这 里 ， level 指 定了对所调用的线程的新的优先权的设置。Level的值必须在MIN_PRIORITY到MAX_PRIORITY范围内。通常，它们的值分别是1和10。要返回一个线程为默认的优先级，指定NORM_PRIORITY，通常值为5。这些优先级在Thread中都被定义为final型变量。</p>
+<p>你可以通过调用Thread的getPriority()方法来获得当前的优先级设置。该方法如下：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getPriority</span><span class="params">( )</span></span></div></pre></td></tr></table></figure></p>
+<p>当涉及调度时，Java的执行可以有本质上不同的行为。Windows 95/98/NT/2000 的工作或多或少如你所愿。但其他版本可能工作的完全不同。大多数矛盾发生在你使用有优先级行为的线程，而不是协同的腾出CPU时间。最安全的办法是获得可预先性的优先权，Java获得跨平台的线程行为的方法是自动放弃对CPU的控制。</p>
+<p>下面的例子阐述了两个不同优先级的线程，运行于具有优先权的平台，这与运行于无优先级的平台不同。一个线程通过Thread.NORM_PRIORITY设置了高于普通优先级两级的级数，另一线程设置的优先级则低于普通级两级。两线程被启动并允许运行10秒。每个线程执行一个循环，记录反复的次数。10秒后，主线程终止了两线程。每个线程经过循环的次数被显示。<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="comment">// Demonstrate thread priorities.</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">clicker</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</div><div class="line">     <span class="keyword">int</span> click = <span class="number">0</span>;</div><div class="line">    Thread t;</div><div class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">boolean</span> running = <span class="keyword">true</span>;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="title">clicker</span><span class="params">(<span class="keyword">int</span> p)</span> </span>&#123;</div><div class="line">        t = <span class="keyword">new</span> Thread(<span class="keyword">this</span>);</div><div class="line">        t.setPriority(p);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">        <span class="keyword">while</span> (running) &#123;</div><div class="line">            click++;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stop</span><span class="params">()</span> </span>&#123;</div><div class="line">        running = <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</div><div class="line">        t.start();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Demo</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> </span>&#123;</div><div class="line">        Thread.currentThread().setPriority(Thread.MAX_PRIORITY);</div><div class="line">        clicker hi = <span class="keyword">new</span> clicker(Thread.NORM_PRIORITY + <span class="number">2</span>);</div><div class="line">        clicker lo = <span class="keyword">new</span> clicker(Thread.NORM_PRIORITY - <span class="number">2</span>);</div><div class="line">        lo.start();</div><div class="line">        hi.start();</div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            Thread.sleep(<span class="number">10000</span>);</div><div class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">            System.out.println(<span class="string">"Main thread interrupted."</span>);</div><div class="line">        &#125;</div><div class="line">        lo.stop();</div><div class="line">        hi.stop();</div><div class="line">        <span class="comment">// Wait for child threads to terminate.</span></div><div class="line">        <span class="keyword">try</span> &#123;</div><div class="line">            hi.t.join();</div><div class="line">            lo.t.join();</div><div class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">            System.out.println(<span class="string">"InterruptedException caught"</span>);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        System.out.println(<span class="string">"Low-priority thread: "</span> + lo.click);</div><div class="line">        System.out.println(<span class="string">"High-priority thread: "</span> + hi.click);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我在Mac上运行结果是：</p>
+<blockquote>
+<p>Low-priority thread: 158021835<br>High-priority thread: 111098732</p>
+</blockquote>
+<p>原文情况比较早，如下：<br>该程序在Windows 98下运行的输出，表明线程确实上下转换，甚至既不屈从于CPU，也不被输入输出阻塞。优先级高的线程获得大约90%的CPU时间。</p>
+<blockquote>
+<p>Low-priority thread: 4408112<br>High-priority thread: 589626904</p>
+</blockquote>
+<p>当然，该程序的精确的输出结果依赖于你的CPU的速度和运行的其他任务的数量。当同样的程序运行于无优先级的系统，将会有不同的结果。</p>
+<p>上述程序还有个值得注意的地方。注意running前的关键字volatile。尽管volatile 在下章会被很仔细的讨论，用在此处以确保running的值在下面的循环中每次都得到验证。<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">while</span> (running) &#123;</div><div class="line">	click++;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>如果不用volatile，Java可以自由的优化循环：running的值被存在CPU的一个寄存器中，每次重复不一定需要复检。volatile的运用阻止了该优化，告知Java running可以改变，改变方式并不以直接代码形式显示。</p>
+<h2 id="线程同步"><a href="#线程同步" class="headerlink" title="线程同步"></a>线程同步</h2><p>当两个或两个以上的线程需要共享资源，它们需要某种方法来确定资源在某一刻仅被一个线程占用。达到此目的的过程叫做<code>同步(synchronization）</code>。像你所看到的，Java为此提供了独特的，语言水平上的支持。</p>
+<p>同步的关键是管程（也叫<code>信号量semaphore</code>）的概念。管程是一个互斥独占锁定的对象，或称<code>互斥体（mutex）</code>。在给定的时间，仅有一个线程可以获得管程。当一个线程需要锁定，它必须进入管程。所有其他的试图进入已经锁定的管程的线程必须挂起直到第一个线程退出管程。这些其他的线程被称为等待管程。一个拥有管程的线程如果愿意的话可以再次进入相同的管程。</p>
+<p>如果你用其他语言例如C或C++时用到过同步，你会知道它用起来有一点诡异。这是因为很多语言它们自己不支持同步。相反，对同步线程，程序必须利用操作系统源语。幸运的是Java通过语言元素实现同步，大多数的与同步相关的复杂性都被消除。</p>
+<p>你可以用两种方法同步化代码。两者都包括synchronized关键字的运用，下面分别说明这两种方法。</p>
+<h3 id="使用同步方法"><a href="#使用同步方法" class="headerlink" title="使用同步方法"></a>使用同步方法</h3><p>Java中同步是简单的，因为所有对象都有它们与之对应的隐式管程。进入某一对象的管程，就是调用被synchronized关键字修饰的方法。当一个线程在一个同步方法内部，所有试图调用该方法（或其他同步方法）的同实例的其他线程必须等待。为了退出管程，并放弃对对象的控制权给其他等待的线程，拥有管程的线程仅需从同步方法中返回。</p>
+<p>为理解同步的必要性，让我们从一个应该使用同步却没有用的简单例子开始。下面的程序有三个简单类。首先是Callme，它有一个简单的方法call( )。call( )方法有一个名为msg的String参数。该方法试图在方括号内打印msg 字符串。有趣的事是在调用call( ) 打印左括号和msg字符串后，调用Thread.sleep(1000)，该方法使当前线程暂停1秒。</p>
+<p>下一个类的构造函数Caller，引用了Callme的一个实例以及一个String，它们被分别存在target 和 msg 中。构造函数也创建了一个调用该对象的run( )方法的新线程。该线程立即启动。Caller类的run( )方法通过参数msg字符串调用Callme实例target的call( ) 方法。最后，Synch类由创建Callme的一个简单实例和Caller的三个具有不同消息字符串的实例开始。Callme的同一实例传给每个Caller实例。<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="comment">// This program is not synchronized.</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Callme</span> </span>&#123;</div><div class="line">	<span class="function"><span class="keyword">void</span> <span class="title">call</span><span class="params">(String msg)</span> </span>&#123;</div><div class="line">		System.out.print(<span class="string">"["</span> + msg);</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			Thread.sleep(<span class="number">1000</span>);</div><div class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">			System.out.println(<span class="string">"Interrupted"</span>);</div><div class="line">		&#125;</div><div class="line">		System.out.println(<span class="string">"]"</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Caller</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</div><div class="line">	String msg;</div><div class="line">	Callme target;</div><div class="line">	Thread t;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="title">Caller</span><span class="params">(Callme targ, String s)</span> </span>&#123;</div><div class="line">		target = targ;</div><div class="line">		msg = s;</div><div class="line">		t = <span class="keyword">new</span> Thread(<span class="keyword">this</span>);</div><div class="line">		t.start();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">		target.call(msg);</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Synch</span> </span>&#123;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> </span>&#123;</div><div class="line">		Callme target = <span class="keyword">new</span> Callme();</div><div class="line">		Caller ob1 = <span class="keyword">new</span> Caller(target, <span class="string">"Hello"</span>);</div><div class="line">		Caller ob2 = <span class="keyword">new</span> Caller(target, <span class="string">"Synchronized"</span>);</div><div class="line">		Caller ob3 = <span class="keyword">new</span> Caller(target, <span class="string">"World"</span>);</div><div class="line">		<span class="comment">// wait for threads to end</span></div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			ob1.t.join();</div><div class="line">			ob2.t.join();</div><div class="line">			ob3.t.join();</div><div class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">			System.out.println(<span class="string">"Interrupted"</span>);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>该程序的输出如下：</p>
+<blockquote>
+<p>[Hello[World[Synchronized]<br>]<br>]</p>
+</blockquote>
+<p>在本例中，通过调用sleep( )，call( )方法允许执行转换到另一个线程。该结果是三个消息字符串的混合输出。该程序中，没有阻止三个线程同时调用同一对象的同一方法的方法存在。这是一种竞争，因为三个线程争着完成方法。例题用sleep( )使该影响重复和明显。在大多数情况，竞争是更为复杂和不可预知的，因为你不能确定何时上下文转换会发生。这使程序时而运行正常时而出错。</p>
+<p>为达到上例所想达到的目的，必须有权连续的使用call( )。也就是说，在某一时刻，必须限制只有一个线程可以支配它。为此，你只需在call( ) 定义前加上关键字synchronized，如下：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Callme</span> </span>&#123;</div><div class="line">    <span class="function"><span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">call</span><span class="params">(String msg)</span> </span>&#123;</div><div class="line">        ...</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这防止了在一个线程使用call( )时其他线程进入call( )。在synchronized加到call( )前面以后，程序输出如下：</p>
+<blockquote>
+<p>[Hello]<br>[World]<br>[Synchronized]</p>
+</blockquote>
+<p>任何时候在多线程情况下，你有一个方法或多个方法操纵对象的内部状态，都必须用synchronized 关键字来防止状态出现竞争。记住，一旦线程进入实例的同步方法，没有其他线程可以进入相同实例的同步方法。然而，该实例的其他不同步方法却仍然可以被调用。</p>
+<h3 id="同步语句"><a href="#同步语句" class="headerlink" title="同步语句"></a>同步语句</h3><p>尽管在创建的类的内部创建同步方法是获得同步的简单和有效的方法，但它并非在任何时候都有效。这其中的原因，请跟着思考。假设你想获得不为多线程访问设计的类对象的同步访问，也就是，该类没有用到synchronized方法。而且，该类不是你自己，而是第三方创建的，你不能获得它的源代码。这样，你不能在相关方法前加synchronized修饰符。怎样才能使该类的一个对象同步化呢？很幸运，解决方法很简单：你只需将对这个类定义的方法的调用放入一个synchronized块内就可以了。</p>
+<p>下面是synchronized语句的普通形式：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="keyword">synchronized</span>(object) &#123;</div><div class="line">    <span class="comment">// statements to be synchronized</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>其中，object是被同步对象的引用。如果你想要同步的只是一个语句，那么不需要花括号。一个同步块确保对object成员方法的调用仅在当前线程成功进入object管程后发生。<br>下面是前面程序的修改版本，在run( )方法内用了同步块：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="comment">// synchronize calls to call()</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">synchronized</span> (target) &#123; <span class="comment">// synchronized block</span></div><div class="line">			target.call(msg);</div><div class="line">		&#125;</div><div class="line">	&#125;</div></pre></td></tr></table></figure></p>
+<p>这里，call( )方法没有被synchronized修饰。而synchronized是在Caller类的run( )方法中声明的。这可以得到上例中同样正确的结果，因为每个线程运行前都等待先前的一个线程结束。</p>
+<hr>
+<h2 id="线程间通信"><a href="#线程间通信" class="headerlink" title="线程间通信"></a>线程间通信</h2><p>上述例题无条件的阻塞了其他线程异步访问某个方法。Java对象中隐式管程的应用是很强大的，但是你可以通过线程间通信达到更微妙的境界。这在Java中是尤为简单的。</p>
+<p>像前面所讨论过的，多线程通过把任务分成离散的和合乎逻辑的单元代替了事件循环程序。线程还有第二优点：它远离了轮询。轮询通常由重复监测条件的循环实现。一旦条件成立，就要采取适当的行动。这浪费了CPU时间。举例来说，考虑经典的序列问题，当一个线程正在产生数据而另一个程序正在消费它。为使问题变得更有趣，假设数据产生器必须等待消费者完成工作才能产生新的数据。在轮询系统，消费者在等待生产者产生数据时会浪费很多CPU周期。一旦生产者完成工作，它将启动轮询，浪费更多的CPU时间等待消费者的工作结束，如此下去。很明显，这种情形不受欢迎。</p>
+<p>为避免轮询，Java包含了通过wait( )，notify( )和notifyAll( )方法实现的一个进程间通信机制。这些方法在对象中是用final方法实现的，所以所有的类都含有它们。这三个方法仅在synchronized方法中才能被调用。尽管这些方法从计算机科学远景方向上来说具有概念的高度先进性，实际中用起来是很简单的：</p>
+<ul>
+<li>wait( ) 告知被调用的线程放弃管程进入睡眠直到其他线程进入相同管程并且调用notify( )。</li>
+<li>notify( ) 恢复相同对象中第一个调用 wait( ) 的线程。</li>
+<li>notifyAll( ) 恢复相同对象中所有调用 wait( ) 的线程。具有最高优先级的线程最先运行。</li>
+</ul>
+<p>这些方法在Object中被声明，如下所示：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">wait</span><span class="params">( )</span> <span class="keyword">throws</span> InterruptedException</span></div><div class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">notify</span><span class="params">( )</span></span></div><div class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">notifyAll</span><span class="params">( )</span></span></div></pre></td></tr></table></figure></p>
+<p>wait( )存在的另外的形式允许你定义等待时间。</p>
+<p>下面的例子程序错误的实行了一个简单生产者/消费者的问题。它由四个类组成：Q，设法获得同步的序列；Producer，产生排队的线程对象；Consumer，消费序列的线程对象；以及PC，创建单个Q，Producer，和Consumer的小类。<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="comment">// An incorrect implementation of a producer and consumer.</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Q</span> </span>&#123;</div><div class="line">	<span class="keyword">int</span> n;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">synchronized</span> <span class="keyword">int</span> <span class="title">get</span><span class="params">()</span> </span>&#123;</div><div class="line">		System.out.println(<span class="string">"Got: "</span> + n);</div><div class="line">		<span class="keyword">return</span> n;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</div><div class="line">		<span class="keyword">this</span>.n = n;</div><div class="line">		System.out.println(<span class="string">"Put: "</span> + n);</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Producer</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</div><div class="line">	Q q;</div><div class="line"></div><div class="line">	Producer(Q q) &#123;</div><div class="line">		<span class="keyword">this</span>.q = q;</div><div class="line">		<span class="keyword">new</span> Thread(<span class="keyword">this</span>, <span class="string">"Producer"</span>).start();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">int</span> i = <span class="number">0</span>;</div><div class="line">		<span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</div><div class="line">			q.put(i++);</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Consumer</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</div><div class="line">	Q q;</div><div class="line"></div><div class="line">	Consumer(Q q) &#123;</div><div class="line">		<span class="keyword">this</span>.q = q;</div><div class="line">		<span class="keyword">new</span> Thread(<span class="keyword">this</span>, <span class="string">"Consumer"</span>).start();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</div><div class="line">			q.get();</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">PC</span> </span>&#123;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> </span>&#123;</div><div class="line">		Q q = <span class="keyword">new</span> Q();</div><div class="line">		<span class="keyword">new</span> Producer(q);</div><div class="line">		<span class="keyword">new</span> Consumer(q);</div><div class="line"></div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			Thread.sleep(<span class="number">1</span>);</div><div class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">			<span class="comment">// TODO Auto-generated catch block</span></div><div class="line">			e.printStackTrace();</div><div class="line">		&#125;</div><div class="line">		System.exit(<span class="number">0</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>尽管Q类中的put( )和get( )方法是同步的，没有东西阻止生产者超越消费者，也没有东西阻止消费者消费同样的序列两次。这样，你就得到下面的错误输出（输出将随处理器速度和装载的任务而改变，每次也会不同）：</p>
+<blockquote>
+<p>Put: 0<br>Put: 1<br>Got: 1<br>Got: 1<br>Got: 1<br>Got: 1<br>Got: 1<br>Put: 2<br>Put: 3<br>Put: 4<br>Put: 5<br>Put: 6<br>Put: 7<br>Got: 7</p>
+</blockquote>
+<p>生产者生成1后，消费者依次获得同样的1五次。生产者在继续生成2到7，消费者没有机会获得它们。</p>
+<p>用Java正确的编写该程序是用wait( )和notify( )来对两个方向进行标志，如下所示：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="comment">// A correct implementation of a producer and consumer.</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Q</span> </span>&#123;</div><div class="line">	<span class="keyword">int</span> n;</div><div class="line">	<span class="keyword">boolean</span> valueSet = <span class="keyword">false</span>;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">synchronized</span> <span class="keyword">int</span> <span class="title">get</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">if</span> (!valueSet)</div><div class="line">			<span class="keyword">try</span> &#123;</div><div class="line">				wait();</div><div class="line">			&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">				System.out.println(<span class="string">"InterruptedException caught"</span>);</div><div class="line">			&#125;</div><div class="line">		System.out.println(<span class="string">"Got: "</span> + n);</div><div class="line">		valueSet = <span class="keyword">false</span>;</div><div class="line">		notify();</div><div class="line">		<span class="keyword">return</span> n;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">put</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</div><div class="line">		<span class="keyword">if</span> (valueSet)</div><div class="line">			<span class="keyword">try</span> &#123;</div><div class="line">				wait();</div><div class="line">			&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">				System.out.println(<span class="string">"InterruptedException caught"</span>);</div><div class="line">			&#125;</div><div class="line">		<span class="keyword">this</span>.n = n;</div><div class="line">		valueSet = <span class="keyword">true</span>;</div><div class="line">		System.out.println(<span class="string">"Put: "</span> + n);</div><div class="line">		notify();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>内部get( ), wait( )被调用。这使执行挂起直到Producer 告知数据已经预备好。这时，内部get( ) 被恢复执行。获取数据后，get( )调用notify( )。这告诉Producer可以向序列中输入更多数据。在put( )内，wait( )挂起执行直到Consumer取走了序列中的项目。当执行再继续，下一个数据项目被放入序列，notify( )被调用，这通知Consumer它应该移走该数据。</p>
+<p>下面是该程序的输出，它清楚的显示了同步行为：</p>
+<blockquote>
+<p>Put: 0<br>Got: 0<br>Put: 1<br>Got: 1<br>Put: 2<br>Got: 2<br>Put: 3<br>Got: 3</p>
+</blockquote>
+<h3 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h3><p>需要避免的与多任务处理有关的特殊错误类型是<code>死锁（deadlock）</code>。死锁发生在当两个线程对一对同步对象有循环依赖关系时。例如，假定一个线程进入了对象X的管程而另一个线程进入了对象Y的管程。如果X的线程试图调用Y的同步方法，它将像预料的一样被锁定。而Y的线程同样希望调用X的一些同步方法，线程永远等待，因为为到达X，必须释放自己的Y的锁定以使第一个线程可以完成。死锁是很难调试的错误，因为：</p>
+<ul>
+<li>通常，它极少发生，只有到两线程的时间段刚好符合时才能发生。</li>
+<li>它可能包含多于两个的线程和同步对象（也就是说，死锁在比刚讲述的例子有更多复杂的事件序列的时候可以发生）。</li>
+</ul>
+<p>为充分理解死锁，观察它的行为是很有用的。下面的例子生成了两个类，A和B，分别有foo( )和bar( )方法。这两种方法在调用其他类的方法前有一个短暂的停顿。主类，名为Deadlock，创建了A和B的实例，然后启动第二个线程去设置死锁环境。foo( )和bar( )方法使用sleep( )强迫死锁现象发生。<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="comment">// An example of deadlock.</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">	<span class="function"><span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">foo</span><span class="params">(B b)</span> </span>&#123;</div><div class="line">		String name = Thread.currentThread().getName();</div><div class="line">		System.out.println(name + <span class="string">" entered A.foo"</span>);</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			Thread.sleep(<span class="number">1000</span>);</div><div class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">			System.out.println(<span class="string">"A Interrupted"</span>);</div><div class="line">		&#125;</div><div class="line">		System.out.println(name + <span class="string">" trying to call B.last()"</span>);</div><div class="line">		b.last();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">last</span><span class="params">()</span> </span>&#123;</div><div class="line">		System.out.println(<span class="string">"Inside A.last"</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> </span>&#123;</div><div class="line">	<span class="function"><span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">bar</span><span class="params">(A a)</span> </span>&#123;</div><div class="line">		String name = Thread.currentThread().getName();</div><div class="line">		System.out.println(name + <span class="string">" entered B.bar"</span>);</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			Thread.sleep(<span class="number">1000</span>);</div><div class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">			System.out.println(<span class="string">"B Interrupted"</span>);</div><div class="line">		&#125;</div><div class="line">		System.out.println(name + <span class="string">" trying to call A.last()"</span>);</div><div class="line">		a.last();</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">last</span><span class="params">()</span> </span>&#123;</div><div class="line">		System.out.println(<span class="string">"Inside A.last"</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Deadlock</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</div><div class="line">	A a = <span class="keyword">new</span> A();</div><div class="line">	B b = <span class="keyword">new</span> B();</div><div class="line"></div><div class="line">	Deadlock() &#123;</div><div class="line">		Thread.currentThread().setName(<span class="string">"MainThread"</span>);</div><div class="line">		Thread t = <span class="keyword">new</span> Thread(<span class="keyword">this</span>, <span class="string">"RacingThread"</span>);</div><div class="line">		t.start();</div><div class="line">		a.foo(b); <span class="comment">// get lock on a in this thread.</span></div><div class="line">		System.out.println(<span class="string">"Back in main thread"</span>);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">		b.bar(a); <span class="comment">// get lock on b in other thread.</span></div><div class="line">		System.out.println(<span class="string">"Back in other thread"</span>);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> </span>&#123;</div><div class="line">		<span class="keyword">new</span> Deadlock();</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>运行程序后，输出如下：</p>
+<blockquote>
+<p>MainThread entered A.foo<br>RacingThread entered B.bar<br>MainThread trying to call B.last()<br>RacingThread trying to call A.last()</p>
+</blockquote>
+<p>因为程序死锁，RacingThread在等待管程a时占用管程b，同时，MainThread占用a等待b。该程序永远都不会结束。像该例阐明的，你的多线程程序经常被锁定，死锁是你首先应检查的问题。</p>
+<hr>
+<h2 id="挂起、恢复和终止线程"><a href="#挂起、恢复和终止线程" class="headerlink" title="挂起、恢复和终止线程"></a>挂起、恢复和终止线程</h2><p>有时，线程的挂起是很有用的。例如，一个独立的线程可以用来显示当日的时间。如果用户不希望用时钟，线程被挂起。在任何情形下，挂起线程是很简单的，一旦挂起，重新启动线程也是一件简单的事。</p>
+<p>挂起，终止和恢复线程机制在Java 2和早期版本中有所不同。尽管你运用Java 2的途径编写代码，你仍需了解这些操作在早期Java环境下是如何完成的。例如，你也许需要更新或维护老的代码。你也需要了解为什么Java 2会有这样的变化。因为这些原因，下面内容描述了执行线程控制的原始方法，接着是Java 2的方法。</p>
+<h3 id="Java-1-1或更早版本的线程的挂起、恢复和终止"><a href="#Java-1-1或更早版本的线程的挂起、恢复和终止" class="headerlink" title="Java 1.1或更早版本的线程的挂起、恢复和终止"></a>Java 1.1或更早版本的线程的挂起、恢复和终止</h3><p>先于Java2的版本，程序用Thread 定义的suspend() 和 resume() 来暂停和再启动线程。它们的形式如下：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">suspend</span><span class="params">( )</span></span></div><div class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">resume</span><span class="params">( )</span></span></div></pre></td></tr></table></figure></p>
+<p>下面的程序描述了这些方法：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="comment">// Using suspend() and resume().</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">NewThread</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</div><div class="line">	String name; <span class="comment">// name of thread</span></div><div class="line">	Thread t;</div><div class="line"></div><div class="line">	NewThread(String threadname) &#123;</div><div class="line">		name = threadname;</div><div class="line">		t = <span class="keyword">new</span> Thread(<span class="keyword">this</span>, name);</div><div class="line">		System.out.println(<span class="string">"New thread: "</span> + t);</div><div class="line">		t.start(); <span class="comment">// Start the thread</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// This is the entry point for thread.</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">15</span>; i &gt; <span class="number">0</span>; i--) &#123;</div><div class="line">				System.out.println(name + <span class="string">": "</span> + i);</div><div class="line">				Thread.sleep(<span class="number">200</span>);</div><div class="line">			&#125;</div><div class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">			System.out.println(name + <span class="string">" interrupted."</span>);</div><div class="line">		&#125;</div><div class="line">		System.out.println(name + <span class="string">" exiting."</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">SuspendResume</span> </span>&#123;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> </span>&#123;</div><div class="line">		NewThread ob1 = <span class="keyword">new</span> NewThread(<span class="string">"One"</span>);</div><div class="line">		NewThread ob2 = <span class="keyword">new</span> NewThread(<span class="string">"Two"</span>);</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			Thread.sleep(<span class="number">1000</span>);</div><div class="line">			ob1.t.suspend();</div><div class="line">			System.out.println(<span class="string">"Suspending thread One"</span>);</div><div class="line">			Thread.sleep(<span class="number">1000</span>);</div><div class="line">			ob1.t.resume();</div><div class="line">			System.out.println(<span class="string">"Resuming thread One"</span>);</div><div class="line">			ob2.t.suspend();</div><div class="line">			System.out.println(<span class="string">"Suspending thread Two"</span>);</div><div class="line">			Thread.sleep(<span class="number">1000</span>);</div><div class="line">			ob2.t.resume();</div><div class="line">			System.out.println(<span class="string">"Resuming thread Two"</span>);</div><div class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">			System.out.println(<span class="string">"Main thread Interrupted"</span>);</div><div class="line">		&#125;</div><div class="line">		<span class="comment">// wait for threads to finish</span></div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			System.out.println(<span class="string">"Waiting for threads to finish."</span>);</div><div class="line">			ob1.t.join();</div><div class="line">			ob2.t.join();</div><div class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">			System.out.println(<span class="string">"Main thread Interrupted"</span>);</div><div class="line">		&#125;</div><div class="line">		System.out.println(<span class="string">"Main thread exiting."</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>程序输出如下：</p>
+<blockquote>
+<p>New thread: Thread[One,5,main]<br>New thread: Thread[Two,5,main]<br>One: 15<br>Two: 15<br>Two: 14<br>One: 14<br>Two: 13<br>One: 13<br>Two: 12<br>One: 12<br>Two: 11<br>One: 11<br>Suspending thread One<br>Two: 10<br>Two: 9<br>Two: 8<br>Two: 7<br>Two: 6<br>Resuming thread One<br>Suspending thread Two<br>One: 10<br>One: 9<br>One: 8<br>One: 7<br>One: 6<br>Resuming thread Two<br>Waiting for threads to finish.<br>Two: 5<br>One: 5<br>Two: 4<br>One: 4<br>Two: 3<br>One: 3<br>Two: 2<br>One: 2<br>Two: 1<br>One: 1<br>Two exiting.<br>One exiting.<br>Main thread exiting.</p>
+</blockquote>
+<p>Thread类同样定义了stop() 来终止线程。它的形式如下：<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">void</span> <span class="title">stop</span><span class="params">( )</span></span></div></pre></td></tr></table></figure></p>
+<p>一旦线程被终止，它不能被resume() 恢复继续运行。</p>
+<h3 id="Java-2中挂起、恢复和终止线程"><a href="#Java-2中挂起、恢复和终止线程" class="headerlink" title="Java 2中挂起、恢复和终止线程"></a>Java 2中挂起、恢复和终止线程</h3><p>Thread定义的suspend()，resume()和stop()方法看起来是管理线程的完美的和方便的方法，它们不能用于新Java版本的程序。下面是其中的原因。Thread类的suspend()方法在Java2中不被赞成，因为suspend()有时会造成严重的系统故障。假定对关键的数据结构的一个线程被锁定的情况，如果该线程在那里挂起，这些锁定的线程并没有放弃对资源的控制。其他的等待这些资源的线程可能死锁。</p>
+<p>Resume()方法同样不被赞同。它不引起问题，但不能离开suspend()方法而独立使用。Thread类的stop()方法同样在Java 2中受到反对。这是因为该方法可能导致严重的系统故障。设想一个线程正在写一个精密的重要的数据结构且仅完成一个零头。如果该线程在此刻终止，则数据结构可能会停留在崩溃状态。</p>
+<p>因为在Java 2中不能使用suspend()，resume()和stop() 方法来控制线程，你也许会想那就没有办法来停止，恢复和结束线程。其实不然。相反，线程必须被设计以使run() 方法定期检查以来判定线程是否应该被挂起，恢复或终止它自己的执行。有代表性的，这由建立一个指示线程状态的标志变量来完成。只要该标志设为“running”，run()方法必须继续让线程执行。如果标志为“suspend”，线程必须暂停。若设为“stop”，线程必须终止。</p>
+<p>当然，编写这样的代码有很多方法，但中心主题对所有的程序应该是相同的。</p>
+<p>下面的例题阐述了从Object继承的wait()和notify()方法怎样控制线程的执行。该例与前面讲过的程序很像。然而，不被赞同的方法都没有用到。让我们思考程序的执行。</p>
+<p>NewTread 类包含了用来控制线程执行的布尔型的实例变量suspendFlag。它被构造函数初始化为false。Run()方法包含一个监测suspendFlag 的同步声明的块。如果变量是true，wait()方法被调用以挂起线程。Mysuspend()方法设置suspendFlag为true。Myresume()方法设置suspendFlag为false并且调用notify()方法来唤起线程。最后，main()方法被修改以调用mysuspend()和myresume()方法。<br><figure class="highlight java"><table><tr><td class="code"><pre><div class="line"><span class="comment">// Suspending and resuming a thread for Java2</span></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">NewThread</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</div><div class="line">	String name; <span class="comment">// name of thread</span></div><div class="line">	Thread t;</div><div class="line">	<span class="keyword">boolean</span> suspendFlag;</div><div class="line"></div><div class="line">	NewThread(String threadname) &#123;</div><div class="line">		name = threadname;</div><div class="line">		t = <span class="keyword">new</span> Thread(<span class="keyword">this</span>, name);</div><div class="line">		System.out.println(<span class="string">"New thread: "</span> + t);</div><div class="line">		suspendFlag = <span class="keyword">false</span>;</div><div class="line">		t.start(); <span class="comment">// Start the thread</span></div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="comment">// This is the entry point for thread.</span></div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">15</span>; i &gt; <span class="number">0</span>; i--) &#123;</div><div class="line">				System.out.println(name + <span class="string">": "</span> + i);</div><div class="line">				Thread.sleep(<span class="number">200</span>);</div><div class="line">				<span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</div><div class="line">					<span class="keyword">while</span> (suspendFlag) &#123;</div><div class="line">						wait();</div><div class="line">					&#125;</div><div class="line">				&#125;</div><div class="line">			&#125;</div><div class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">			System.out.println(name + <span class="string">" interrupted."</span>);</div><div class="line">		&#125;</div><div class="line">		System.out.println(name + <span class="string">" exiting."</span>);</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">void</span> <span class="title">mysuspend</span><span class="params">()</span> </span>&#123;</div><div class="line">		suspendFlag = <span class="keyword">true</span>;</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	<span class="function"><span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">myresume</span><span class="params">()</span> </span>&#123;</div><div class="line">		suspendFlag = <span class="keyword">false</span>;</div><div class="line">		notify();</div><div class="line">	&#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">SuspendResume</span> </span>&#123;</div><div class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> </span>&#123;</div><div class="line">		NewThread ob1 = <span class="keyword">new</span> NewThread(<span class="string">"One"</span>);</div><div class="line">		NewThread ob2 = <span class="keyword">new</span> NewThread(<span class="string">"Two"</span>);</div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			Thread.sleep(<span class="number">1000</span>);</div><div class="line">			ob1.mysuspend();</div><div class="line">			System.out.println(<span class="string">"Suspending thread One"</span>);</div><div class="line">			Thread.sleep(<span class="number">1000</span>);</div><div class="line">			ob1.myresume();</div><div class="line">			System.out.println(<span class="string">"Resuming thread One"</span>);</div><div class="line">			ob2.mysuspend();</div><div class="line">			System.out.println(<span class="string">"Suspending thread Two"</span>);</div><div class="line">			Thread.sleep(<span class="number">1000</span>);</div><div class="line">			ob2.myresume();</div><div class="line">			System.out.println(<span class="string">"Resuming thread Two"</span>);</div><div class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">			System.out.println(<span class="string">"Main thread Interrupted"</span>);</div><div class="line">		&#125;</div><div class="line">		<span class="comment">// wait for threads to finish</span></div><div class="line">		<span class="keyword">try</span> &#123;</div><div class="line">			System.out.println(<span class="string">"Waiting for threads to finish."</span>);</div><div class="line">			ob1.t.join();</div><div class="line">			ob2.t.join();</div><div class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</div><div class="line">			System.out.println(<span class="string">"Main thread Interrupted"</span>);</div><div class="line">		&#125;</div><div class="line">		System.out.println(<span class="string">"Main thread exiting."</span>);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>该程序的输出与前面的程序相同。尽管Java 2控制线程机制不像老方法那样“干净”，然而，它是确保运行时不发生错误的方法。它是所有新的代码必须采用的方法。</p>
+<hr>
+<h2 id="使用多线程机制"><a href="#使用多线程机制" class="headerlink" title="使用多线程机制"></a>使用多线程机制</h2><p>如果你和大多数程序员一样，那么在语言中加入多线程支持对你来说是很新鲜的事物。有效运用这种支持的关键是并发思考而不是连续思考。例如，当你的程序有两个可以并行执行的子系统，创建他们各自的线程。仔细的运用多线程，你能编写出非常有效的程序。然而要注意：如果你创建太多的线程，你可能会减弱而不是加强程序的性能。记住，上下文转换是需要开销的。如果你创建了太多的线程，更多的CPU时间会用于上下文转换而不是用来执行程序。</p>
+<blockquote>
+<p>Written with <a href="https://stackedit.io/" target="_blank" rel="external">StackEdit</a>.</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      Wossoneri
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="http://wossoneri.github.io/2015/09/29/[Java] 多线程编程/" title="[Java] 多线程编程">http://wossoneri.github.io/2015/09/29/[Java] 多线程编程/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/Multithread/" rel="tag"># Multithread</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/06/22/[iOS] Win8下在Vmware11中安装使用苹果系统OS X 10.10/" rel="next" title="[iOS] Win8下在Vmware11中安装使用苹果系统OS X 10.10">
+                <i class="fa fa-chevron-left"></i> [iOS] Win8下在Vmware11中安装使用苹果系统OS X 10.10
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/10/11/[iOS] 圆形进度条及计时功能/" rel="prev" title="[iOS] 圆形进度条及计时功能">
+                [iOS] 圆形进度条及计时功能 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460"
+               alt="Wossoneri" />
+          <p class="site-author-name" itemprop="name">Wossoneri</p>
+           
+              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">36</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">8</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">56</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
+                  
+                    <i class="fa fa-fw fa-weibo"></i>
+                  
+                  Weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+          <div class="cc-license motion-element" itemprop="license">
+            <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+              <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+            </a>
+          </div>
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              友情链接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#线程的概念"><span class="nav-number">1.</span> <span class="nav-text">线程的概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程模型"><span class="nav-number">2.</span> <span class="nav-text">线程模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#线程优先级"><span class="nav-number">2.1.</span> <span class="nav-text">线程优先级</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#同步性"><span class="nav-number">2.2.</span> <span class="nav-text">同步性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#消息传递"><span class="nav-number">2.3.</span> <span class="nav-text">消息传递</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Thread-类和Runnable-接口"><span class="nav-number">2.4.</span> <span class="nav-text">Thread 类和Runnable 接口</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#主线程"><span class="nav-number">3.</span> <span class="nav-text">主线程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建线程"><span class="nav-number">4.</span> <span class="nav-text">创建线程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#实现Runnable接口"><span class="nav-number">4.1.</span> <span class="nav-text">实现Runnable接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#扩展Thread"><span class="nav-number">4.2.</span> <span class="nav-text">扩展Thread</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建多线程"><span class="nav-number">5.</span> <span class="nav-text">创建多线程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用-isAlive-和-join"><span class="nav-number">6.</span> <span class="nav-text">使用 isAlive() 和 join()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程优先级-1"><span class="nav-number">7.</span> <span class="nav-text">线程优先级</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程同步"><span class="nav-number">8.</span> <span class="nav-text">线程同步</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用同步方法"><span class="nav-number">8.1.</span> <span class="nav-text">使用同步方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#同步语句"><span class="nav-number">8.2.</span> <span class="nav-text">同步语句</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程间通信"><span class="nav-number">9.</span> <span class="nav-text">线程间通信</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#死锁"><span class="nav-number">9.1.</span> <span class="nav-text">死锁</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#挂起、恢复和终止线程"><span class="nav-number">10.</span> <span class="nav-text">挂起、恢复和终止线程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Java-1-1或更早版本的线程的挂起、恢复和终止"><span class="nav-number">10.1.</span> <span class="nav-text">Java 1.1或更早版本的线程的挂起、恢复和终止</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java-2中挂起、恢复和终止线程"><span class="nav-number">10.2.</span> <span class="nav-text">Java 2中挂起、恢复和终止线程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用多线程机制"><span class="nav-number">11.</span> <span class="nav-text">使用多线程机制</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("RHlsmdBRQUmQMHNOl3U1ocam-gzGzoHsz", "RU2vFPiDzi68XGHCgJXtBAqo");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
