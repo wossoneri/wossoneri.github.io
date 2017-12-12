@@ -376,7 +376,7 @@
                  <i class="fa fa-clock-o" ></i>
             </span>
 		        <span class="post-meta-item-text">总记</span>
-            <span class="post-count">665 字</span>
+            <span class="post-count">674 字</span>
 		        <span class="post-meta-item-text">读完需要</span>
     		    <span class="post-count">3 分</span>
   		  </span>
@@ -408,69 +408,69 @@
 </blockquote>
 <h2 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h2><p>Mac OS X Yosemite 10.10 是預裝了apache和php的。</p>
 <p>所以直接打開apache</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">sudo apachectl start</div></pre></td></tr></table></figure>
-<p>查看apache版本<br><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">httpd -v</div></pre></td></tr></table></figure></p>
-<p>在我的系統下返回一下結果<br><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">Server version: Apache/2.4.16 (Unix)</div><div class="line">Server built:   Jul 31 2015 15:53:26</div></pre></td></tr></table></figure></p>
-<p>重新启用PHP，避免脚本直接显示在页面上<br><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">sudo vim /etc/apache2/httpd.conf</div></pre></td></tr></table></figure></p>
-<p>ctrl + w 搜索下面這句，將其註釋(#)去掉<br><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">LoadModule php5_module libexec/apache2/libphp5.so</div></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apachectl start</span><br></pre></td></tr></table></figure>
+<p>查看apache版本<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">httpd -v</span><br></pre></td></tr></table></figure></p>
+<p>在我的系統下返回一下結果<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Server version: Apache/2.4.16 (Unix)</span><br><span class="line">Server built:   Jul 31 2015 15:53:26</span><br></pre></td></tr></table></figure></p>
+<p>重新启用PHP，避免脚本直接显示在页面上<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/apache2/httpd.conf</span><br></pre></td></tr></table></figure></p>
+<p>ctrl + w 搜索下面這句，將其註釋(#)去掉<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">LoadModule php5_module libexec/apache2/libphp5.so</span><br></pre></td></tr></table></figure></p>
 <p>设置允许访问用户目录</p>
 <ul>
-<li>在用戶目錄下，創建Sites 文件夾<figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">sudo mkdir ~/Sites</div></pre></td></tr></table></figure>
+<li>在用戶目錄下，創建Sites 文件夾<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo mkdir ~/Sites</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <p>他就是預設被隱藏的個人根目錄資料夾，建立資料夾後他會自動有一個自己的圖案</p>
 <ul>
-<li>修改httpd.conf 設置<figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">sudo vim /etc/apache2/httpd.conf</div></pre></td></tr></table></figure>
+<li>修改httpd.conf 設置<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/apache2/httpd.conf</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-<p>ctrl + w 搜索下面內容，將其註釋(#)去掉<br><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">LoadModule authz_core_module libexec/apache2/mod_authz_core.so</div><div class="line"></div><div class="line">LoadModule authz_host_module libexec/apache2/mod_authz_host.so</div><div class="line"></div><div class="line">LoadModule userdir_module libexec/apache2/mod_userdir.so</div><div class="line"></div><div class="line">LoadModule php5_module libexec/apache2/libphp5.so</div><div class="line"></div><div class="line">Include /private/etc/apache2/extra/httpd-vhosts.conf</div><div class="line"></div><div class="line">Include /private/etc/apache2/extra/httpd-userdir.conf</div></pre></td></tr></table></figure></p>
+<p>ctrl + w 搜索下面內容，將其註釋(#)去掉<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">LoadModule authz_core_module libexec/apache2/mod_authz_core.so</span><br><span class="line"></span><br><span class="line">LoadModule authz_host_module libexec/apache2/mod_authz_host.so</span><br><span class="line"></span><br><span class="line">LoadModule userdir_module libexec/apache2/mod_userdir.so</span><br><span class="line"></span><br><span class="line">LoadModule php5_module libexec/apache2/libphp5.so</span><br><span class="line"></span><br><span class="line">Include /private/etc/apache2/extra/httpd-vhosts.conf</span><br><span class="line"></span><br><span class="line">Include /private/etc/apache2/extra/httpd-userdir.conf</span><br></pre></td></tr></table></figure></p>
 <ul>
-<li>修改httpd-userdir.conf設置<figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">sudo vim /etc/apache2/extra/httpd-userdir.conf</div></pre></td></tr></table></figure>
+<li>修改httpd-userdir.conf設置<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/apache2/extra/httpd-userdir.conf</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-<p>ctrl + w 搜索下面內容，將其註釋(#)去掉<br><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">Include /private/etc/apache2/users/*.conf</div></pre></td></tr></table></figure></p>
+<p>ctrl + w 搜索下面內容，將其註釋(#)去掉<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Include /private/etc/apache2/users/*.conf</span><br></pre></td></tr></table></figure></p>
 <ul>
-<li>修改yourUserName.conf配置<figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">sudo vim /etc/apache2/users/username.conf</div></pre></td></tr></table></figure>
+<li>修改yourUserName.conf配置<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo vim /etc/apache2/users/username.conf</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <blockquote>
 <p><strong>ps</strong>: username.conf 裡的 username 是指你的mac的用戶名，如果沒有這個文件，上面的這條命令就會新建一個。</p>
 </blockquote>
-<p>裡面添加(或修改)內容<br><figure class="highlight xml"><table><tr><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">Directory</span> "/<span class="attr">Users</span>/你的用戶名/<span class="attr">Sites</span>/"&gt;</span></div><div class="line">    Options Indexes MultiViews</div><div class="line">    AllowOverride None</div><div class="line">    Require all granted</div><div class="line"><span class="tag">&lt;/<span class="name">Directory</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>裡面添加(或修改)內容<br><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">Directory</span> "/<span class="attr">Users</span>/你的用戶名/<span class="attr">Sites</span>/"&gt;</span></span><br><span class="line">    Options Indexes MultiViews</span><br><span class="line">    AllowOverride None</span><br><span class="line">    Require all granted</span><br><span class="line"><span class="tag">&lt;/<span class="name">Directory</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
 <ul>
 <li><p>給以該文件權限(注意修改命令的username)</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">sudo chmod 777 /etc/apache2/users/username.conf</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo chmod 777 /etc/apache2/users/username.conf</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>重啟apache</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">sudo apachectl restart</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apachectl restart</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>訪問<br>將php文件放入 Sites 中</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">http://localhost/~username/</div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">http://localhost/~username/</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <hr>
 <h2 id="mysql"><a href="#mysql" class="headerlink" title="mysql"></a>mysql</h2><blockquote>
 <p><a href="http://dev.mysql.com/downloads/mysql/" target="_blank" rel="external">下載</a><br>參考此文章：<a href="http://blog.csdn.net/colourless/article/details/41647199" target="_blank" rel="external">Mac osx 10.10系统下MySQL的安装（安装失败解决方法）</a></p>
 </blockquote>
-<p>開啟mysql<br><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">sudo /usr/<span class="built_in">local</span>/mysql/support-files/mysql.server start</div></pre></td></tr></table></figure></p>
-<p>自行新增環境變量<br><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line"><span class="built_in">cd</span> ; nano .bash_profile</div><div class="line"><span class="built_in">export</span> PATH=<span class="string">"/usr/local/mysql/bin:<span class="variable">$PATH</span>"</span></div></pre></td></tr></table></figure></p>
-<p>重新載入shell<br><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line"><span class="built_in">source</span> ~/.bash_profile</div></pre></td></tr></table></figure></p>
-<p>設定MySQL的帳號密碼<br><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">/usr/<span class="built_in">local</span>/mysql/bin/mysqladmin -u root password <span class="string">'yourpasswordhere'</span></div><div class="line"></div><div class="line">sudo mkdir /var/mysql</div><div class="line"></div><div class="line">sudo ln -s /tmp/mysql.sock /var/mysql/mysql.sock</div></pre></td></tr></table></figure></p>
-<p>自動執行MySQL<br><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">sudo nano /Library/LaunchDaemons/com.mysql.mysql.plist</div></pre></td></tr></table></figure></p>
-<p>增加下面這段<br><figure class="highlight xml"><table><tr><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">plist</span> <span class="attr">version</span>=<span class="string">"1.0"</span>&gt;</span></div><div class="line">  <span class="tag">&lt;<span class="name">dict</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">key</span>&gt;</span>KeepAlive<span class="tag">&lt;/<span class="name">key</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">true</span> /&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">key</span>&gt;</span>Label<span class="tag">&lt;/<span class="name">key</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">string</span>&gt;</span>com.mysql.mysqld<span class="tag">&lt;/<span class="name">string</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">key</span>&gt;</span>ProgramArguments<span class="tag">&lt;/<span class="name">key</span>&gt;</span></div><div class="line">    <span class="tag">&lt;<span class="name">array</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">string</span>&gt;</span>/usr/local/mysql/bin/mysqld_safe<span class="tag">&lt;/<span class="name">string</span>&gt;</span></div><div class="line">      <span class="tag">&lt;<span class="name">string</span>&gt;</span>--user=mysql<span class="tag">&lt;/<span class="name">string</span>&gt;</span></div><div class="line">    <span class="tag">&lt;/<span class="name">array</span>&gt;</span>        </div><div class="line">  <span class="tag">&lt;/<span class="name">dict</span>&gt;</span></div><div class="line"><span class="tag">&lt;/<span class="name">plist</span>&gt;</span></div></pre></td></tr></table></figure></p>
-<p>保存後執行<br><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">sudo chown root:wheel /Library/LaunchDaemons/com.mysql.mysql.plist</div><div class="line">sudo chmod 644 /Library/LaunchDaemons/com.mysql.mysql.plist</div><div class="line">sudo launchctl load -w /Library/LaunchDaemons/com.mysql.mysql.plist</div></pre></td></tr></table></figure></p>
+<p>開啟mysql<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo /usr/<span class="built_in">local</span>/mysql/support-files/mysql.server start</span><br></pre></td></tr></table></figure></p>
+<p>自行新增環境變量<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> ; nano .bash_profile</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="string">"/usr/local/mysql/bin:<span class="variable">$PATH</span>"</span></span><br></pre></td></tr></table></figure></p>
+<p>重新載入shell<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">source</span> ~/.bash_profile</span><br></pre></td></tr></table></figure></p>
+<p>設定MySQL的帳號密碼<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">/usr/<span class="built_in">local</span>/mysql/bin/mysqladmin -u root password <span class="string">'yourpasswordhere'</span></span><br><span class="line"></span><br><span class="line">sudo mkdir /var/mysql</span><br><span class="line"></span><br><span class="line">sudo ln -s /tmp/mysql.sock /var/mysql/mysql.sock</span><br></pre></td></tr></table></figure></p>
+<p>自動執行MySQL<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo nano /Library/LaunchDaemons/com.mysql.mysql.plist</span><br></pre></td></tr></table></figure></p>
+<p>增加下面這段<br><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">plist</span> <span class="attr">version</span>=<span class="string">"1.0"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">dict</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">key</span>&gt;</span>KeepAlive<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">true</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">key</span>&gt;</span>Label<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">string</span>&gt;</span>com.mysql.mysqld<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">key</span>&gt;</span>ProgramArguments<span class="tag">&lt;/<span class="name">key</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">array</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">string</span>&gt;</span>/usr/local/mysql/bin/mysqld_safe<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">string</span>&gt;</span>--user=mysql<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">array</span>&gt;</span>        </span><br><span class="line">  <span class="tag">&lt;/<span class="name">dict</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">plist</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>保存後執行<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo chown root:wheel /Library/LaunchDaemons/com.mysql.mysql.plist</span><br><span class="line">sudo chmod 644 /Library/LaunchDaemons/com.mysql.mysql.plist</span><br><span class="line">sudo launchctl load -w /Library/LaunchDaemons/com.mysql.mysql.plist</span><br></pre></td></tr></table></figure></p>
 <hr>
 <h2 id="phpMyAdmin"><a href="#phpMyAdmin" class="headerlink" title="phpMyAdmin"></a>phpMyAdmin</h2><blockquote>
 <p><a href="http://www.phpmyadmin.net/home_page/downloads.php" target="_blank" rel="external">下載</a></p>
 </blockquote>
 <p>將下載的phpMyAdmin文件名改成phpMyAdmin，放入Stites文件夾裡，</p>
-<p>創建配置文件<br><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">mkdir ~/Sites/phpMyAdmin/config</div></pre></td></tr></table></figure></p>
-<p>配置<br><figure class="highlight bash"><table><tr><td class="code"><pre><div class="line">http://localhost/~username/phpmyadmin/setup/</div></pre></td></tr></table></figure></p>
+<p>創建配置文件<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mkdir ~/Sites/phpMyAdmin/config</span><br></pre></td></tr></table></figure></p>
+<p>配置<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">http://localhost/~username/phpmyadmin/setup/</span><br></pre></td></tr></table></figure></p>
 <ul>
 <li>點擊新建服務器</li>
 <li>認證</li>
 <li>在 config 认证方式的密码 欄 輸入設置的數據庫用戶名和密碼</li>
-<li>應用，保存。<br>登錄phpMyAdmin<figure class="highlight plain"><table><tr><td class="code"><pre><div class="line">http://localhost/~username/phpmyadmin/</div></pre></td></tr></table></figure>
+<li>應用，保存。<br>登錄phpMyAdmin<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http://localhost/~username/phpmyadmin/</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <blockquote>

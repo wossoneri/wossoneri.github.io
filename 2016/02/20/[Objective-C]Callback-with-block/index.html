@@ -409,25 +409,25 @@
 <ol>
 <li>定义一个<code>Block</code>类型，用来代替原来的<code>@Protocol</code></li>
 </ol>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">void</span>(^getTextViewRows)(<span class="built_in">NSInteger</span> lines);</div></pre></td></tr></table></figure>
+<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">void</span>(^getTextViewRows)(<span class="built_in">NSInteger</span> lines);</span><br></pre></td></tr></table></figure>
 <ol>
 <li>在<code>interface</code>中声明参数为<code>Block</code>的实例方法</li>
 </ol>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><div class="line">- (<span class="keyword">void</span>)textViewRowsChangeTo:(getTextViewRows)block;</div></pre></td></tr></table></figure>
+<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)textViewRowsChangeTo:(getTextViewRows)block;</span><br></pre></td></tr></table></figure>
 <ol>
 <li>实现<code>textViewRowsChangeTo:</code>的方法</li>
 </ol>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><div class="line">- (<span class="keyword">void</span>)textViewRowsChangeTo:(getTextViewRows)block &#123;</div><div class="line">	block(lines);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)textViewRowsChangeTo:(getTextViewRows)block &#123;</span><br><span class="line">	block(lines);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>唉，等等，我应该返回的行数是在<code>textViewDidChange:</code>运行时获得后才返回的啊，这样写还回调个什么鬼。。</p>
 <p>所以我们需要声明一个<code>Block</code>变量，保存从外部传进来的<code>Block</code>的地址，然后当我们获取到改变的行数后，再从这个地址把正确的内容返回。</p>
 <p>在第2步添加声明<code>Block</code>变量</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><div class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) getTextViewRows b_getRowsBlock;</div><div class="line">- (<span class="keyword">void</span>)textViewRowsChangeTo:(getTextViewRows)block;</div></pre></td></tr></table></figure>
+<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) getTextViewRows b_getRowsBlock;</span><br><span class="line">- (<span class="keyword">void</span>)textViewRowsChangeTo:(getTextViewRows)block;</span><br></pre></td></tr></table></figure>
 <p>修改第3步</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><div class="line">- (<span class="keyword">void</span>)textViewRowsChangeTo:(getTextViewRows)block &#123;</div><div class="line">	_b_getRowsBlock = block;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)textViewRowsChangeTo:(getTextViewRows)block &#123;</span><br><span class="line">	_b_getRowsBlock = block;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>然后在需要返回行数的时候，把行数作为参数传给<code>Block</code></p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><div class="line">- (<span class="keyword">void</span>)textViewDidChange:(<span class="built_in">UITextView</span> *)textView &#123;</div><div class="line"></div><div class="line">    <span class="built_in">NSInteger</span> numLines = textView.contentSize.height / textView.font.lineHeight;</div><div class="line">    <span class="keyword">if</span> (numLines != rows) &#123;</div><div class="line">        rows = numLines;</div><div class="line">        <span class="comment">//发生换行</span></div><div class="line">        _b_getRowsBlock(rows);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">	......</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)textViewDidChange:(<span class="built_in">UITextView</span> *)textView &#123;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">NSInteger</span> numLines = textView.contentSize.height / textView.font.lineHeight;</span><br><span class="line">    <span class="keyword">if</span> (numLines != rows) &#123;</span><br><span class="line">        rows = numLines;</span><br><span class="line">        <span class="comment">//发生换行</span></span><br><span class="line">        _b_getRowsBlock(rows);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">	......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>最后，在外部调用前面的实例方法即可</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><div class="line">B *b = [B new];</div><div class="line">[b textViewRowsChangeTo:^(<span class="built_in">NSInteger</span> lines) &#123;</div><div class="line">	rowCount = lines;</div><div class="line">	[<span class="keyword">self</span> remakeConstraint];</div><div class="line">&#125;];</div></pre></td></tr></table></figure>
+<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">B *b = [B new];</span><br><span class="line">[b textViewRowsChangeTo:^(<span class="built_in">NSInteger</span> lines) &#123;</span><br><span class="line">	rowCount = lines;</span><br><span class="line">	[<span class="keyword">self</span> remakeConstraint];</span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure>
 <blockquote>
 <p>最后，这又是一篇How to do的文章。说起来价值不算大。</p>
 <p>但我觉得，想快速学一个新东西并且上手用起来，是需要从不断模仿别人写的代码做起的。</p>
