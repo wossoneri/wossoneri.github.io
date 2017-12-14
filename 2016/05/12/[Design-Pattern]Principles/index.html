@@ -84,17 +84,18 @@
 <meta name="description" content="最近开始看设计模式，做一些笔记">
 <meta name="keywords" content="Design pattern,iOS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[设计模式]之二:策略模式">
-<meta property="og:url" content="http://wossoneri.github.io/2016/05/15/[Design-Pattern]Strategy/index.html">
+<meta property="og:title" content="[设计模式]之零：六大设计原则">
+<meta property="og:url" content="http://wossoneri.github.io/2016/05/12/[Design-Pattern]Principles/index.html">
 <meta property="og:site_name" content="Wossoneri`s Blog">
 <meta property="og:description" content="最近开始看设计模式，做一些笔记">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/UML-strategy.png?raw=true">
-<meta property="og:updated_time" content="2017-12-14T13:29:51.000Z">
+<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/ISP1.jpg?raw=true">
+<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/ISP2.jpg?raw=true">
+<meta property="og:updated_time" content="2017-12-14T13:30:40.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="[设计模式]之二:策略模式">
+<meta name="twitter:title" content="[设计模式]之零：六大设计原则">
 <meta name="twitter:description" content="最近开始看设计模式，做一些笔记">
-<meta name="twitter:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/UML-strategy.png?raw=true">
+<meta name="twitter:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/ISP1.jpg?raw=true">
 
 
 
@@ -124,13 +125,13 @@
 
 
 
-  <link rel="canonical" href="http://wossoneri.github.io/2016/05/15/[Design-Pattern]Strategy/"/>
+  <link rel="canonical" href="http://wossoneri.github.io/2016/05/12/[Design-Pattern]Principles/"/>
 
 
 
 
 
-  <title>[设计模式]之二:策略模式 | Wossoneri`s Blog</title>
+  <title>[设计模式]之零：六大设计原则 | Wossoneri`s Blog</title>
   
 
 
@@ -277,7 +278,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2016/05/15/[Design-Pattern]Strategy/">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2016/05/12/[Design-Pattern]Principles/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Wossoneri">
@@ -294,7 +295,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">[设计模式]之二:策略模式</h1>
+          <h1 class="post-title" itemprop="name headline">[设计模式]之零：六大设计原则</h1>
         
 
         <div class="post-meta">
@@ -306,8 +307,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-15T21:44:50+08:00">
-                2016-05-15
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-12T18:12:54+08:00">
+                2016-05-12
               </time>
             
 
@@ -346,7 +347,7 @@
 
           
           
-             <span id="/2016/05/15/[Design-Pattern]Strategy/" class="leancloud_visitors" data-flag-title="[设计模式]之二:策略模式">
+             <span id="/2016/05/12/[Design-Pattern]Principles/" class="leancloud_visitors" data-flag-title="[设计模式]之零：六大设计原则">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -364,9 +365,9 @@
                  <i class="fa fa-clock-o" ></i>
             </span>
 		        <span class="post-meta-item-text">总记</span>
-            <span class="post-count">1,658 字</span>
+            <span class="post-count">3,210 字</span>
 		        <span class="post-meta-item-text">读完需要</span>
-    		    <span class="post-count">6 分</span>
+    		    <span class="post-count">11 分</span>
   		  </span>
            
          
@@ -395,52 +396,94 @@
 
       
         <p><strong><a href="http://www.wossoneri.com/2016/05/13/[Design-Pattern]Simple-Factory/#23_u79CD_u8BBE_u8BA1_u6A21_u5F0F" target="_blank" rel="external">设计模式系列目录</a></strong></p>
-<h3 id="需求情景"><a href="#需求情景" class="headerlink" title="需求情景"></a>需求情景</h3><p>比如现在需要做一个收银软件，要根据用户所买商品的单价和数量进行计算。</p>
-<p>很简单，用“单价 * 数量”即可。</p>
-<p>但如果某天需要打折呢？</p>
-<p>也很简单，同一个方法，把折扣作为一个参数，默认值为1，代码改为“单价 <em> 数量 </em> 折扣”即可。</p>
-<p>恩，看起来都很美好。现在又要加需求，我要满300减100，我还要满200送50…</p>
-<p>OK，现在就得回到面向对象上来了。向上次简单工厂一样，把所有计算价格可能的方法封装成一个个类。比如一个打一折类，一个打两折类…唉等等，这可不对。上次加、减、乘、除分别封装是因为他们属于同一种类型，但是有不同的实现方法。而这次，对于打折来说，不论打几折，打折的计算方式都是一样的，只是形式不同，但本质是一样的。同理，满减和返利也是两种类型，但各自有多种实现。</p>
-<blockquote>
-<p>面向对象的编程，并不是类越多越好，类的划分是为了封装，但分类的基础是抽象，具有相同属性和功能的对象的抽象集合才是类</p>
+<h3 id="单一职责原则-Single-Responsibility-Principle-SRP"><a href="#单一职责原则-Single-Responsibility-Principle-SRP" class="headerlink" title="单一职责原则 Single Responsibility Principle - SRP"></a>单一职责原则 Single Responsibility Principle - SRP</h3><blockquote>
+<p>就一个类而言，应该仅有一个引起它变化的原因。</p>
 </blockquote>
-<p>所以可以开始编码，先抽象一个计算收款的类，抽象一个收钱的方法，然后根据不同打折类型实现不同的收钱方法。</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Cash</span> : <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="built_in">CGFloat</span>)acceptOriginCash: (<span class="built_in">CGFloat</span>)money;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Cash</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="built_in">CGFloat</span>)acceptOriginCash: (<span class="built_in">CGFloat</span>)money &#123;</span><br><span class="line">    <span class="keyword">return</span> money;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"><span class="comment">///正常价钱</span></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">CashNormal</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="built_in">CGFloat</span>)acceptOriginCash:(<span class="built_in">CGFloat</span>)money &#123;</span><br><span class="line">    <span class="keyword">return</span> money;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"><span class="comment">///折扣</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">CashRebate</span> : <span class="title">Cash</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) <span class="built_in">CGFloat</span> rebate;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">CashRebate</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">instancetype</span>)init &#123;</span><br><span class="line">    <span class="keyword">self</span> = [<span class="keyword">super</span> init];</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">self</span>) &#123;</span><br><span class="line">        _rebate = <span class="number">1.0</span>; <span class="comment">//默认不打折</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">CGFloat</span>)acceptOriginCash:(<span class="built_in">CGFloat</span>)money &#123;</span><br><span class="line">    <span class="keyword">return</span> money * _rebate;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"><span class="comment">///满返</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">CashReturn</span> : <span class="title">Cash</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) <span class="built_in">CGFloat</span> moneyCondition;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) <span class="built_in">CGFloat</span> moneyReturn;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">CashReturn</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">instancetype</span>)init &#123;</span><br><span class="line">    <span class="keyword">self</span> = [<span class="keyword">super</span> init];</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">self</span>) &#123;</span><br><span class="line">        _moneyReturn = <span class="number">0</span>;</span><br><span class="line">        _moneyCondition = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">CGFloat</span>)acceptOriginCash:(<span class="built_in">CGFloat</span>)money &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (_moneyCondition == <span class="number">0</span> || _moneyReturn == <span class="number">0</span> || money &lt; _moneyCondition) &#123;</span><br><span class="line">        <span class="keyword">return</span> money; <span class="comment">//没有返现</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">int</span> returnCount = floorf(money / _moneyCondition);</span><br><span class="line">        money -= returnCount * _moneyReturn;</span><br><span class="line">        <span class="keyword">return</span> money;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
-<p>创建好以上几种收费类型，设想一下，一般打折时都会列出相应的打折商品，也就是说平时不是所有的商品都打折，这时候假设我们专门写好一个折扣日的类，类中包含了打折商品列表，当然也包含了打折的方式等其他信息。继续用面向对象的思想去思考，折扣日应该也分好几种，比如周末，五一，工作日等等，所以折扣日也可以抽象一个基类出来，这个基类就应该包含<strong>返回折扣结果的抽象方法</strong>。</p>
-<p>OK，到这里问题就来了，不同的折扣日都有相同的获取最终价钱的方法，而对于价钱的计算策略却完全不同，也就是每个具体的折扣日实现这个<strong>返回折扣结果的抽象方法</strong>都不一样。那该怎么做？</p>
+<p>假设现在要在iPhone上做一个图片编辑工具。功能有裁剪图片，旋转图片，缩放移动照片等等。</p>
+<p>呐，我们可以写一个功能集类，然后把这些所有操作视为功能集的一部分，把代码全部写进这个类里面。</p>
+<p>这么看来似乎可以，因为这是作为一个单独的模块嘛，把相关功能写进一个工具类里，用哪个功能调用哪个函数就好了。但这带来了一个问题就是这个工具类包含过多功能显得非常臃肿，不容易维护。而且在一个类里往往容易出现几个函数共用一个全局变量的情况，功能之间耦合度太大，难以复用。</p>
+<p>举个最直接的例子：如果我想把这个功能移植到Android上去怎么办。这个移植过程麻烦之处并不在于语言语法变化，而是两个系统有着完全不同的手势传递机制，我要用手旋转，缩放图片这段代码完全没法复用，唯一能用的裁剪代码，也可能因为和其他代码耦合过大导致需要重新修改，退一步说，裁剪算法就算没有耦合，代码可以直接用，但关系到手势的代码对我来说都成为冗余代码，这对于代码复用就是灾难。</p>
 <blockquote>
-<p>设计原则：找到系统中变化的部分，将变化的部分同其它稳定的部分隔开。换句话说就是：”找到变化并且把它封装起来，稍后你就可以在不影响其它部分的情况下修改或扩展被封装的变化部分。”尽管这个概念很简单，但是它几乎是所有设计模式的基础，所有模式都提供了使系统里变化的部分独立于其它部分的方法。</p>
+<p>如果一个类承担的职责过多，就等于把这些职责偶合在一起，一个职责的变化可能会削弱或者抑制这个类完成其他职责的能力。这种耦合会导致脆弱的设计，当变化发生时，设计会遭受到意想不到的破坏。</p>
 </blockquote>
-<p>可以看出，每个折扣日都要实现基类返回折扣结果的方法，但实现的方法不一样。而计算方法都是经过了封装的，保证计算方法不被改变，也保证改变一个不会影响到其他计算方法。在这种情况下，就可以考虑使用策略模式。</p>
-<hr>
-<h3 id="策略模式"><a href="#策略模式" class="headerlink" title="策略模式"></a>策略模式</h3><p>策略模式定义了算法家族，分别封装起来，让他们之间可以互相替换，此模式让算法的变化不会影响到使用算法的客户。</p>
-<p>以上几种收钱方式都是一些算法，算法本身只是一种策略，最重要的是这些算法是随时都可能且可以互相替换的，这就是变化点，而<strong>封装变化点</strong>是我们面向对象很重要的思维方式。</p>
-<p>所以这里的思路是创建一个上下文类，用策略对象作为构造参数，来维护一个对策略对象的引用。同时这样也不会受到拓展的影响。</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">CashContext</span> : <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">instancetype</span>)initWithCash: (Cash *)cash;</span><br><span class="line">- (<span class="built_in">CGFloat</span>)getResult: (<span class="built_in">CGFloat</span>)money;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"><span class="comment">///</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">CashContext</span>()</span></span><br><span class="line">&#123;</span><br><span class="line">    Cash *_cash;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">CashContext</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">instancetype</span>)initWithCash: (Cash *)cash &#123;</span><br><span class="line">    <span class="keyword">self</span> = [<span class="keyword">super</span> init];</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">self</span>) &#123;</span><br><span class="line">        _cash = cash;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">self</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">CGFloat</span>)getResult: (<span class="built_in">CGFloat</span>)money &#123;</span><br><span class="line">    <span class="keyword">return</span> [_cash acceptOriginCash:money];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
-<p>创建好Context类，就可以通过构造方法选择不同的策略来实现计算：<br><figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">CashContext *context = [[CashContext alloc] initWithCash:[[CashRebate alloc] initWithRebate:<span class="number">0.8</span>]];<span class="comment">//打8折</span></span><br><span class="line"><span class="built_in">CGFloat</span> value = [context getResult:<span class="number">400</span>]]<span class="comment">//原价400</span></span><br></pre></td></tr></table></figure></p>
-<hr>
-<h3 id="UML类图"><a href="#UML类图" class="headerlink" title="UML类图"></a>UML类图</h3><p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/UML-strategy.png?raw=true" alt="UML"></p>
-<hr>
-<h3 id="应用场景和优缺点"><a href="#应用场景和优缺点" class="headerlink" title="应用场景和优缺点"></a>应用场景和优缺点</h3><p>应用</p>
-<ul>
-<li>多个类只区别在表现行为不同，可以使用Strategy模式，在运行时动态选择具体要执行的行为。</li>
-<li>需要在不同情况下使用不同的策略(算法)，或者策略还可能在未来用其它方式来实现。</li>
-<li>对客户隐藏具体策略(算法)的实现细节，彼此完全独立。(你只要知道Context类的接口，不必知道折扣算法内部是怎么实现的)</li>
-</ul>
-<p>实际上，一些平时常见的方法就是用的策略模式，比如说Swift(很多其他语言也是)里的数组的<code>Sort</code>函数<br><figure class="highlight swift"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">biggerNumberFirst</span><span class="params">( a: Int, <span class="number">_</span> b: Int )</span></span> -&gt; <span class="type">Bool</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> a &gt; b</span><br><span class="line">&#125;</span><br><span class="line">arr.<span class="built_in">sort</span>(biggerNumberFirst)</span><br></pre></td></tr></table></figure></p>
-<p><code>Sort</code>函数可以添加参数，上面代码中是我们自己定制一个策略，然后作为参数传给<code>Sort</code>去处理。当然也可以定制其他策略或者使用系统默认的一些策略去进行排序工作。这就是策略模式一个很典型的应用。</p>
-<p>优点</p>
-<ul>
-<li>提供了一种替代继承的方法，而且既保持了继承的优点(代码重用)还比继承更灵活(算法独立，可以任意扩展)。</li>
-<li>避免程序中使用多重条件转移语句，使系统更灵活，并易于扩展。</li>
-<li>遵守大部分GRASP原则和常用设计原则，高内聚、低偶合。</li>
-</ul>
-<p>缺点</p>
-<ul>
-<li>因为每个具体策略类都会产生一个新类，所以会增加系统需要维护的类的数量。</li>
-</ul>
+<p>所以这里在设计的时候，就要考虑一下把这些功能分类。比如裁剪功能需要知道裁剪框大小，位置。那就分离出一个类，专门负责计算裁剪框四个点的坐标变化。旋转缩放图片需要知道图片的大小，缩放率，显示方向等信息，那就再分离出一个类，负责计算图片形态的变化。最后剩下手势再封装一个类，处理手势的逻辑，在不同情况下获取不同的手势数据，作为参数交给上面两个算法类进行计算输出。</p>
+<p>这样一来，每个类的职责就变得单一了，维护就容易多了。后面再移植代码的话，算法类只需要切换语法，手势类只要去重写触发手势的条件，而不必修改逻辑。代码很快就可以改好，并且不会破坏原有的项目结构。</p>
 <blockquote>
-<p>参考<br><a href="http://www.cnblogs.com/justinw/archive/2007/02/06/641414.html" target="_blank" rel="external">鸭子-策略模式（Strategy）</a><br>这篇文章更深入形象，推荐阅读</p>
+<p>软件设计真正要做的许多内容，就是发现职责并把那些职责相互分离。判断是否要分离出类的方法就是，如果你能够想到多于一个的动机去改变一个类，那么这个类就具有多于一个的职责，就应该考虑类的职责分离。</p>
+</blockquote>
+<p><strong>优点</strong></p>
+<ul>
+<li>可以降低类的复杂度，一个类只负责一项职责，其逻辑肯定要比负责多项职责简单的多</li>
+<li>提高类的可读性，提高系统的可维护性</li>
+<li>变更引起的风险降低，变更是必然的，如果单一职责原则遵守的好，当修改一个功能时，可以显著降低对其他功能的影响</li>
+</ul>
+<hr>
+<h3 id="里氏替换原则-Liskov-Substitution-Principle-LSP"><a href="#里氏替换原则-Liskov-Substitution-Principle-LSP" class="headerlink" title="里氏替换原则 Liskov Substitution Principle - LSP"></a>里氏替换原则 Liskov Substitution Principle - LSP</h3><blockquote>
+<p>子类型必须能够替换掉他们的父类型</p>
+</blockquote>
+<p>通俗的讲，一个软件实体如果使用的是一个父类的话，那么一定适用于其子类，而且它察觉不出父类对象和子类对象的区别。即，在软件里，把父类都替换成它的子类，程序的行为没有变化。</p>
+<p>里氏替换原则的重点在不影响原功能，而不是不覆盖原方法。</p>
+<p>所以正常遵从该原则的处理办法是在需要覆盖父类方法时应该首先考虑使用super调用父类的同名方法以保证父类同名方法会被调用。</p>
+<p>如果确实不需要调用父类方法，则不加此语句。</p>
+<p>这个原则很重要，编码时要注意。</p>
+<hr>
+<h3 id="依赖倒置原则-Dependence-Inversion-Principle-DIP"><a href="#依赖倒置原则-Dependence-Inversion-Principle-DIP" class="headerlink" title="依赖倒置原则 Dependence Inversion Principle - DIP"></a>依赖倒置原则 Dependence Inversion Principle - DIP</h3><blockquote>
+<p>抽象不应该依赖细节，细节应该依赖抽象</p>
+</blockquote>
+<p>通俗的说，就是要<strong>针对接口编程，不要对实现编程</strong>。呐，比如说电脑主板，CPU，内存，硬盘这些硬件的设计就是依赖接口设计的。单拿CPU来说，CPU有各种厂家设计的各种型号，这些型号的内部设计实现都不相同，但他们的接口是一样的，这样主板就可以随意更换CPU了。</p>
+<p>关于倒置，比如说我有一个高层模块，模块实现对SQLite读写的功能依赖一个控制访问SQLite的低层模块。一旦我要求把SQLite改为MySQL，那这个低层模块就无法正常工作，进而倒置上层模块也无法正常工作。依赖倒置就是说设计代码不再是上层依赖下层，而是两层都去依赖接口去实现，这样两层的运行状态便不会互相影响。</p>
+<blockquote>
+<p>依赖倒转其实可以说是面向对象设计的标志，用哪种语言来编写程序不重要，如果编写时考虑的都是如何针对抽象编程而不是针对细节编程，即程序中所有的依赖关系都是终止于抽象类或者接口，那就是面向对象的设计，反之那就是过程化的设计了。</p>
+</blockquote>
+<p>依赖倒置原则的实现可以参考策略模式：<a href="http://www.wossoneri.com/2016/05/15/[Design-Pattern]Strategy/" target="_blank" rel="external">设计模式之二:策略模式</a><br>例子中的收取现金的不同方式可以看做CPU的不同型号。调用收现金的方法可看做主板插上不同型号的CPU。就是这么个思想。</p>
+<blockquote>
+<p>遵循依赖倒置原则可以降低类之间的耦合性，提高系统的稳定性，降低修改程序造成的风险。</p>
+</blockquote>
+<p>根据该原则，编程中要注意</p>
+<ul>
+<li>低层模块尽量都要有抽象类或接口，或者两者都有</li>
+<li>变量的声明类型尽量是抽象类或接口</li>
+<li>使用继承时遵循里氏替换原则</li>
+</ul>
+<hr>
+<h3 id="接口隔离原则-Interface-Segregation-Principle-ISP"><a href="#接口隔离原则-Interface-Segregation-Principle-ISP" class="headerlink" title="接口隔离原则 Interface Segregation Principle - ISP"></a>接口隔离原则 Interface Segregation Principle - ISP</h3><blockquote>
+<p>客户端不应该依赖它不需要的接口；一个类对另一个类的依赖应该建立在最小的接口上</p>
+</blockquote>
+<p>看图，图一是未遵循该原则的结构：<br><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/ISP1.jpg?raw=true" alt="未遵循ISP"><br><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/ISP2.jpg?raw=true" alt="遵循ISP"></p>
+<p>接口隔离原则的含义是：建立单一接口，不要建立庞大臃肿的接口，尽量细化接口，接口中的方法尽量少。也就是说，我们要为各个类建立专用的接口，而不要试图去建立一个很庞大的接口供所有依赖它的类去调用。</p>
+<p>接口是设计时对外部设定的“契约”，通过分散定义多个接口，可以预防外来变更的扩散，提高系统的灵活性和可维护性。</p>
+<p>注意事项</p>
+<ul>
+<li>接口尽量小，但是要有限度。对接口进行细化可以提高程序设计灵活性是不挣的事实，但是如果过小，则会造成接口数量过多，使设计复杂化。所以一定要适度</li>
+<li>为依赖接口的类定制服务，只暴露给调用的类它需要的方法，它不需要的方法则隐藏起来。只有专注地为一个模块提供定制服务，才能建立最小的依赖关系</li>
+<li>提高内聚，减少对外交互。使接口用最少的方法去完成最多的事情</li>
+</ul>
+<hr>
+<h3 id="迪米特法则-Law-Of-Demeter-LOD"><a href="#迪米特法则-Law-Of-Demeter-LOD" class="headerlink" title="迪米特法则 Law Of Demeter - LOD"></a>迪米特法则 Law Of Demeter - LOD</h3><blockquote>
+<p>一个对象应该对其他对象保持最少的了解。</p>
+</blockquote>
+<p>如果两个类不必彼此直接通信，那么这两个类就不应当发生直接的相互作用。如果其中一个类需要调用另一个类的某一个方法，可以通过第三者转发这个调用。</p>
+<p>迪米特法则首先强调的前提是在<strong>类的结构设计上，每一个类应当尽量降低成员的访问权限</strong>，也就是要降低类之间的耦合。类之间的耦合越弱，越有利于复用，修改类相互之间的影响也会降到最低。</p>
+<p>迪米特法则还有一个更简单的定义：只与<strong>直接的朋友</strong>通信。首先来解释一下什么是直接的朋友：每个对象都会与其他对象有耦合关系，只要两个对象之间有耦合关系，我们就说这两个对象之间是朋友关系。耦合的方式很多，依赖、关联、组合、聚合等。其中，我们称出现成员变量、方法参数、方法返回值中的类为直接的朋友，而出现在局部变量中的类则不是直接的朋友。也就是说，陌生的类最好不要作为局部变量的形式出现在类的内部。</p>
+<p>迪米特法则的初衷是降低类之间的耦合，由于每个类都减少了不必要的依赖，因此的确可以降低耦合关系。但是凡事都有度，虽然可以避免与非直接的类通信，但是要通信，必然会通过一个“中介”来发生联系，例如本例中，总公司就是通过分公司这个“中介”来与分公司的员工发生联系的。过分的使用迪米特原则，会产生大量这样的中介和传递类，导致系统复杂度变大。所以在采用迪米特法则时要反复权衡，既做到结构清晰，又要高内聚低耦合。</p>
+<hr>
+<h3 id="开闭原则-Open-Close-Principle-OCP"><a href="#开闭原则-Open-Close-Principle-OCP" class="headerlink" title="开闭原则 Open Close Principle - OCP"></a>开闭原则 Open Close Principle - OCP</h3><blockquote>
+<p>软件实体（类，模块，函数等）应该可以拓展，但是不可修改</p>
+</blockquote>
+<p>这个原则有两点：</p>
+<ul>
+<li>对于拓展是开放的 Open for extension</li>
+<li>对于更改是封闭的 Closed for modification</li>
+</ul>
+<p>在软件的生命周期内，因为变化、升级和维护等原因需要对软件原有代码进行修改时，可能会给旧代码中引入错误，也可能会使我们不得不对整个功能进行重构，并且需要原有代码经过重新测试。所以当软件需要变化时，尽量通过扩展软件实体的行为来实现变化，而不是通过修改已有的代码来实现变化。</p>
+<p>但在设计软件的时候，无论模块是多么的封闭，都会存在无法对之封闭的变化，因为你不可能在编码前就考虑到所有情况。所以在设计代码时就必须先猜测出最可能发生变化的种类，然后构造抽象来隔离变化。在编码之后，一旦遇到发生变化的地方，那就应该首先考虑要不要对这里进行结构的修改。也就是<strong>遇到变化发生时要立即采取行动</strong>。</p>
+<p>比如现在在客户端类中写了一个加法程序，后来说要增加减法，那么这时就应该立即抽象出来一个运算类。虽然说直接在客户端增加减法算法很快，但考虑到以后也许会拓展更多的算法，而且代码改得越晚修改代码的范围就越大。立即修改代码结构的代价似乎比以后去改的代价要小很多。</p>
+<blockquote>
+<p>我们希望的是在开发工作展开不久就知道可能发生的变化。查明可能发生的变化所等待的时间越长，要创建正确的抽象就越困难<br>开放-封闭原则是面向对象设计的核心所在。遵循这个原则可以带来面向对象技术所声称的巨大好处，也就是可维护，可拓展，可复用，灵活性好。开发人员应该对程序中呈现出频繁变化的那些部分作出抽象，然而，对于应用程序中的每个部分都刻意地进行抽象同样不是一个好主意。拒绝不成熟的抽象和抽象本身一样重要。</p>
+</blockquote>
+<hr>
+<blockquote>
+<p>参考<br><a href="http://blog.csdn.net/zhengzhb/article/category/926691/" target="_blank" rel="external">http://blog.csdn.net/zhengzhb/article/category/926691/</a></p>
 </blockquote>
 
       
@@ -491,7 +534,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://wossoneri.github.io/2016/05/15/[Design-Pattern]Strategy/" title="[设计模式]之二:策略模式">http://wossoneri.github.io/2016/05/15/[Design-Pattern]Strategy/</a>
+    <a href="http://wossoneri.github.io/2016/05/12/[Design-Pattern]Principles/" title="[设计模式]之零：六大设计原则">http://wossoneri.github.io/2016/05/12/[Design-Pattern]Principles/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -521,8 +564,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/05/13/[Design-Pattern]Simple-Factory/" rel="next" title="[设计模式]之一:简单工厂模式">
-                <i class="fa fa-chevron-left"></i> [设计模式]之一:简单工厂模式
+              <a href="/2016/05/05/[iOS]WSHorizontalPickerView/" rel="next" title="[iOS] WSHorizontalPickerView 图片水平滚动封装">
+                <i class="fa fa-chevron-left"></i> [iOS] WSHorizontalPickerView 图片水平滚动封装
               </a>
             
           </div>
@@ -531,8 +574,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2016/05/19/[Objective-C]Create-Constants/" rel="prev" title="[Objective-C] 常量和枚举">
-                [Objective-C] 常量和枚举 <i class="fa fa-chevron-right"></i>
+              <a href="/2016/05/13/[Design-Pattern]Simple-Factory/" rel="prev" title="[设计模式]之一:简单工厂模式">
+                [设计模式]之一:简单工厂模式 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -716,7 +759,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#需求情景"><span class="nav-number">1.</span> <span class="nav-text">需求情景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#策略模式"><span class="nav-number">2.</span> <span class="nav-text">策略模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UML类图"><span class="nav-number">3.</span> <span class="nav-text">UML类图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#应用场景和优缺点"><span class="nav-number">4.</span> <span class="nav-text">应用场景和优缺点</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#单一职责原则-Single-Responsibility-Principle-SRP"><span class="nav-number">1.</span> <span class="nav-text">单一职责原则 Single Responsibility Principle - SRP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#里氏替换原则-Liskov-Substitution-Principle-LSP"><span class="nav-number">2.</span> <span class="nav-text">里氏替换原则 Liskov Substitution Principle - LSP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#依赖倒置原则-Dependence-Inversion-Principle-DIP"><span class="nav-number">3.</span> <span class="nav-text">依赖倒置原则 Dependence Inversion Principle - DIP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#接口隔离原则-Interface-Segregation-Principle-ISP"><span class="nav-number">4.</span> <span class="nav-text">接口隔离原则 Interface Segregation Principle - ISP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#迪米特法则-Law-Of-Demeter-LOD"><span class="nav-number">5.</span> <span class="nav-text">迪米特法则 Law Of Demeter - LOD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开闭原则-Open-Close-Principle-OCP"><span class="nav-number">6.</span> <span class="nav-text">开闭原则 Open Close Principle - OCP</span></a></li></ol></div>
             
 
           </div>

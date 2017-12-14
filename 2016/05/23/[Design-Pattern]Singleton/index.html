@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="iOS,Design pattern," />
+  <meta name="keywords" content="Design pattern,iOS," />
 
 
 
@@ -82,7 +82,7 @@
 
 
 <meta name="description" content="最近开始看设计模式，做一些笔记">
-<meta name="keywords" content="iOS,Design pattern">
+<meta name="keywords" content="Design pattern,iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[设计模式]之三:单例模式">
 <meta property="og:url" content="http://wossoneri.github.io/2016/05/23/[Design-Pattern]Singleton/index.html">
@@ -90,7 +90,7 @@
 <meta property="og:description" content="最近开始看设计模式，做一些笔记">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/UML-singleton.png?raw=true">
-<meta property="og:updated_time" content="2017-12-14T13:23:59.000Z">
+<meta property="og:updated_time" content="2017-12-14T13:29:54.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[设计模式]之三:单例模式">
 <meta name="twitter:description" content="最近开始看设计模式，做一些笔记">
@@ -329,8 +329,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/设计模式/" itemprop="url" rel="index">
-                    <span itemprop="name">设计模式</span>
+                  <a href="/categories/Design-pattern/" itemprop="url" rel="index">
+                    <span itemprop="name">Design pattern</span>
                   </a>
                 </span>
 
@@ -364,7 +364,7 @@
                  <i class="fa fa-clock-o" ></i>
             </span>
 		        <span class="post-meta-item-text">总记</span>
-            <span class="post-count">963 字</span>
+            <span class="post-count">979 字</span>
 		        <span class="post-meta-item-text">读完需要</span>
     		    <span class="post-count">4 分</span>
   		  </span>
@@ -395,6 +395,7 @@
 
       
         <p><strong><a href="http://wossoneri.github.io/2016/05/13/[Design-Pattern]Simple-Factory/#23_u79CD_u8BBE_u8BA1_u6A21_u5F0F">设计模式系列目录</a></strong></p>
+<p>单例进阶：<a href="http://wossoneri.github.io/2017/12/14/[Design-Pattern]More-about-Singleton/">[设计模式]之四:再谈单例模式</a></p>
 <p>吐槽一下，这两天练车又热又累…</p>
 <h3 id="需求情景"><a href="#需求情景" class="headerlink" title="需求情景"></a>需求情景</h3><p>还是试想一个情景：现在有一个自定义对话框。当主界面上的按钮被点击后，弹出对话框。<br>一般的设计思路是这样的：</p>
 <figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)onBtnClicked &#123;</span><br><span class="line">	MyPopupView *popup = [[MyPopupView alloc] init];</span><br><span class="line">	[<span class="keyword">self</span>.view addSubview: popup];</span><br><span class="line">	[popup show];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -489,9 +490,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/iOS/" rel="tag"><i class="fa fa-tag"></i> iOS</a>
-          
             <a href="/tags/Design-pattern/" rel="tag"><i class="fa fa-tag"></i> Design pattern</a>
+          
+            <a href="/tags/iOS/" rel="tag"><i class="fa fa-tag"></i> iOS</a>
           
         </div>
       
