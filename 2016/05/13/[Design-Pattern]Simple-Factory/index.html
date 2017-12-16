@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Design pattern,iOS," />
+  <meta name="keywords" content="iOS,Design pattern," />
 
 
 
@@ -82,7 +82,7 @@
 
 
 <meta name="description" content="最近开始看设计模式，做一些笔记">
-<meta name="keywords" content="Design pattern,iOS">
+<meta name="keywords" content="iOS,Design pattern">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[设计模式]之一:简单工厂模式">
 <meta property="og:url" content="http://wossoneri.github.io/2016/05/13/[Design-Pattern]Simple-Factory/index.html">
@@ -90,7 +90,7 @@
 <meta property="og:description" content="最近开始看设计模式，做一些笔记">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/UML-simple-factory.png?raw=true">
-<meta property="og:updated_time" content="2017-12-14T13:29:49.000Z">
+<meta property="og:updated_time" content="2017-12-14T13:32:10.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[设计模式]之一:简单工厂模式">
 <meta name="twitter:description" content="最近开始看设计模式，做一些笔记">
@@ -394,7 +394,7 @@
       
 
       
-        <p><strong><a href="http://wossoneri.github.io/2016/05/13/[Design-Pattern]Simple-Factory/#23_u79CD_u8BBE_u8BA1_u6A21_u5F0F">设计模式系列目录</a></strong></p>
+        <p><strong><a href="http://wossoneri.github.io/categories/Design-pattern/">设计模式系列目录</a></strong></p>
 <h3 id="系列前言"><a href="#系列前言" class="headerlink" title="系列前言"></a>系列前言</h3><p>最近思考了一下这两年的工作：做Android的时候一直看Android知识，做iOS的时候一直学iOS的东西。其实看起来感觉这样没什么问题，但仔细想想，我发现自己一直忽略了一大片知识点，那就是软件工程。不同的语言，不同的开发方向的确在代码上有千差万别，但是回到软件架构上来看，所有的编程思想都是相通的，比如说算法，再比如说设计模式。算法这点可能在移动开发中用得较少，但设计模式是必不可少的。我回想了一下，虽说写了不少代码，也考虑过一些关于模块代码结构的设计，但还是缺乏对这一块的系统了解。所以就找了一本众人推荐的书——《大话设计模式》来看。这本书写的的确好，通俗易懂，所以在这里我也推荐一下。这本书看了几个章节我就有一种受人点拨的感觉，明显感觉到如果我把这本书吃透，编码水平肯定能提高一个level。想到我的读书列表还有几本受到程序员追捧的大作要看，突然有种迫不及待就要一本一本读下去的感觉。不过读书可不是读一遍就完事的，关键就在于悟。进步也不能急，一点一点来吧。加油！</p>
 <hr>
 <h3 id="23种设计模式"><a href="#23种设计模式" class="headerlink" title="23种设计模式"></a>23种设计模式</h3><p>关于设计模式最好的书应该是GoF的《设计模式》了，其中列出了23种设计模式，这里先列出来，后面写完对应博客会把这里改为文章链接方便查看。</p>
@@ -504,9 +504,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Design-pattern/" rel="tag"><i class="fa fa-tag"></i> Design pattern</a>
-          
             <a href="/tags/iOS/" rel="tag"><i class="fa fa-tag"></i> iOS</a>
+          
+            <a href="/tags/Design-pattern/" rel="tag"><i class="fa fa-tag"></i> Design pattern</a>
           
         </div>
       
@@ -612,7 +612,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-count">39</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -623,7 +623,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -634,7 +634,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">57</span>
+                  <span class="site-state-item-count">58</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -1028,6 +1028,28 @@
   
 
   
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
 
   
 

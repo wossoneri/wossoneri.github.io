@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Swift," />
+  <meta name="keywords" content="decode," />
 
 
 
@@ -81,18 +81,18 @@
 
 
 
-<meta name="description" content="建立一个Github保存笔记">
-<meta name="keywords" content="Swift">
+<meta name="description" content="简单聊聊计算机字符编码">
+<meta name="keywords" content="decode">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[Swift] Swift笔记">
-<meta property="og:url" content="http://wossoneri.github.io/2016/04/16/[Swift]Notes-of-Swift/index.html">
+<meta property="og:title" content="[CS]聊聊字符编码">
+<meta property="og:url" content="http://wossoneri.github.io/2017/12/15/[CS]Talk-about-char-encode/index.html">
 <meta property="og:site_name" content="Wossoneri`s Blog">
-<meta property="og:description" content="建立一个Github保存笔记">
+<meta property="og:description" content="简单聊聊计算机字符编码">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2016-04-16T15:38:52.000Z">
+<meta property="og:updated_time" content="2017-12-16T07:04:40.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="[Swift] Swift笔记">
-<meta name="twitter:description" content="建立一个Github保存笔记">
+<meta name="twitter:title" content="[CS]聊聊字符编码">
+<meta name="twitter:description" content="简单聊聊计算机字符编码">
 
 
 
@@ -122,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="http://wossoneri.github.io/2016/04/16/[Swift]Notes-of-Swift/"/>
+  <link rel="canonical" href="http://wossoneri.github.io/2017/12/15/[CS]Talk-about-char-encode/"/>
 
 
 
 
 
-  <title>[Swift] Swift笔记 | Wossoneri`s Blog</title>
+  <title>[CS]聊聊字符编码 | Wossoneri`s Blog</title>
   
 
 
@@ -275,7 +275,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2016/04/16/[Swift]Notes-of-Swift/">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2017/12/15/[CS]Talk-about-char-encode/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Wossoneri">
@@ -292,7 +292,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">[Swift] Swift笔记</h1>
+          <h1 class="post-title" itemprop="name headline">[CS]聊聊字符编码</h1>
         
 
         <div class="post-meta">
@@ -304,8 +304,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-16T23:31:00+08:00">
-                2016-04-16
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-15T18:18:33+08:00">
+                2017-12-15
               </time>
             
 
@@ -327,8 +327,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Syntax/" itemprop="url" rel="index">
-                    <span itemprop="name">Syntax</span>
+                  <a href="/categories/Computer-Science/" itemprop="url" rel="index">
+                    <span itemprop="name">Computer Science</span>
                   </a>
                 </span>
 
@@ -344,7 +344,7 @@
 
           
           
-             <span id="/2016/04/16/[Swift]Notes-of-Swift/" class="leancloud_visitors" data-flag-title="[Swift] Swift笔记">
+             <span id="/2017/12/15/[CS]Talk-about-char-encode/" class="leancloud_visitors" data-flag-title="[CS]聊聊字符编码">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -362,9 +362,9 @@
                  <i class="fa fa-clock-o" ></i>
             </span>
 		        <span class="post-meta-item-text">总记</span>
-            <span class="post-count">98 字</span>
+            <span class="post-count">1,302 字</span>
 		        <span class="post-meta-item-text">读完需要</span>
-    		    <span class="post-count">1 分</span>
+    		    <span class="post-count">5 分</span>
   		  </span>
            
          
@@ -375,7 +375,7 @@
 
           
               <div class="post-description">
-                  建立一个Github保存笔记
+                  简单聊聊计算机字符编码
               </div>
           
 
@@ -392,7 +392,57 @@
       
 
       
-        <p>开始整理<code>Swift</code>笔记了。打算直接用<code>Playground</code>去写，里面自带的<code>Markup</code>语法和<code>Markdown</code>差不多，显示的效果也不差于博客。而且用<code>Xcode</code>看代码也方便。所以这部分内容不再在博客里记录了，直接上传<code>Github</code>。<br>地址：<a href="https://github.com/wossoneri/swift_basics" target="_blank" rel="external">https://github.com/wossoneri/swift_basics</a><br>需要看的直接<code>Fork</code>，我不定时提交，你也可以提交更新。</p>
+        <h4 id="源起一个Bug"><a href="#源起一个Bug" class="headerlink" title="源起一个Bug"></a>源起一个Bug</h4><p>用爬虫在百度爬图片的时候,发现部分查询关键字的时候,出现爬不出图片的情况.比如在爬<code>鱼</code>的时候,就没有结果.爬<code>鱼 图片</code>就会有结果.</p>
+<p>经过异常捕获,发现,在对<code>URL</code>转码的时候出现了转码错误:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">html = requests.get(url, timeout=<span class="number">10</span>).content.decode(<span class="string">'utf-8'</span>)</span><br><span class="line"></span><br><span class="line">error:</span><br><span class="line">    html = requests.get(url, timeout=<span class="number">10</span>).content.decode(<span class="string">'utf-8'</span>)</span><br><span class="line">UnicodeDecodeError: <span class="string">'utf-8'</span> codec can<span class="string">'t decode byte 0xe7 in position 63897: invalid continuation byte</span></span><br></pre></td></tr></table></figure>
+<p>Log的意思是,<code>UTF-8</code>的解码器无法处理字符<code>0xe7</code></p>
+<p>最后的解决方案是使用<code>latin-1</code>编码:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">html = requests.get(url, timeout=<span class="number">10</span>).content.decode(<span class="string">'latin-1'</span>)</span><br></pre></td></tr></table></figure>
+<p>不过这里遗留了几个问题:</p>
+<ul>
+<li><code>0xe7</code>是什么?</li>
+<li><code>latin-1</code>是什么编码?</li>
+</ul>
+<p>下面就要聊一聊这些问题.</p>
+<h4 id="计算机编码"><a href="#计算机编码" class="headerlink" title="计算机编码"></a>计算机编码</h4><p>在计算机中,所有数据在存储和运算时都要使用二进制表示(这个不理解可以问问冯诺依曼),也就是说,所有字母,符号在计算机中都是由<code>0</code>和<code>1</code>组成的一串数字表示.但是,就像我们需要给所有事物起名一样,所有现实中的字母,符号都需要一个对应的<code>0</code> <code>1</code>字串表示,即编码.为了方便大家编码互通,就需要制定统一的编码规则,<code>ASCII</code>码就这么产生了.</p>
+<h4 id="ASCII编码"><a href="#ASCII编码" class="headerlink" title="ASCII编码"></a>ASCII编码</h4><p>学编程的时候,<code>ASCII</code>是最早介绍的字符编码.<br>标准<code>ASCII</code>使用7位二进制数,因为一个字节占8位,所以在第一位补0形成8位.</p>
+<p>举个栗子:<br>在<code>ASCII</code>编码中,字母<code>A</code>的表示为:</p>
+<ul>
+<li>二进制: 0100 0001</li>
+<li>十进制: 65</li>
+<li>十六进制: 0x41</li>
+</ul>
+<p>所以看前面的问题:<code>0xe7</code>是什么?<br><code>0x</code>是16进制,用二进制表示就是<code>1110 0111</code>,十进制是<code>231</code>.</p>
+<p>对照<code>ASCII</code>码,7位一共128个字符,231明显超过了128,所以对于<code>ASCII</code>编码来说,它并不认识<code>0xe7</code>.<br>这也说明了一个问题,由于<code>ASCII</code>编码长度很短,可以表示的字符有限,遇到中文或者其他字符,就需要其他编码来表示.</p>
+<p>比如中文,上万个汉子需要表示,仅用1个字节表示$2^8$个字符是不够的.所以像<code>GB2312</code>就是使用两字节表示一个汉字,一共$2^8$ * $2^8$ = 65536个</p>
+<h4 id="Unicode编码"><a href="#Unicode编码" class="headerlink" title="Unicode编码"></a>Unicode编码</h4><p>因为存在不同的编码,所以打开文件前就需要指定正确的编码格式,不然解码出来的都是乱码.<br>那么能不能出一种编码,能够涵盖所有的字符呢?<code>Unicode</code>就是这么样的一个符号集.</p>
+<p>但是<code>Unicode</code>只是一个符号集,只规定符号二进制代码,没有规定二进制如何存储.</p>
+<p>举个栗子:<br>汉字<code>鱼</code>,用<code>Unicode</code>表示为十六进制的<code>9c7c</code>:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="string">u'鱼'</span></span><br><span class="line"><span class="string">u'\u9c7c'</span></span><br></pre></td></tr></table></figure>
+<p>用二进制表示为<code>1001 1100 0111 1100</code>,一共16位,所以至少需要两个字节表示它.</p>
+<p>所以问题来了</p>
+<ul>
+<li>怎么确定它是<code>Unicode</code>而不是两个字符组成的<code>ASCII</code>?</li>
+<li>为了解决上面的问题,如果所有字符都用两字节表示,那么只用到7位的字符<code>A</code>就会浪费掉将近一个字节的空间.这怎么解决?</li>
+</ul>
+<h4 id="UTF-8"><a href="#UTF-8" class="headerlink" title="UTF-8"></a>UTF-8</h4><p>为了解决空间浪费的问题，出现了一些中间格式的字符集，他们被称为通用转换格式，即UTF（Unicode Transformation Format）。常见的UTF格式有：UTF-7, UTF-7.5, UTF-8,UTF-16, 以及 UTF-32。</p>
+<p>主要聊聊常见的<code>UTF-8</code><br><code>UTF-8</code>规则:</p>
+<ul>
+<li>如果字符只有一个字节则其最高二进制位为0,后7位是字符的<code>Unicode</code>码.单字节的编码和<code>ASCII</code>一致</li>
+<li>对于N字节(N&gt;1),第一个字节前N位设为1,第N+1位为0，其余各字节均以10开头<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">2字节: 110xxxxx 10xxxxxx</span><br><span class="line">3字节: 1110xxxx 10xxxxxx 10xxxxxx</span><br><span class="line">4字节: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>试着把前面的<code>鱼</code>字转成<code>UTF-8</code>,<code>鱼</code>的二进制16位,正好可以填入3字节的<code>UTF-8</code>:<code>11101001 10110001 10111100</code>,将其转成16进制就是<code>e9b1bc</code>.</p>
+<blockquote>
+<p>填入顺序是从低字节开始填,到高字节填不满的补0</p>
+</blockquote>
+<p>用代码验证一下:<br><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="string">u'鱼'</span>.encode(<span class="string">'utf-8'</span>)</span><br><span class="line"><span class="string">'\xe9\xb1\xbc'</span></span><br></pre></td></tr></table></figure></p>
+<p>了解了<code>UTF-8</code>,再回看之前的Bug:<code>0xe7</code>的二进制是<code>1110 0111</code>,占2字节,对比<code>UTF-8</code>的2字节,第三位就不一样,所以<code>0xe7</code>不属于<code>UTF-8</code>的格式,因此无法解码.</p>
+<h4 id="ISO-IEC-8859-1"><a href="#ISO-IEC-8859-1" class="headerlink" title="ISO/IEC 8859-1"></a>ISO/IEC 8859-1</h4><p>看到这个编码名字是否是一脸懵逼?不过提起别称就清楚了,它就是<code>Latin-1</code>编码.</p>
+<p><code>Latin-1</code>属于单字节编码,最多能表示0-255的范围,即$2^8$,所以<code>0xe7</code>就在它的表示范围内,因此可以解码.</p>
+<p>单字节编码的问题是能够表示的字符很少,但是单字节和计算机最基础的表示单位一致,所以面对其他编码的中文表示,可以拆成一个一个的单字节,用<code>Latin-1</code>进行保存.所以就像上面<code>UTF-8</code>对<code>鱼</code>的表示一样,用<code>Latin-1</code>解码后,单个字节拼起来就是<code>UTF-8</code>编码了:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="string">b'鱼'</span>.decode(<span class="string">'Latin-1'</span>)</span><br><span class="line"><span class="string">u'\xe9\xb1\xbc'</span></span><br></pre></td></tr></table></figure>
+<p>以上,问题解决.</p>
 
       
     </div>
@@ -442,7 +492,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://wossoneri.github.io/2016/04/16/[Swift]Notes-of-Swift/" title="[Swift] Swift笔记">http://wossoneri.github.io/2016/04/16/[Swift]Notes-of-Swift/</a>
+    <a href="http://wossoneri.github.io/2017/12/15/[CS]Talk-about-char-encode/" title="[CS]聊聊字符编码">http://wossoneri.github.io/2017/12/15/[CS]Talk-about-char-encode/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -457,7 +507,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Swift/" rel="tag"><i class="fa fa-tag"></i> Swift</a>
+            <a href="/tags/decode/" rel="tag"><i class="fa fa-tag"></i> decode</a>
           
         </div>
       
@@ -470,8 +520,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/02/22/[iOS]Scroll-to-hide-show-HeaderView/" rel="next" title="[iOS] 列表滑动展开隐藏头部HeaderView">
-                <i class="fa fa-chevron-left"></i> [iOS] 列表滑动展开隐藏头部HeaderView
+              <a href="/2017/12/14/[Design-Pattern]More-about-Singleton/" rel="next" title="[设计模式]之四:再谈单例模式">
+                <i class="fa fa-chevron-left"></i> [设计模式]之四:再谈单例模式
               </a>
             
           </div>
@@ -479,10 +529,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/04/18/[iOS]Collections-of-issues/" rel="prev" title="[iOS] 小问题记录">
-                [iOS] 小问题记录 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -534,8 +580,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -646,6 +701,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#源起一个Bug"><span class="nav-number">1.</span> <span class="nav-text">源起一个Bug</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#计算机编码"><span class="nav-number">2.</span> <span class="nav-text">计算机编码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ASCII编码"><span class="nav-number">3.</span> <span class="nav-text">ASCII编码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Unicode编码"><span class="nav-number">4.</span> <span class="nav-text">Unicode编码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#UTF-8"><span class="nav-number">5.</span> <span class="nav-text">UTF-8</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ISO-IEC-8859-1"><span class="nav-number">6.</span> <span class="nav-text">ISO/IEC 8859-1</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
