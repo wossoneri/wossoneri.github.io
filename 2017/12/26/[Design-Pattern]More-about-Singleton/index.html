@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Objective-C,block,思考," />
+  <meta name="keywords" content="Java,Design pattern," />
 
 
 
@@ -81,18 +81,18 @@
 
 
 
-<meta name="description" content="初识Block的时候，总觉得其很可怕，因为看不懂其运行原理，所以用起来总是觉得不安全。关于Block的语法，等我把手里的资料全部看完，整理好再发出来。这次先看看用Block怎么实现回调。">
-<meta name="keywords" content="Objective-C,block,思考">
+<meta name="description" content="单例其实能聊得挺多的">
+<meta name="keywords" content="Java,Design pattern">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[Objective-C] Block实现回调和简单的学习思考">
-<meta property="og:url" content="http://wossoneri.github.io/2016/02/20/[Objective-C]Callback-with-block/index.html">
+<meta property="og:title" content="[设计模式]之四:再谈单例模式">
+<meta property="og:url" content="http://wossoneri.github.io/2017/12/26/[Design-Pattern]More-about-Singleton/index.html">
 <meta property="og:site_name" content="Wossoneri`s Blog">
-<meta property="og:description" content="初识Block的时候，总觉得其很可怕，因为看不懂其运行原理，所以用起来总是觉得不安全。关于Block的语法，等我把手里的资料全部看完，整理好再发出来。这次先看看用Block怎么实现回调。">
+<meta property="og:description" content="单例其实能聊得挺多的">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2016-02-19T16:35:11.000Z">
+<meta property="og:updated_time" content="2017-12-26T17:50:34.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="[Objective-C] Block实现回调和简单的学习思考">
-<meta name="twitter:description" content="初识Block的时候，总觉得其很可怕，因为看不懂其运行原理，所以用起来总是觉得不安全。关于Block的语法，等我把手里的资料全部看完，整理好再发出来。这次先看看用Block怎么实现回调。">
+<meta name="twitter:title" content="[设计模式]之四:再谈单例模式">
+<meta name="twitter:description" content="单例其实能聊得挺多的">
 
 
 
@@ -122,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="http://wossoneri.github.io/2016/02/20/[Objective-C]Callback-with-block/"/>
+  <link rel="canonical" href="http://wossoneri.github.io/2017/12/26/[Design-Pattern]More-about-Singleton/"/>
 
 
 
 
 
-  <title>[Objective-C] Block实现回调和简单的学习思考 | Wossoneri`s Blog</title>
+  <title>[设计模式]之四:再谈单例模式 | Wossoneri`s Blog</title>
   
 
 
@@ -275,7 +275,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2016/02/20/[Objective-C]Callback-with-block/">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2017/12/26/[Design-Pattern]More-about-Singleton/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Wossoneri">
@@ -292,7 +292,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">[Objective-C] Block实现回调和简单的学习思考</h1>
+          <h1 class="post-title" itemprop="name headline">[设计模式]之四:再谈单例模式</h1>
         
 
         <div class="post-meta">
@@ -304,8 +304,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-02-20T00:35:09+08:00">
-                2016-02-20
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-26T22:10:54+08:00">
+                2017-12-26
               </time>
             
 
@@ -327,8 +327,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Syntax/" itemprop="url" rel="index">
-                    <span itemprop="name">Syntax</span>
+                  <a href="/categories/Design-pattern/" itemprop="url" rel="index">
+                    <span itemprop="name">Design pattern</span>
                   </a>
                 </span>
 
@@ -344,7 +344,7 @@
 
           
           
-             <span id="/2016/02/20/[Objective-C]Callback-with-block/" class="leancloud_visitors" data-flag-title="[Objective-C] Block实现回调和简单的学习思考">
+             <span id="/2017/12/26/[Design-Pattern]More-about-Singleton/" class="leancloud_visitors" data-flag-title="[设计模式]之四:再谈单例模式">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -362,9 +362,9 @@
                  <i class="fa fa-clock-o" ></i>
             </span>
 		        <span class="post-meta-item-text">总记</span>
-            <span class="post-count">1,151 字</span>
+            <span class="post-count">1,195 字</span>
 		        <span class="post-meta-item-text">读完需要</span>
-    		    <span class="post-count">4 分</span>
+    		    <span class="post-count">5 分</span>
   		  </span>
            
          
@@ -375,7 +375,7 @@
 
           
               <div class="post-description">
-                  初识Block的时候，总觉得其很可怕，因为看不懂其运行原理，所以用起来总是觉得不安全。关于Block的语法，等我把手里的资料全部看完，整理好再发出来。这次先看看用Block怎么实现回调。
+                  单例其实能聊得挺多的
               </div>
           
 
@@ -392,41 +392,57 @@
       
 
       
-        <p>关于Objective-C的回调，最常见的应该是用<code>delegate</code>代理实现。不过代理的实现比起<code>Block</code>要更基础，就不介绍了，下面总结一下<code>Block</code>回调的实现。</p>
-<p>就拿我昨天才写的博客为例：<a href="http://www.wossoneri.com/2016/02/18/[iOS]%20%E8%BE%93%E5%85%A5%E6%A1%86%E9%AB%98%E5%BA%A6%E9%9A%8F%E8%BE%93%E5%85%A5%E5%86%85%E5%AE%B9%E5%8F%98%E5%8C%96/" target="_blank" rel="external">[iOS] 输入框高度随输入内容变化</a></p>
-<p>在昨天的例子中，我的组件封装控件后，是通过代理实现返回行数的变化的。这次改用<code>Block</code>来实现。</p>
-<ol>
-<li>定义一个<code>Block</code>类型，用来代替原来的<code>@Protocol</code></li>
-</ol>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">void</span>(^getTextViewRows)(<span class="built_in">NSInteger</span> lines);</span><br></pre></td></tr></table></figure>
-<ol>
-<li>在<code>interface</code>中声明参数为<code>Block</code>的实例方法</li>
-</ol>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)textViewRowsChangeTo:(getTextViewRows)block;</span><br></pre></td></tr></table></figure>
-<ol>
-<li>实现<code>textViewRowsChangeTo:</code>的方法</li>
-</ol>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)textViewRowsChangeTo:(getTextViewRows)block &#123;</span><br><span class="line">	block(lines);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>唉，等等，我应该返回的行数是在<code>textViewDidChange:</code>运行时获得后才返回的啊，这样写还回调个什么鬼。。</p>
-<p>所以我们需要声明一个<code>Block</code>变量，保存从外部传进来的<code>Block</code>的地址，然后当我们获取到改变的行数后，再从这个地址把正确的内容返回。</p>
-<p>在第2步添加声明<code>Block</code>变量</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) getTextViewRows b_getRowsBlock;</span><br><span class="line">- (<span class="keyword">void</span>)textViewRowsChangeTo:(getTextViewRows)block;</span><br></pre></td></tr></table></figure>
-<p>修改第3步</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)textViewRowsChangeTo:(getTextViewRows)block &#123;</span><br><span class="line">	_b_getRowsBlock = block;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>然后在需要返回行数的时候，把行数作为参数传给<code>Block</code></p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)textViewDidChange:(<span class="built_in">UITextView</span> *)textView &#123;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">NSInteger</span> numLines = textView.contentSize.height / textView.font.lineHeight;</span><br><span class="line">    <span class="keyword">if</span> (numLines != rows) &#123;</span><br><span class="line">        rows = numLines;</span><br><span class="line">        <span class="comment">//发生换行</span></span><br><span class="line">        _b_getRowsBlock(rows);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">	......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>最后，在外部调用前面的实例方法即可</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">B *b = [B new];</span><br><span class="line">[b textViewRowsChangeTo:^(<span class="built_in">NSInteger</span> lines) &#123;</span><br><span class="line">	rowCount = lines;</span><br><span class="line">	[<span class="keyword">self</span> remakeConstraint];</span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure>
+        <p><strong><a href="http://wossoneri.github.io/categories/Design-pattern/">设计模式系列目录</a></strong></p>
+<p>之前有写过单例模式：<a href="http://wossoneri.github.io/2016/05/23/[Design-Pattern]Singleton/">[设计模式]之三:单例模式</a>，可以通过链接回顾一下。然后这次再多聊聊这个设计模式。</p>
+<h3 id="线程不安全的懒汉式"><a href="#线程不安全的懒汉式" class="headerlink" title="线程不安全的懒汉式"></a>线程不安全的懒汉式</h3><p>可能一提到单例模式，大多数人都会想到这么写：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Singleton</span> </span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> Singleton instance;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">private</span> <span class="title">Singleton</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line">		<span class="keyword">if</span> (<span class="keyword">null</span> == instance) &#123;</span><br><span class="line">			instance = <span class="keyword">new</span> Singleton();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> instance;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个写法也是严格按照概念来的</p>
 <blockquote>
-<p>最后，这又是一篇How to do的文章。说起来价值不算大。</p>
-<p>但我觉得，想快速学一个新东西并且上手用起来，是需要从不断模仿别人写的代码做起的。</p>
-<p>就像我第一次看代理，虽然了解大概实现过程，但用起来还是经常会出现忘写<code>XX.delegate = self</code>这看似微不足道的代码的，导致的结果就是调试程序的时候发现代理不起作用，然后排查业务逻辑，看手势事件有没有捕捉到…到最后才会想到排查语法错误。一个小错误导致我效率低下。（这种错误其实是对代理实现原理理解的不够造成的，但对于新手，理解需要时间，而要快速上项目就需要熟记这个实现流程，然后通过大量编码的过程去参悟原理。）</p>
-<p>我想说的是，一般调试逻辑bug的时候很少会去想到语法错误，这就要求了我们平时写代码的时候要注意编程的细节，在学习的时候打好基础。有时候为了追求快速实现功能，可以不去深究，知道实现步骤就可以，比如说这个<code>Block</code>回调，这篇文章就可以作为一个模板，每次用的时候都按照这个步骤去做可以保证不出错，可以快速出效果。照着这个写多了，熟练了就自然不会犯低级的语法错误，这对提升效率很有帮助。这也是为什么我坚持记录How to do的文章的原因。</p>
-<p>不过另外说起来，How to do的文章还有一个意义，那就是How to do都是有一个步骤顺序的，先干什么，再干什么。这个顺序就很有意义，它能提供一套解决问题的思路，也就是能看出这套语法的设计者是怎么去思考的。从设计者的思路去看语法就为我们后期深入学习理解相关知识提供了一条路子。当然了，具体能看到什么，学到什么还是看个人对编程的理解，也就是我所认为的编程心法。</p>
-<p>好了，扯的有点偏，关于<code>Block</code>回调快速上手的方法就是这样了，熟记这个步骤（千万别死记，编码是灵活的），多去敲代码，慢慢就会产生诸如”为什么要写_b_getRowsBlock = block;”的疑问，当产生疑问时，那就说明你熟悉并开始思考语法了。一定要思考，不然注定是当一辈子的码农，而不是程序员。</p>
-<p>关于<code>Block</code>的内容还有很多。由于平时<code>Block</code>用的的确少，所以关于这部分的资料我还需要一些时间去消化。后面我会尽量多写<code>Block</code>，感受不同场景下的使用。</p>
-<p>最最后，我还记得几个月前我盯着代码发呆然后突然感叹一声：“原来这TM就是面向对象啊”的喜悦呢。</p>
+<p>让类自身负责保存它的唯一实例。这个类保证没有其它实例可以被创建，并且它可以提供一个访问该实例的方法。</p>
 </blockquote>
+<p>但这个写法有一个问题：多线程情况下并行调用<code>Singleton.getInstance()</code>,会导致创建多个实例。</p>
+<p>可以用代码做个简单验证：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">		System.out.println(<span class="string">"s1 hashcode:"</span> + Singleton.getInstance().hashCode()); </span><br><span class="line">	&#125;</span><br><span class="line">&#125;).start();</span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">    System.out.println(<span class="string">"s2 hashcode:"</span> + Singleton.getInstance().hashCode()); </span><br><span class="line">  &#125;</span><br><span class="line">&#125;).start();</span><br></pre></td></tr></table></figure>
+<p>通过<code>hashCode</code>看到有时候获取到的两个实例并不相同。</p>
+<h3 id="线程安全的懒汉式"><a href="#线程安全的懒汉式" class="headerlink" title="线程安全的懒汉式"></a>线程安全的懒汉式</h3><p>对于多线程情况，一个直接的办法就是使用同步锁<code>synchronized</code>。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">synchronized</span> Singleton <span class="title">getInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">null</span> == instance) &#123;</span><br><span class="line">    instance = <span class="keyword">new</span> Singleton();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> instance;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>再次执行测试程序，现在不论怎么执行，打印的哈希值都是一样的。这样很轻松地解决了同步问题。</p>
+<p>BUG解掉了不代表工作就结束了，我们还没看程序性能呢。处理性能问题，首先要梳理程序逻辑。</p>
+<ul>
+<li><p>同步锁解决的是什么问题？</p>
+<p>是会创建多个<strong>实例</strong>。</p>
+</li>
+<li><p>如果保证了只有一个实例，后面get实例还有问题吗？</p>
+<p>没有</p>
+</li>
+</ul>
+<p>那么问题就出来了，同步锁保证同时只有一个线程访问它，这个功能只在实例未创建的时候需要。其他时间，我们认为它可以随便调用。否则的话多线程运行到这里就成单线程了，一个一个执行，太影响效率了。</p>
+<p>所以就需要先做一个判断，如果实例未创建，加锁！否则就返回实例。这样就形成了双重检验。</p>
+<h3 id="双重检验锁"><a href="#双重检验锁" class="headerlink" title="双重检验锁"></a>双重检验锁</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">null</span> == instance) &#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (Singleton.class) &#123;</span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">null</span> == instance) &#123;</span><br><span class="line">        instance = <span class="keyword">new</span> Singleton();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> instance;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先，检查实例是否存在，不存在就进行加锁。但是加锁后，里面为何又要判断实例为空呢？因为可能有多线程一起通过第一层，而到了同步锁这里，几个线程排队执行。这样第一个线程创建实例后，第二个线程就会进来。所以需要再做一次判断，防止多创建实例。</p>
+<p>到此，一个<strong>近乎</strong>完美的单例就写出来了。说是近乎，是因为还有一个很细小问题没有解决：指令顺序优化。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">instance = <span class="keyword">new</span> Singleton();</span><br></pre></td></tr></table></figure>
+<p>这行代码，在JVM中执行：（描述可能不是很准确，后续再修改）</p>
+<ol>
+<li>为instance分配内存</li>
+<li>调用Singleton构造函数初始化成员变量</li>
+<li>将创建的对象指向分配的内存空间</li>
+</ol>
+<p>执行了1，2，3后，instance才是非空的。但是在JVM编译时，为了提高执行效率，这些指令执行顺序会被调整。如果出现1，3，2的执行顺序，那么程序就会报错。</p>
+<p>解决方案就是使用<code>volatile</code>关键字禁止指令排序优化。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">static</span> Singleton instance;</span><br></pre></td></tr></table></figure>
+<p>关于<code>volatile</code>关键字，是涉及到JVM书籍里都会讲到的。我会另外去总结，这里不多BB了。</p>
+<h3 id="饿汉式"><a href="#饿汉式" class="headerlink" title="饿汉式"></a>饿汉式</h3><p>前面的都是在第一次使用的时候，初始化实例，所以叫做懒汉式。那么饿汉式就是在使用前直接创建实例给你用。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Singleton instance = <span class="keyword">new</span> Singleton();</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> instance;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其实这样更简单呢。</p>
+<p>因为static final在第一次加载到内存就执行了，所以不用担心线程问题。</p>
+<p>但是毕竟这样还是有缺陷的，就是如果涉及到根据参数初始化的情况，这个写法就不奏效了。</p>
+<h3 id="静态内部类"><a href="#静态内部类" class="headerlink" title="静态内部类"></a>静态内部类</h3><p>这个是<effective java="">推荐的写法。</effective></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">SingletonHolder</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Singleton INSTANCE = <span class="keyword">new</span> Singleton();</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Singleton <span class="title">getInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> SingletonHolder.INSTANCE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>后面也会再聊聊内部静态类这个东西。</p>
+<h3 id="枚举单例"><a href="#枚举单例" class="headerlink" title="枚举单例"></a>枚举单例</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">enum</span> EnumSingleton &#123;</span><br><span class="line">  INSTANCE;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> Singleton singleton;</span><br><span class="line">  <span class="function"><span class="keyword">private</span> <span class="title">EnumSingleton</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    singleton = <span class="keyword">new</span> Singleton();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="keyword">private</span> Singleton <span class="title">getInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> singleton;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="title">Singleton</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title">getInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> EnumSingleton.INSTANCE.getInstance();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>目前最为安全的实现单例的方法是通过内部静态enum的方法来实现，因为JVM会保证enum不能被反射并且构造器方法只执行一次。</p>
+<p>枚举类型可以干很多有意思的事情，后面也会拿出来聊一聊。</p>
 
       
     </div>
@@ -476,7 +492,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://wossoneri.github.io/2016/02/20/[Objective-C]Callback-with-block/" title="[Objective-C] Block实现回调和简单的学习思考">http://wossoneri.github.io/2016/02/20/[Objective-C]Callback-with-block/</a>
+    <a href="http://wossoneri.github.io/2017/12/26/[Design-Pattern]More-about-Singleton/" title="[设计模式]之四:再谈单例模式">http://wossoneri.github.io/2017/12/26/[Design-Pattern]More-about-Singleton/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -491,11 +507,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Objective-C/" rel="tag"><i class="fa fa-tag"></i> Objective-C</a>
+            <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i> Java</a>
           
-            <a href="/tags/block/" rel="tag"><i class="fa fa-tag"></i> block</a>
-          
-            <a href="/tags/思考/" rel="tag"><i class="fa fa-tag"></i> 思考</a>
+            <a href="/tags/Design-pattern/" rel="tag"><i class="fa fa-tag"></i> Design pattern</a>
           
         </div>
       
@@ -508,8 +522,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/02/18/[Objective-C]Talk-about-NSInteger/" rel="next" title="[Objective-C] 从NSInteger说开去">
-                <i class="fa fa-chevron-left"></i> [Objective-C] 从NSInteger说开去
+              <a href="/2017/12/16/[Tensorflow]conv-in-tf/" rel="next" title="[Tensorflow] Tensorflow卷积理解">
+                <i class="fa fa-chevron-left"></i> [Tensorflow] Tensorflow卷积理解
               </a>
             
           </div>
@@ -517,10 +531,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/02/22/[iOS]Scroll-to-hide-show-HeaderView/" rel="prev" title="[iOS] 列表滑动展开隐藏头部HeaderView">
-                [iOS] 列表滑动展开隐藏头部HeaderView <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -572,8 +582,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -684,6 +703,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#线程不安全的懒汉式"><span class="nav-number">1.</span> <span class="nav-text">线程不安全的懒汉式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程安全的懒汉式"><span class="nav-number">2.</span> <span class="nav-text">线程安全的懒汉式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#双重检验锁"><span class="nav-number">3.</span> <span class="nav-text">双重检验锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#饿汉式"><span class="nav-number">4.</span> <span class="nav-text">饿汉式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#静态内部类"><span class="nav-number">5.</span> <span class="nav-text">静态内部类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#枚举单例"><span class="nav-number">6.</span> <span class="nav-text">枚举单例</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
