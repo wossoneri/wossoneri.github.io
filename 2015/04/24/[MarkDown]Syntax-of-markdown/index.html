@@ -367,7 +367,7 @@
                  <i class="fa fa-clock-o" ></i>
             </span>
 		        <span class="post-meta-item-text">总记</span>
-            <span class="post-count">2,443 字</span>
+            <span class="post-count">2,449 字</span>
 		        <span class="post-meta-item-text">读完需要</span>
     		    <span class="post-count">10 分</span>
   		  </span>
@@ -405,14 +405,7 @@
 <p>标题有两种形式<br>1.用=或者-表示两阶标题，符号数量建议3个以上，紧挨着显示的标题下一行输入<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">第一阶标题</span><br><span class="line">=======</span><br><span class="line">第二阶标题显示效果有下划线</span><br><span class="line">---</span><br></pre></td></tr></table></figure></p>
 <p>效果：</p>
 <h1 id="第一阶标题"><a href="#第一阶标题" class="headerlink" title="第一阶标题"></a>第一阶标题</h1><h2 id="第二阶标题显示效果有下划线"><a href="#第二阶标题显示效果有下划线" class="headerlink" title="第二阶标题显示效果有下划线"></a>第二阶标题显示效果有下划线</h2><p>2.开头用#的数量表示1-6阶的标题，结尾可以以任意数量#结尾（包括0个）</p>
-<p>#H1#####</p>
-<p>##H2有下划线</p>
-<p>###H3</p>
-<p>####H4</p>
-<p>#####H5</p>
-<p>######H6</p>
-<p>#######H7 超过6个#就是这个样子</p>
-<hr>
+<h1 id="H1"><a href="#H1" class="headerlink" title="H1"></a>H1</h1><h2 id="H2有下划线"><a href="#H2有下划线" class="headerlink" title="H2有下划线"></a>H2有下划线</h2><h3 id="H3"><a href="#H3" class="headerlink" title="H3"></a>H3</h3><h4 id="H4"><a href="#H4" class="headerlink" title="H4"></a>H4</h4><h5 id="H5"><a href="#H5" class="headerlink" title="H5"></a>H5</h5><h6 id="H6"><a href="#H6" class="headerlink" title="H6"></a>H6</h6><h6 id="H7-超过6个-就是这个样子"><a href="#H7-超过6个-就是这个样子" class="headerlink" title="#H7 超过6个#就是这个样子"></a>#H7 超过6个#就是这个样子</h6><hr>
 <h2 id="区块引用"><a href="#区块引用" class="headerlink" title="区块引用"></a>区块引用</h2><p>在每行前面使用&gt; 或者只在段落中第一行前加&gt;</p>
 <blockquote>
 <p>This is a blockquote with two paragraphs. Lorem ipsum dolor sit amet,<br>consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus.<br>Vestibulum enim wisi, viverra nec, fringilla in, laoreet vitae, risus.</p>
@@ -465,7 +458,7 @@
 <li>Green</li>
 <li>Blue</li>
 </ol>
-<p><br><br>列表项目标记通常是放在最左边，但是其实也可以缩进，最多 3 个空格，项目标记后面则一定要接着至少一个空格或制表符。每一项换行后前面不对齐也没关系，产生的效果还是好的</p>
+<p>&lt;/br&gt;<br>列表项目标记通常是放在最左边，但是其实也可以缩进，最多 3 个空格，项目标记后面则一定要接着至少一个空格或制表符。每一项换行后前面不对齐也没关系，产生的效果还是好的</p>
 <ul>
 <li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.<br>   Aliquam hendrerit mi posuere lectus. Vestibulum enim wisi,<br>viverra nec, fringilla in, laoreet vitae, risus.</li>
 <li>Donec sit amet nisl. Aliquam semper ipsum sit amet velit.<br>Suspendisse id sem consectetuer libero luctus adipiscing.</li>
@@ -490,9 +483,9 @@
 <p>如果要在list中放代码，该区块需要缩进2次 即8个空格或2个tab</p>
 <ul>
 <li><p>a list item with a codeblock</p>
-<pre><code>private void fun(int x){
+<pre><code>  private void fun(int x){
 
-}
+  }
 </code></pre></li>
 </ul>
 <hr>
@@ -542,13 +535,13 @@ _   底线
 <hr>
 <h2 id="github-特有的特性"><a href="#github-特有的特性" class="headerlink" title="github 特有的特性"></a>github 特有的特性</h2><h3 id="复选框列表"><a href="#复选框列表" class="headerlink" title="复选框列表"></a>复选框列表</h3><p>在列表符号后面加上<code>[]</code>或者<code>[x]</code>代表选中或者未选中情况</p>
 <ul>
-<li style="list-style: none"><input type="checkbox" checked> C</li>
-<li style="list-style: none"><input type="checkbox" checked> C++</li>
-<li style="list-style: none"><input type="checkbox" checked> Java</li>
-<li style="list-style: none"><input type="checkbox" checked> Qt</li>
-<li style="list-style: none"><input type="checkbox" checked> Android</li>
-<li style="list-style: none"><input type="checkbox"> C#</li>
-<li style="list-style: none"><input type="checkbox"> .NET</li>
+<li>[x] C</li>
+<li>[x] C++</li>
+<li>[x] Java</li>
+<li>[x] Qt</li>
+<li>[x] Android</li>
+<li>[ ] C#</li>
+<li>[ ] .NET</li>
 </ul>
 <p>效果如图：<br><img src="http://images.cnblogs.com/cnblogs_com/rossoneri/682731/o_aaa.png" alt="复选框列表" title="复选框效果"></p>
 <h3 id="emoji表情"><a href="#emoji表情" class="headerlink" title="emoji表情"></a>emoji表情</h3><p>Github的Markdown语法支持添加emoji表情，输入不同的符号码（两个冒号包围的字符）可以显示出不同的表情。</p>
@@ -828,7 +821,7 @@ _   底线
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#特殊字符自动转换"><span class="nav-number">1.</span> <span class="nav-text">特殊字符自动转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#段落和换行"><span class="nav-number">2.</span> <span class="nav-text">段落和换行</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第一阶标题"><span class="nav-number"></span> <span class="nav-text">第一阶标题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#第二阶标题显示效果有下划线"><span class="nav-number">1.</span> <span class="nav-text">第二阶标题显示效果有下划线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#区块引用"><span class="nav-number">2.</span> <span class="nav-text">区块引用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#这是一个标题。"><span class="nav-number">3.</span> <span class="nav-text">这是一个标题。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#列表"><span class="nav-number">4.</span> <span class="nav-text">列表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码区块"><span class="nav-number">5.</span> <span class="nav-text">代码区块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分割线"><span class="nav-number">6.</span> <span class="nav-text">分割线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#图片"><span class="nav-number">7.</span> <span class="nav-text">图片</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#反斜杠"><span class="nav-number">8.</span> <span class="nav-text">反斜杠</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#表格"><span class="nav-number">9.</span> <span class="nav-text">表格</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#github-特有的特性"><span class="nav-number">10.</span> <span class="nav-text">github 特有的特性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#复选框列表"><span class="nav-number">10.1.</span> <span class="nav-text">复选框列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#emoji表情"><span class="nav-number">10.2.</span> <span class="nav-text">emoji表情</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#有待补充"><span class="nav-number">10.3.</span> <span class="nav-text">有待补充</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">11.</span> <span class="nav-text">参考</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#特殊字符自动转换"><span class="nav-number">1.</span> <span class="nav-text">特殊字符自动转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#段落和换行"><span class="nav-number">2.</span> <span class="nav-text">段落和换行</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#第一阶标题"><span class="nav-number"></span> <span class="nav-text">第一阶标题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#第二阶标题显示效果有下划线"><span class="nav-number">1.</span> <span class="nav-text">第二阶标题显示效果有下划线</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#H1"><span class="nav-number"></span> <span class="nav-text">H1</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#H2有下划线"><span class="nav-number">1.</span> <span class="nav-text">H2有下划线</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#H3"><span class="nav-number">1.1.</span> <span class="nav-text">H3</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#H4"><span class="nav-number">1.1.1.</span> <span class="nav-text">H4</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#H5"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">H5</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#H6"><span class="nav-number">1.1.1.1.1.</span> <span class="nav-text">H6</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#H7-超过6个-就是这个样子"><span class="nav-number">1.1.1.1.2.</span> <span class="nav-text">#H7 超过6个#就是这个样子</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#区块引用"><span class="nav-number">2.</span> <span class="nav-text">区块引用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#这是一个标题。"><span class="nav-number">3.</span> <span class="nav-text">这是一个标题。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#列表"><span class="nav-number">4.</span> <span class="nav-text">列表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码区块"><span class="nav-number">5.</span> <span class="nav-text">代码区块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分割线"><span class="nav-number">6.</span> <span class="nav-text">分割线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#图片"><span class="nav-number">7.</span> <span class="nav-text">图片</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#反斜杠"><span class="nav-number">8.</span> <span class="nav-text">反斜杠</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#表格"><span class="nav-number">9.</span> <span class="nav-text">表格</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#github-特有的特性"><span class="nav-number">10.</span> <span class="nav-text">github 特有的特性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#复选框列表"><span class="nav-number">10.1.</span> <span class="nav-text">复选框列表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#emoji表情"><span class="nav-number">10.2.</span> <span class="nav-text">emoji表情</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#有待补充"><span class="nav-number">10.3.</span> <span class="nav-text">有待补充</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">11.</span> <span class="nav-text">参考</span></a></li></ol></div>
             
 
           </div>

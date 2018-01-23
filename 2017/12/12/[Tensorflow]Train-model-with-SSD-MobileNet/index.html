@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Tensorflow,python,Machine Learning," />
+  <meta name="keywords" content="Tensorflow,Machine Learning,python," />
 
 
 
@@ -82,7 +82,7 @@
 
 
 <meta name="description" content="这一段时间都在看机器学习相关内容，近期在用Tensorflow做一些实践，看了非常多的资料，慢慢整理出来。">
-<meta name="keywords" content="Tensorflow,python,Machine Learning">
+<meta name="keywords" content="Tensorflow,Machine Learning,python">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[Tensorflow] 使用SSD-MobileNet训练模型">
 <meta property="og:url" content="http://wossoneri.github.io/2017/12/12/[Tensorflow]Train-model-with-SSD-MobileNet/index.html">
@@ -449,7 +449,7 @@
 <p>再把所有<code>PATH_TO_BE_CONFIGURED</code>的地方改掉,就可以用前面的命令进行训练.</p>
 <p>训练时会遇到这个错误:<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">INFO:tensorflow:Restoring parameters from object_detection/train/model.ckpt-5390</span><br><span class="line">INFO:tensorflow:Error reported to Coordinator: &lt;class <span class="string">'tensorflow.python.framework.errors_impl.InvalidArgumentError'</span>&gt;, Assign requires shapes of both tensors to match. lhs shape= [1,1,128,12] rhs shape= [1,1,128,126]</span><br></pre></td></tr></table></figure></p>
 <p>这是因为之前我有训练过模型,训练到5390次就停了.这里配置写的是200k次,所以它会接着之前的结果继续跑.但我们的数据发生了变化,所以会出现这个错误.解决方法就是把train目录删掉,重新生成即可</p>
-<h4 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h4><p><a href="https://cloud.tencent.com/community/article/351424" target="_blank" rel="external">深度学习入门篇–手把手教你用 TensorFlow 训练模型</a></p>
+<h4 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h4><p><a href="https://cloud.tencent.com/community/article/351424" target="_blank" rel="external">深度学习入门篇—手把手教你用 TensorFlow 训练模型</a></p>
 <p><a href="http://blog.csdn.net/u010302327/article/details/78248394" target="_blank" rel="external">tensorflow ssd mobilenet模型训练</a></p>
 
       
@@ -517,9 +517,9 @@
           
             <a href="/tags/Tensorflow/" rel="tag"><i class="fa fa-tag"></i> Tensorflow</a>
           
-            <a href="/tags/python/" rel="tag"><i class="fa fa-tag"></i> python</a>
-          
             <a href="/tags/Machine-Learning/" rel="tag"><i class="fa fa-tag"></i> Machine Learning</a>
+          
+            <a href="/tags/python/" rel="tag"><i class="fa fa-tag"></i> python</a>
           
         </div>
       

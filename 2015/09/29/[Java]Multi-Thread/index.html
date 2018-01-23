@@ -420,7 +420,7 @@
 <h3 id="消息传递"><a href="#消息传递" class="headerlink" title="消息传递"></a>消息传递</h3><p>在你把程序分成若干线程后，你就要定义各线程之间的联系。用大多数其他语言规划时，你必须依赖于操作系统来确立线程间通信。这样当然增加花费。然而，Java提供了多线程间谈话清洁的、低成本的途径——通过调用所有对象都有的预先确定的方法。Java的消息传递系统允许一个线程进入一个对象的一个同步方法，然后在那里等待，直到其他线程明确通知它出来。</p>
 <h3 id="Thread-类和Runnable-接口"><a href="#Thread-类和Runnable-接口" class="headerlink" title="Thread 类和Runnable 接口"></a>Thread 类和Runnable 接口</h3><p>Java的多线程系统建立于Thread类，它的方法，它的共伴接口Runnable基础上。Thread类封装了线程的执行。既然你不能直接引用运行着的线程的状态，你要通过它的代理处理它，于是Thread 实例产生了。为创建一个新的线程，你的程序必须扩展Thread 或实现Runnable接口。</p>
 <p>Thread类定义了好几种方法来帮助管理线程。本章用到的方法如下表所示：</p>
-<p></p><p align="center">管理线程的方法</p><br>| 方法    |意义     |<br>| ——- | ——-  |<br>| getName   | 获得线程名称                 |<br>| getPriority | 获得线程优先级                 |<br>| isAlive       | 判定线程是否仍在运行             |<br>| join           | 等待一个线程终止                 |<br>| run           | 线程的入口点             |<br>| sleep         | 在一段时间内挂起线程             |<br>| start       | 通过调用运行方法来启动线程 |<br>（博客园markdown不支持表格显示？）<p></p>
+<p></p><p align="center">管理线程的方法</p><br>| 方法    |意义     |<br>| ———- | ———-  |<br>| getName   | 获得线程名称                 |<br>| getPriority | 获得线程优先级                 |<br>| isAlive       | 判定线程是否仍在运行             |<br>| join           | 等待一个线程终止                 |<br>| run           | 线程的入口点             |<br>| sleep         | 在一段时间内挂起线程             |<br>| start       | 通过调用运行方法来启动线程 |<br>（博客园markdown不支持表格显示？）<p></p>
 <hr>
 <h2 id="主线程"><a href="#主线程" class="headerlink" title="主线程"></a>主线程</h2><p>当Java程序启动时，一个线程立刻运行，该线程通常叫做程序的<code>主线程（main thread）</code>，因为它是程序开始时就执行的。主线程的重要性体现在两方面：</p>
 <ul>
