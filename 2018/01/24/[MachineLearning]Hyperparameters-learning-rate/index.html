@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Python,Tensorflow,Machine Learning,Hyperparameter," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="在做实践的时候，我也遇到了Loss不下降的情况，于是开始着手调整参数。Learning Rate就是其中一个很有效的超参数">
+<meta name="keywords" content="Python,Tensorflow,Machine Learning,Hyperparameter">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[MachineLearning] 超参数之LearningRate">
+<meta property="og:url" content="http://wossoneri.github.io/2018/01/24/[MachineLearning]Hyperparameters-learning-rate/index.html">
+<meta property="og:site_name" content="Wossoneri`s Blog">
+<meta property="og:description" content="在做实践的时候，我也遇到了Loss不下降的情况，于是开始着手调整参数。Learning Rate就是其中一个很有效的超参数">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/gradient_descent_algorithm.png?raw=true">
+<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/hyperparameter_1.jpg?raw=true">
+<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/LR_exponential_decay.webp?raw=true">
+<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/LR_inverse_decay.webp?raw=true">
+<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/LR_natural_decay.webp?raw=true">
+<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/LR_piecewise_decay.webp?raw=true">
+<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/LR_polynomial_decay.webp?raw=true">
+<meta property="og:updated_time" content="2018-01-23T16:49:15.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[MachineLearning] 超参数之LearningRate">
+<meta name="twitter:description" content="在做实践的时候，我也遇到了Loss不下降的情况，于是开始着手调整参数。Learning Rate就是其中一个很有效的超参数">
+<meta name="twitter:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/gradient_descent_algorithm.png?raw=true">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '6234852363740382000',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wossoneri.github.io/2018/01/24/[MachineLearning]Hyperparameters-learning-rate/"/>
+
+
+
+
+
+  <title>[MachineLearning] 超参数之LearningRate | Wossoneri`s Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-70716047-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/wossoneri"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wossoneri`s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2018/01/24/[MachineLearning]Hyperparameters-learning-rate/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wossoneri">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wossoneri`s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[MachineLearning] 超参数之LearningRate</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-24T00:29:17+08:00">
+                2018-01-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Machine-Learning/" itemprop="url" rel="index">
+                    <span itemprop="name">Machine Learning</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2018/01/24/[MachineLearning]Hyperparameters-learning-rate/" class="leancloud_visitors" data-flag-title="[MachineLearning] 超参数之LearningRate">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+	
+  		  <span class="post-letters-count">
+            &nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+                 <i class="fa fa-clock-o" ></i>
+            </span>
+		        <span class="post-meta-item-text">总记</span>
+            <span class="post-count">2,297 字</span>
+		        <span class="post-meta-item-text">读完需要</span>
+    		    <span class="post-count">10 分</span>
+  		  </span>
+           
+         
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  在做实践的时候，我也遇到了Loss不下降的情况，于是开始着手调整参数。Learning Rate就是其中一个很有效的超参数
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="Gardient-Descent"><a href="#Gardient-Descent" class="headerlink" title="Gardient Descent"></a>Gardient Descent</h3><p>关于Gradient descent 算法,不打算细说概念,公式什么的.贴一张Andrew的PPT:</p>
+<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/gradient_descent_algorithm.png?raw=true" alt=""></p>
+<p>图中有几点说明:</p>
+<ul>
+<li><p><strong>:=</strong> 是赋值操作</p>
+</li>
+<li><p>$J(\theta<em>{0},\theta</em>{1})$是代价函数</p>
+</li>
+<li><p>$\alpha$是learning rate,它控制我们以多大的幅度更新这个参数$\theta_{J} $.</p>
+<blockquote>
+<p>当偏导数部分为0时,即已经到达极小值,梯度便不再下降.这也说明$\alpha$保持不变时,梯度下降也可以收敛到局部最低点</p>
+</blockquote>
+</li>
+</ul>
+<ul>
+<li>梯度下降操作是同时更新 $\theta<em>{0}$和$\theta</em>{1}$的.</li>
+</ul>
+<p>所以一般在梯度下降算法中,都需要设置一个学习率.</p>
+<blockquote>
+<p><a href="https://www.zhihu.com/question/64134994/answer/216895968" target="_blank" rel="external">SGD和minibatch-SGD</a></p>
+<p>Stochastic Gradient Descent是随机梯度下降,每次计算只用一个随机样本</p>
+<p>minibatch-SGD 一次采用batch size的样本做梯度</p>
+</blockquote>
+<h3 id="Learning-rate"><a href="#Learning-rate" class="headerlink" title="Learning rate"></a>Learning rate</h3><p>学习率决定了在一个小批量(mini-batch)中权重在梯度方向要移动多远.</p>
+<p>比如下面Andrew的PPT截图 (图中$ J\left(\theta_{1} \right)$ 是代价函数):</p>
+<ul>
+<li>LR很小时,训练会变得可靠,也就是说梯度会向着最/极小值一步步靠近.算出来的loss会越来越小.但代价是,下降的速度很慢,训练时间会很长.</li>
+<li>LR很大时,训练会越过最/极小值,表现出loss值不断震荡,忽高忽低.最严重的情况,有可能永远不会达到最/极小值,甚至跳出这个范围,进入另一个下降区域.</li>
+</ul>
+<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/hyperparameter_1.jpg?raw=true" alt=""></p>
+<p>所以选择一个合适的LR是需要不断尝试和调整的.</p>
+<p>Andrew提供一些practice的LR选取方法,比如0.001, 0.003, 0.01, 0.03, 0.1等.</p>
+<p>总结下来,就是:</p>
+<ol>
+<li>小的LR会更精确</li>
+<li>大的LR的loss下降更快</li>
+</ol>
+<p>结合上面两点优点,就会有这样的策略:</p>
+<p>在训练刚开始的时候,由于初始的随机权重远离最优值,所以使用大一些的LR,让loss尽快下降接近局部最小值.然后训练过程中把LR调小,允许细粒度的权重更新,找到局部最小值.</p>
+<p>调整LR的目的是使loss快速收敛.</p>
+<blockquote>
+<p>Andrew:</p>
+<p>在梯度下降法中,当我们接近局部最低点时,梯度下降法会自动采取更小的幅度.</p>
+<p>这是因为当我们接近局部最低点时,很显然在局部最低时导数等于零,所以当我们接近局部最低时,导数值会自动变得越来越小.所以梯度下降将自动采取较小的幅度,这就是梯度下降的做法.</p>
+<p>所以实际上没有必要再另外减小α,这就是梯度下降算法.你可以用它来最小化任何代价函数, 不只是线性回归中的代价函数J </p>
+</blockquote>
+<h3 id="Initialize-Learning-Rate"><a href="#Initialize-Learning-Rate" class="headerlink" title="Initialize Learning Rate"></a>Initialize Learning Rate</h3><p>简单的方法就是尝试不同值,看哪个值能让损失函数最优,且不损失训练速度.</p>
+<p>一个选择学习率的方法是:以一个低LR开始训练网络,在之后每个batch中指数提高LR,记录每批batch的LR和loss.然后绘制Loss和LR的关系图,从图中找取使Loss最低的LR.</p>
+<p>或者</p>
+<p>从0.1开始,指数下降LR,0.01,0.001这样尝试.在前几次迭代中,如果出现loss从某一时刻下降,这个学习率就是可用的最大值,超过他的都不能使loss收敛.所以用最大值训练一段时间,随后根据loss值适当地降低LR,让其以更细粒度的权重更新.</p>
+<h3 id="Decay-Learning-Rate"><a href="#Decay-Learning-Rate" class="headerlink" title="Decay Learning Rate"></a>Decay Learning Rate</h3><p>前面提到,在训练的不同阶段,LR是需要调整的.比如,在loss不下降的时候,把LR缩小10倍往往会有效果.</p>
+<p>但是,手动调整算哪门子程序员,于是,各种自动调整LR的方法变因此而生.下面介绍Tensorflow中LR的衰减策略.</p>
+<p>底部链接里介绍有更多的策略,这里只放Tensorflow文档里常用的5个.</p>
+<h4 id="exponential-decay"><a href="#exponential-decay" class="headerlink" title="exponential_decay"></a>exponential_decay</h4><p>LR指数衰减是最常用的衰减方法.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">exponential_decay(learning_rate, global_step, decay_steps, decay_rate, staircase=<span class="keyword">False</span>, name=<span class="keyword">None</span>)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>learning rate 传入初始LR值</li>
+<li>global_step 用于计算衰减</li>
+<li>decay_steps 衰减的周期,每过decay_steps步后做一次衰减</li>
+<li>decay_rate 每次衰减倍率,用初始LR * decay_rate</li>
+<li>staircase 阶梯状衰减</li>
+</ul>
+<p>计算原理是</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">decayed_learning_rate = learning_rate *</span><br><span class="line">                        decay_rate ^ (global_step / decay_steps)</span><br></pre></td></tr></table></figure>
+<p>如果参数<code>staircase</code>是<code>True</code>,则<code>global_step / decay_steps</code>是整除,衰减的LR就遵循阶梯函数.</p>
+<p>示例代码</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">global_step = tf.Variable(<span class="number">0</span>, trainable=<span class="keyword">False</span>)</span><br><span class="line">starter_learning_rate = <span class="number">0.1</span></span><br><span class="line">learning_rate = tf.train.exponential_decay(starter_learning_rate, global_step,</span><br><span class="line">                                           <span class="number">100000</span>, <span class="number">0.96</span>, staircase=<span class="keyword">True</span>)</span><br><span class="line"><span class="comment"># Passing global_step to minimize() will increment it at each step.</span></span><br><span class="line">learning_step = (</span><br><span class="line">    tf.train.GradientDescentOptimizer(learning_rate)</span><br><span class="line">    .minimize(...my loss..., global_step=global_step)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>示例图</p>
+<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/LR_exponential_decay.webp?raw=true" alt=""></p>
+<h4 id="inverse-time-decay"><a href="#inverse-time-decay" class="headerlink" title="inverse_time_decay"></a>inverse_time_decay</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">tf.train.inverse_time_decay(learning_rate, global_step, decay_steps, decay_rate, staircase=<span class="keyword">False</span>, name=<span class="keyword">None</span>)</span><br></pre></td></tr></table></figure>
+<p>倒数衰减.参数同上.</p>
+<p>计算方式:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">decayed_learning_rate = learning_rate / (<span class="number">1</span> + decay_rate * t)</span><br></pre></td></tr></table></figure>
+<p>示例代码,以0.5的衰减率衰减1 / t:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">global_step = tf.Variable(<span class="number">0</span>, trainable=<span class="keyword">False</span>)</span><br><span class="line">learning_rate = <span class="number">0.1</span></span><br><span class="line">k = <span class="number">0.5</span></span><br><span class="line">learning_rate = tf.train.inverse_time_decay(learning_rate, global_step, k)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Passing global_step to minimize() will increment it at each step.</span></span><br><span class="line">learning_step = (</span><br><span class="line">    tf.train.GradientDescentOptimizer(learning_rate)</span><br><span class="line">    .minimize(...my loss..., global_step=global_step)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>示例图:</p>
+<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/LR_inverse_decay.webp?raw=true" alt=""></p>
+<h4 id="natural-exp-decay"><a href="#natural-exp-decay" class="headerlink" title="natural_exp_decay"></a>natural_exp_decay</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">tf.train.natural_exp_decay(learning_rate, global_step, decay_steps, decay_rate, staircase=<span class="keyword">False</span>, name=<span class="keyword">None</span>)</span><br></pre></td></tr></table></figure>
+<p>自然指数衰减.和指数衰减差不多,不过下降的底数是$1/e$</p>
+<p>计算公式</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">decayed_learning_rate = learning_rate * exp(-decay_rate * global_step)</span><br></pre></td></tr></table></figure>
+<p>示例代码 decay exponentially with a base of 0.96:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">global_step = tf.Variable(<span class="number">0</span>, trainable=<span class="keyword">False</span>)</span><br><span class="line">learning_rate = <span class="number">0.1</span></span><br><span class="line">k = <span class="number">0.5</span></span><br><span class="line">learning_rate = tf.train.exponential_time_decay(learning_rate, global_step, k)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Passing global_step to minimize() will increment it at each step.</span></span><br><span class="line">learning_step = (</span><br><span class="line">    tf.train.GradientDescentOptimizer(learning_rate)</span><br><span class="line">    .minimize(...my loss..., global_step=global_step)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>示例图(绿色是exponential_decay):</p>
+<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/LR_natural_decay.webp?raw=true" alt=""></p>
+<h4 id="piecewise-constant"><a href="#piecewise-constant" class="headerlink" title="piecewise_constant"></a>piecewise_constant</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">tf.train.piecewise_constant(x, boundaries, values, name=<span class="keyword">None</span>)</span><br></pre></td></tr></table></figure>
+<p>分段常数下降法类似于 exponential_decay 中的阶梯式下降法，不过各阶段的值是自己设定的。</p>
+<p>其中，x 即为 global step，boundaries=[step_1, step_2, …, step_n] 定义了在第几步进行 lr 衰减，values=[val_0, val_1, val_2, …, val_n] 定义了 lr 的初始值和后续衰减时的具体取值。需要注意的是，values 应该比 boundaries 长一个维度。</p>
+<p>示例代码:use a learning rate that’s 1.0 for the first 100000 steps, 0.5<br>  for steps 100001 to 110000, and 0.1 for any additional steps.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">global_step = tf.Variable(<span class="number">0</span>, trainable=<span class="keyword">False</span>)</span><br><span class="line">boundaries = [<span class="number">100000</span>, <span class="number">110000</span>]</span><br><span class="line">values = [<span class="number">1.0</span>, <span class="number">0.5</span>, <span class="number">0.1</span>]</span><br><span class="line">learning_rate = tf.train.piecewise_constant(global_step, boundaries, values)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Later, whenever we perform an optimization step, we increment global_step.</span></span><br></pre></td></tr></table></figure>
+<p>示例图:</p>
+<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/LR_piecewise_decay.webp?raw=true" alt=""></p>
+<h4 id="polynomial-decay"><a href="#polynomial-decay" class="headerlink" title="polynomial_decay"></a>polynomial_decay</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">tf.train.polynomial_decay(learning_rate, global_step, decay_steps, end_learning_rate=<span class="number">0.0001</span>, power=<span class="number">1.0</span>, cycle=<span class="keyword">False</span>, name=<span class="keyword">None</span>)</span><br></pre></td></tr></table></figure>
+<p>polynomial_decay 是以多项式的方式衰减学习率的。</p>
+<p>计算方式:</p>
+<p>The function returns the decayed learning rate.  It is computed as:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">global_step = min(global_step, decay_steps)</span><br><span class="line">decayed_learning_rate = (learning_rate - end_learning_rate) *</span><br><span class="line">                        (<span class="number">1</span> - global_step / decay_steps) ^ (power) +</span><br><span class="line">                        end_learning_rate</span><br></pre></td></tr></table></figure>
+<p>If <code>cycle</code> is True then a multiple of <code>decay_steps</code> is used, the first one<br>that is bigger than <code>global_steps</code>.</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">decay_steps = decay_steps * ceil(global_step / decay_steps)</span><br><span class="line">decayed_learning_rate = (learning_rate - end_learning_rate) *</span><br><span class="line">                        (<span class="number">1</span> - global_step / decay_steps) ^ (power) +</span><br><span class="line">                        end_learning_rate</span><br></pre></td></tr></table></figure>
+<p>示例代码:decay from 0.1 to 0.01 in 10000 steps using sqrt (i.e. power=0.5):</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line">global_step = tf.Variable(<span class="number">0</span>, trainable=<span class="keyword">False</span>)</span><br><span class="line">starter_learning_rate = <span class="number">0.1</span></span><br><span class="line">end_learning_rate = <span class="number">0.01</span></span><br><span class="line">decay_steps = <span class="number">10000</span></span><br><span class="line">learning_rate = tf.train.polynomial_decay(starter_learning_rate, global_step,</span><br><span class="line">                                          decay_steps, end_learning_rate,</span><br><span class="line">                                          power=<span class="number">0.5</span>)</span><br><span class="line"><span class="comment"># Passing global_step to minimize() will increment it at each step.</span></span><br><span class="line">learning_step = (</span><br><span class="line">    tf.train.GradientDescentOptimizer(learning_rate)</span><br><span class="line">    .minimize(...my loss..., global_step=global_step)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>示例图:</p>
+<p>cycle=False，其中红色线为 power=1，即线性下降；蓝色线为 power=0.5，即开方下降；绿色线为 power=2，即二次下降</p>
+<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/LR_polynomial_decay.webp?raw=true" alt=""></p>
+<h3 id="Experience"><a href="#Experience" class="headerlink" title="Experience"></a>Experience</h3><p>在用new Yolo训练自己的训练集时(3个class),的确遇到了loss不下降的情况.大概在不到2000次step的时候loss就已经维持在1.2-1.5之间,随后的几千次step都没有看到loss有下降的趋势.</p>
+<p>于是就下调LR,5倍,10倍这样下调.从最开始的5e-5调整到1e-7时(同时增加了一倍的batch size),loss出现比较明显的下降,整体维持在0.8-0.9左右,偶尔会出现0.5,0.6这样的值,而且随着训练增多,这些小值的比例在增加.</p>
+<p>另外,观察loss需要有耐心,可能到某一个阶段,它整体在下降,但速度很慢而已.</p>
+<p>贴上一段darkflow中的问答:</p>
+<blockquote>
+<p><a href="https://github.com/thtrieu/darkflow/issues/9" target="_blank" rel="external">what is the lowest loss value can reach?</a></p>
+<p>Q:</p>
+<p>hi, I have trained a yolo-small model to step 4648, but most of loss<br>values are greater than 1.0,  and the result of test is not very well. I<br> want to know how well can loss value be, and could you please show some<br> key parameters when training,  e.g learning rate, training time, the<br>final loss value, and so on.</p>
+<p>A:</p>
+<p>What batch size are you using? Because without the batch size, step number cannot say anything about how far you’ve gone. According to the author of YOLO, he used pretty powerful machine and the training have two stages with the first stage (training convolution layer with average pool) takes about <strong>a week</strong>. So you should be patient if you’re not that far from the beginning.</p>
+<p>Training deep net is more of an art than science. So my suggestion is you first train your model on a small data size first to see if the model is able to overfit over training set, if not then there’s a problem to solve before proceeding. Notice due to data augmentation built in the code, you can’t really reach 0.0 for the loss.</p>
+<p>I’ve trained a few configs on my code and the loss can shrink down well from &gt; 10.0 to around 0.5 or below (parameters C, B, S are not relevant since the loss is averaged across the output tensor). I usually start with default learning rate 1e-5, and batch size 16 or even 8 to speed up the loss first until it stops decreasing and seem to be unstable.</p>
+<p>Then, learning rate will be decreased down to 1e-6 and batch size increase to 32 and 64 whenever I feel that the loss get stuck (and testing still does not give good result). You can switch to other adaptive learning rate training algorithm (e.g. Adadelta, Adam, etc) if you feel like familiar with them by editing <code>./yolo/train.py/yolo_loss()</code></p>
+<p>You can also look at the learning rate policy the YOLO author used, inside .cfg files.</p>
+<p>Best of luck</p>
+</blockquote>
+<h3 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h3><p><a href="https://www.jiqizhixin.com/articles/2017-11-17-2" target="_blank" rel="external">如何估算深度神经网络的最优学习率</a><br><a href="https://mp.weixin.qq.com/s?__biz=MjM5ODU3OTIyOA==&amp;mid=2650669235&amp;idx=2&amp;sn=5d7c3266d2c99722ce696ad8927e6a94&amp;chksm=bec23dc089b5b4d6ff69b8d904546da2d7de826bb4e69f2fbdbed068535c193d99af8ed67e0a&amp;mpshare=1&amp;scene=1&amp;srcid=01182DsY1hPx919Jf4caieo3&amp;pass_ticket=ytueXC6c9lzoMtH0iIymjCax%2FKklKlHa1L8ic4FMY1fv9jP5afdynPKDklX3JMsD#rd" target="_blank" rel="external">Tensorflow 中 learning rate decay 的奇技淫巧</a><br><a href="https://www.tensorflow.org/versions/r0.12/api_docs/python/train/decaying_the_learning_rate" target="_blank" rel="external">Decaying the learning rate</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Wossoneri
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://wossoneri.github.io/2018/01/24/[MachineLearning]Hyperparameters-learning-rate/" title="[MachineLearning] 超参数之LearningRate">http://wossoneri.github.io/2018/01/24/[MachineLearning]Hyperparameters-learning-rate/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Python/" rel="tag"><i class="fa fa-tag"></i> Python</a>
+          
+            <a href="/tags/Tensorflow/" rel="tag"><i class="fa fa-tag"></i> Tensorflow</a>
+          
+            <a href="/tags/Machine-Learning/" rel="tag"><i class="fa fa-tag"></i> Machine Learning</a>
+          
+            <a href="/tags/Hyperparameter/" rel="tag"><i class="fa fa-tag"></i> Hyperparameter</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/12/26/[Design-Pattern]More-about-Singleton/" rel="next" title="[设计模式]之四:再谈单例模式">
+                <i class="fa fa-chevron-left"></i> [设计模式]之四:再谈单例模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460"
+                alt="Wossoneri" />
+            
+              <p class="site-author-name" itemprop="name">Wossoneri</p>
+              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">59</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+            <div class="cc-license motion-element" itemprop="license">
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+              </a>
+            </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-globe"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Gardient-Descent"><span class="nav-number">1.</span> <span class="nav-text">Gardient Descent</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Learning-rate"><span class="nav-number">2.</span> <span class="nav-text">Learning rate</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Initialize-Learning-Rate"><span class="nav-number">3.</span> <span class="nav-text">Initialize Learning Rate</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Decay-Learning-Rate"><span class="nav-number">4.</span> <span class="nav-text">Decay Learning Rate</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#exponential-decay"><span class="nav-number">4.1.</span> <span class="nav-text">exponential_decay</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#inverse-time-decay"><span class="nav-number">4.2.</span> <span class="nav-text">inverse_time_decay</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#natural-exp-decay"><span class="nav-number">4.3.</span> <span class="nav-text">natural_exp_decay</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#piecewise-constant"><span class="nav-number">4.4.</span> <span class="nav-text">piecewise_constant</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#polynomial-decay"><span class="nav-number">4.5.</span> <span class="nav-text">polynomial_decay</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Experience"><span class="nav-number">5.</span> <span class="nav-text">Experience</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Reference"><span class="nav-number">6.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("RHlsmdBRQUmQMHNOl3U1ocam-gzGzoHsz", "RU2vFPiDzi68XGHCgJXtBAqo");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/love.js"></script>
