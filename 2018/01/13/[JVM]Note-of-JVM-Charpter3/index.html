@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Java,JVM," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="《深入理解Java虚拟机》第三章笔记">
+<meta name="keywords" content="Java,JVM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[JVM] 垃圾收集器与内存分配策略">
+<meta property="og:url" content="http://wossoneri.github.io/2018/01/13/[JVM]Note-of-JVM-Charpter3/index.html">
+<meta property="og:site_name" content="Wossoneri`s Blog">
+<meta property="og:description" content="《深入理解Java虚拟机》第三章笔记">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/3-1.png?raw=true">
+<meta property="og:updated_time" content="2018-02-14T04:23:56.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[JVM] 垃圾收集器与内存分配策略">
+<meta name="twitter:description" content="《深入理解Java虚拟机》第三章笔记">
+<meta name="twitter:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/3-1.png?raw=true">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '6234852363740382000',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wossoneri.github.io/2018/01/13/[JVM]Note-of-JVM-Charpter3/"/>
+
+
+
+
+
+  <title>[JVM] 垃圾收集器与内存分配策略 | Wossoneri`s Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-70716047-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/wossoneri"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wossoneri`s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2018/01/13/[JVM]Note-of-JVM-Charpter3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wossoneri">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wossoneri`s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[JVM] 垃圾收集器与内存分配策略</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-13T19:00:20+08:00">
+                2018-01-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2018/01/13/[JVM]Note-of-JVM-Charpter3/" class="leancloud_visitors" data-flag-title="[JVM] 垃圾收集器与内存分配策略">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+	
+  		  <span class="post-letters-count">
+            &nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+                 <i class="fa fa-clock-o" ></i>
+            </span>
+		        <span class="post-meta-item-text">总记</span>
+            <span class="post-count">3,026 字</span>
+		        <span class="post-meta-item-text">读完需要</span>
+    		    <span class="post-count">11 分</span>
+  		  </span>
+           
+         
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  《深入理解Java虚拟机》第三章笔记
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="垃圾收集器与内存分配策略"><a href="#垃圾收集器与内存分配策略" class="headerlink" title="　垃圾收集器与内存分配策略"></a>　垃圾收集器与内存分配策略</h3><p>最早人们思考GC需要完成的3件事情:</p>
+<ul>
+<li>哪些内存需要回收</li>
+<li>什么时候回收</li>
+<li>如何回收</li>
+</ul>
+<p>经过发展,内存动态分配和回收技术已经成熟,为什么还要了解GC和内存分配呢?<br>当需要排查各种内存溢出,内存泄露问题时,当垃圾手机成为系统达到更高并发量的瓶颈时,就需要人为对其进行监控和调节.</p>
+<p>前面提到的<code>程序计数器</code>,<code>虚拟机栈</code>,<code>本地方法栈</code>3个区域随线程生和灭,每个栈帧分配内存基本上是在类结构确定后就已知的.因此方法结束或者线程结束时,内存自然就跟着回收了.</p>
+<p>而<code>Java堆</code>和<code>方法区</code>则不一样:</p>
+<ul>
+<li>一个接口中多个实现类需要的内存可能不一样</li>
+<li>一个方法中的多个分支需要的内存也可能不一样</li>
+</ul>
+<p>我们只有在程序运行期间才知道会创建哪些对象,这部分内存分配和回收都是动态的,垃圾收集器所关注的就是这部分内存.</p>
+<h4 id="对象已死吗"><a href="#对象已死吗" class="headerlink" title="对象已死吗"></a>对象已死吗</h4><p><code>堆</code>中存放着Java中几乎所有的对象实例,垃圾收集器对<code>堆</code>回收前,第一件事情是要确定这些对象哪些还活着.</p>
+<h5 id="引用计数法-Reference-Counting"><a href="#引用计数法-Reference-Counting" class="headerlink" title="引用计数法 Reference Counting"></a>引用计数法 Reference Counting</h5><p>给对象一个引用计数器,对它引用时,计数器加1;引用失效,计数器减1.任何时刻,计数为0的对象是不可能再被使用的.</p>
+<p><code>引用计数法</code>实现简单,判定效率高,但很难解决对象之间循环引用问题.所以JVM没有使用这个方法.</p>
+<h5 id="可达性分析算法-Reachability-Analysis"><a href="#可达性分析算法-Reachability-Analysis" class="headerlink" title="可达性分析算法 Reachability Analysis"></a>可达性分析算法 Reachability Analysis</h5><p>基本思路是,通过一系列称为<code>GC Roots</code>的对象作为起始点,从节点向下搜索.搜索走过的路径称为<code>引用链 Reference Chain</code>,当一个对象到<code>GC Roots</code>没有任何引用链相连时,证明此对象不可用.</p>
+<p>下图白色对象就是可回收的对象.</p>
+<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/3-1.png?raw=true" alt=""></p>
+<p>可作为GC Roots的对象包括:</p>
+<ul>
+<li>虚拟机栈(栈帧中本地变量表)中引用的对象</li>
+<li>方法区中类静态属性引用的对象</li>
+<li>方法区中常量引用的对象</li>
+<li>本地方法栈中JNI(Native方法)引用的对象</li>
+</ul>
+<h5 id="再谈引用"><a href="#再谈引用" class="headerlink" title="再谈引用"></a>再谈引用</h5><p>JDK1.2以后,对引用概念进行扩充,将引用分为:</p>
+<ul>
+<li><p><strong>强引用 Strong Reference</strong></p>
+<p>类似<code>A obj = new A()</code>这类普遍存在的引用.只要<code>强引用</code>还在,垃圾收集器永远不会回收掉被引用的对象.</p>
+</li>
+<li><p><strong>软引用 Soft Reference</strong></p>
+<p>用<code>SoftReference</code>类实现.表示一些有用但并非必需的对象.</p>
+<p>对于<code>软引用</code>关联的对象,在系统将要发生内存溢出异常之前,将会把这些对象列入回收范围中进行二次回收.如果这次回收还没有足够内存,抛出OOM.</p>
+</li>
+<li><p><strong>弱引用 Weak Reference</strong></p>
+<p>用<code>WeakReference</code>类实现.表示非必需的对象,但强度比<code>软引用</code>弱.</p>
+<p>被<code>弱引用</code>关联的对象只能生存到下一次垃圾收集发生之前.收集器一旦工作,就会回收掉只被<code>弱引用</code>关联的对象.无关内存情况.</p>
+</li>
+<li><p><strong>虚引用 Phantom Reference</strong></p>
+<p>用<code>PhantomReference</code>类实现<code>虚引用</code>.它是最弱的引用关系.</p>
+<p>一个对象是否有<code>虚引用</code>不对其生存时间产生影响,无法通过虚引用取得一个对象实例.</p>
+<p>其存在的唯一目的,<strong>是对象被回收时收到一个系统通知</strong>.</p>
+</li>
+</ul>
+<h5 id="生存or死亡"><a href="#生存or死亡" class="headerlink" title="生存or死亡"></a>生存or死亡</h5><p>在<code>可达性分析算法</code>中找到的可回收的对象,会被第一次标记并进行一次筛选.条件是此对象是否有必要执行<code>finalize()</code>方法.</p>
+<p>当对象没有覆盖<code>finalize()</code>方法,或者<code>finalize()</code>方法已经被虚拟机调用过,虚拟机将认为没有必要触发该方法.(<code>finalize()</code>方法最多只被自动调用一次)</p>
+<p>如果这个对象被判定为有必要执行<code>finalize()</code>方法,对象就被放入<code>F-Queue</code>队列,等待<code>Finalizer</code>线程执行.</p>
+<p><code>finalize()</code>方法中GC将对<code>F-Queue</code>中对象进行第二次标记,这个阶段对象只要重新与引用链上任何一个对象建立关联即可不被标记,从而”活”下来.</p>
+<p>下面用代码演示<code>finalize()</code>过程:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FinalizeEscapeGC</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> FinalizeEscapeGC SAVE_HOOK = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">isAlive</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"I am alive!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">finalize</span><span class="params">()</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.finalize();</span><br><span class="line">        System.out.println(<span class="string">"finalize method executed!"</span>);</span><br><span class="line">        FinalizeEscapeGC.SAVE_HOOK = <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        SAVE_HOOK = <span class="keyword">new</span> FinalizeEscapeGC();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//first time save itself</span></span><br><span class="line">        SAVE_HOOK = <span class="keyword">null</span>;</span><br><span class="line">        System.gc();</span><br><span class="line">        <span class="comment">// finalize priority is low, so wait it</span></span><br><span class="line">        Thread.sleep(<span class="number">500</span>);</span><br><span class="line">        <span class="keyword">if</span> (SAVE_HOOK != <span class="keyword">null</span>) &#123;</span><br><span class="line">            SAVE_HOOK.isAlive();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">"I am dead ..."</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//second time. same code but save failed</span></span><br><span class="line">        SAVE_HOOK = <span class="keyword">null</span>;</span><br><span class="line">        System.gc();</span><br><span class="line">        <span class="comment">// finalize priority is low, so wait it</span></span><br><span class="line">        Thread.sleep(<span class="number">500</span>);</span><br><span class="line">        <span class="keyword">if</span> (SAVE_HOOK != <span class="keyword">null</span>) &#123;</span><br><span class="line">            SAVE_HOOK.isAlive();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">"I am dead ..."</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">finalize method executed!</span><br><span class="line">I am alive!</span><br><span class="line">I am dead ...</span><br></pre></td></tr></table></figure>
+<p>代码能看到,<code>finalize()</code>方法有被触发过.至于第二次自救失败,是因为任何对象的<code>finalize()</code>方法只被系统自动调用一次.对象面临下一次回收,此方法不会被再次执行.</p>
+<p><code>finalize()</code>方法不建议使用,因为运行代价高,不确定性强,无法保证各对象的调用顺序.</p>
+<h5 id="回收方法区"><a href="#回收方法区" class="headerlink" title="回收方法区"></a>回收方法区</h5><p>之前提到过,<code>方法区</code>可以不实现垃圾回收,而且这里的回收”性价比”非常低(对比<code>堆</code>).</p>
+<p><code>方法区</code>回收主要是两部分内容:</p>
+<ul>
+<li>废弃常量</li>
+<li>无用的类</li>
+</ul>
+<p>回收常量和回收Java<code>堆</code>类似,没有对这个常量有引用的情况就可以回收.</p>
+<p>回收无用的类就要判断以下:</p>
+<ul>
+<li>Java堆中该类的所有实例都已经被回收</li>
+<li>加载该类的ClassLoader已经回收</li>
+<li>该类对应的java.lang.Class对象没有被引用,无法通过反射访问该类的方法</li>
+</ul>
+<h4 id="垃圾收集算法"><a href="#垃圾收集算法" class="headerlink" title="垃圾收集算法"></a>垃圾收集算法</h4><p>仅做原理介绍.</p>
+<h5 id="标记-清除-Mark-Sweep"><a href="#标记-清除-Mark-Sweep" class="headerlink" title="标记-清除 Mark-Sweep"></a>标记-清除 Mark-Sweep</h5><p>先标记所有需要回收的对象,然后统一回收.</p>
+<p>不足:</p>
+<ul>
+<li>效率过低.标记和清除都不高效</li>
+<li>空间碎片过多.清除标记后产生大量不连续内存碎片.如果以后要再分配大对象时,无法找到足够的连续内存会导致再次触发垃圾回收.</li>
+</ul>
+<h5 id="复制-Copying"><a href="#复制-Copying" class="headerlink" title="复制 Copying"></a>复制 Copying</h5><p>将内存按容量分为相等的两块A和B.每次只使用一块,比如A,这一块内存用完了,就对A进行回收,把存活的对象复制到B上,然后把A一次清理掉.</p>
+<p>这样没有内存碎片,按顺序移动堆指针,很高效.</p>
+<p>不足:</p>
+<ul>
+<li>但内存缩小了一半.所以一些优化是把1:1改成9:1或者8:1这样分配.</li>
+<li>对象存活率高时,复制操作效率低.</li>
+</ul>
+<h5 id="标记整理-Mark-Compact"><a href="#标记整理-Mark-Compact" class="headerlink" title="标记整理 Mark-Compact"></a>标记整理 Mark-Compact</h5><p>标记还是和之前一样,但清除前,先将存活对象移到同一端,然后清理掉边界外的内存.</p>
+<h5 id="分代收集-Generational-Collection"><a href="#分代收集-Generational-Collection" class="headerlink" title="分代收集 Generational Collection"></a>分代收集 Generational Collection</h5><p>根据对象存活周期将内存分为几块,根据特点选算法.一般分为新生代,老年代:</p>
+<ul>
+<li>新生代采用<code>复制算法</code></li>
+<li>老年代使用<code>标记清理</code>或<code>标记整理</code></li>
+</ul>
+<h4 id="HotSpot-虚拟机算法实现"><a href="#HotSpot-虚拟机算法实现" class="headerlink" title="HotSpot 虚拟机算法实现"></a>HotSpot 虚拟机算法实现</h4><p>从可达性分析入手,我们首先需要找到<code>GC Roots</code>.这个<code>GC Roots</code>主要存在于全局性引用与执行上下文中.但现在很多应用在方法区都有数百兆,直接检查很耗时.</p>
+<p>另外,这项工作在分析期间,系统需要暂停,即分析时保证状态不会变化.</p>
+<p>在系统暂停期间,虚拟机从<code>OopMap</code>直接获得对象引用,不需要一个不漏地检查完所有执行上下文和全局的引用位置.</p>
+<p>能引起<code>OopMap</code>内容变化的指令很多,但HotSpot并没有为每条指令都生成<code>OopMap</code>,只是在特定位置记录这些信息,这个位置称为<code>安全点Safepoint</code>.</p>
+<p><code>安全点</code>不能太多也不能太少,权衡标准就是:是否具有让程序长时间执行的特征.所以长指令流的指令才会产生<code>安全点</code>.</p>
+<p><code>安全点</code>保证程序执行时,可以进入GC的<code>安全点</code>,但是程序不执行的时候,即线程处于Sleep或者Blocked时,线程无法响应JVM中断请求.这就需要<code>安全区Safe Region</code>解决.</p>
+<p>线程进入<code>安全区</code>中,就会标识自己,JVM发起GC就会忽略有标记的线程.</p>
+<p>线程离开<code>安全区</code>,先检查系统是否完成根节点枚举或整个GC,如果完成,线程就继续执行,否则等待直到收到可以离开的信号.</p>
+<h4 id="垃圾收集器"><a href="#垃圾收集器" class="headerlink" title="垃圾收集器"></a>垃圾收集器</h4><p>垃圾收集器的实现没有统一的规定,所以有很多种不同实现.</p>
+<p>这里仅列举常见的收集器.</p>
+<ul>
+<li>Serial</li>
+<li>ParNew</li>
+<li>Parallel Scavenge</li>
+<li>Serial Old</li>
+<li>Parallel Old</li>
+<li>CMS</li>
+<li>G1</li>
+</ul>
+<h5 id="理解GC日志"><a href="#理解GC日志" class="headerlink" title="理解GC日志"></a>理解GC日志</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">33.125: [GC [DefNew: 3324K-&gt;152K(3712K), 0.0025925 secs] 3324K-&gt;152K(11904K), 0.0031680 secs]</span><br><span class="line">100.667: [Full GC [Tenured: OK-&gt;210K(10240K), 0.0149142 secs] 4603K-&gt;210K(19456K), [Perm : 2999K-&gt;2999K(21248K)], 0.0150007 secs] [Times: user=0.01 sys=0.00, real=0.02 secs]</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><strong>33.125</strong>,<strong>100.667</strong></p>
+<p>代表从JVM启动开始,GC发生的时间点.</p>
+</li>
+<li><p><strong>[GC</strong> 和 <strong>[Full GC</strong> </p>
+<p>说明垃圾收集的停顿类型.如果有Full,说明这次GC发生Stop-The-World(系统暂停).</p>
+<p>如果调用<code>System.gc()</code>,则log显示<strong>[Full GC(System)</strong></p>
+</li>
+<li><p><strong>[DefNew</strong>,<strong>[Tenured</strong>,<strong>[Perm</strong></p>
+<p>表示GC发生的区域.</p>
+<p>Serial收集器新生代名为<code>Default New Generation</code>,所以显示<strong>[DefNew</strong></p>
+</li>
+<li><p>内存区域括号内的 <strong>3324K-&gt;152K(3712K)</strong></p>
+<p>GC前该内存区已使用容量-&gt;GC后该内存区域已使用容量(该内存区域总容量)</p>
+</li>
+<li><p>GC括号内的 <strong>3324K-&gt;152K(11904K)</strong></p>
+<p>GC前Java堆已使用容量-&gt;GC后Java堆已使用容量(Java堆总容量)</p>
+</li>
+<li><p><strong>0.0025925 secs</strong></p>
+<p>该区域GC所用时间</p>
+</li>
+<li><p><strong>[Times: user=0.01 sys=0.00, real=0.02 secs]</strong></p>
+<p>和linux时间含义一致,用户消耗CPU时间,内核消耗CPU时间和操作从开始到结束经过墙钟时间</p>
+</li>
+</ul>
+<h4 id="内存分配与回收策略"><a href="#内存分配与回收策略" class="headerlink" title="内存分配与回收策略"></a>内存分配与回收策略</h4><p>对象的内存分配,往大方面讲,是在堆上面分配.对象主要分配在新生代的Eden区上.</p>
+<p>普遍的分配规则:</p>
+<ul>
+<li><p>对象优先在Eden分配</p>
+<p>比如,20MB内存,新生代10MB,老年代10MB.新生代又分为8MBEden区和1MBSurvivor区.</p>
+<p>新建6M对象,存在Eden区,再存入4MB对象,这时Eden区空间不足,遂计划将6MB移入Survivor区,但Survivor区内存也不够,于是这6MB就移入老年代.</p>
+</li>
+<li><p>大对象直接进入老年代</p>
+<p>大对象就是需要连续内存空间的Java对象.比如超长的字符串或数组.平时需要避免大对象,因为系统会为了腾出足够的连续空间而提前GC.</p>
+<p>大对象进入老年代就是因为新生代GC很频繁,降低负担.</p>
+</li>
+<li><p>长期存活的对象将进入老年代</p>
+<p>这个好理解吧?每一次经过GC存活的对象,年龄都加1.默认阈值是15,到15岁就进入老年代.</p>
+</li>
+<li><p>动态对象年龄判定</p>
+<p>15岁的阈值规定也不是永远强制的.如果Survivor中相同年龄所有对象大小总和大于Survivor空间的一半,年龄大于或等于该年龄的对象就可直接进入老年代.</p>
+</li>
+<li><p>空间分配担保</p>
+<blockquote>
+<p>发生Minor GC(新生代GC)之前,虚拟机先检查老年代最大可用的连续空间是否大于新生代所有对象总空间.</p>
+<blockquote>
+<p>如果成立,则Minor GC是安全的.</p>
+<p>否则,查看HandlePromotionFailure设置值是否允许担保失败.</p>
+<blockquote>
+<p>如果允许,继续检查老年代最大可用的连续空间是否大于历次晋升到老年代对象的平均大小.</p>
+<blockquote>
+<p>如果大于,尝试一次Minor GC</p>
+<p>如果小于,改为进行一次Full GC</p>
+</blockquote>
+<p>如果不允许,改为进行一次Full GC</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Wossoneri
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://wossoneri.github.io/2018/01/13/[JVM]Note-of-JVM-Charpter3/" title="[JVM] 垃圾收集器与内存分配策略">http://wossoneri.github.io/2018/01/13/[JVM]Note-of-JVM-Charpter3/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i> Java</a>
+          
+            <a href="/tags/JVM/" rel="tag"><i class="fa fa-tag"></i> JVM</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/12/[JVM]Note-of-JVM-Charpter2/" rel="next" title="[JVM] Java内存区域与内存溢出异常">
+                <i class="fa fa-chevron-left"></i> [JVM] Java内存区域与内存溢出异常
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/24/[MachineLearning]Hyperparameters-learning-rate/" rel="prev" title="[MachineLearning] 超参数之LearningRate">
+                [MachineLearning] 超参数之LearningRate <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460"
+                alt="Wossoneri" />
+            
+              <p class="site-author-name" itemprop="name">Wossoneri</p>
+              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">44</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">60</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+            <div class="cc-license motion-element" itemprop="license">
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+              </a>
+            </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-globe"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#垃圾收集器与内存分配策略"><span class="nav-number">1.</span> <span class="nav-text">　垃圾收集器与内存分配策略</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#对象已死吗"><span class="nav-number">1.1.</span> <span class="nav-text">对象已死吗</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#引用计数法-Reference-Counting"><span class="nav-number">1.1.1.</span> <span class="nav-text">引用计数法 Reference Counting</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#可达性分析算法-Reachability-Analysis"><span class="nav-number">1.1.2.</span> <span class="nav-text">可达性分析算法 Reachability Analysis</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#再谈引用"><span class="nav-number">1.1.3.</span> <span class="nav-text">再谈引用</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#生存or死亡"><span class="nav-number">1.1.4.</span> <span class="nav-text">生存or死亡</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#回收方法区"><span class="nav-number">1.1.5.</span> <span class="nav-text">回收方法区</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#垃圾收集算法"><span class="nav-number">1.2.</span> <span class="nav-text">垃圾收集算法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#标记-清除-Mark-Sweep"><span class="nav-number">1.2.1.</span> <span class="nav-text">标记-清除 Mark-Sweep</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#复制-Copying"><span class="nav-number">1.2.2.</span> <span class="nav-text">复制 Copying</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#标记整理-Mark-Compact"><span class="nav-number">1.2.3.</span> <span class="nav-text">标记整理 Mark-Compact</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#分代收集-Generational-Collection"><span class="nav-number">1.2.4.</span> <span class="nav-text">分代收集 Generational Collection</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HotSpot-虚拟机算法实现"><span class="nav-number">1.3.</span> <span class="nav-text">HotSpot 虚拟机算法实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#垃圾收集器"><span class="nav-number">1.4.</span> <span class="nav-text">垃圾收集器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#理解GC日志"><span class="nav-number">1.4.1.</span> <span class="nav-text">理解GC日志</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#内存分配与回收策略"><span class="nav-number">1.5.</span> <span class="nav-text">内存分配与回收策略</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("RHlsmdBRQUmQMHNOl3U1ocam-gzGzoHsz", "RU2vFPiDzi68XGHCgJXtBAqo");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/love.js"></script>
