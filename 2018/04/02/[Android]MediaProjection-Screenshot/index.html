@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android,MediaProjection,截屏," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="用MediaProjection实现Android快速截屏">
+<meta name="keywords" content="Android,MediaProjection,截屏">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Android] 使用MediaProjection截屏">
+<meta property="og:url" content="http://wossoneri.github.io/2018/04/02/[Android]MediaProjection-Screenshot/index.html">
+<meta property="og:site_name" content="Wossoneri`s Blog">
+<meta property="og:description" content="用MediaProjection实现Android快速截屏">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-04-02T07:55:41.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[Android] 使用MediaProjection截屏">
+<meta name="twitter:description" content="用MediaProjection实现Android快速截屏">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '6234852363740382000',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wossoneri.github.io/2018/04/02/[Android]MediaProjection-Screenshot/"/>
+
+
+
+
+
+  <title>[Android] 使用MediaProjection截屏 | Wossoneri`s Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-70716047-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/wossoneri"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wossoneri`s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2018/04/02/[Android]MediaProjection-Screenshot/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wossoneri">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wossoneri`s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[Android] 使用MediaProjection截屏</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-02T19:24:24+08:00">
+                2018-04-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/04/02/[Android]MediaProjection-Screenshot/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/04/02/[Android]MediaProjection-Screenshot/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/04/02/[Android]MediaProjection-Screenshot/" class="leancloud_visitors" data-flag-title="[Android] 使用MediaProjection截屏">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+	
+  		  <span class="post-letters-count">
+            &nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+                 <i class="fa fa-clock-o" ></i>
+            </span>
+		        <span class="post-meta-item-text">总记</span>
+            <span class="post-count">2,957 字</span>
+		        <span class="post-meta-item-text">读完需要</span>
+    		    <span class="post-count">12 分</span>
+  		  </span>
+           
+         
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  用MediaProjection实现Android快速截屏
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h2><p>Android5.0以上提供了MediaProjection，方便截屏录屏等功能。</p>
+<p>详细代码参阅Github：<a href="https://github.com/wossoneri/ScreenCapture" target="_blank" rel="external">https://github.com/wossoneri/ScreenCapture</a></p>
+<p>一个完整的创建MediaProjection到结束的流程如下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">mProjectionManager = (MediaProjectionManager)getSystemService(Context.MEDIA_PROJECTION_SERVICE);</span><br><span class="line"><span class="comment">// init</span></span><br><span class="line">startActivityForResult(mProjectionManager.createScreenCaptureIntent(), REQUEST_CODE);</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onActivityResult</span><span class="params">(<span class="keyword">int</span> requestCode, <span class="keyword">int</span> resultCode, Intent data)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">super</span>.onActivityResult(requestCode, resultCode, data);</span><br><span class="line">  <span class="keyword">if</span> (RESULT_OK == resultCode &amp;&amp; REQUEST_CODE == requestCode) &#123;</span><br><span class="line">    sMediaProjection = mProjectionManager.getMediaProjection(resultCode, data);</span><br><span class="line">    ......</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// end</span></span><br><span class="line">sMediaProjection.stop();</span><br></pre></td></tr></table></figure>
+<p>其中，需要使用<code>startActivityForResult</code>的唯一原因是，捕捉屏幕是需要用户确认权限才可以，这个权限对应的对话框就是由<code>createScreenCaptureIntent</code>创建的，在用户点击允许之后，在<code>onActivityResult</code>得到确认码，才可以拿到MediaProjection对象。</p>
+<p>下面详细介绍相关知识点。</p>
+<h2 id="About-MediaProjection"><a href="#About-MediaProjection" class="headerlink" title="About MediaProjection"></a>About MediaProjection</h2><h3 id="MediaProjection"><a href="#MediaProjection" class="headerlink" title="MediaProjection"></a>MediaProjection</h3><p>授予应用程序捕获屏幕内容或记录系统音频的能力。授予的准确能力取决于<code>MediaProjection</code>的类型</p>
+<p>可以通过<code>createScreenCaptureIntent()</code>捕获屏幕会话。它能获取屏幕内容，但无法获取系统音频。</p>
+<p>它有4个公有方法：</p>
+<h4 id="createVirtualDisplay"><a href="#createVirtualDisplay" class="headerlink" title="createVirtualDisplay"></a>createVirtualDisplay</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function">VirtualDisplay <span class="title">createVirtualDisplay</span> <span class="params">(String name, </span></span></span><br><span class="line"><span class="function"><span class="params">                <span class="keyword">int</span> width, </span></span></span><br><span class="line"><span class="function"><span class="params">                <span class="keyword">int</span> height, </span></span></span><br><span class="line"><span class="function"><span class="params">                <span class="keyword">int</span> dpi, </span></span></span><br><span class="line"><span class="function"><span class="params">                <span class="keyword">int</span> flags, </span></span></span><br><span class="line"><span class="function"><span class="params">                Surface surface, </span></span></span><br><span class="line"><span class="function"><span class="params">                VirtualDisplay.Callback callback, </span></span></span><br><span class="line"><span class="function"><span class="params">                Handler handler)</span></span></span><br></pre></td></tr></table></figure>
+<p>创建一个VirtualDisplay用来捕获屏幕内容。</p>
+<p>参数：</p>
+<ul>
+<li><strong>name:String</strong> 名称，永不为空</li>
+<li><strong>width:int</strong></li>
+<li><strong>height:int</strong></li>
+<li><strong>dpi:int</strong></li>
+<li><strong>flags:int</strong> DisplayManager定义的flag组合</li>
+<li><strong>surface:Surface</strong> virtual display的内容应该被渲染的surface，没有的话为空</li>
+<li><strong>callback:VirtualDisplay.Callback</strong> virtual display状态变化的回调</li>
+<li><strong>handler:Handler</strong> callback调用的Handler。如果回调在calling thread的主looper被调用，则为空？</li>
+</ul>
+<h4 id="registerCallback"><a href="#registerCallback" class="headerlink" title="registerCallback"></a>registerCallback</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">registerCallback</span> <span class="params">(MediaProjection.Callback callback, </span></span></span><br><span class="line"><span class="function"><span class="params">                Handler handler)</span></span></span><br></pre></td></tr></table></figure>
+<p>注册一个listener接收<code>MediaProjection</code>变化状态的通知。</p>
+<h4 id="stop"><a href="#stop" class="headerlink" title="stop"></a>stop</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">stop</span> <span class="params">()</span></span></span><br></pre></td></tr></table></figure>
+<p>停止projection</p>
+<h4 id="unregisterCallback"><a href="#unregisterCallback" class="headerlink" title="unregisterCallback"></a>unregisterCallback</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">unregisterCallback</span> <span class="params">(MediaProjection.Callback callback)</span></span></span><br></pre></td></tr></table></figure>
+<p>取消注册<code>MediaProjection</code>的listener</p>
+<h3 id="MediaProjectionManager"><a href="#MediaProjectionManager" class="headerlink" title="MediaProjectionManager"></a>MediaProjectionManager</h3><p>管理获取到MediaProjection具体类型。</p>
+<p>该类必须使用<code>Context.getSystemService(Class)</code>方法，参数用<code>MediaProjectionManager.class</code>或者<code>Context.getSystemService(String)</code>方法，参数用<code>Context.MEDIA_PROJECTION_SERVICE</code>两种方式实例化。</p>
+<p>公有方法：</p>
+<h4 id="createScreenCaptureIntent"><a href="#createScreenCaptureIntent" class="headerlink" title="createScreenCaptureIntent"></a>createScreenCaptureIntent</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function">Intent <span class="title">createScreenCaptureIntent</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
+<p>启动screen capture，必须把这个方法返回的Intent传递给<code>startActivityForResult()</code>。这个Activity会提示用户是否允许捕捉屏幕。用户的操作结果需要传递给getMediaProjection。</p>
+<p>所以这里的目的就是提示用户，获取允许再抓屏。我用小米系统，这个提示只会弹一次。后面用nexus试试</p>
+<h4 id="getMediaProjection"><a href="#getMediaProjection" class="headerlink" title="getMediaProjection"></a>getMediaProjection</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function">MediaProjection <span class="title">getMediaProjection</span> <span class="params">(<span class="keyword">int</span> resultCode, Intent resultData)</span></span></span><br></pre></td></tr></table></figure>
+<p>成功获得用户允许后获取MediaProjection对象。如果授权失败，则得到空对象。</p>
+<h3 id="MediaProjection-Callback"><a href="#MediaProjection-Callback" class="headerlink" title="MediaProjection.Callback"></a>MediaProjection.Callback</h3><p>projection session的回调<br>主要就一个方法：</p>
+<h4 id="onStop"><a href="#onStop" class="headerlink" title="onStop"></a>onStop</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">onStop</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
+<p>当MediaProjection session不再有效时调用。一旦一个MediaProjection调用<code>stop</code>方法就回调到这里，然后由应用程序决定释放其可能持有的资源。如下示例代码，所有资源释放在这里进行。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">MediaProjectionStopCallback</span> <span class="keyword">extends</span> <span class="title">MediaProjection</span>.<span class="title">Callback</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onStop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    mHandler.post(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">      <span class="meta">@Override</span></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (mVirtualDisplay != <span class="keyword">null</span>) &#123;</span><br><span class="line">          mVirtualDisplay.release();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (mImageReader != <span class="keyword">null</span>) &#123;</span><br><span class="line">          mImageReader.setOnImageAvailableListener(<span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        sMediaProjection.unregisterCallback(MediaProjectionStopCallback.<span class="keyword">this</span>);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Screen-Capture"><a href="#Screen-Capture" class="headerlink" title="Screen Capture"></a>Screen Capture</h2><p>以上就是MediaProjection调用的几个接口。得到MediaProjection实例后怎么截屏呢？下面是截屏的核心步骤。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">        <span class="comment">//start capture reader</span></span><br><span class="line">        mImageReader = ImageReader.newInstance(mWidth, mHeight,</span><br><span class="line">                PixelFormat.RGBA_8888, <span class="number">2</span>);</span><br><span class="line">        mVirtualDisplay = sMediaProjection.createVirtualDisplay(</span><br><span class="line">                <span class="string">"ScreenShot"</span>,</span><br><span class="line">                mWidth,</span><br><span class="line">                mHeight,</span><br><span class="line">                mDensity,</span><br><span class="line">                DisplayManager.VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY | DisplayManager.VIRTUAL_DISPLAY_FLAG_PUBLIC,</span><br><span class="line">                mImageReader.getSurface(),</span><br><span class="line">                <span class="keyword">null</span>,</span><br><span class="line">                mHandler);</span><br><span class="line">        mImageReader.setOnImageAvailableListener(<span class="keyword">new</span> ImageReader.OnImageAvailableListener() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onImageAvailable</span><span class="params">(ImageReader reader)</span> </span>&#123;</span><br><span class="line">                Image image = <span class="keyword">null</span>;</span><br><span class="line">                FileOutputStream fos = <span class="keyword">null</span>;</span><br><span class="line">                Bitmap bitmap = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    image = reader.acquireLatestImage();</span><br><span class="line">                    <span class="keyword">if</span> (image != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        Image.Plane[] planes = image.getPlanes();</span><br><span class="line">                        ByteBuffer buffer = planes[<span class="number">0</span>].getBuffer();</span><br><span class="line">                        <span class="keyword">int</span> pixelStride = planes[<span class="number">0</span>].getPixelStride();</span><br><span class="line">                        <span class="keyword">int</span> rowStride = planes[<span class="number">0</span>].getRowStride();</span><br><span class="line">                        <span class="keyword">int</span> rowPadding = rowStride - pixelStride * mWidth;</span><br><span class="line"></span><br><span class="line">                        bitmap = Bitmap.createBitmap(mWidth + rowPadding / pixelStride,</span><br><span class="line">                                mHeight, Bitmap.Config.ARGB_8888);</span><br><span class="line">                        bitmap.copyPixelsFromBuffer(buffer);</span><br><span class="line"></span><br><span class="line">                        Date currentDate = <span class="keyword">new</span> Date();</span><br><span class="line">                        SimpleDateFormat date = <span class="keyword">new</span> SimpleDateFormat(<span class="string">"yyyyMMddhhmmss"</span>);</span><br><span class="line">                        String fileName = STORE_DIR + <span class="string">"/myScreen_"</span> + date.format(currentDate) + <span class="string">".png"</span>;</span><br><span class="line">                        fos = <span class="keyword">new</span> FileOutputStream(fileName);</span><br><span class="line">                        bitmap.compress(Bitmap.CompressFormat.JPEG, <span class="number">100</span>, fos);</span><br><span class="line">                        Log.d(<span class="string">"WOW"</span>, <span class="string">"End now!!!!!!"</span>);</span><br><span class="line">                        Toast.makeText(mContext, <span class="string">"Screenshot saved in "</span> + fileName, Toast.LENGTH_LONG);</span><br><span class="line">                        stopProjection();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                    <span class="keyword">if</span> (fos != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        <span class="keyword">try</span> &#123;</span><br><span class="line">                            fos.close();</span><br><span class="line">                        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                            e.printStackTrace();</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">if</span> (bitmap != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        bitmap.recycle();</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">if</span> (image != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        image.close();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, mHandler);</span><br><span class="line">        sMediaProjection.registerCallback(<span class="keyword">new</span> MediaProjectionStopCallback(), mHandler);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="ImageReader-amp-Surface"><a href="#ImageReader-amp-Surface" class="headerlink" title="ImageReader &amp; Surface"></a>ImageReader &amp; Surface</h3><p>Surface用来处理由屏幕合成器管理的raw buffer。</p>
+<p>在Andorid的窗口实现里，每一个Window其实都会对应一个Surface，而每个Activity都会持有一个Window。可以理解为所有view的绘制都会绘制到surface上面去。</p>
+<p>而ImageReader允许应用级别的直接访问render到surface上面的图像数据。</p>
+<p>图像数据封装在Image对象中，并且可以同时访问多个此类对象，能够访问的数量由构造参数<code>maxImages</code>决定（稍后会看到这个参数）。通过Surface发送给ImageReader的图像都放在队列中，由<code>acquireLatestImage()</code>或 <code>acquireNextImage()</code> 两个方法取出。限于内存大小，如果ImageReader不能以与生成速率相同的速率获取和释放图像，那么图像源最终会在试图渲染到表面的过程中停止或删除图像。</p>
+<p>相关代码说明：</p>
+<h4 id="newInstance"><a href="#newInstance" class="headerlink" title="newInstance"></a>newInstance</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function">ImageReader <span class="title">newInstance</span> <span class="params">(<span class="keyword">int</span> width, </span></span></span><br><span class="line"><span class="function"><span class="params">                <span class="keyword">int</span> height, </span></span></span><br><span class="line"><span class="function"><span class="params">                <span class="keyword">int</span> format, </span></span></span><br><span class="line"><span class="function"><span class="params">                <span class="keyword">int</span> maxImages)</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">mImageReader = ImageReader.newInstance(mWidth, mHeight, PixelFormat.RGBA_8888, <span class="number">2</span>);</span><br></pre></td></tr></table></figure>
+<p>使用<code>newInstance</code>方法实例化一个ImageReader。</p>
+<p>前两个参数是ImageReader生成图像的尺寸，截屏当然是使用屏幕尺寸。</p>
+<blockquote>
+<p>注意，用Display获取屏幕尺寸要用真实的尺寸，使用<code>getRealMetrics</code>方法。如果使用<code>getMetrics</code>方法，得到的高度是缺少Navigaiton Bar的高度的。</p>
+<p>如果尺寸和屏幕不一致，最终得到的图像会是等比例缩放到屏幕大小的图像，然后空白的地方会显示黑边。</p>
+</blockquote>
+<p>第三个参数是format类型，使用ImageFormat或者PixelFormat的一种。代码使用PixelFormat最高保真的类型。</p>
+<p>第四个参数是maxImages，这个参数决定了可以同时从ImageReader对象获取最大图像对象的数量。所以请求更多的缓冲区要占用更多的内存，所以要根据需求选择最小数量。对截屏来说，要1张图像就够了，但是代码使用的是2，这个理由在后面说。</p>
+<h4 id="getSurface"><a href="#getSurface" class="headerlink" title="getSurface"></a>getSurface</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function">Surface <span class="title">getSurface</span> <span class="params">()</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">mImageReader.getSurface()</span><br></pre></td></tr></table></figure>
+<p>获取可以用来为当前ImageReader生产Images的Surface对象。</p>
+<p>在有效的图像数据render到这个Surface之前， <code>acquireNextImage()</code> 方法将会返回空值。</p>
+<h4 id="acquireLatestImage"><a href="#acquireLatestImage" class="headerlink" title="acquireLatestImage"></a>acquireLatestImage</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Image acquireLatestImage ()</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">image = reader.acquireLatestImage();</span><br></pre></td></tr></table></figure>
+<p>从ImageReader的队列获取最新的图像，删除旧的图像。如果没有新图像，返回null</p>
+<p>这个方法将会获得来自ImageReader的所有图像，close()掉所有不是最新的图像。对于大多数用例，建议使用这个方法，而不是<code>acquireNextImage()</code>方法，因为它更加适合实时处理。</p>
+<blockquote>
+<p>注意，对于acquireLatestImage方法来说，maxImages应该至少为2，因为它的机制，要获取最新的图像，同时丢弃旧的图像，因此一次至少需要获取两个图像。</p>
+</blockquote>
+<h4 id="acquireNextImage"><a href="#acquireNextImage" class="headerlink" title="acquireNextImage"></a>acquireNextImage</h4><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Image acquireNextImage ()</span><br></pre></td></tr></table></figure>
+<p>从ImageReader队列获取下一张图像。还是建议使用<code>acquireNextImage</code>方法，因为它会自动释放旧图片。</p>
+<p>错误的使用这个方法，会导致图像不断增加的延时，最终导致没有新图像产生。</p>
+<h4 id="setOnImageAvailableListener"><a href="#setOnImageAvailableListener" class="headerlink" title="setOnImageAvailableListener"></a>setOnImageAvailableListener</h4><p>注册listener，当ImageReader有新的图像时候会回调到这里。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">mImageReader.setOnImageAvailableListener(<span class="keyword">new</span> ImageReader.OnImageAvailableListener() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onImageAvailable</span><span class="params">(ImageReader reader)</span> </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">        image = reader.acquireLatestImage();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="DisplayManager-amp-VirtualDisplay"><a href="#DisplayManager-amp-VirtualDisplay" class="headerlink" title="DisplayManager &amp; VirtualDisplay"></a>DisplayManager &amp; VirtualDisplay</h3><p>VirtualDisplay表示一个虚拟显示，显示的内容render到 <code>createVirtualDisplay()</code>参数的Surface。</p>
+<p>因为virtual display内容render到应用程序提供的surface，所以当进程终止时，它将会自动释放，并且所以剩余的窗口都会被强制删除。但是，你仍然需要在使用完后显式地调用<code>release()</code>方法。</p>
+<p>DisplayManager管理加载的display的属性</p>
+<p>实例化方法有两种：</p>
+<ul>
+<li><code>Context.getSystemService(DisplayManager.class)</code></li>
+<li><code>Context.getSYstemService(Context.DISPLAY_SERVICE)</code></li>
+</ul>
+<p>DisplayManager的几个常量：</p>
+<h4 id="DISPLAY-CATEGORY-PRESENTATION"><a href="#DISPLAY-CATEGORY-PRESENTATION" class="headerlink" title="DISPLAY_CATEGORY_PRESENTATION"></a>DISPLAY_CATEGORY_PRESENTATION</h4><p>String类型。</p>
+<p>Display category: Presentation displays. （不知道如何翻译准确）</p>
+<p>这一类别可用于识别适合用于presentation displays的第二级的displays，比如HDMI或者Wireless displays。应用程序可以自动地投射他们的内容到presentation displays以提供更丰富的第二屏体验。</p>
+<blockquote>
+<p>关键字：Android双屏异显</p>
+<p>可以参阅Android <a href="https://developer.android.com/reference/android/app/Presentation.html" target="_blank" rel="external">Presentation</a>接口说明，实现双屏异显的功能。</p>
+</blockquote>
+<h4 id="VIRTUAL-DISPLAY-FLAG-AUTO-MIRROR"><a href="#VIRTUAL-DISPLAY-FLAG-AUTO-MIRROR" class="headerlink" title="VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR"></a>VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR</h4><p>int类型（后面皆是）。允许在没有显示内容的情况下在私有display上显示内容。</p>
+<p>这个flag和<code>VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY</code>互相排斥，如果两者同时指定，后者将被应用。</p>
+<p>当设置<code>VIRTUAL_DISPLAY_FLAG_PUBLIC</code> ，同时没有设置<code>VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY</code>时，这个flag会被隐含。只有在创建私有display时，才需要使用该flag来覆盖默认行为。</p>
+<p>创建一个自动mirror的virtual display需要 <code>CAPTURE_VIDEO_OUTPUT</code>或者 <code>CAPTURE_SECURE_VIDEO_OUTPUT</code> 权限。这些权限保留为系统组件使用，对第三方应用不可用。或者，可以使用适当的MediaProjection创建一个自动mirror的virtual display。</p>
+<h4 id="VIRTUAL-DISPLAY-FLAG-OWN-CONTENT-ONLY"><a href="#VIRTUAL-DISPLAY-FLAG-OWN-CONTENT-ONLY" class="headerlink" title="VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY"></a>VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY</h4><p>只展示这个display自己的内容，不镜像其他display的内容。</p>
+<p>这个flag与<code>VIRTUAL_DISPLAY_FLAG_PUBLIC</code>一起使用。通常，public  virtual display在没有自己的窗口时会自动镜像显示默认display的内容。当设定这个flag后，virtual display只会显示自己的内容，如果自己没有窗口，就会为空白。</p>
+<p>在<code>VIRTUAL_DISPLAY_FLAG_PUBLIC</code>或者 <code>VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR</code> 没有设置时，该flag是隐含的。只有在创建公开display时，才需要使用该标志来覆盖默认行为。</p>
+<h4 id="VIRTUAL-DISPLAY-FLAG-PRESENTATION"><a href="#VIRTUAL-DISPLAY-FLAG-PRESENTATION" class="headerlink" title="VIRTUAL_DISPLAY_FLAG_PRESENTATION"></a>VIRTUAL_DISPLAY_FLAG_PRESENTATION</h4><p>创建一个presentation display</p>
+<p>这个和双屏异显有关。设置成该flag，virtual display就注册为一个Presentation display。</p>
+<h4 id="VIRTUAL-DISPLAY-FLAG-PUBLIC"><a href="#VIRTUAL-DISPLAY-FLAG-PUBLIC" class="headerlink" title="VIRTUAL_DISPLAY_FLAG_PUBLIC"></a>VIRTUAL_DISPLAY_FLAG_PUBLIC</h4><p>创建一个public display</p>
+<p>一个公共virtual display 和其他任何与系统连接的display一样，比如HDMI或Wireless display。应用程序可以在display上打开窗口，系统也可以镜像其他display的内容在其上面。</p>
+<p>Creating a public virtual display that isn’t restricted to own-content only implicitly creates an auto-mirroring display. </p>
+<p>当没有设置这个flag，就是私有的display。私有的virtual display属于创建它的应用程序。只有这个display的拥有者才能往上面放置windows。私有的virtual display也不参与display mirroring，它既不接收其他的镜像，也不会把自己镜像出去。更准确的说，只有相同的UID的应用程序或者已经在display上的activities可以使用私有display</p>
+<h4 id="VIRTUAL-DISPLAY-FLAG-SECURE"><a href="#VIRTUAL-DISPLAY-FLAG-SECURE" class="headerlink" title="VIRTUAL_DISPLAY_FLAG_SECURE"></a>VIRTUAL_DISPLAY_FLAG_SECURE</h4><p>创建一个secure的display</p>
+<p>调用者将采取一些合理的措施，比如无线加密，来防止display的内容被拦截或被持久的媒介记录。</p>
+<p>需要系统级别的 <code>CAPTURE_SECURE_VIDEO_OUTPUT</code>权限。</p>
+<h3 id="Process-with-Image"><a href="#Process-with-Image" class="headerlink" title="Process with Image"></a>Process with Image</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">image = reader.acquireLatestImage();</span><br><span class="line"><span class="keyword">if</span> (image != <span class="keyword">null</span>) &#123;</span><br><span class="line">  Image.Plane[] planes = image.getPlanes();</span><br><span class="line">  ByteBuffer buffer = planes[<span class="number">0</span>].getBuffer();</span><br><span class="line">  <span class="keyword">int</span> pixelStride = planes[<span class="number">0</span>].getPixelStride();</span><br><span class="line">  <span class="keyword">int</span> rowStride = planes[<span class="number">0</span>].getRowStride();</span><br><span class="line">  <span class="keyword">int</span> rowPadding = rowStride - pixelStride * mWidth;</span><br><span class="line"></span><br><span class="line">  bitmap = Bitmap.createBitmap(mWidth + rowPadding / pixelStride,</span><br><span class="line">                               mHeight, Bitmap.Config.ARGB_8888);</span><br><span class="line">  bitmap.copyPixelsFromBuffer(buffer);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这部分将Image对象的字节流写进Bitmap里，但是Bitmap接收的是像素格式的。</p>
+<p>先获取图片的buffer数据，然后要把这一行buffer包含的图片宽高找出来。</p>
+<p>获取pixelStride。因为是RGBA4个通道，所以每个像素的间距是4。</p>
+<p>得到每行的宽度rowStride。</p>
+<p>因为内存对齐的缘故，所以buffer的宽度会有不同。用图片宽度×像素间距得到一个大概的宽度。然后拿获取得到的宽度减去计算出的宽度，找到内存对齐的padding。</p>
+<p>由于计算的padding还是把4通道展开一行的宽度，拿给图像就需要rowPadding / pixelStride统一单位和mWidth相加。</p>
+<h4 id="Image-Plane的几个方法说明"><a href="#Image-Plane的几个方法说明" class="headerlink" title="Image.Plane的几个方法说明"></a>Image.Plane的几个方法说明</h4><h5 id="getBuffer"><a href="#getBuffer" class="headerlink" title="getBuffer"></a>getBuffer</h5><p>获得一个包含帧数据的ByteBuffer</p>
+<p>In particular, the buffer returned will always have isDirect return true, so the underlying data could be mapped as a pointer in JNI without doing any copies with GetDirectBufferAddress.</p>
+<p>For raw formats, each plane is only guaranteed to contain data up to the last pixel in the last row. In other words, the stride after the last row may not be mapped into the buffer. This is a necessary requirement for any interleaved format.</p>
+<h5 id="getPixelStride"><a href="#getPixelStride" class="headerlink" title="getPixelStride"></a>getPixelStride</h5><p>The distance between adjacent pixel samples, in bytes.</p>
+<p>This is the distance between two consecutive pixel values in a row of pixels. It may be larger than the size of a single pixel to account for interleaved image data or padded formats. Note that pixel stride is undefined for some formats such as <code>RAW_PRIVATE</code>, and calling getPixelStride on images of these formats will cause an UnsupportedOperationException being thrown. For formats where pixel stride is well defined, the pixel stride is always greater than 0.</p>
+<h5 id="getRowStride"><a href="#getRowStride" class="headerlink" title="getRowStride"></a>getRowStride</h5><p>The row stride for this color plane, in bytes.</p>
+<p>This is the distance between the start of two consecutive rows of pixels in the image. Note that row stried is undefined for some formats such as <code>RAW_PRIVATE</code>, and calling getRowStride on images of these formats will cause an UnsupportedOperationException being thrown. For formats where row stride is well defined, the row stride is always greater than 0.</p>
+<h2 id="Problems"><a href="#Problems" class="headerlink" title="Problems"></a>Problems</h2><p>使用过程中问题总结。</p>
+<ul>
+<li>截屏有黑边<br>mDisplay.getMetrics(metrics);导致的。这个方法获取到的屏幕是不包含NavigationBar的高度的，所以得到的尺寸比真实的全屏要小。需要使用mDisplay.getRealMetrics(metrics);解决这个问题。</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Wossoneri
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://wossoneri.github.io/2018/04/02/[Android]MediaProjection-Screenshot/" title="[Android] 使用MediaProjection截屏">http://wossoneri.github.io/2018/04/02/[Android]MediaProjection-Screenshot/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+          
+            <a href="/tags/MediaProjection/" rel="tag"><i class="fa fa-tag"></i> MediaProjection</a>
+          
+            <a href="/tags/截屏/" rel="tag"><i class="fa fa-tag"></i> 截屏</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/14/[MachingLearning][Repost]Understanding-LSTM/" rel="next" title="[MachineLearning][转载]LSTM">
+                <i class="fa fa-chevron-left"></i> [MachineLearning][转载]LSTM
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460"
+                alt="Wossoneri" />
+            
+              <p class="site-author-name" itemprop="name">Wossoneri</p>
+              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">47</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">67</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+            <div class="cc-license motion-element" itemprop="license">
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+              </a>
+            </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-globe"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Background"><span class="nav-number">1.</span> <span class="nav-text">Background</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#About-MediaProjection"><span class="nav-number">2.</span> <span class="nav-text">About MediaProjection</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MediaProjection"><span class="nav-number">2.1.</span> <span class="nav-text">MediaProjection</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#createVirtualDisplay"><span class="nav-number">2.1.1.</span> <span class="nav-text">createVirtualDisplay</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#registerCallback"><span class="nav-number">2.1.2.</span> <span class="nav-text">registerCallback</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#stop"><span class="nav-number">2.1.3.</span> <span class="nav-text">stop</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#unregisterCallback"><span class="nav-number">2.1.4.</span> <span class="nav-text">unregisterCallback</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MediaProjectionManager"><span class="nav-number">2.2.</span> <span class="nav-text">MediaProjectionManager</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#createScreenCaptureIntent"><span class="nav-number">2.2.1.</span> <span class="nav-text">createScreenCaptureIntent</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getMediaProjection"><span class="nav-number">2.2.2.</span> <span class="nav-text">getMediaProjection</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MediaProjection-Callback"><span class="nav-number">2.3.</span> <span class="nav-text">MediaProjection.Callback</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#onStop"><span class="nav-number">2.3.1.</span> <span class="nav-text">onStop</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Screen-Capture"><span class="nav-number">3.</span> <span class="nav-text">Screen Capture</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ImageReader-amp-Surface"><span class="nav-number">3.1.</span> <span class="nav-text">ImageReader & Surface</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#newInstance"><span class="nav-number">3.1.1.</span> <span class="nav-text">newInstance</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#getSurface"><span class="nav-number">3.1.2.</span> <span class="nav-text">getSurface</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#acquireLatestImage"><span class="nav-number">3.1.3.</span> <span class="nav-text">acquireLatestImage</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#acquireNextImage"><span class="nav-number">3.1.4.</span> <span class="nav-text">acquireNextImage</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#setOnImageAvailableListener"><span class="nav-number">3.1.5.</span> <span class="nav-text">setOnImageAvailableListener</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DisplayManager-amp-VirtualDisplay"><span class="nav-number">3.2.</span> <span class="nav-text">DisplayManager & VirtualDisplay</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#DISPLAY-CATEGORY-PRESENTATION"><span class="nav-number">3.2.1.</span> <span class="nav-text">DISPLAY_CATEGORY_PRESENTATION</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#VIRTUAL-DISPLAY-FLAG-AUTO-MIRROR"><span class="nav-number">3.2.2.</span> <span class="nav-text">VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#VIRTUAL-DISPLAY-FLAG-OWN-CONTENT-ONLY"><span class="nav-number">3.2.3.</span> <span class="nav-text">VIRTUAL_DISPLAY_FLAG_OWN_CONTENT_ONLY</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#VIRTUAL-DISPLAY-FLAG-PRESENTATION"><span class="nav-number">3.2.4.</span> <span class="nav-text">VIRTUAL_DISPLAY_FLAG_PRESENTATION</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#VIRTUAL-DISPLAY-FLAG-PUBLIC"><span class="nav-number">3.2.5.</span> <span class="nav-text">VIRTUAL_DISPLAY_FLAG_PUBLIC</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#VIRTUAL-DISPLAY-FLAG-SECURE"><span class="nav-number">3.2.6.</span> <span class="nav-text">VIRTUAL_DISPLAY_FLAG_SECURE</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Process-with-Image"><span class="nav-number">3.3.</span> <span class="nav-text">Process with Image</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Image-Plane的几个方法说明"><span class="nav-number">3.3.1.</span> <span class="nav-text">Image.Plane的几个方法说明</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#getBuffer"><span class="nav-number">3.3.1.1.</span> <span class="nav-text">getBuffer</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#getPixelStride"><span class="nav-number">3.3.1.2.</span> <span class="nav-text">getPixelStride</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#getRowStride"><span class="nav-number">3.3.1.3.</span> <span class="nav-text">getRowStride</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Problems"><span class="nav-number">4.</span> <span class="nav-text">Problems</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: '1522668264000', 
+            owner: 'wossoneri',
+            repo: 'wossoneri.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
+            
+                client_id: '40b6c719a11e3fca29e8'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("RHlsmdBRQUmQMHNOl3U1ocam-gzGzoHsz", "RU2vFPiDzi68XGHCgJXtBAqo");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/love.js"></script>
