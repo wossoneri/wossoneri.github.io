@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android,Framework,Gallery," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="Gallery的幻灯片出现一个和Bitmap相关的很诡异的BUG">
+<meta name="keywords" content="Android,Framework,Gallery">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Android][Framework] Gallery幻灯片流程以及一个Bitmap的bug">
+<meta property="og:url" content="http://wossoneri.github.io/2018/04/25/[Android][Framework]Gallery-slideshow/index.html">
+<meta property="og:site_name" content="Wossoneri`s Blog">
+<meta property="og:description" content="Gallery的幻灯片出现一个和Bitmap相关的很诡异的BUG">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/slideshow_Screenshot.png?raw=true">
+<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/SlideShow.png?raw=true">
+<meta property="og:updated_time" content="2018-04-24T17:04:49.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[Android][Framework] Gallery幻灯片流程以及一个Bitmap的bug">
+<meta name="twitter:description" content="Gallery的幻灯片出现一个和Bitmap相关的很诡异的BUG">
+<meta name="twitter:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/slideshow_Screenshot.png?raw=true">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '6234852363740382000',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wossoneri.github.io/2018/04/25/[Android][Framework]Gallery-slideshow/"/>
+
+
+
+
+
+  <title>[Android][Framework] Gallery幻灯片流程以及一个Bitmap的bug | Wossoneri`s Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-70716047-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/wossoneri"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wossoneri`s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2018/04/25/[Android][Framework]Gallery-slideshow/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wossoneri">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wossoneri`s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[Android][Framework] Gallery幻灯片流程以及一个Bitmap的bug</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-25T20:00:00+08:00">
+                2018-04-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/04/25/[Android][Framework]Gallery-slideshow/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/04/25/[Android][Framework]Gallery-slideshow/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/04/25/[Android][Framework]Gallery-slideshow/" class="leancloud_visitors" data-flag-title="[Android][Framework] Gallery幻灯片流程以及一个Bitmap的bug">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+	
+  		  <span class="post-letters-count">
+            &nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+                 <i class="fa fa-clock-o" ></i>
+            </span>
+		        <span class="post-meta-item-text">总记</span>
+            <span class="post-count">1,880 字</span>
+		        <span class="post-meta-item-text">读完需要</span>
+    		    <span class="post-count">9 分</span>
+  		  </span>
+           
+         
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  Gallery的幻灯片出现一个和Bitmap相关的很诡异的BUG
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="一个奇怪的Bug"><a href="#一个奇怪的Bug" class="headerlink" title="一个奇怪的Bug"></a>一个奇怪的Bug</h3><p>用Camera录制任意长度视频。进入Gallery，打开包含刚拍好的视频的相册，然后右上角选择展示“幻灯片”，发现，刚才的视频的Thumbnail出现倾斜，被分割成三段展示。当第一遍循环展示结束，再次展示这张图时，图片就正常了。<br>如图：<br><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/slideshow_Screenshot.png?raw=true" alt=""></p>
+<h3 id="Slideshow流程"><a href="#Slideshow流程" class="headerlink" title="Slideshow流程"></a>Slideshow流程</h3><p>简单看一下Slideshow的流程<br><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/SlideShow.png?raw=true" alt=""></p>
+<p>幻灯片展示的数据是经过<code>SlideshowPage</code>处理，由<code>SlideshowView</code>进行动画展示。展示的Bitmap来自<code>ImageCacheRequest</code>。图中最后的<code>DecodeUtils</code>是静态工具类，其中<code>decodeUsingPool</code>和<code>ensureGLCompatibleBitmap</code>对Bitmap做了处理。</p>
+<p>从代码简单跟一遍这个流程</p>
+<p>首先在AlbumPage或者PhotoPage界面的菜单选择<code>Slideshow</code></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">boolean</span> <span class="title">onItemSelected</span><span class="params">(MenuItem item)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">switch</span> (item.getItemId()) &#123;</span><br><span class="line">        <span class="keyword">case</span> R.id.action_slideshow: &#123;</span><br><span class="line">            mInCameraAndWantQuitOnPause = <span class="keyword">false</span>;</span><br><span class="line">            Bundle data = <span class="keyword">new</span> Bundle();</span><br><span class="line">            data.putString(SlideshowPage.KEY_SET_PATH,</span><br><span class="line">                    mMediaSetPath.toString());</span><br><span class="line">            data.putBoolean(SlideshowPage.KEY_REPEAT, <span class="keyword">true</span>);</span><br><span class="line">            mActivity.getStateManager().startStateForResult(</span><br><span class="line">                    SlideshowPage.class, REQUEST_SLIDESHOW, data);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面代码是从AlbumPage里的代码，看到传入的data有两个内容：相册path和数据可以重复repeat。</p>
+<p>然后通过<code>StateManager</code>启动SlideshowPage。这里没如果不了解Gallery代码可能会奇怪这个<code>StateManager</code>是什么。这里简单介绍一下：AlbumPage和SlideshowPage都是继承自<code>ActivityState</code>这个类。这个<code>ActivityState</code>是Gallery自创的一个状态管理类，类似于<code>Activity</code>。<code>StateManager</code>通过一个栈管理着这些Page的声明周期。后面会单独介绍这个东西。</p>
+<p>启动SlideshowPage后，就会按照onCreate,onResume的顺序初始化这个类。在onResume的时候进行调用loadNextBitmap()方法加载下一张要显示的幻灯片，然后这个方法会给handler发信息，循环调用showPendingBitmap()-&gt;loadNextBitmap()来实现幻灯片循环播放。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">mHandler = <span class="keyword">new</span> SynchronizedHandler(mActivity.getGLRoot()) &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message message)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">switch</span> (message.what) &#123;</span><br><span class="line">            <span class="keyword">case</span> MSG_SHOW_PENDING_BITMAP:</span><br><span class="line">                showPendingBitmap();</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> MSG_LOAD_NEXT_BITMAP:</span><br><span class="line">                loadNextBitmap();</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">default</span>: <span class="keyword">throw</span> <span class="keyword">new</span> AssertionError();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>在onResume的时候它还做了一件重要的事，初始化SlideshowDataAdapter并且调用其resume方法。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">mModel.resume();</span><br></pre></td></tr></table></figure>
+<p>看一下这个resume做了什么：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SlideshowDataAdapter</span> <span class="keyword">implements</span> <span class="title">SlideshowPage</span>.<span class="title">Model</span> </span>&#123;    </span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">resume</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        mIsActive = <span class="keyword">true</span>;</span><br><span class="line">        mSource.addContentListener(mSourceListener);</span><br><span class="line">        mNeedReload.set(<span class="keyword">true</span>);</span><br><span class="line">        mDataReady = <span class="keyword">true</span>;</span><br><span class="line">        mReloadTask = mThreadPool.submit(<span class="keyword">new</span> ReloadTask());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>主要是开启异步加载图片的ReloadTask。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">ReloadTask</span> <span class="keyword">implements</span> <span class="title">Job</span>&lt;<span class="title">Void</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Void <span class="title">run</span><span class="params">(JobContext jc)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (SlideshowDataAdapter.<span class="keyword">this</span>) &#123;</span><br><span class="line">                <span class="keyword">while</span> (mIsActive &amp;&amp; (!mDataReady</span><br><span class="line">                        || mImageQueue.size() &gt;= IMAGE_QUEUE_CAPACITY)) &#123;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        SlideshowDataAdapter.<span class="keyword">this</span>.wait();</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (InterruptedException ex) &#123;</span><br><span class="line">                        <span class="comment">// ignored.</span></span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (!mIsActive) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            mNeedReset = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">            MediaItem item = loadItem();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (mNeedReset) &#123;</span><br><span class="line">                <span class="keyword">synchronized</span> (SlideshowDataAdapter.<span class="keyword">this</span>) &#123;</span><br><span class="line">                    mImageQueue.clear();</span><br><span class="line">                    mLoadIndex = mNextOutput;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (item == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">synchronized</span> (SlideshowDataAdapter.<span class="keyword">this</span>) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (!mNeedReload.get()) mDataReady = <span class="keyword">false</span>;</span><br><span class="line">                    SlideshowDataAdapter.<span class="keyword">this</span>.notifyAll();</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            Bitmap bitmap = item</span><br><span class="line">                    .requestImage(MediaItem.TYPE_THUMBNAIL)</span><br><span class="line">                    .run(jc);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (bitmap != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">synchronized</span> (SlideshowDataAdapter.<span class="keyword">this</span>) &#123;</span><br><span class="line">                    mImageQueue.addLast(</span><br><span class="line">                            <span class="keyword">new</span> Slide(item, mLoadIndex, bitmap));</span><br><span class="line">                    <span class="keyword">if</span> (mImageQueue.size() == <span class="number">1</span>) &#123;</span><br><span class="line">                        SlideshowDataAdapter.<span class="keyword">this</span>.notifyAll();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            ++mLoadIndex;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个Task里面，异步获取的Bitmap全部保存在mImageQueue里面。</p>
+<p>而Bitmap的获取又是一个任务Job。这个Job是MediaItem定义的一个抽象方法，LocalVideo作为MediaItem的一个子类实现了这个方法：（这里因为是Video出现的bug，所以就直接找video流程）</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Job&lt;Bitmap&gt; <span class="title">requestImage</span><span class="params">(<span class="keyword">int</span> type)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> LocalVideoRequest(mApplication, getPath(), dateModifiedInSec,</span><br><span class="line">            type, filePath);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>LocalVideoRequest是LocalView的一个内部类</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">LocalVideoRequest</span> <span class="keyword">extends</span> <span class="title">ImageCacheRequest</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String mLocalFilePath;</span><br><span class="line"></span><br><span class="line">    LocalVideoRequest(GalleryApp application, Path path, <span class="keyword">long</span> timeModified,</span><br><span class="line">            <span class="keyword">int</span> type, String localFilePath) &#123;</span><br><span class="line">        <span class="keyword">super</span>(application, path, timeModified, type,</span><br><span class="line">                MediaItem.getTargetSize(type));</span><br><span class="line">        mLocalFilePath = localFilePath;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Bitmap <span class="title">onDecodeOriginal</span><span class="params">(JobContext jc, <span class="keyword">int</span> type)</span> </span>&#123;</span><br><span class="line">        Bitmap bitmap = BitmapUtils.createVideoThumbnail(mLocalFilePath);</span><br><span class="line">        <span class="keyword">if</span> (bitmap == <span class="keyword">null</span> || jc.isCancelled()) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">return</span> bitmap;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后从super进入ImageCacheRequest</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">ImageCacheRequest</span> <span class="keyword">implements</span> <span class="title">Job</span>&lt;<span class="title">Bitmap</span>&gt; </span>&#123;</span><br><span class="line">      <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Bitmap <span class="title">run</span><span class="params">(JobContext jc)</span> </span>&#123;</span><br><span class="line">        ImageCacheService cacheService = mApplication.getImageCacheService();</span><br><span class="line"></span><br><span class="line">        BytesBuffer buffer = MediaItem.getBytesBufferPool().get();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">boolean</span> found = cacheService.getImageData(mPath, mTimeModified, mType, buffer);</span><br><span class="line">            <span class="keyword">if</span> (jc.isCancelled()) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">if</span> (found) &#123;</span><br><span class="line">                BitmapFactory.Options options = <span class="keyword">new</span> BitmapFactory.Options();</span><br><span class="line">                options.inPreferredConfig = Bitmap.Config.ARGB_8888;</span><br><span class="line">                Bitmap bitmap;</span><br><span class="line">                <span class="keyword">if</span> (mType == MediaItem.TYPE_MICROTHUMBNAIL) &#123;</span><br><span class="line">                    bitmap = DecodeUtils.decodeUsingPool(jc,</span><br><span class="line">                            buffer.data, buffer.offset, buffer.length, options);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    bitmap = DecodeUtils.decodeUsingPool(jc,</span><br><span class="line">                            buffer.data, buffer.offset, buffer.length, options);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (bitmap == <span class="keyword">null</span> &amp;&amp; !jc.isCancelled()) &#123;</span><br><span class="line">                    Log.w(TAG, <span class="string">"decode cached failed "</span> + debugTag());</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> bitmap;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            MediaItem.getBytesBufferPool().recycle(buffer);</span><br><span class="line">        &#125;</span><br><span class="line">        Bitmap bitmap = onDecodeOriginal(jc, mType);</span><br><span class="line">        <span class="keyword">if</span> (jc.isCancelled()) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (bitmap == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (mType == MediaItem.TYPE_MICROTHUMBNAIL) &#123;</span><br><span class="line">            bitmap = BitmapUtils.resizeAndCropCenter(bitmap, mTargetSize, <span class="keyword">true</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            bitmap = BitmapUtils.resizeDownBySideLength(bitmap, mTargetSize, <span class="keyword">true</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (jc.isCancelled()) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">byte</span>[] array = BitmapUtils.compressToBytes(bitmap);</span><br><span class="line">        <span class="keyword">if</span> (jc.isCancelled()) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        cacheService.putImageData(mPath, mTimeModified, mType, array);</span><br><span class="line">        <span class="keyword">return</span> bitmap;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里就从不同的地方对Bitmap进行处理。然后返回Bitmap，最后经过next()方法展示幻灯片：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SlideshowView</span> <span class="keyword">extends</span> <span class="title">GLView</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">next</span><span class="params">(Bitmap bitmap, <span class="keyword">int</span> rotation)</span> </span>&#123;</span><br><span class="line">        mTransitionAnimation.start();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (mPrevTexture != <span class="keyword">null</span>) &#123;</span><br><span class="line">            mPrevTexture.getBitmap().recycle();</span><br><span class="line">            mPrevTexture.recycle();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        mPrevTexture = mCurrentTexture;</span><br><span class="line">        mPrevAnimation = mCurrentAnimation;</span><br><span class="line">        mPrevRotation = mCurrentRotation;</span><br><span class="line"></span><br><span class="line">        mCurrentRotation = rotation;</span><br><span class="line">        mCurrentTexture = <span class="keyword">new</span> BitmapTexture(bitmap);</span><br><span class="line">        <span class="keyword">if</span> (((rotation / <span class="number">90</span>) &amp; <span class="number">0x01</span>) == <span class="number">0</span>) &#123;</span><br><span class="line">            mCurrentAnimation = <span class="keyword">new</span> SlideshowAnimation(</span><br><span class="line">                    mCurrentTexture.getWidth(), mCurrentTexture.getHeight(),</span><br><span class="line">                    mRandom);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            mCurrentAnimation = <span class="keyword">new</span> SlideshowAnimation(</span><br><span class="line">                    mCurrentTexture.getHeight(), mCurrentTexture.getWidth(),</span><br><span class="line">                    mRandom);</span><br><span class="line">        &#125;</span><br><span class="line">        mCurrentAnimation.start();</span><br><span class="line"></span><br><span class="line">        invalidate();</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">      <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">render</span><span class="params">(GLCanvas canvas)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">long</span> animTime = AnimationTime.get();</span><br><span class="line">        <span class="keyword">boolean</span> requestRender = mTransitionAnimation.calculate(animTime);</span><br><span class="line">        <span class="keyword">float</span> alpha = mPrevTexture == <span class="keyword">null</span> ? <span class="number">1f</span> : mTransitionAnimation.get();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (mPrevTexture != <span class="keyword">null</span> &amp;&amp; alpha != <span class="number">1f</span>) &#123;</span><br><span class="line">            requestRender |= mPrevAnimation.calculate(animTime);</span><br><span class="line">            canvas.save(GLCanvas.SAVE_FLAG_ALPHA | GLCanvas.SAVE_FLAG_MATRIX);</span><br><span class="line">            canvas.setAlpha(<span class="number">1f</span> - alpha);</span><br><span class="line">            mPrevAnimation.apply(canvas);</span><br><span class="line">            canvas.rotate(mPrevRotation, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>);</span><br><span class="line">            mPrevTexture.draw(canvas, -mPrevTexture.getWidth() / <span class="number">2</span>,</span><br><span class="line">                    -mPrevTexture.getHeight() / <span class="number">2</span>);</span><br><span class="line">            canvas.restore();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (mCurrentTexture != <span class="keyword">null</span>) &#123;</span><br><span class="line">            requestRender |= mCurrentAnimation.calculate(animTime);</span><br><span class="line">            canvas.save(GLCanvas.SAVE_FLAG_ALPHA | GLCanvas.SAVE_FLAG_MATRIX);</span><br><span class="line">            canvas.setAlpha(alpha);</span><br><span class="line">            mCurrentAnimation.apply(canvas);</span><br><span class="line">            canvas.rotate(mCurrentRotation, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>);</span><br><span class="line">            mCurrentTexture.draw(canvas, -mCurrentTexture.getWidth() / <span class="number">2</span>,</span><br><span class="line">                    -mCurrentTexture.getHeight() / <span class="number">2</span>);</span><br><span class="line">            canvas.restore();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (requestRender) invalidate();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Bug的判断处理"><a href="#Bug的判断处理" class="headerlink" title="Bug的判断处理"></a>Bug的判断处理</h3><p>关于开始的问题，首先要调查的就是展示的Bitmap是否是正常的。</p>
+<p>通过把Bitmap保存到本地文件，发现图片是正常的。再尝试读这个文件到Bitmap展示，发现没有再出现图像分割的现象了。</p>
+<p>所以这个问题有一个初步的解决办法：把原始Bitmap压缩到字节流去，然后再从字节流读到Bitmap对象：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">ByteArrayOutputStream fOut = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">bitmap.compress(Bitmap.CompressFormat.JPEG, <span class="number">100</span>, fOut);</span><br><span class="line"><span class="keyword">byte</span>[] bitmapData = fOut.toByteArray();</span><br><span class="line">bitmap = BitmapFactory.decodeByteArray(bitmapData, <span class="number">0</span>, bitmapData.length);</span><br></pre></td></tr></table></figure>
+<p>然后继续跟代码，发现，在最开始的图片加载是在ImageCacheRequest中的run()方法，见下方注释。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Bitmap <span class="title">run</span><span class="params">(JobContext jc)</span> </span>&#123;</span><br><span class="line">    ImageCacheService cacheService = mApplication.getImageCacheService();</span><br><span class="line"></span><br><span class="line">    BytesBuffer buffer = MediaItem.getBytesBufferPool().get();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="comment">//一开始这里的found是false，会跳出这里</span></span><br><span class="line">        <span class="keyword">boolean</span> found = cacheService.getImageData(mPath, mTimeModified, mType, buffer);</span><br><span class="line">        <span class="keyword">if</span> (jc.isCancelled()) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (found) &#123;</span><br><span class="line">            BitmapFactory.Options options = <span class="keyword">new</span> BitmapFactory.Options();</span><br><span class="line">            options.inPreferredConfig = Bitmap.Config.ARGB_8888;</span><br><span class="line">            Bitmap bitmap;</span><br><span class="line">            <span class="keyword">if</span> (mType == MediaItem.TYPE_MICROTHUMBNAIL) &#123;</span><br><span class="line">                bitmap = DecodeUtils.decodeUsingPool(jc,</span><br><span class="line">                        buffer.data, buffer.offset, buffer.length, options);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 第二次走到这里</span></span><br><span class="line">                bitmap = DecodeUtils.decodeUsingPool(jc,</span><br><span class="line">                        buffer.data, buffer.offset, buffer.length, options);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (bitmap == <span class="keyword">null</span> &amp;&amp; !jc.isCancelled()) &#123;</span><br><span class="line">                Log.w(TAG, <span class="string">"decode cached failed "</span> + debugTag());</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> bitmap;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        MediaItem.getBytesBufferPool().recycle(buffer);</span><br><span class="line">    &#125;</span><br><span class="line">  <span class="comment">//最开始的Bitmap来自这里</span></span><br><span class="line">    Bitmap bitmap = onDecodeOriginal(jc, mType);</span><br><span class="line">    <span class="keyword">if</span> (jc.isCancelled()) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (bitmap == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (mType == MediaItem.TYPE_MICROTHUMBNAIL) &#123;</span><br><span class="line">        bitmap = BitmapUtils.resizeAndCropCenter(bitmap, mTargetSize, <span class="keyword">true</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">//然后进行resize处理</span></span><br><span class="line">        bitmap = BitmapUtils.resizeDownBySideLength(bitmap, mTargetSize, <span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (jc.isCancelled()) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">byte</span>[] array = BitmapUtils.compressToBytes(bitmap);</span><br><span class="line">    <span class="keyword">if</span> (jc.isCancelled()) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    cacheService.putImageData(mPath, mTimeModified, mType, array);</span><br><span class="line">    <span class="keyword">return</span> bitmap;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>先看一下onDecodeOriginal()方法：</p>
+<p>在LocalVideo中</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Bitmap <span class="title">onDecodeOriginal</span><span class="params">(JobContext jc, <span class="keyword">int</span> type)</span> </span>&#123;</span><br><span class="line">    Bitmap bitmap = BitmapUtils.createVideoThumbnail(mLocalFilePath);</span><br><span class="line">    <span class="keyword">if</span> (bitmap == <span class="keyword">null</span> || jc.isCancelled()) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">return</span> bitmap;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Bitmap <span class="title">createVideoThumbnail</span><span class="params">(String filePath)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// MediaMetadataRetriever is available on API Level 8</span></span><br><span class="line">    <span class="comment">// but is hidden until API Level 10</span></span><br><span class="line">    Class&lt;?&gt; clazz = <span class="keyword">null</span>;</span><br><span class="line">    Object instance = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        clazz = Class.forName(<span class="string">"android.media.MediaMetadataRetriever"</span>);</span><br><span class="line">        instance = clazz.newInstance();</span><br><span class="line"></span><br><span class="line">        Method method = clazz.getMethod(<span class="string">"setDataSource"</span>, String.class);</span><br><span class="line">        method.invoke(instance, filePath);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// The method name changes between API Level 9 and 10.</span></span><br><span class="line">        <span class="keyword">if</span> (Build.VERSION.SDK_INT &lt;= <span class="number">9</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> (Bitmap) clazz.getMethod(<span class="string">"captureFrame"</span>).invoke(instance);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">byte</span>[] data = (<span class="keyword">byte</span>[]) clazz.getMethod(<span class="string">"getEmbeddedPicture"</span>).invoke(instance);</span><br><span class="line">            <span class="keyword">if</span> (data != <span class="keyword">null</span>) &#123;</span><br><span class="line">                Bitmap bitmap = BitmapFactory.decodeByteArray(data, <span class="number">0</span>, data.length);</span><br><span class="line">                <span class="keyword">if</span> (bitmap != <span class="keyword">null</span>) <span class="keyword">return</span> bitmap;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> (Bitmap) clazz.getMethod(<span class="string">"getFrameAtTime"</span>).invoke(instance);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IllegalArgumentException ex) &#123;</span><br><span class="line">        <span class="comment">// Assume this is a corrupt video file</span></span><br><span class="line">    &#125; <span class="keyword">catch</span> (RuntimeException ex) &#123;</span><br><span class="line">        <span class="comment">// Assume this is a corrupt video file.</span></span><br><span class="line">    &#125; <span class="keyword">catch</span> (InstantiationException e) &#123;</span><br><span class="line">        Log.e(TAG, <span class="string">"createVideoThumbnail"</span>, e);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InvocationTargetException e) &#123;</span><br><span class="line">        Log.e(TAG, <span class="string">"createVideoThumbnail"</span>, e);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (ClassNotFoundException e) &#123;</span><br><span class="line">        Log.e(TAG, <span class="string">"createVideoThumbnail"</span>, e);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (NoSuchMethodException e) &#123;</span><br><span class="line">        Log.e(TAG, <span class="string">"createVideoThumbnail"</span>, e);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IllegalAccessException e) &#123;</span><br><span class="line">        Log.e(TAG, <span class="string">"createVideoThumbnail"</span>, e);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (instance != <span class="keyword">null</span>) &#123;</span><br><span class="line">                clazz.getMethod(<span class="string">"release"</span>).invoke(instance);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception ignored) &#123;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里用反射拿到Video的缩略图。</p>
+<p>然后对图片缩放</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Bitmap <span class="title">resizeDownBySideLength</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        Bitmap bitmap, <span class="keyword">int</span> maxLength, <span class="keyword">boolean</span> recycle)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> srcWidth = bitmap.getWidth();</span><br><span class="line">    <span class="keyword">int</span> srcHeight = bitmap.getHeight();</span><br><span class="line">    <span class="keyword">float</span> scale = Math.min(</span><br><span class="line">            (<span class="keyword">float</span>) maxLength / srcWidth, (<span class="keyword">float</span>) maxLength / srcHeight);</span><br><span class="line">    <span class="keyword">if</span> (scale &gt;= <span class="number">1.0f</span>) <span class="keyword">return</span> bitmap;</span><br><span class="line">    <span class="keyword">return</span> resizeBitmapByScale(bitmap, scale, recycle);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Bitmap <span class="title">resizeBitmapByScale</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        Bitmap bitmap, <span class="keyword">float</span> scale, <span class="keyword">boolean</span> recycle)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> width = Math.round(bitmap.getWidth() * scale);</span><br><span class="line">    <span class="keyword">int</span> height = Math.round(bitmap.getHeight() * scale);</span><br><span class="line">    <span class="keyword">if</span> (width == bitmap.getWidth()</span><br><span class="line">            &amp;&amp; height == bitmap.getHeight()) <span class="keyword">return</span> bitmap;</span><br><span class="line">  <span class="comment">//实际走到这里</span></span><br><span class="line">    Bitmap target = Bitmap.createBitmap(width, height, getConfig(bitmap));</span><br><span class="line">    Canvas canvas = <span class="keyword">new</span> Canvas(target);</span><br><span class="line">    canvas.scale(scale, scale);</span><br><span class="line">    Paint paint = <span class="keyword">new</span> Paint(Paint.FILTER_BITMAP_FLAG | Paint.DITHER_FLAG);</span><br><span class="line">    canvas.drawBitmap(bitmap, <span class="number">0</span>, <span class="number">0</span>, paint);</span><br><span class="line">    <span class="keyword">if</span> (recycle) bitmap.recycle();</span><br><span class="line">    <span class="keyword">return</span> target;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但根据这一步的代码，并没能找到明确的原因。</p>
+<p>根据现象，由于显示的Bitmap内容是完整的，只是数据错乱了。然后保存到字节流再取出来将数据顺序重新排列了。所以下一步就是探索Bitmap源码寻找真正的原因。<br>TBC</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Wossoneri
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://wossoneri.github.io/2018/04/25/[Android][Framework]Gallery-slideshow/" title="[Android][Framework] Gallery幻灯片流程以及一个Bitmap的bug">http://wossoneri.github.io/2018/04/25/[Android][Framework]Gallery-slideshow/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+          
+            <a href="/tags/Framework/" rel="tag"><i class="fa fa-tag"></i> Framework</a>
+          
+            <a href="/tags/Gallery/" rel="tag"><i class="fa fa-tag"></i> Gallery</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/03/[Android][Framework]AccessibilityShortcut/" rel="next" title="[Android][Framework] 无障碍快捷方式相关代码">
+                <i class="fa fa-chevron-left"></i> [Android][Framework] 无障碍快捷方式相关代码
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460"
+                alt="Wossoneri" />
+            
+              <p class="site-author-name" itemprop="name">Wossoneri</p>
+              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">71</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">73</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+            <div class="cc-license motion-element" itemprop="license">
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+              </a>
+            </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-globe"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#一个奇怪的Bug"><span class="nav-number">1.</span> <span class="nav-text">一个奇怪的Bug</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Slideshow流程"><span class="nav-number">2.</span> <span class="nav-text">Slideshow流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Bug的判断处理"><span class="nav-number">3.</span> <span class="nav-text">Bug的判断处理</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: '1524657600000', 
+            owner: 'wossoneri',
+            repo: 'wossoneri.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
+            
+                client_id: '40b6c719a11e3fca29e8'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("RHlsmdBRQUmQMHNOl3U1ocam-gzGzoHsz", "RU2vFPiDzi68XGHCgJXtBAqo");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/love.js"></script>
