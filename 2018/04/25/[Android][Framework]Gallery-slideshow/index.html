@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Android,Framework,Gallery," />
+  <meta name="keywords" content="Android,Gallery,Framework," />
 
 
 
@@ -82,7 +82,7 @@
 
 
 <meta name="description" content="Gallery的幻灯片出现一个和Bitmap相关的很诡异的BUG">
-<meta name="keywords" content="Android,Framework,Gallery">
+<meta name="keywords" content="Android,Gallery,Framework">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[Android][Framework] Gallery幻灯片流程以及一个Bitmap的bug">
 <meta property="og:url" content="http://wossoneri.github.io/2018/04/25/[Android][Framework]Gallery-slideshow/index.html">
@@ -91,7 +91,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/slideshow_Screenshot.png?raw=true">
 <meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/SlideShow.png?raw=true">
-<meta property="og:updated_time" content="2018-04-24T17:04:49.000Z">
+<meta property="og:updated_time" content="2018-04-25T06:18:59.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Android][Framework] Gallery幻灯片流程以及一个Bitmap的bug">
 <meta name="twitter:description" content="Gallery的幻灯片出现一个和Bitmap相关的很诡异的BUG">
@@ -375,9 +375,9 @@
                  <i class="fa fa-clock-o" ></i>
             </span>
 		        <span class="post-meta-item-text">总记</span>
-            <span class="post-count">1,880 字</span>
+            <span class="post-count">2,085 字</span>
 		        <span class="post-meta-item-text">读完需要</span>
-    		    <span class="post-count">9 分</span>
+    		    <span class="post-count">10 分</span>
   		  </span>
            
          
@@ -444,6 +444,12 @@
 <p>然后对图片缩放</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Bitmap <span class="title">resizeDownBySideLength</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        Bitmap bitmap, <span class="keyword">int</span> maxLength, <span class="keyword">boolean</span> recycle)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> srcWidth = bitmap.getWidth();</span><br><span class="line">    <span class="keyword">int</span> srcHeight = bitmap.getHeight();</span><br><span class="line">    <span class="keyword">float</span> scale = Math.min(</span><br><span class="line">            (<span class="keyword">float</span>) maxLength / srcWidth, (<span class="keyword">float</span>) maxLength / srcHeight);</span><br><span class="line">    <span class="keyword">if</span> (scale &gt;= <span class="number">1.0f</span>) <span class="keyword">return</span> bitmap;</span><br><span class="line">    <span class="keyword">return</span> resizeBitmapByScale(bitmap, scale, recycle);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Bitmap <span class="title">resizeBitmapByScale</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        Bitmap bitmap, <span class="keyword">float</span> scale, <span class="keyword">boolean</span> recycle)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> width = Math.round(bitmap.getWidth() * scale);</span><br><span class="line">    <span class="keyword">int</span> height = Math.round(bitmap.getHeight() * scale);</span><br><span class="line">    <span class="keyword">if</span> (width == bitmap.getWidth()</span><br><span class="line">            &amp;&amp; height == bitmap.getHeight()) <span class="keyword">return</span> bitmap;</span><br><span class="line">  <span class="comment">//实际走到这里</span></span><br><span class="line">    Bitmap target = Bitmap.createBitmap(width, height, getConfig(bitmap));</span><br><span class="line">    Canvas canvas = <span class="keyword">new</span> Canvas(target);</span><br><span class="line">    canvas.scale(scale, scale);</span><br><span class="line">    Paint paint = <span class="keyword">new</span> Paint(Paint.FILTER_BITMAP_FLAG | Paint.DITHER_FLAG);</span><br><span class="line">    canvas.drawBitmap(bitmap, <span class="number">0</span>, <span class="number">0</span>, paint);</span><br><span class="line">    <span class="keyword">if</span> (recycle) bitmap.recycle();</span><br><span class="line">    <span class="keyword">return</span> target;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>但根据这一步的代码，并没能找到明确的原因。</p>
+<p>但是，通过流程代码，发现一个更好的修改方法，就是在ImageCacheRequest中：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">//最开始的Bitmap来自这里</span></span><br><span class="line">        Bitmap bitmap = onDecodeOriginal(jc, mType);</span><br><span class="line">        <span class="keyword">if</span> (jc.isCancelled()) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (bitmap == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (mType == MediaItem.TYPE_MICROTHUMBNAIL) &#123;</span><br><span class="line">            bitmap = BitmapUtils.resizeAndCropCenter(bitmap, mTargetSize, <span class="keyword">true</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          <span class="comment">//然后进行resize处理</span></span><br><span class="line">            bitmap = BitmapUtils.resizeDownBySideLength(bitmap, mTargetSize, <span class="keyword">true</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (jc.isCancelled()) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">byte</span>[] array = BitmapUtils.compressToBytes(bitmap);</span><br><span class="line">        <span class="keyword">if</span> (jc.isCancelled()) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        cacheService.putImageData(mPath, mTimeModified, mType, array);</span><br><span class="line">        <span class="keyword">return</span> bitmap;</span><br></pre></td></tr></table></figure>
+<p>出问题的Bitmap是经过resizeDownBySideLength处理的，然后做了一步转换成字节流的步骤。所以还是使用前面的修改策略，对这个字节流还原成Bitmap返回。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">      <span class="keyword">if</span> (jc.isCancelled()) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">      <span class="keyword">byte</span>[] array = BitmapUtils.compressToBytes(bitmap);</span><br><span class="line"><span class="comment">//只需要这一行代码</span></span><br><span class="line">bitmap = BitmapFactory.decodeByteArray(array, <span class="number">0</span>, array.length);</span><br><span class="line">      <span class="keyword">if</span> (jc.isCancelled()) <span class="keyword">return</span> <span class="keyword">null</span>;</span><br></pre></td></tr></table></figure>
+<p>这样修改就不会影响其他流程，只处理第一次获取缩略图的过程。</p>
+<p>最后，</p>
 <p>根据现象，由于显示的Bitmap内容是完整的，只是数据错乱了。然后保存到字节流再取出来将数据顺序重新排列了。所以下一步就是探索Bitmap源码寻找真正的原因。<br>TBC</p>
 
       
@@ -511,9 +517,9 @@
           
             <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
           
-            <a href="/tags/Framework/" rel="tag"><i class="fa fa-tag"></i> Framework</a>
-          
             <a href="/tags/Gallery/" rel="tag"><i class="fa fa-tag"></i> Gallery</a>
+          
+            <a href="/tags/Framework/" rel="tag"><i class="fa fa-tag"></i> Framework</a>
           
         </div>
       
@@ -622,7 +628,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">71</span>
+                  <span class="site-state-item-count">73</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -644,7 +650,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">73</span>
+                  <span class="site-state-item-count">75</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

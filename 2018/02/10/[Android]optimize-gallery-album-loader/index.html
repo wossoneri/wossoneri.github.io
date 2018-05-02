@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android,性能优化," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="之前整理的一个Gallery性能优化问题">
+<meta name="keywords" content="Android,性能优化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Android]相册列表加载过程性能优化">
+<meta property="og:url" content="http://wossoneri.github.io/2018/02/10/[Android]optimize-gallery-album-loader/index.html">
+<meta property="og:site_name" content="Wossoneri`s Blog">
+<meta property="og:description" content="之前整理的一个Gallery性能优化问题">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-05-02T17:50:02.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[Android]相册列表加载过程性能优化">
+<meta name="twitter:description" content="之前整理的一个Gallery性能优化问题">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '6234852363740382000',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wossoneri.github.io/2018/02/10/[Android]optimize-gallery-album-loader/"/>
+
+
+
+
+
+  <title>[Android]相册列表加载过程性能优化 | Wossoneri`s Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-70716047-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/wossoneri"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wossoneri`s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2018/02/10/[Android]optimize-gallery-album-loader/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wossoneri">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wossoneri`s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[Android]相册列表加载过程性能优化</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-10T19:29:28+08:00">
+                2018-02-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/02/10/[Android]optimize-gallery-album-loader/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/02/10/[Android]optimize-gallery-album-loader/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/02/10/[Android]optimize-gallery-album-loader/" class="leancloud_visitors" data-flag-title="[Android]相册列表加载过程性能优化">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+	
+  		  <span class="post-letters-count">
+            &nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+                 <i class="fa fa-clock-o" ></i>
+            </span>
+		        <span class="post-meta-item-text">总记</span>
+            <span class="post-count">3,736 字</span>
+		        <span class="post-meta-item-text">读完需要</span>
+    		    <span class="post-count">16 分</span>
+  		  </span>
+           
+         
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  之前整理的一个Gallery性能优化问题
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>在手机中有多个存有图片的文件夹，在recent界面清掉所有的应用，点击进入图库，切换到相册列表。发现要过几秒钟才能从空白页面开始显示文件夹。同时会引起另一问题，在有大量图片文件夹的情况下删除一个文件夹，这个被删除的文件夹还会在界面上显示一段时间，要过好几秒才会被覆盖掉。</p>
+<h2 id="分析与解决"><a href="#分析与解决" class="headerlink" title="分析与解决"></a>分析与解决</h2><p>优化整体分为几个部分，由于当时第一手截图和log都没有保存，所以整体以记录修改思路为主。</p>
+<h3 id="优化一"><a href="#优化一" class="headerlink" title="优化一"></a>优化一</h3><p>一般面对性能优化问题，首先要定位问题。有两个入手方向:</p>
+<ol>
+<li>从代码逻辑角度分析，在代码流程关键处添加Log，通过复现操作观察哪些Log不符合预期。比如这个问题，就是每次刷新相册列表的时候， 刷新行为表现的很慢，可以很容易找到出问题的代码段。</li>
+<li>从 <code>traceView</code> 分析，适合性能异常不确定的问题。比如 Gallery 的启动速度，启动流程涉及很多流程，没 法从逻辑角度确定出问题的代码段。 </li>
+</ol>
+<p>针对当前问题，可以很明确是刷新相册列表的时候某些地方做了一些耗时的操作。所以就要先看看每次刷新列表的时候程序到底干了些什么。因此，需要打一个完整的 log 看看刷新的流程。<br>通过分析 log (很多 log 并没有保存，所以只做文字描述)，一个感觉到异常的地方是：刷新相册的时候，打印出了数十个重复的相册名称，而且不同相册名重复的次数不一样。 </p>
+<p>所以查找打印相关 Log 的代码，发现是方法 <code>ListAlbumSetDataAdapter.setLayoutInfo()</code>中打印的。这也就意 味着这个方法进行了多次执行。 </p>
+<p>对照 traceView，这个方法的确是出现耗时问题的一个地方。 </p>
+<p>那么这个方法是做什么的呢? 这个方法就是对相册列表的每一项进行封面图像和文字更新的方法。因为涉及到了封面图像的生成显示，所以会比较耗时。而大量调用这个方法会导致这个耗时线性增加。像我手机里有 6 个相册，这个方法却执行了数十次。 </p>
+<p>那么是谁在调用这个方法呢?<br>有两个地方，<code>ListAlbumSetDataAdapter.updateView()</code> 和 <code>ListAlbumSetDataAdapter.getView()</code></p>
+<p>先看 <code>updateView()</code>，这个方法是我们自己定义的:<br> 通过在 <code>updateView()</code>处打印堆栈信息，一层层向上查看方法调用顺序，最终发现在 <code>AlbumSetSlidingWindow.updateAllImageRequests()</code>处调用的时候进行了二级循环，进而导致 <code>updateView()</code>循环多次调用。 </p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = mActiveStart, n = mActiveEnd; i &lt; n; ++i) &#123; </span><br><span class="line">    AlbumSetEntry entry = mData[i % mData.length]; </span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; entry.coverLoader.size(); j++) &#123;</span><br><span class="line"> 		<span class="keyword">if</span> (startLoadBitmap(entry.coverLoader.get(j))) ++mActiveRequestCount; </span><br><span class="line">	&#125;</span><br><span class="line"> 	... </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>外层循环是更新每个相册，内层循环是对当前相册内图片进行更新。但对相册来说只需要更新第一张封面图<br>片即可，所以对这里内层循环可以进行优化。否则遇到很多图片的相册，对每张图片循环一次的开销太大了:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = mActiveStart, n = mActiveEnd; i &lt; n; ++i) &#123; </span><br><span class="line">    AlbumSetEntry entry = mData[i % mData.length]; </span><br><span class="line">    <span class="keyword">if</span> (entry.coverLoader.size &gt; <span class="number">0</span>) &#123; </span><br><span class="line">        startLoadBitmap(entry.coverLoader.get(<span class="number">0</span>)); </span><br><span class="line">    &#125;</span><br><span class="line">     ... </span><br><span class="line">&#125; </span><br><span class="line">++mActiveRequestCount;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>优化期间和开发的同事讨论中得知有一个地方设置了一个 12 的范围，但不确定对这里执行有什么影响。我 在看 log 的时候，恰好发现了一个包含很多图片的相册打印了 12 次，而其他相册只打印了几次，所以猜想好 像相册图片超过 12 张就会只打印 12 次，于是新建一个相册尝试了一下，发现的确是这样。所以定位到设置 12 的代码，是在 MediaSet.getCoverMediaItem()处。看了一下代码，这里 12 是返回数组最大范围，相册有超过 12 张图片就返回 12 张。然而对返回的这 12 张之后的操作，结合代码并没有发现特别的操作，反而导致 setLayoutInfo()多执行了很多遍。所以这里也进行了优化。把 12 改成 1。对照AOSP源码，源码在这里也是用的 1。 </p>
+</blockquote>
+<p>经过后来一系列分析，发现改动这个 12 的效果和改动上面的循环是一样的。原因如下: 在 <code>AlbumSetDataLoader.reloadTask.run()</code> 中，会进行图片的加载，其中有一句: </p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">info.cover = info.item.getCoverMediaItem();</span><br></pre></td></tr></table></figure>
+<p>就是获取我们把 list.size 从 12 改为 1 的地方。所以这里 info.cover 保存的 list.size = 1。 </p>
+<p>赋值之后会执行: </p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">executeAndWait(<span class="keyword">new</span> UpdateContent(info));</span><br></pre></td></tr></table></figure>
+<p>在 UpdateContent(info)中，会执行这段代码: </p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">mCoverItem[pos] = info.cover;</span><br></pre></td></tr></table></figure>
+<p>这个 mCoverItem[]是干什么的?他的作用体现在 <code>AlbumSetDataLoader.getCoverItem()</code>中: </p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> List&lt;MediaItem&gt; <span class="title">getCoverItem</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">    	assertIsActive(index); </span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    	e.printStackTrace();</span><br><span class="line">    	<span class="keyword">return</span> <span class="keyword">null</span>; </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> mCoverItem[index % mCoverItem.length]; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个 getCoverItem()是被 <code>AlbumSetSlidingWindow.updateAlbumSetEntry()</code>处调用: </p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">List&lt;MediaItem&gt; cover = mSource.getCoverItem(slotIndex); </span><br><span class="line">...</span><br><span class="line"><span class="keyword">if</span>(cover != <span class="keyword">null</span>) &#123; </span><br><span class="line">	resetEntry(entry, cover.size());</span><br><span class="line"> 	<span class="keyword">for</span> (<span class="keyword">int</span> i = cover.size() -<span class="number">1</span> ; i &gt;= <span class="number">0</span> ; i--) &#123; </span><br><span class="line">        ... </span><br><span class="line">		entry.coverLoader.set(....) </span><br><span class="line">		... </span><br><span class="line">	&#125; </span><br><span class="line">&#125; </span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>所以这里就看明白了，<code>entry.coverLoader.size</code> 是和 <code>getCoverMediaItem()</code> 相关的。因此这两处改动一处即 可。 </p>
+<h3 id="优化二"><a href="#优化二" class="headerlink" title="优化二"></a>优化二</h3><p>再看 getView()方法:<br>getView() 是 BaseAdapter 的方法，是每次刷新 List 都会调用的方法。<br>从 log 信息可以看到，在我有 <strong>5</strong> 个相册的时候，getView()执行了 <strong>150</strong> 次，也就是每个相册遍历了 <strong>30</strong> 遍。 </p>
+<p>关于 getView()方法的调用，一般是和布局文件的复杂度相关的，尤其是对没有指定 cell 高度的 listView， 系统需要模拟加载这些 view 去进行计算，然后计算得出一个高度，之后再把真正的 cell 加载出来。所以出 现 getView()重复调用的情况，就要关注一下布局情况。 </p>
+<p>找到 list 相关界面布局文件 albumset_fragment.xml </p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">com.tct.gallery3d.ui.DragListView</span> </span></span><br><span class="line"><span class="tag">	<span class="attr">android:layout_marginTop</span>=<span class="string">"60dp"</span> </span></span><br><span class="line"><span class="tag"> 	<span class="attr">android:background</span>=<span class="string">"#f8f8f8"</span> </span></span><br><span class="line"><span class="tag"> 	<span class="attr">android:dividerHeight</span>=<span class="string">"5dp"</span> </span></span><br><span class="line"><span class="tag"> 	<span class="attr">android:divider</span>=<span class="string">"#f8f8f8"</span></span></span><br><span class="line"><span class="tag"> 	<span class="attr">android:id</span>=<span class="string">"@+id/drag_list_view"</span></span></span><br><span class="line"><span class="tag"> 	<span class="attr">android:layout_width</span>=<span class="string">"match_parent"</span></span></span><br><span class="line"><span class="tag"> 	<span class="attr">android:layout_height</span>=<span class="string">"wrap_content"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+<p>看到列表的 <code>layout_height</code> 是 <code>wrap_content</code>，这个地方就会有问题，因为是 <code>wrap_content</code>，列表计算高度 的时候就会先试着加载所有 cell，算出真正的高度，然后再去加载一遍 cell，算出界面需要显示的 cell 的数 量，确定之后再真正加载一遍(大概是这样)。如果相册很多，每次滑动也都会重复这些操作。 所以这里如果把 <code>layout_height</code> 改为 <code>match_parent</code>，那就为系统省去了很多计算。 </p>
+<p>改动后再看 log，发现 <strong>5</strong> 个相册的情况下，getView()只执行了 <strong>30</strong> 次，改之前可是执行了 150 次! </p>
+<p>这时候再从 <code>traceView</code> 查找耗时操作，很明显的看到另一个耗时大户露出了尾巴: <code>LocalMergeAlbum.getTotalMediaItemCount()</code>方法。</p>
+<h3 id="优化三"><a href="#优化三" class="headerlink" title="优化三"></a>优化三</h3><p>回到之前的大尾巴:<code>LocalMergeAlbum.getTotalMediaItemCount()</code>，这个方法会执行到另一处方法 <code>LocalAlbum.getMediaItemCount()</code>。 </p>
+<p>同样的问题：这个方法是干什么的？<code>LocalAlbum.getMediaItemCount()</code>执行了数据库的查询操作，其实是获取当前相册的图片信息。 </p>
+<p>谁在调用它? 在该方法里打印堆栈信息，发现好多地方在调用它，但是某个方法的一次执行，导致了连续重复 3-4 次调用数据库查询，这引起了我的注意。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getTotalMediaItemCount</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">	mVideoCount = <span class="number">0</span>;</span><br><span class="line"> 	<span class="keyword">for</span> (MediaSet set : mSources) &#123; ---------------<span class="number">4</span> </span><br><span class="line">		<span class="keyword">if</span>(<span class="keyword">null</span> == set) </span><br><span class="line">    		<span class="keyword">continue</span>; </span><br><span class="line">		count += set.getTotalMediaItemCount(); -------- <span class="number">1</span> </span><br><span class="line">		<span class="keyword">if</span>(GalleryActivity.TV_LINK_DRM_HIDE_FLAG)&#123; </span><br><span class="line">			count -= set.getDrmCount();</span><br><span class="line">		&#125; </span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span>(set.getMediaSetType() == MEDIASET_TYPE_VIDEO)&#123; -------------<span class="number">2</span> </span><br><span class="line">    		<span class="keyword">if</span> (set <span class="keyword">instanceof</span> LocalAlbum) &#123; </span><br><span class="line">				mVideoCount = ((LocalAlbum)set).getTotalMediaItemVideoCount(); </span><br><span class="line">    		&#125; <span class="keyword">else</span> <span class="keyword">if</span> (set <span class="keyword">instanceof</span> FavoriteAlbum) &#123; </span><br><span class="line">				mVideoCount = ((FavoriteAlbum)set).getTotalMediaItemVideoCount(); &#125; </span><br><span class="line">			&#125; </span><br><span class="line">		Log.i(TAG, <span class="string">"-----combo++sub--count-"</span>+set.getTotalMediaItemCount()); -----------<span class="number">3</span> </span><br><span class="line"> 	&#125; </span><br><span class="line">	<span class="keyword">return</span> count;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如代码所示，<code>LocalMergeAlbum.getTotalMediaItemCount()</code>每执行 1 次，<code>LocalAlbum.getMediaItemCount()</code>至少执行 4 次!! </p>
+<p>对代码做个注释:</p>
+<ol>
+<li>不用解释了，直接就调用 1 次了</li>
+<li>在 set.getMediaSetType()里也执行了 1 次</li>
+<li>竟然在 log 里还执行了无关紧要的 1 次，之前从 traceView 发现一个 Log.i 耗时就源于这里。 </li>
+<li>mSources 是 image 和 video 两个类型各循环一次. </li>
+</ol>
+<p>接下来就优化代码。</p>
+<ul>
+<li>对于 3. 直接注释掉…</li>
+<li>对于4.把内部执行逻辑分为image和 Video，先判断再执行流程，减少不必要的流程，也就是在判断类型条件后的代码块中执行代码 1，而不是像当前这样每次都执行代码 1，然后再根据类型执行其他操作。</li>
+<li><p>对于 2. 因为重写该方法的地方比较多，所以只调整 LocalAlbum.getMediaSetType()内部逻辑。 这样，因为实际上 image 和 video 总是不同的文件夹，这个方法在优化后只会执行 1 次的 getTotalMediaItemCount()的方法。</p>
+<p>调整之后，每次执行这个函数就只做一次数据库查询了。</p>
+</li>
+</ul>
+<p>优化到这一步，初次加载相册和删除相册就已经很流畅了。但前面说了，调用 getMediaItemCount()的地方 很多，排查了一下，还有<code>LocalAlbumSet.AlbumsLoader.run()</code>中还有一处 <code>int count = album.getMediaItemCount();</code> 其中 count 并没有使用，所以是一段<strong>无用代码</strong>，可以注释掉。 </p>
+<blockquote>
+<p>所以说，平时在加Log或者删除无用代码的时候，一定要注意把不再使用的耗时的方法都去掉。否则都是定时炸弹。</p>
+</blockquote>
+<h3 id="优化四"><a href="#优化四" class="headerlink" title="优化四"></a>优化四</h3><p>触发刷新相册有几个操作:</p>
+<ol>
+<li><p>第一次打开相册的时候</p>
+</li>
+<li><p>删除相册的时候</p>
+</li>
+<li><p>添加相册的时候</p>
+<p>前三个发生在 ListAlbumSetFragment</p>
+</li>
+<li><p>添加相册后要从其他相册列表选择相片的时候，显示的 ListAlbumPickerFragment 也会刷新 List </p>
+</li>
+</ol>
+<p>前面的优化已经对第 1，2 点优化的很好了。然而对于 3，4 点还是有不流畅。 </p>
+<p>所以进行添加相册操作再看 log，通过堆栈信息，发现这个在操作下，<code>getMediaItemCount()</code>的执行基本全部来自于 <code>AlbumDataLoader.reloadTask.run()</code> </p>
+<p>可以知道这是一个线程。但通过 log 信息，发现这个线程有大量重复执行的情况，而且一个非常明显的现象就是，log 信息很混乱。看到线程重复执行，而且运行不同步，线程ID也有大量重复，每次操作都会创建新的线程。 </p>
+<p>所以特意打印出线程信息以及开关线程的 log: resume 是创建线程， pause 是结束线程，当前 log 中 pause 从未执行 </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">09-02 01:08:12.942 25843 25843 D UpdateThread: ======================&gt;resume&lt;====================</span><br><span class="line"></span><br><span class="line"> 09-02 01:08:12.959 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-359,5,main] </span><br><span class="line">  09-02 01:08:13.063 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-359,5,main] </span><br><span class="line">  09-02 01:08:13.140 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-359,5,main] </span><br><span class="line">  09-02 01:08:13.206 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-359,5,main] </span><br><span class="line">  09-02 01:08:20.625 25843 25843 D UpdateThread: ======================&gt;resume&lt;====================</span><br><span class="line"> 09-02 01:08:20.692 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-368,5,main] </span><br><span class="line"> 09-02 01:08:20.824 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-368,5,main] </span><br><span class="line"> 09-02 01:08:20.828 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-359,5,main] </span><br><span class="line"> 09-02 01:08:20.893 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-368,5,main] </span><br><span class="line"> 09-02 01:08:20.899 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-359,5,main] </span><br><span class="line"> 09-02 01:08:28.437 25843 25843 D UpdateThread: ======================&gt;resume&lt;====================</span><br><span class="line"> 09-02 01:08:28.697 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-368,5,main] </span><br><span class="line"> 09-02 01:08:28.707 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-380,5,main] </span><br><span class="line"> 09-02 01:08:28.796 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-380,5,main] </span><br><span class="line"> 09-02 01:08:28.886 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-368,5,main] </span><br><span class="line"> 09-02 01:08:28.890 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-380,5,main] </span><br><span class="line"> 09-02 01:08:29.048 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-380,5,main] </span><br><span class="line"> 09-02 01:08:29.064 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-368,5,main] </span><br><span class="line"> 09-02 01:08:29.065 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-380,5,main] </span><br><span class="line"> 09-02 01:08:29.107 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-380,5,main] </span><br><span class="line"> 09-02 01:08:29.127 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-368,5,main] </span><br><span class="line"> 09-02 01:08:29.149 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-380,5,main] </span><br><span class="line"> 09-02 01:08:29.184 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-380,5,main] </span><br><span class="line"> 09-02 01:08:29.185 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-368,5,main] </span><br><span class="line"> 09-02 01:08:29.224 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-380,5,main] </span><br><span class="line"> 09-02 01:08:29.228 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-368,5,main] </span><br><span class="line"> 09-02 01:08:29.258 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-380,5,main] </span><br><span class="line"> 09-02 01:08:29.283 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-380,5,main] </span><br><span class="line"> 09-02 01:08:29.326 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-380,5,main] </span><br><span class="line"> 09-02 01:08:29.355 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-380,5,main] </span><br><span class="line"> 09-02 01:08:42.739 25843 25843 D UpdateThread: ======================&gt;resume&lt;====================</span><br><span class="line"> 09-02 01:08:46.630 25843 25843 D UpdateThread: ======================&gt;resume&lt;====================</span><br><span class="line"> 09-02 01:08:49.243 25843 25843 D UpdateThread: ======================&gt;resume&lt;====================</span><br><span class="line"> 09-02 01:08:52.546 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-392,5,main] </span><br><span class="line"> 09-02 01:08:52.571 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-368,5,main] </span><br><span class="line"> 09-02 01:08:52.608 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-392,5,main] </span><br><span class="line"> 09-02 01:08:52.630 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-368,5,main] </span><br><span class="line"> 09-02 01:08:52.659 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-392,5,main] </span><br><span class="line"> 09-02 01:08:52.699 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-392,5,main] </span><br><span class="line"> 09-02 01:09:00.288 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-368,5,main] </span><br><span class="line"> 09-02 01:09:00.294 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-392,5,main] </span><br><span class="line"> 09-02 01:09:00.329 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-368,5,main] </span><br><span class="line"> 09-02 01:09:00.342 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-392,5,main] </span><br><span class="line"> 09-02 01:09:00.391 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-392,5,main] </span><br><span class="line"> 09-02 01:09:00.428 25843 25843 D UpdateThread: ------------------------------------------------------------------&gt;Thread[Thread-392,5,main] </span><br><span class="line"> 09-02 01:09:08.559 25843 25843 D UpdateThread: ======================&gt;resume&lt;====================</span><br><span class="line"> 09-02 01:09:13.460 25843 25843 D UpdateThread: ======================&gt;resume&lt;====================</span><br></pre></td></tr></table></figure>
+<p>可以看到，经过一些连续操作后线程越来越多。所以联想到应该有某处是关闭线程的。跟踪代码，发现在对应 Fragment 的生命周期 onPause 里应该是进行线程关闭的操作的，然而这段代码竟然被注释掉了。将注释打开，重新测试，发现这时候同一时间只有一条线程了。这样就避免了多个线程多次执行 <code>getMediaItemCount()</code>的方法了。 最后操作一下程序，现在的相册刷新过程就非常流畅了。和优化前完全是两种体验。 </p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>面对这种有固定复现步骤的性能问题，</p>
+<ul>
+<li>首先要定位到操作执行的相关代码段，通过阅读分析，推断可能出现问题的地方。然后，在关键流程处添加Log，然后复现问题，拿到相关Log。</li>
+<li>抓TraceView或者Systrace，结合Log信息，对比CPU耗时的方法和执行次数很多的方法。</li>
+<li>通过前两个信息定位到问题函数。然后添加堆栈信息Log.printStackTrace(new Throwable())，找到调用顺序（也可以用traceView看，但log打印会更直观）进行分析调试</li>
+</ul>
+<p>另外，也从中看到一些不规范的编码习惯造成的严重影响。比如，ListView布局引起的getView多次调用，这个就需要多学习，对相关机制多一些了解。比如Log里打印从数据库读取的数据，这个是需要注意的习惯，建议打Log的时候，直接打印变量，而不要直接调用方法。还有无用代码的删除，耗时间读取数据库，然后读出的数据没有任何作用，这个也是不应该的。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Wossoneri
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://wossoneri.github.io/2018/02/10/[Android]optimize-gallery-album-loader/" title="[Android]相册列表加载过程性能优化">http://wossoneri.github.io/2018/02/10/[Android]optimize-gallery-album-loader/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+          
+            <a href="/tags/性能优化/" rel="tag"><i class="fa fa-tag"></i> 性能优化</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/06/[MachineLearning]BackPropagation/" rel="next" title="[MachineLearning] 反向传播Back Propagation">
+                <i class="fa fa-chevron-left"></i> [MachineLearning] 反向传播Back Propagation
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/02/14/[DeepLearning][Charpter 9]CNN/" rel="prev" title=" [深度学习]Charpter 9:卷积网络">
+                 [深度学习]Charpter 9:卷积网络 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460"
+                alt="Wossoneri" />
+            
+              <p class="site-author-name" itemprop="name">Wossoneri</p>
+              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">73</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">75</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+            <div class="cc-license motion-element" itemprop="license">
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+              </a>
+            </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-globe"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#问题描述"><span class="nav-number">1.</span> <span class="nav-text">问题描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分析与解决"><span class="nav-number">2.</span> <span class="nav-text">分析与解决</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#优化一"><span class="nav-number">2.1.</span> <span class="nav-text">优化一</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#优化二"><span class="nav-number">2.2.</span> <span class="nav-text">优化二</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#优化三"><span class="nav-number">2.3.</span> <span class="nav-text">优化三</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#优化四"><span class="nav-number">2.4.</span> <span class="nav-text">优化四</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: '1518262168000', 
+            owner: 'wossoneri',
+            repo: 'wossoneri.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
+            
+                client_id: '40b6c719a11e3fca29e8'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("RHlsmdBRQUmQMHNOl3U1ocam-gzGzoHsz", "RU2vFPiDzi68XGHCgJXtBAqo");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/love.js"></script>

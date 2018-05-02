@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android,Framework,SystemServer," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="简单了解Android O SystemServer启动流程">
+<meta name="keywords" content="Android,Framework,SystemServer">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Android][Framework] Android O SystemServer启动流程">
+<meta property="og:url" content="http://wossoneri.github.io/2018/03/25/[Android][Framework]start-of-SystemServer/index.html">
+<meta property="og:site_name" content="Wossoneri`s Blog">
+<meta property="og:description" content="简单了解Android O SystemServer启动流程">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/system_server.jpg?raw=true">
+<meta property="og:updated_time" content="2018-05-02T17:57:31.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[Android][Framework] Android O SystemServer启动流程">
+<meta name="twitter:description" content="简单了解Android O SystemServer启动流程">
+<meta name="twitter:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/system_server.jpg?raw=true">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '6234852363740382000',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wossoneri.github.io/2018/03/25/[Android][Framework]start-of-SystemServer/"/>
+
+
+
+
+
+  <title>[Android][Framework] Android O SystemServer启动流程 | Wossoneri`s Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-70716047-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/wossoneri"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wossoneri`s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2018/03/25/[Android][Framework]start-of-SystemServer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wossoneri">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wossoneri`s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[Android][Framework] Android O SystemServer启动流程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-25T01:55:00+08:00">
+                2018-03-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/03/25/[Android][Framework]start-of-SystemServer/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/03/25/[Android][Framework]start-of-SystemServer/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/03/25/[Android][Framework]start-of-SystemServer/" class="leancloud_visitors" data-flag-title="[Android][Framework] Android O SystemServer启动流程">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+	
+  		  <span class="post-letters-count">
+            &nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+                 <i class="fa fa-clock-o" ></i>
+            </span>
+		        <span class="post-meta-item-text">总记</span>
+            <span class="post-count">2,590 字</span>
+		        <span class="post-meta-item-text">读完需要</span>
+    		    <span class="post-count">14 分</span>
+  		  </span>
+           
+         
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  简单了解Android O SystemServer启动流程
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/system_server.jpg?raw=true" alt=""></p>
+<h4 id="SystemServer-main"><a href="#SystemServer-main" class="headerlink" title="SystemServer.main"></a>SystemServer.main</h4><p>SystemServer通过ZygoteInit.java反射启动，首先会进入main方法，main会构造一个新的SystemServer，然后运行run()方法</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">/frameworks/base/services/java/com/android/server/SystemServer.java</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">SystemServer</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The main entry point from zygote.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">new</span> SystemServer().run();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="SystemServer-run"><a href="#SystemServer-run" class="headerlink" title="SystemServer.run"></a>SystemServer.run</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        traceBeginAndSlog(<span class="string">"InitBeforeStartServices"</span>);</span><br><span class="line">        <span class="comment">// 如果一个设备时间在1970年之前，很多API会crash，所以会将时间统一设置为1970年起</span></span><br><span class="line">        <span class="keyword">if</span> (System.currentTimeMillis() &lt; EARLIEST_SUPPORTED_TIME) &#123;</span><br><span class="line">            Slog.w(TAG, <span class="string">"System clock is before 1970; setting to 1970."</span>);</span><br><span class="line">            SystemClock.setCurrentTimeMillis(EARLIEST_SUPPORTED_TIME);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Default the timezone property to GMT if not set.</span></span><br><span class="line">        String timezoneProperty =  SystemProperties.get(<span class="string">"persist.sys.timezone"</span>);</span><br><span class="line">        <span class="keyword">if</span> (timezoneProperty == <span class="keyword">null</span> || timezoneProperty.isEmpty()) &#123;</span><br><span class="line">            Slog.w(TAG, <span class="string">"Timezone not set; setting to GMT."</span>);</span><br><span class="line">            SystemProperties.set(<span class="string">"persist.sys.timezone"</span>, <span class="string">"GMT"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// If the system has "persist.sys.language" and friends set, replace them with</span></span><br><span class="line">        <span class="comment">// "persist.sys.locale". Note that the default locale at this point is calculated</span></span><br><span class="line">        <span class="comment">// using the "-Duser.locale" command line flag. That flag is usually populated by</span></span><br><span class="line">        <span class="comment">// AndroidRuntime using the same set of system properties, but only the system_server</span></span><br><span class="line">        <span class="comment">// and system apps are allowed to set them.</span></span><br><span class="line">        <span class="comment">//</span></span><br><span class="line">        <span class="comment">// <span class="doctag">NOTE:</span> Most changes made here will need an equivalent change to</span></span><br><span class="line">        <span class="comment">// core/jni/AndroidRuntime.cpp</span></span><br><span class="line">        <span class="keyword">if</span> (!SystemProperties.get(<span class="string">"persist.sys.language"</span>).isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">final</span> String languageTag = Locale.getDefault().toLanguageTag();</span><br><span class="line"></span><br><span class="line">            SystemProperties.set(<span class="string">"persist.sys.locale"</span>, languageTag);</span><br><span class="line">            SystemProperties.set(<span class="string">"persist.sys.language"</span>, <span class="string">""</span>);</span><br><span class="line">            SystemProperties.set(<span class="string">"persist.sys.country"</span>, <span class="string">""</span>);</span><br><span class="line">            SystemProperties.set(<span class="string">"persist.sys.localevar"</span>, <span class="string">""</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// The system server should never make non-oneway calls</span></span><br><span class="line">        Binder.setWarnOnBlocking(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Here we go! 正式进入system server</span></span><br><span class="line">        Slog.i(TAG, <span class="string">"Entered the Android system server!"</span>);</span><br><span class="line">        <span class="keyword">int</span> uptimeMillis = (<span class="keyword">int</span>) SystemClock.elapsedRealtime();</span><br><span class="line">        EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_SYSTEM_RUN, uptimeMillis);</span><br><span class="line">        <span class="keyword">if</span> (!mRuntimeRestart) &#123;</span><br><span class="line">            MetricsLogger.histogram(<span class="keyword">null</span>, <span class="string">"boot_system_server_init"</span>, uptimeMillis);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// In case the runtime switched since last boot (such as when</span></span><br><span class="line">        <span class="comment">// the old runtime was removed in an OTA), set the system</span></span><br><span class="line">        <span class="comment">// property so that it is in sync. We can | xq oqi't do this in</span></span><br><span class="line">        <span class="comment">// libnativehelper's JniInvocation::Init code where we already</span></span><br><span class="line">        <span class="comment">// had to fallback to a different runtime because it is</span></span><br><span class="line">        <span class="comment">// running as root and we need to be the system user to set</span></span><br><span class="line">        <span class="comment">// the property. http://b/11463182</span></span><br><span class="line">      	<span class="comment">// 变更虚拟机的库文件</span></span><br><span class="line">        SystemProperties.set(<span class="string">"persist.sys.dalvik.vm.lib.2"</span>, VMRuntime.getRuntime().vmLibrary());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Enable the sampling profiler.</span></span><br><span class="line">        <span class="keyword">if</span> (SamplingProfilerIntegration.isEnabled()) &#123;</span><br><span class="line">            SamplingProfilerIntegration.start();</span><br><span class="line">            mProfilerSnapshotTimer = <span class="keyword">new</span> Timer();</span><br><span class="line">            mProfilerSnapshotTimer.schedule(<span class="keyword">new</span> TimerTask() &#123;</span><br><span class="line">                    <span class="meta">@Override</span></span><br><span class="line">                    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                        SamplingProfilerIntegration.writeSnapshot(<span class="string">"system_server"</span>, <span class="keyword">null</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;, SNAPSHOT_INTERVAL, SNAPSHOT_INTERVAL);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Mmmmmm... more memory!</span></span><br><span class="line">      	<span class="comment">// 因为启动过程需要较多的虚拟机内存空间，清除vm内存增长上限</span></span><br><span class="line">        VMRuntime.getRuntime().clearGrowthLimit();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// The system server has to run all of the time, so it needs to be</span></span><br><span class="line">        <span class="comment">// as efficient as possible with its memory usage.</span></span><br><span class="line">        <span class="comment">// 设置内存利用率0.8</span></span><br><span class="line">        VMRuntime.getRuntime().setTargetHeapUtilization(<span class="number">0.8f</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Some devices rely on runtime fingerprint generation, so make sure</span></span><br><span class="line">        <span class="comment">// we've defined it before booting further.</span></span><br><span class="line">        <span class="comment">// 部分机型依赖于运行时就产生指纹信息，因此需要在开机完成前定义</span></span><br><span class="line">        Build.ensureFingerprintProperty();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Within the system server, it is an error to access Environment paths without</span></span><br><span class="line">        <span class="comment">// explicitly specifying a user.</span></span><br><span class="line">      	<span class="comment">// 指定访问环境变量的用户</span></span><br><span class="line">        Environment.setUserRequired(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Within the system server, any incoming Bundles should be defused</span></span><br><span class="line">        <span class="comment">// to avoid throwing BadParcelableException.</span></span><br><span class="line">        BaseBundle.setShouldDefuse(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Ensure binder calls into the system always run at foreground priority.</span></span><br><span class="line">      	<span class="comment">// 确保进入系统的binder调用运行高优先级</span></span><br><span class="line">        BinderInternal.disableBackgroundScheduling(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Increase the number of binder threads in system_server</span></span><br><span class="line">        BinderInternal.setMaxThreads(sMaxBinderThreads);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Prepare the main looper thread (this thread).</span></span><br><span class="line">        android.os.Process.setThreadPriority(</span><br><span class="line">            android.os.Process.THREAD_PRIORITY_FOREGROUND);</span><br><span class="line">        android.os.Process.setCanSelfBackground(<span class="keyword">false</span>);</span><br><span class="line">        Looper.prepareMainLooper();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Initialize native services.</span></span><br><span class="line">      	<span class="comment">// 加载native 库</span></span><br><span class="line">        System.loadLibrary(<span class="string">"android_servers"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Check whether we failed to shut down last time we tried.</span></span><br><span class="line">        <span class="comment">// This call may not return.</span></span><br><span class="line">        performPendingShutdown();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Initialize the system context.</span></span><br><span class="line">        createSystemContext();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Create the system service manager.</span></span><br><span class="line">        mSystemServiceManager = <span class="keyword">new</span> SystemServiceManager(mSystemContext);</span><br><span class="line">        mSystemServiceManager.setRuntimeRestarted(mRuntimeRestart);</span><br><span class="line">      	<span class="comment">// 添加mSystemServiceManager到本地服务成员sLocalServiceObjects 见LocalServices.java</span></span><br><span class="line">        LocalServices.addService(SystemServiceManager.class, mSystemServiceManager);</span><br><span class="line">        <span class="comment">// Prepare the thread pool for init tasks that can be parallelized</span></span><br><span class="line">        SystemServerInitThreadPool.get();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        traceEnd();  <span class="comment">// InitBeforeStartServices</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Start services.</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        traceBeginAndSlog(<span class="string">"StartServices"</span>);</span><br><span class="line">        startBootstrapServices(); <span class="comment">// 启动引导服务</span></span><br><span class="line">        startCoreServices(); <span class="comment">// 启动核心服务</span></span><br><span class="line">        startOtherServices(); <span class="comment">// 启动其他服务</span></span><br><span class="line">        SystemServerInitThreadPool.shutdown();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Throwable ex) &#123;</span><br><span class="line">        Slog.e(<span class="string">"System"</span>, <span class="string">"******************************************"</span>);</span><br><span class="line">        Slog.e(<span class="string">"System"</span>, <span class="string">"************ Failure starting system services"</span>, ex);</span><br><span class="line">        <span class="keyword">throw</span> ex;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        traceEnd();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// For debug builds, log event loop stalls to dropbox for analysis.</span></span><br><span class="line">    <span class="keyword">if</span> (StrictMode.conditionallyEnableDebugLogging()) &#123;</span><br><span class="line">        Slog.i(TAG, <span class="string">"Enabled StrictMode for system server main thread."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!mRuntimeRestart &amp;&amp; !isFirstBootOrUpgrade()) &#123;</span><br><span class="line">        <span class="keyword">int</span> uptimeMillis = (<span class="keyword">int</span>) SystemClock.elapsedRealtime();</span><br><span class="line">        MetricsLogger.histogram(<span class="keyword">null</span>, <span class="string">"boot_system_server_ready"</span>, uptimeMillis);</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> MAX_UPTIME_MILLIS = <span class="number">60</span> * <span class="number">1000</span>;</span><br><span class="line">        <span class="keyword">if</span> (uptimeMillis &gt; MAX_UPTIME_MILLIS) &#123;</span><br><span class="line">            Slog.wtf(SYSTEM_SERVER_TIMING_TAG,</span><br><span class="line">                    <span class="string">"SystemServer init took too long. uptimeMillis="</span> + uptimeMillis);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Loop forever.</span></span><br><span class="line">    Looper.loop();</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Main thread loop unexpectedly exited"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面看一下run函数用到的本地私有方法</p>
+<h4 id="SystemServer-performPendingShutdown"><a href="#SystemServer-performPendingShutdown" class="headerlink" title="SystemServer.performPendingShutdown"></a>SystemServer.performPendingShutdown</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">performPendingShutdown</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  	<span class="comment">// 通过检查ShutdownThread.SHUTDOWN_ACTION_PROPERTY来判断上次关机是否失败</span></span><br><span class="line">    <span class="keyword">final</span> String shutdownAction = SystemProperties.get(</span><br><span class="line">            ShutdownThread.SHUTDOWN_ACTION_PROPERTY, <span class="string">""</span>);</span><br><span class="line">    <span class="keyword">if</span> (shutdownAction != <span class="keyword">null</span> &amp;&amp; shutdownAction.length() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">boolean</span> reboot = (shutdownAction.charAt(<span class="number">0</span>) == <span class="string">'1'</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">final</span> String reason;</span><br><span class="line">        <span class="keyword">if</span> (shutdownAction.length() &gt; <span class="number">1</span>) &#123;</span><br><span class="line">            reason = shutdownAction.substring(<span class="number">1</span>, shutdownAction.length());</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            reason = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// If it's a pending reboot into recovery to apply an update,</span></span><br><span class="line">        <span class="comment">// always make sure uncrypt gets executed properly when needed.</span></span><br><span class="line">        <span class="comment">// If '/cache/recovery/block.map' hasn't been created, stop the</span></span><br><span class="line">        <span class="comment">// reboot which will fail for sure, and get a chance to capture a</span></span><br><span class="line">        <span class="comment">// bugreport when that's still feasible. (Bug: 26444951)</span></span><br><span class="line">        <span class="keyword">if</span> (reason != <span class="keyword">null</span> &amp;&amp; reason.startsWith(PowerManager.REBOOT_RECOVERY_UPDATE)) &#123;</span><br><span class="line">            File packageFile = <span class="keyword">new</span> File(UNCRYPT_PACKAGE_FILE);</span><br><span class="line">            <span class="keyword">if</span> (packageFile.exists()) &#123;</span><br><span class="line">                String filename = <span class="keyword">null</span>;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    filename = FileUtils.readTextFile(packageFile, <span class="number">0</span>, <span class="keyword">null</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                    Slog.e(TAG, <span class="string">"Error reading uncrypt package file"</span>, e);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (filename != <span class="keyword">null</span> &amp;&amp; filename.startsWith(<span class="string">"/data"</span>)) &#123;</span><br><span class="line">                    <span class="keyword">if</span> (!<span class="keyword">new</span> File(BLOCK_MAP_FILE).exists()) &#123;</span><br><span class="line">                        Slog.e(TAG, <span class="string">"Can't find block map file, uncrypt failed or "</span> +</span><br><span class="line">                                   <span class="string">"unexpected runtime restart?"</span>);</span><br><span class="line">                        <span class="keyword">return</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        ShutdownThread.rebootOrShutdown(<span class="keyword">null</span>, reboot, reason);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="SystemServer-createSystemContext"><a href="#SystemServer-createSystemContext" class="headerlink" title="SystemServer.createSystemContext"></a>SystemServer.createSystemContext</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">createSystemContext</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  	<span class="comment">// 创建系统上下文并设置主题</span></span><br><span class="line">    ActivityThread activityThread = ActivityThread.systemMain();</span><br><span class="line">    mSystemContext = activityThread.getSystemContext();</span><br><span class="line">    mSystemContext.setTheme(DEFAULT_SYSTEM_THEME);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> Context systemUiContext = activityThread.getSystemUiContext();</span><br><span class="line">    systemUiContext.setTheme(DEFAULT_SYSTEM_THEME);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="SystemServer-startBootstrapServices"><a href="#SystemServer-startBootstrapServices" class="headerlink" title="SystemServer.startBootstrapServices"></a>SystemServer.startBootstrapServices</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Starts the small tangle of critical services that are needed to get</span></span><br><span class="line"><span class="comment"> * the system off the ground.  These services have complex mutual dependencies</span></span><br><span class="line"><span class="comment"> * which is why we initialize them all in one place here.  Unless your service</span></span><br><span class="line"><span class="comment"> * is also entwined in these dependencies, it should be initialized in one of</span></span><br><span class="line"><span class="comment"> * the other functions.</span></span><br><span class="line"><span class="comment"> * 这里的服务都是有复杂的依赖性，所以放在这里统一初始化。如果有与这些服务不相关的服务需要启动，应该放在其他地方去做</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">startBootstrapServices</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Slog.i(TAG, <span class="string">"Reading configuration..."</span>);</span><br><span class="line">    <span class="keyword">final</span> String TAG_SYSTEM_CONFIG = <span class="string">"ReadingSystemConfig"</span>;</span><br><span class="line">    traceBeginAndSlog(TAG_SYSTEM_CONFIG);</span><br><span class="line">    SystemServerInitThreadPool.get().submit(SystemConfig::getInstance, TAG_SYSTEM_CONFIG);</span><br><span class="line">    traceEnd();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Wait for installd to finish starting up so that it has a chance to</span></span><br><span class="line">    <span class="comment">// create critical directories such as /data/user with the appropriate</span></span><br><span class="line">    <span class="comment">// permissions.  We need this to complete before we initialize other services.</span></span><br><span class="line">    traceBeginAndSlog(<span class="string">"StartInstaller"</span>);</span><br><span class="line">  	<span class="comment">// 等待installd启动，使其有时间建立正确权限的目录。之后才可以初始化其他服务</span></span><br><span class="line">    Installer installer = mSystemServiceManager.startService(Installer.class);</span><br><span class="line">    traceEnd();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// In some cases after launching an app we need to access device identifiers,</span></span><br><span class="line">    <span class="comment">// therefore register the device identifier policy before the activity manager.</span></span><br><span class="line">    traceBeginAndSlog(<span class="string">"DeviceIdentifiersPolicyService"</span>);</span><br><span class="line">    mSystemServiceManager.startService(DeviceIdentifiersPolicyService.class);</span><br><span class="line">    traceEnd();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Activity manager runs the show.</span></span><br><span class="line">    traceBeginAndSlog(<span class="string">"StartActivityManager"</span>);</span><br><span class="line">  	<span class="comment">// 启动ActivityManagerService</span></span><br><span class="line">    mActivityManagerService = mSystemServiceManager.startService(</span><br><span class="line">            ActivityManagerService.Lifecycle.class).getService();</span><br><span class="line">    mActivityManagerService.setSystemServiceManager(mSystemServiceManager);</span><br><span class="line">    mActivityManagerService.setInstaller(installer);</span><br><span class="line">    traceEnd();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Power manager needs to be started early because other services need it.</span></span><br><span class="line">    <span class="comment">// Native daemons may be watching for it to be registered so it must be ready</span></span><br><span class="line">    <span class="comment">// to handle incoming binder calls immediately (including being able to verify</span></span><br><span class="line">    <span class="comment">// the permissions for those calls).</span></span><br><span class="line">  	<span class="comment">// 启动PowerManagerService，因为其他服务需要使用它，所以需要早期创建</span></span><br><span class="line">    traceBeginAndSlog(<span class="string">"StartPowerManager"</span>);</span><br><span class="line">    mPowerManagerService = mSystemServiceManager.startService(PowerManagerService.class);</span><br><span class="line">    traceEnd();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Now that the power manager has been started, let the activity manager</span></span><br><span class="line">    <span class="comment">// initialize power management features.</span></span><br><span class="line">    traceBeginAndSlog(<span class="string">"InitPowerManagement"</span>);</span><br><span class="line">    mActivityManagerService.initPowerManagement();</span><br><span class="line">    traceEnd();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Bring up recovery system in case a rescue party needs a reboot</span></span><br><span class="line">  	<span class="comment">// 如果一个rescure party需要重启，则启动recovery</span></span><br><span class="line">  	<span class="comment">// rescure party是Android O的新特性，代码位于/services/core/java/com/android/server/RescueParty.java</span></span><br><span class="line">    <span class="keyword">if</span> (!SystemProperties.getBoolean(<span class="string">"config.disable_noncore"</span>, <span class="keyword">false</span>)) &#123;</span><br><span class="line">        traceBeginAndSlog(<span class="string">"StartRecoverySystemService"</span>);</span><br><span class="line">        mSystemServiceManager.startService(RecoverySystemService.class);</span><br><span class="line">        traceEnd();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Now that we have the bare essentials of the OS up and running, take</span></span><br><span class="line">    <span class="comment">// note that we just booted, which might send out a rescue party if</span></span><br><span class="line">    <span class="comment">// we're stuck in a runtime restart loop.</span></span><br><span class="line">  	<span class="comment">// 正常启动系统做一个标记，如果开机重启循环，就会发出一个rescure party</span></span><br><span class="line">    RescueParty.noteBoot(mSystemContext);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Manages LEDs and display backlight so we need it to bring up the display.</span></span><br><span class="line">  	<span class="comment">// 点亮display</span></span><br><span class="line">    traceBeginAndSlog(<span class="string">"StartLightsService"</span>);</span><br><span class="line">    mSystemServiceManager.startService(LightsService.class);</span><br><span class="line">    traceEnd();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Display manager is needed to provide display metrics before package manager</span></span><br><span class="line">    <span class="comment">// starts up.</span></span><br><span class="line">  	<span class="comment">// 要在package manager之前启动display manager，这样可以提供display metrics数据下去</span></span><br><span class="line">    traceBeginAndSlog(<span class="string">"StartDisplayManager"</span>);</span><br><span class="line">    mDisplayManagerService = mSystemServiceManager.startService(DisplayManagerService.class);</span><br><span class="line">    traceEnd();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// We need the default display before we can initialize the package manager.</span></span><br><span class="line">  	<span class="comment">// 初始化package manager前需要default display</span></span><br><span class="line">    traceBeginAndSlog(<span class="string">"WaitForDisplay"</span>);</span><br><span class="line">    mSystemServiceManager.startBootPhase(SystemService.PHASE_WAIT_FOR_DEFAULT_DISPLAY);</span><br><span class="line">    traceEnd();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Only run "core" apps if we're encrypting the device.</span></span><br><span class="line">  	<span class="comment">// 设备在加密时，运行核心app</span></span><br><span class="line">    String cryptState = SystemProperties.get(<span class="string">"vold.decrypt"</span>);</span><br><span class="line">    <span class="keyword">if</span> (ENCRYPTING_STATE.equals(cryptState)) &#123;</span><br><span class="line">        Slog.w(TAG, <span class="string">"Detected encryption in progress - only parsing core apps"</span>);</span><br><span class="line">        mOnlyCore = <span class="keyword">true</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (ENCRYPTED_STATE.equals(cryptState)) &#123;</span><br><span class="line">        Slog.w(TAG, <span class="string">"Device encrypted - only parsing core apps"</span>);</span><br><span class="line">        mOnlyCore = <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Start the package manager.</span></span><br><span class="line">  	<span class="comment">// 开始启动PMS</span></span><br><span class="line">    <span class="keyword">if</span> (!mRuntimeRestart) &#123;</span><br><span class="line">        MetricsLogger.histogram(<span class="keyword">null</span>, <span class="string">"boot_package_manager_init_start"</span>,</span><br><span class="line">                (<span class="keyword">int</span>) SystemClock.elapsedRealtime());</span><br><span class="line">    &#125;</span><br><span class="line">    traceBeginAndSlog(<span class="string">"StartPackageManagerService"</span>);</span><br><span class="line">    mPackageManagerService = PackageManagerService.main(mSystemContext, installer,</span><br><span class="line">            mFactoryTestMode != FactoryTest.FACTORY_TEST_OFF, mOnlyCore);</span><br><span class="line">    mFirstBoot = mPackageManagerService.isFirstBoot();</span><br><span class="line">    mPackageManager = mSystemContext.getPackageManager();</span><br><span class="line">    traceEnd();</span><br><span class="line">    <span class="keyword">if</span> (!mRuntimeRestart &amp;&amp; !isFirstBootOrUpgrade()) &#123;</span><br><span class="line">        MetricsLogger.histogram(<span class="keyword">null</span>, <span class="string">"boot_package_manager_init_ready"</span>,</span><br><span class="line">                (<span class="keyword">int</span>) SystemClock.elapsedRealtime());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Manages A/B OTA dexopting. This is a bootstrap service as we need it to rename</span></span><br><span class="line">    <span class="comment">// A/B artifacts after boot, before anything else might touch/need them.</span></span><br><span class="line">    <span class="comment">// Note: this isn't needed during decryption (we don't have /data anyways).</span></span><br><span class="line">    <span class="keyword">if</span> (!mOnlyCore) &#123;</span><br><span class="line">        <span class="keyword">boolean</span> disableOtaDexopt = SystemProperties.getBoolean(<span class="string">"config.disable_otadexopt"</span>,</span><br><span class="line">                <span class="keyword">false</span>);</span><br><span class="line">        <span class="keyword">if</span> (!disableOtaDexopt) &#123;</span><br><span class="line">            traceBeginAndSlog(<span class="string">"StartOtaDexOptService"</span>);</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                OtaDexoptService.main(mSystemContext, mPackageManagerService);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Throwable e) &#123;</span><br><span class="line">                reportWtf(<span class="string">"starting OtaDexOptService"</span>, e);</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                traceEnd();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    traceBeginAndSlog(<span class="string">"StartUserManagerService"</span>);</span><br><span class="line">  	<span class="comment">// UserManagerService 新建目录/data/user/</span></span><br><span class="line">    mSystemServiceManager.startService(UserManagerService.LifeCycle.class);</span><br><span class="line">    traceEnd();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Initialize attribute cache used to cache resources from packages.</span></span><br><span class="line">    traceBeginAndSlog(<span class="string">"InitAttributerCache"</span>);</span><br><span class="line">    AttributeCache.init(mSystemContext);</span><br><span class="line">    traceEnd();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Set up the Application instance for the system process and get started.</span></span><br><span class="line">  	<span class="comment">// 设置AMS</span></span><br><span class="line">    traceBeginAndSlog(<span class="string">"SetSystemProcess"</span>);</span><br><span class="line">    mActivityManagerService.setSystemProcess();</span><br><span class="line">    traceEnd();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// DisplayManagerService needs to setup android.display scheduling related policies</span></span><br><span class="line">    <span class="comment">// since setSystemProcess() would have overridden policies due to setProcessGroup</span></span><br><span class="line">  	<span class="comment">// 配置displayManagerService</span></span><br><span class="line">    mDisplayManagerService.setupSchedulerPolicies();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Manages Overlay packages</span></span><br><span class="line">  	<span class="comment">// 启动OverlayManagerService</span></span><br><span class="line">    traceBeginAndSlog(<span class="string">"StartOverlayManagerService"</span>);</span><br><span class="line">    mSystemServiceManager.startService(<span class="keyword">new</span> OverlayManagerService(mSystemContext, installer));</span><br><span class="line">    traceEnd();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// The sensor service needs access to package manager service, app ops</span></span><br><span class="line">    <span class="comment">// service, and permissions service, therefore we start it after them.</span></span><br><span class="line">    <span class="comment">// Start sensor service in a separate thread. Completion should be checked</span></span><br><span class="line">    <span class="comment">// before using it.</span></span><br><span class="line">  	<span class="comment">// sensor service需要访问PMS,app ops service和permission service。所以基本上在最后启动。</span></span><br><span class="line">  	<span class="comment">// sensor在线程启动，访问前需要检查是否启动完成</span></span><br><span class="line">    mSensorServiceStart = SystemServerInitThreadPool.get().submit(() -&gt; &#123;</span><br><span class="line">        BootTimingsTraceLog traceLog = <span class="keyword">new</span> BootTimingsTraceLog(</span><br><span class="line">                SYSTEM_SERVER_TIMING_ASYNC_TAG, Trace.TRACE_TAG_SYSTEM_SERVER);</span><br><span class="line">        traceLog.traceBegin(START_SENSOR_SERVICE);</span><br><span class="line">        startSensorService();</span><br><span class="line">        traceLog.traceEnd();</span><br><span class="line">    &#125;, START_SENSOR_SERVICE);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>BootstrapService整理：</p>
+<ol>
+<li><p><strong>Installer</strong>.class</p>
+<p>等待installd启动，使其有时间建立正确权限的目录。之后才可以初始化其他服务。</p>
+</li>
+<li><p><strong>DeviceIdentifiersPolicyService</strong>.class</p>
+<p>在activity manager之前启动该服务，提供app访问设备identifier。</p>
+</li>
+<li><p><strong>ActivityManagerService</strong>.Lifecycle.class</p>
+<p>启动AMS</p>
+</li>
+<li><p><strong>PowerManagerService</strong>.class</p>
+<p>启动PowerManagerService，因为其他服务需要使用它，所以需要早期创建。</p>
+</li>
+<li><p>mActivityManagerService.initPowerManagement();</p>
+<p>由AMS初始化PowerManagerService</p>
+</li>
+<li><p><strong>RecoverySystemService</strong>.class</p>
+<p>准备rescue party相关</p>
+</li>
+<li><p><strong>LightsService</strong>.class</p>
+<p>点亮display</p>
+</li>
+<li><p><strong>DisplayManagerService</strong>.class</p>
+<p>上一步点亮屏幕后，启动displayManagerService，准备display metrics数据</p>
+</li>
+<li><p>mSystemServiceManager.startBootPhase(SystemService.PHASE_WAIT_FOR_DEFAULT_DISPLAY);</p>
+<p>systemServiceManager等待display</p>
+</li>
+<li><p><strong>PackageManagerService</strong>.main</p>
+<p>启动PMS</p>
+</li>
+<li><p><strong>UserManagerService</strong>.LifeCycle.class</p>
+<p>启动UserManagerService，管理多用户，创建/data/user目录</p>
+</li>
+<li><p>AttributeCache.init(mSystemContext);</p>
+<p>初始化attribute cache，用来缓存从packages拿到的资源</p>
+</li>
+<li><p>mActivityManagerService.setSystemProcess();</p>
+<p>设置AMS</p>
+</li>
+<li><p>mDisplayManagerService.setupSchedulerPolicies();</p>
+<p>设置DisplayManagerService的schedule</p>
+</li>
+<li><p>new <strong>OverlayManagerService</strong></p>
+<p>启动OverlayManagerService</p>
+</li>
+<li><p>start<strong>SensorService</strong>();</p>
+<p>启动sensor服务，最后启动它，而且是在线程中启动，所以使用时需要检查完整性</p>
+</li>
+</ol>
+<h4 id="SystemServer-startCoreServices"><a href="#SystemServer-startCoreServices" class="headerlink" title="SystemServer.startCoreServices"></a>SystemServer.startCoreServices</h4><p>来了解一下核心服务，核心的也就是最基本的。这些服务不会和启动阶段的进程产生影响。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Starts some essential services that are not tangled up in the bootstrap process.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">startCoreServices</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Records errors and logs, for example wtf()</span></span><br><span class="line">  	<span class="comment">// 记录error和log的服务，经典的wtf的log...</span></span><br><span class="line">    traceBeginAndSlog(<span class="string">"StartDropBoxManager"</span>);</span><br><span class="line">    mSystemServiceManager.startService(DropBoxManagerService.class);</span><br><span class="line">    traceEnd();</span><br><span class="line"></span><br><span class="line">    traceBeginAndSlog(<span class="string">"StartBatteryService"</span>);</span><br><span class="line">    <span class="comment">// Tracks the battery level.  Requires LightService.</span></span><br><span class="line">  	<span class="comment">// 统计电池的服务，需要LightService</span></span><br><span class="line">    mSystemServiceManager.startService(BatteryService.class);</span><br><span class="line">    traceEnd();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Tracks application usage stats.</span></span><br><span class="line">  	<span class="comment">// 统计应用使用情况的服务</span></span><br><span class="line">    traceBeginAndSlog(<span class="string">"StartUsageService"</span>);</span><br><span class="line">    mSystemServiceManager.startService(UsageStatsService.class);</span><br><span class="line">    mActivityManagerService.setUsageStatsManager(</span><br><span class="line">            LocalServices.getService(UsageStatsManagerInternal.class));</span><br><span class="line">    traceEnd();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Tracks whether the updatable WebView is in a ready state and watches for update installs.</span></span><br><span class="line">    traceBeginAndSlog(<span class="string">"StartWebViewUpdateService"</span>);</span><br><span class="line">    mWebViewUpdateService = mSystemServiceManager.startService(WebViewUpdateService.class);</span><br><span class="line">    traceEnd();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li><p><strong>DropBoxManagerService</strong>.class</p>
+<p>记录error和log的服务</p>
+</li>
+<li><p><strong>BatteryService</strong>.class</p>
+<p>记录电池使用的服务</p>
+</li>
+<li><p><strong>UsageStatsService</strong>.class</p>
+<p>应用使用情况的服务</p>
+</li>
+<li><p><strong>WebViewUpdateService</strong>.class</p>
+<p>WebView更新的服务</p>
+</li>
+</ol>
+<h4 id="SystemServer-startOtherServices"><a href="#SystemServer-startOtherServices" class="headerlink" title="SystemServer.startOtherServices"></a>SystemServer.startOtherServices</h4><p>启动一些没有被重构和管理的杂项。</p>
+<p>这个代码很长，有一千多行就不贴了。基本上如果遇到一些前面过程没提到的服务，就可以到这里面找。</p>
+<p>这个方法内最后的代码是：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// We now tell the activity manager it is okay to run third party</span></span><br><span class="line"><span class="comment">// code.  It will call back into us once it has gotten to the state</span></span><br><span class="line"><span class="comment">// where third party code can really run (but before it has actually</span></span><br><span class="line"><span class="comment">// started launching the initial applications), for us to complete our</span></span><br><span class="line"><span class="comment">// initialization.</span></span><br><span class="line">mActivityManagerService.systemReady(() -&gt; &#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这时候AMS已经启动完成，可以运行三方代码了。</p>
+<p>参考</p>
+<p><a href="http://gityuan.com/2016/02/20/android-system-server-2/" target="_blank" rel="external">http://gityuan.com/2016/02/20/android-system-server-2/</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Wossoneri
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://wossoneri.github.io/2018/03/25/[Android][Framework]start-of-SystemServer/" title="[Android][Framework] Android O SystemServer启动流程">http://wossoneri.github.io/2018/03/25/[Android][Framework]start-of-SystemServer/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+          
+            <a href="/tags/Framework/" rel="tag"><i class="fa fa-tag"></i> Framework</a>
+          
+            <a href="/tags/SystemServer/" rel="tag"><i class="fa fa-tag"></i> SystemServer</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/14/[MachingLearning][Repost]Understanding-LSTM/" rel="next" title="[MachineLearning][转载]LSTM">
+                <i class="fa fa-chevron-left"></i> [MachineLearning][转载]LSTM
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/04/02/[Android]MediaProjection-Screenshot/" rel="prev" title="[Android] 使用MediaProjection截屏">
+                [Android] 使用MediaProjection截屏 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460"
+                alt="Wossoneri" />
+            
+              <p class="site-author-name" itemprop="name">Wossoneri</p>
+              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">73</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">75</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+            <div class="cc-license motion-element" itemprop="license">
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+              </a>
+            </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-globe"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#SystemServer-main"><span class="nav-number">1.</span> <span class="nav-text">SystemServer.main</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SystemServer-run"><span class="nav-number">2.</span> <span class="nav-text">SystemServer.run</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SystemServer-performPendingShutdown"><span class="nav-number">3.</span> <span class="nav-text">SystemServer.performPendingShutdown</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SystemServer-createSystemContext"><span class="nav-number">4.</span> <span class="nav-text">SystemServer.createSystemContext</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SystemServer-startBootstrapServices"><span class="nav-number">5.</span> <span class="nav-text">SystemServer.startBootstrapServices</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SystemServer-startCoreServices"><span class="nav-number">6.</span> <span class="nav-text">SystemServer.startCoreServices</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SystemServer-startOtherServices"><span class="nav-number">7.</span> <span class="nav-text">SystemServer.startOtherServices</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: '1521914100000', 
+            owner: 'wossoneri',
+            repo: 'wossoneri.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
+            
+                client_id: '40b6c719a11e3fca29e8'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("RHlsmdBRQUmQMHNOl3U1ocam-gzGzoHsz", "RU2vFPiDzi68XGHCgJXtBAqo");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/love.js"></script>
