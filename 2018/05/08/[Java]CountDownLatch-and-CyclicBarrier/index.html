@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="java,Multithread," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="看代码看到CountDownLatch，就顺便了解了一下，然后引出CyclicBarrier，于是把相关知识整理下来。">
+<meta name="keywords" content="java,Multithread">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Java] CountDownLatch 与 CyclicBarrier">
+<meta property="og:url" content="http://wossoneri.github.io/2018/05/08/[Java]CountDownLatch-and-CyclicBarrier/index.html">
+<meta property="og:site_name" content="Wossoneri`s Blog">
+<meta property="og:description" content="看代码看到CountDownLatch，就顺便了解了一下，然后引出CyclicBarrier，于是把相关知识整理下来。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-05-09T09:33:06.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[Java] CountDownLatch 与 CyclicBarrier">
+<meta name="twitter:description" content="看代码看到CountDownLatch，就顺便了解了一下，然后引出CyclicBarrier，于是把相关知识整理下来。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '6234852363740382000',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wossoneri.github.io/2018/05/08/[Java]CountDownLatch-and-CyclicBarrier/"/>
+
+
+
+
+
+  <title>[Java] CountDownLatch 与 CyclicBarrier | Wossoneri`s Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-70716047-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/wossoneri"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wossoneri`s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2018/05/08/[Java]CountDownLatch-and-CyclicBarrier/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wossoneri">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wossoneri`s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[Java] CountDownLatch 与 CyclicBarrier</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-08T15:30:22+08:00">
+                2018-05-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Syntax/" itemprop="url" rel="index">
+                    <span itemprop="name">Syntax</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/05/08/[Java]CountDownLatch-and-CyclicBarrier/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/05/08/[Java]CountDownLatch-and-CyclicBarrier/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/05/08/[Java]CountDownLatch-and-CyclicBarrier/" class="leancloud_visitors" data-flag-title="[Java] CountDownLatch 与 CyclicBarrier">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+	
+  		  <span class="post-letters-count">
+            &nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+                 <i class="fa fa-clock-o" ></i>
+            </span>
+		        <span class="post-meta-item-text">总记</span>
+            <span class="post-count">1,945 字</span>
+		        <span class="post-meta-item-text">读完需要</span>
+    		    <span class="post-count">8 分</span>
+  		  </span>
+           
+         
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  看代码看到CountDownLatch，就顺便了解了一下，然后引出CyclicBarrier，于是把相关知识整理下来。
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="CountDownLatch"><a href="#CountDownLatch" class="headerlink" title="CountDownLatch"></a>CountDownLatch</h2><h3 id="CountDownLatch是什么"><a href="#CountDownLatch是什么" class="headerlink" title="CountDownLatch是什么"></a>CountDownLatch是什么</h3><p>源码注释描述如下：</p>
+<p>A synchronization aid that allows one or more threads to wait until a set of operations being performed in other threads completes.</p>
+<p>它是一个同步工具类，允许一个或多个线程一直等待，直到其他线程运行完成后再执行。</p>
+<p>看下我遇到的代码：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">DecodeThread</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> MainActivity mActivity;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> CountDownLatch mHandlerInitLatch;</span><br><span class="line">    <span class="keyword">private</span> Handler mHandler;</span><br><span class="line"></span><br><span class="line">    DecodeThread(MainActivity activity) &#123;</span><br><span class="line">        <span class="keyword">this</span>.mActivity = activity;</span><br><span class="line">        mHandlerInitLatch = <span class="keyword">new</span> CountDownLatch(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">Handler <span class="title">getHandler</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            mHandlerInitLatch.await();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException ie) &#123;</span><br><span class="line">            <span class="comment">// continue?</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> mHandler;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Looper.prepare();</span><br><span class="line">        mHandler = <span class="keyword">new</span> DecodeHandler(mActivity);</span><br><span class="line">        mHandlerInitLatch.countDown();</span><br><span class="line">        Looper.loop();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="CountDownLatch-工作原理"><a href="#CountDownLatch-工作原理" class="headerlink" title="CountDownLatch 工作原理"></a>CountDownLatch 工作原理</h3><p>CountDownLatch是通过一个计数器来实现的，计数器的初始值为线程的数量（上面代码构造线程数为1）。每当一个线程完成了自己的任务后，计数器的值就会减1。当计数器值到达0时，它表示所有的线程已经完成了任务，然后在闭锁上等待的线程就可以恢复执行任务。</p>
+<p>CountDownLatch的构造函数中的count就是闭锁需要等待的线程数量。这个值只能被设置一次，而且不能重新设置。</p>
+<p>主线程必须在启动其他线程后立即调用CountDownLatch.await方法，这样主线程就会在这个方法上阻塞，知道其他线程完成各自任务。</p>
+<p>其他线程完成任务后必须各自通知CountDownLatch对象，使其调用countDown方法。当count值为0时，主线程就能通过await方法恢复自己的任务。</p>
+<p>简述其执行流程：</p>
+<ol>
+<li>运行主线程</li>
+<li>创建N个线程的CountDownLatch</li>
+<li>创建启动N个线程</li>
+<li>主线程运行CountDownLatch.await()，等待latch</li>
+<li>N个线程运行完毕，latch计数减到0</li>
+<li>主线程恢复运行</li>
+</ol>
+<p>再看上面的代码，主线程在getHandler处等待latch，在run处创建handler后执行latch.countDown，就是为了在get的时候能拿到非空的handler。</p>
+<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><ol>
+<li><strong>实现最大的并行性</strong>：有时我们想同时启动多个线程，实现最大程度的并行性。例如，我们想测试一个单例类。如果我们创建一个初始计数为1的CountDownLatch，并让所有线程都在这个锁上等待，那么我们可以很轻松地完成测试。我们只需调用 一次countDown()方法就可以让所有的等待线程同时恢复执行。</li>
+<li><strong>开始执行前等待n个线程完成各自任务</strong>：例如应用程序启动类要确保在处理用户请求前，所有N个外部系统已经启动和运行了。</li>
+<li><strong>死锁检测：</strong>一个非常方便的使用场景是，你可以使用n个线程访问共享资源，在每次测试阶段的线程数目是不同的，并尝试产生死锁。</li>
+</ol>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><p>网上看的一个例子</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 基础checker类</span></span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.CountDownLatch;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">BaseHealthChecker</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> CountDownLatch _latch;</span><br><span class="line">	<span class="keyword">private</span> String _serviceName;</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">boolean</span> _serviceUp;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Get latch object in constructor so that after completing the task, thread</span></span><br><span class="line">	<span class="comment">// can countDown() the latch</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">BaseHealthChecker</span><span class="params">(String serviceName, CountDownLatch latch)</span> </span>&#123;</span><br><span class="line">		<span class="comment">// TODO Auto-generated constructor stub</span></span><br><span class="line">		<span class="keyword">super</span>();</span><br><span class="line">		<span class="keyword">this</span>._latch = latch;</span><br><span class="line">		<span class="keyword">this</span>._serviceName = serviceName;</span><br><span class="line">		<span class="keyword">this</span>._serviceUp = <span class="keyword">false</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			verifyService();</span><br><span class="line">			_serviceUp = <span class="keyword">true</span>;</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">			<span class="comment">// <span class="doctag">TODO:</span> handle exception</span></span><br><span class="line">			t.printStackTrace(System.err);</span><br><span class="line">			_serviceUp = <span class="keyword">false</span>;</span><br><span class="line">		&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">			<span class="keyword">if</span> (_latch != <span class="keyword">null</span>) &#123;</span><br><span class="line">				_latch.countDown();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getServiceName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> _serviceName;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isServiceUp</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> _serviceUp;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// This methos needs to be implemented by all specific service checker</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">verifyService</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后创建三个checker，分别是CacheChecker,DatabaseChecker和NetworkChecker</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.concurrent.CountDownLatch;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CacheHealthChecker</span> <span class="keyword">extends</span> <span class="title">BaseHealthChecker</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">CacheHealthChecker</span> <span class="params">(CountDownLatch latch)</span>  </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(<span class="string">"Cache Service"</span>, latch);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">verifyService</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"Checking "</span> + <span class="keyword">this</span>.getServiceName());</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            Thread.sleep(<span class="number">6000</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (InterruptedException e)</span><br><span class="line">        &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="keyword">this</span>.getServiceName() + <span class="string">" is UP"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>创建一个启动类，处理checker的检测</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.CountDownLatch;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.Executor;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.Executors;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ApplicationStartupUtil</span> </span>&#123;</span><br><span class="line">	<span class="comment">//List of service checkers</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> List&lt;BaseHealthChecker&gt; _services;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">//This latch will be used to wait on</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> CountDownLatch _latch;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">ApplicationStartupUtil</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> ApplicationStartupUtil INSTANCE = <span class="keyword">new</span> ApplicationStartupUtil();</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ApplicationStartupUtil <span class="title">getInstance</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> INSTANCE;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">checkExternalServices</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="comment">//Initialize the latch with number of service checkers</span></span><br><span class="line">        _latch = <span class="keyword">new</span> CountDownLatch(<span class="number">3</span>);</span><br><span class="line"> </span><br><span class="line">        <span class="comment">//All add checker in lists</span></span><br><span class="line">        _services = <span class="keyword">new</span> ArrayList&lt;BaseHealthChecker&gt;();</span><br><span class="line">        _services.add(<span class="keyword">new</span> NetworkHealthChecker(_latch));</span><br><span class="line">        _services.add(<span class="keyword">new</span> CacheHealthChecker(_latch));</span><br><span class="line">        _services.add(<span class="keyword">new</span> DatabaseHealthChecker(_latch));</span><br><span class="line"> </span><br><span class="line">        <span class="comment">//Start service checkers using executor framework</span></span><br><span class="line">        Executor executor = Executors.newFixedThreadPool(_services.size());</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">final</span> BaseHealthChecker v : _services)</span><br><span class="line">        &#123;</span><br><span class="line">            executor.execute(v);</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="comment">//Now wait till all services are checked</span></span><br><span class="line">        _latch.await();</span><br><span class="line"> </span><br><span class="line">        <span class="comment">//Services are file and now proceed startup</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">final</span> BaseHealthChecker v : _services)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>( ! v.isServiceUp())</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在主程序中运行检测</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">		<span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">		<span class="keyword">boolean</span> result = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            result = ApplicationStartupUtil.checkExternalServices();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">"External services validation completed !! Result was :: "</span>+ result);</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<blockquote>
+<p>Checking Network Service<br>Checking Cache Service<br>Checking Database Service<br>Database Service is UP<br>Cache Service is UP<br>Network Service is UP<br>External services validation completed !! Result was :: true</p>
+</blockquote>
+<h2 id="CyclicBarrier"><a href="#CyclicBarrier" class="headerlink" title="CyclicBarrier"></a>CyclicBarrier</h2><h3 id="CyclicBarrier-定义"><a href="#CyclicBarrier-定义" class="headerlink" title="CyclicBarrier 定义"></a>CyclicBarrier 定义</h3><p>A synchronization aid that allows a set of threads to all wait for each other to reach a common barrier point.</p>
+<p>也是一个同步工具类，它是让一组线程相互等待进入barrier状态，然后这组线程再执行。</p>
+<p>初看定义可能有些懵，看个示例代码就清楚了。</p>
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> N = <span class="number">4</span>;</span><br><span class="line">        CyclicBarrier barrier  = <span class="keyword">new</span> CyclicBarrier(N);</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;N;i++)</span><br><span class="line">            <span class="keyword">new</span> Writer(barrier).start();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Writer</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line">        <span class="keyword">private</span> CyclicBarrier cyclicBarrier;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Writer</span><span class="params">(CyclicBarrier cyclicBarrier)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.cyclicBarrier = cyclicBarrier;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            System.out.println(<span class="string">"线程"</span>+Thread.currentThread().getName()+<span class="string">"正在写入数据..."</span>);</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">5000</span>);      <span class="comment">//以睡眠来模拟写入数据操作</span></span><br><span class="line">                System.out.println(<span class="string">"线程"</span>+Thread.currentThread().getName()+<span class="string">"写入数据完毕，等待其他线程写入完毕"</span>);</span><br><span class="line">                cyclicBarrier.await();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;<span class="keyword">catch</span>(BrokenBarrierException e)&#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(<span class="string">"所有线程写入完毕，继续处理其他任务..."</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>示例中创建了监控4个线程的CyclicBarrier(4)，然后启动4个线程，每个线程都持有cyclicBarrier对象。</p>
+<p>在每个线程执行一半时，运行cyclicBarrier.await()，此时CyclicBarrier就会进行+1计数，当前线程被阻塞。当计数达到4时，解除阻塞，所有线程都继续执行。</p>
+<p>所以运行结果是：</p>
+<blockquote>
+<p>线程Thread-0正在写入数据…<br>线程Thread-3正在写入数据…<br>线程Thread-2正在写入数据…<br>线程Thread-1正在写入数据…<br>线程Thread-2写入数据完毕，等待其他线程写入完毕<br>线程Thread-0写入数据完毕，等待其他线程写入完毕<br>线程Thread-3写入数据完毕，等待其他线程写入完毕<br>线程Thread-1写入数据完毕，等待其他线程写入完毕<br>所有线程写入完毕，继续处理其他任务…<br>所有线程写入完毕，继续处理其他任务…<br>所有线程写入完毕，继续处理其他任务…<br>所有线程写入完毕，继续处理其他任务…</p>
+</blockquote>
+<h3 id="要点"><a href="#要点" class="headerlink" title="要点"></a>要点</h3><ul>
+<li>构造方法有两种</li>
+</ul>
+<p>CyclicBarrier(int parties)<br>默认构造方法，参数表示拦截的线程数量。</p>
+<p>CyclicBarrier(int parties, Runnable barrierAction)<br>由于线程之前的调度是由CPU决定的，所以默认的构造方法无法设置线程执行优先级，CyclicBarrier提供一个更高级的构造函数<code>CyclicBarrier(int parties, Runnable barrierAction)</code>，用于在线程到达同步点时，优先执行线程barrierAction，这样可以更加方便的处理一些负责的业务场景。</p>
+<ul>
+<li>await实现</li>
+</ul>
+<p>CyclicBarrier同样提供带超时时间的await和不带超时时间的await。如果指定了时间，在时间内某个线程还未await，就抛出异常，所有线程继续执行后续任务。</p>
+<ul>
+<li>reset功能</li>
+</ul>
+<p>reset可以使其不断地复用</p>
+<h2 id="两者区别"><a href="#两者区别" class="headerlink" title="两者区别"></a>两者区别</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>CountDownLatch</th>
+<th>CyclicBarrier</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>减计数方式</td>
+<td>加计数方式</td>
+</tr>
+<tr>
+<td>计算为0时释放所有等待的线程</td>
+<td>计数达到指定值时释放所有等待线程</td>
+</tr>
+<tr>
+<td>计数为0时，无法重置</td>
+<td>计数达到指定值时，计数置为0重新开始</td>
+</tr>
+<tr>
+<td>调用countDown()方法计数减一，调用await()方法只进行阻塞，对计数没任何影响</td>
+<td>调用await()方法计数加1，若加1后的值不等于构造方法的值，则线程阻塞</td>
+</tr>
+<tr>
+<td>不可重复利用</td>
+<td>可重复利用</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Wossoneri
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://wossoneri.github.io/2018/05/08/[Java]CountDownLatch-and-CyclicBarrier/" title="[Java] CountDownLatch 与 CyclicBarrier">http://wossoneri.github.io/2018/05/08/[Java]CountDownLatch-and-CyclicBarrier/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"><i class="fa fa-tag"></i> java</a>
+          
+            <a href="/tags/Multithread/" rel="tag"><i class="fa fa-tag"></i> Multithread</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/25/[Android][Framework]Gallery-slideshow/" rel="next" title="[Android][Framework] Gallery幻灯片流程以及一个Bitmap的bug">
+                <i class="fa fa-chevron-left"></i> [Android][Framework] Gallery幻灯片流程以及一个Bitmap的bug
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460"
+                alt="Wossoneri" />
+            
+              <p class="site-author-name" itemprop="name">Wossoneri</p>
+              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">76</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">76</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+            <div class="cc-license motion-element" itemprop="license">
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+              </a>
+            </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-globe"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#CountDownLatch"><span class="nav-number">1.</span> <span class="nav-text">CountDownLatch</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CountDownLatch是什么"><span class="nav-number">1.1.</span> <span class="nav-text">CountDownLatch是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CountDownLatch-工作原理"><span class="nav-number">1.2.</span> <span class="nav-text">CountDownLatch 工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用场景"><span class="nav-number">1.3.</span> <span class="nav-text">使用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#例子"><span class="nav-number">1.4.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CyclicBarrier"><span class="nav-number">2.</span> <span class="nav-text">CyclicBarrier</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CyclicBarrier-定义"><span class="nav-number">2.1.</span> <span class="nav-text">CyclicBarrier 定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例"><span class="nav-number">2.2.</span> <span class="nav-text">示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#要点"><span class="nav-number">2.3.</span> <span class="nav-text">要点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#两者区别"><span class="nav-number">3.</span> <span class="nav-text">两者区别</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: '1525764622000', 
+            owner: 'wossoneri',
+            repo: 'wossoneri.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
+            
+                client_id: '40b6c719a11e3fca29e8'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("RHlsmdBRQUmQMHNOl3U1ocam-gzGzoHsz", "RU2vFPiDzi68XGHCgJXtBAqo");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/love.js"></script>

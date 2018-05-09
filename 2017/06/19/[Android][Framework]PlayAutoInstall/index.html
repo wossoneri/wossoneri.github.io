@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android,Framework," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="因为流程上的种种不方便，当时折腾这个PAI花了好多时间，趁着调好了，总结一下">
+<meta name="keywords" content="Android,Framework">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Android][Framework] PlayAutoInstall配置流程总结">
+<meta property="og:url" content="http://wossoneri.github.io/2017/06/19/[Android][Framework]PlayAutoInstall/index.html">
+<meta property="og:site_name" content="Wossoneri`s Blog">
+<meta property="og:description" content="因为流程上的种种不方便，当时折腾这个PAI花了好多时间，趁着调好了，总结一下">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI01.png?raw=true">
+<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI02.png?raw=true">
+<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI03.png?raw=true">
+<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI04.png?raw=true">
+<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI05.png?raw=true">
+<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI06.png?raw=true">
+<meta property="og:updated_time" content="2018-05-09T11:51:17.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[Android][Framework] PlayAutoInstall配置流程总结">
+<meta name="twitter:description" content="因为流程上的种种不方便，当时折腾这个PAI花了好多时间，趁着调好了，总结一下">
+<meta name="twitter:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI01.png?raw=true">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '6234852363740382000',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wossoneri.github.io/2017/06/19/[Android][Framework]PlayAutoInstall/"/>
+
+
+
+
+
+  <title>[Android][Framework] PlayAutoInstall配置流程总结 | Wossoneri`s Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-70716047-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/wossoneri"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wossoneri`s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2017/06/19/[Android][Framework]PlayAutoInstall/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wossoneri">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wossoneri`s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[Android][Framework] PlayAutoInstall配置流程总结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-19T17:55:00+08:00">
+                2017-06-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/06/19/[Android][Framework]PlayAutoInstall/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2017/06/19/[Android][Framework]PlayAutoInstall/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2017/06/19/[Android][Framework]PlayAutoInstall/" class="leancloud_visitors" data-flag-title="[Android][Framework] PlayAutoInstall配置流程总结">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+	
+  		  <span class="post-letters-count">
+            &nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+                 <i class="fa fa-clock-o" ></i>
+            </span>
+		        <span class="post-meta-item-text">总记</span>
+            <span class="post-count">1,812 字</span>
+		        <span class="post-meta-item-text">读完需要</span>
+    		    <span class="post-count">7 分</span>
+  		  </span>
+           
+         
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  因为流程上的种种不方便，当时折腾这个PAI花了好多时间，趁着调好了，总结一下
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>我这里有谷歌给OEM提供的官方文档，需要的可以联系</p>
+</blockquote>
+<h2 id="什么是PAI"><a href="#什么是PAI" class="headerlink" title="什么是PAI"></a>什么是PAI</h2><p>PAI （PlayAutoInstall） 是一个自动下载安装APK到手机，并且摆放在Launcher对应位置的一个机制。</p>
+<p>因为国内没有GMS，所以很多人没接触过这个机制。这个机制其实对于运营商定制来说非常重要，比如美国的运营商，一个运营商有很多地区很多种类的SIM卡，当插上不同地区的SIM卡，运营商定制的手机就会下载不同的APP摆放在界面不同的位置。</p>
+<p>这么说有些抽象，看下面示例图：</p>
+<p>首先是出厂刚开机Launcher的界面：</p>
+<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI01.png?raw=true" alt=""></p>
+<p>当手机插上SIM卡联网，PlayStore会通过PAI机制下载安装摆放不同的APP：</p>
+<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI02.png?raw=true" alt=""></p>
+<p>界面一下子就变丰富了。</p>
+<h2 id="PAI-流程"><a href="#PAI-流程" class="headerlink" title="PAI 流程"></a>PAI 流程</h2><p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI03.png?raw=true" alt=""></p>
+<p>本地编译一个PlayAutoInstallConfig.apk，签名上传到APFE服务器，APFE会验证配置信息，并提供给PlayStore。当目标设备第一次开机启动并且联网（现在不必要登录谷歌帐号），这些应用就会加入下载队列，自动下载到手机。 </p>
+<h2 id="配置菜单"><a href="#配置菜单" class="headerlink" title="配置菜单"></a>配置菜单</h2><p>先聊一下APFE会验证的配置信息。</p>
+<p>需要的配置信息包括：</p>
+<ul>
+<li>指纹（必须）</li>
+<li>城市（可选）</li>
+<li>运营商（可选）</li>
+<li>需要下载的App列表</li>
+<li>应用在桌面的位置信息</li>
+</ul>
+<p>后两项是编译在PlayAutoInstallConfig.apk中的，前三项是把apk上传到服务器时需要填写的。</p>
+<p>上传服务器配置页面如下：</p>
+<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI04.png?raw=true" alt=""></p>
+<p>配置信息的前三项匹配项如果填写，就必须要完全匹配才能应用到手机。我遇到一个问题是配置上传后PlayAutoInstallConfig.apk会在SetupWizard过程中下载到手机，但需要PlayStore下载的应用怎么都不下载。后来发现是在上传apk到服务器时运营商填的不对，导致无法下载。因为尝试填写几种运营商Name都不能正常工作，最后解决方案是只匹配指纹，不匹配城市和运营商（减少过滤项），这样手机就可以和PlayStore信息匹配，然后就可以自动下载了。</p>
+<p>关于其余配置，参考下面表格：</p>
+<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI05.png?raw=true" alt=""></p>
+<h2 id="Config-APK"><a href="#Config-APK" class="headerlink" title="Config APK"></a>Config APK</h2><p>对上表中出现一个Config APK 做一些解释。</p>
+<p>手机内必须要先预置一个符合下列条件的stub APK：</p>
+<ul>
+<li>为一个系列的设备设置唯一的包名，包名格式为android.autoinstalls.config.<oem-name>.<device-name></device-name></oem-name></li>
+<li>必须配置一个receiver ”android.autoinstalls.config.action.PLAY_AUTO_INSTALL”，并且设置exported为flase</li>
+<li>在预置的App里只能有一个定义这个receiver</li>
+<li>versionCode必须定义成1</li>
+<li>APK必须预置在/system/app （不能定义成privileged，即不能放/priv-app）</li>
+<li>必须用私有Key签名（Mercury用的TCL签名）</li>
+<li>不能定义permissions/activities/其他receivers/content provider/services</li>
+</ul>
+<p>这个APK其实就一个Manifest，没有特别的内容。</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span><br><span class="line"><span class="tag">&lt;<span class="name">manifest</span> <span class="attr">xmls:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">package</span>=<span class="string">"android.autoinstalls.config.OEM-Name.deviceName"</span> &gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="tag">&lt;<span class="name">application</span></span></span><br><span class="line"><span class="tag">		<span class="attr">android:allowBackup</span>=<span class="string">"false"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:icon</span>=<span class="string">"@drawable/ic_launcher"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:label</span>=<span class="string">"@string/app_name"</span> &gt;</span></span><br><span class="line">    	</span><br><span class="line">        <span class="tag">&lt;<span class="name">receiver</span></span></span><br><span class="line"><span class="tag">        	<span class="attr">android:name</span>=<span class="string">"DummyReceiver"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:exported</span>=<span class="string">"false"</span> &gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">            	<span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.autoinstalls.config.action.PLAY_AUTO_INSTALL"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">receiver</span>&gt;</span>      </span><br><span class="line">    <span class="tag">&lt;/<span class="name">application</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">manifest</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>相关的MakeFile如下</p>
+<figure class="highlight mk"><table><tr><td class="code"><pre><span class="line"><span class="keyword">include</span> <span class="variable">$(CLEAR_VARS)</span></span><br><span class="line">apk_variant := stub</span><br><span class="line">APK_VERSION := 1</span><br><span class="line"><span class="keyword">include</span> <span class="variable">$(BUILD_APK)</span></span><br></pre></td></tr></table></figure>
+<h2 id="PlayAutoInstallConfig-apk"><a href="#PlayAutoInstallConfig-apk" class="headerlink" title="PlayAutoInstallConfig.apk"></a>PlayAutoInstallConfig.apk</h2><p>这个APK是我们真正配置的APK。</p>
+<p>它和前面的APK的关系是：包名一致。因为PAI机制需要本地存在一个这个包名的APK，在开机的SetupWizard阶段，（如果联网）它会从服务器下载这个写有对应配置的APK到手机上，替换掉那个Stub APK。</p>
+<p>关于PAIconfig APK的配置：</p>
+<ul>
+<li>上传的APK（也就是我们编出来的APK）包名与指纹要和stub一致</li>
+<li>APK签名要一致</li>
+<li>和stub配置同样的receiver</li>
+<li>versionCode必须大于1000</li>
+<li>APK必须包含launcher布局配置的xml文件（即后面会提到的default_layout），不然上传会失败，因为上传前会检查这个xml文件，然后会把要下载的app显示出来。所以也必须要求至少定义一个需要下载的app。最多50个，建议放10～15个。（文档还要求autoinstall的应用必须在launcher上指定摆放位置，目前看来是不需要的，有可能bb launcher做了修改）</li>
+<li>界面会有文件夹，文件夹名称string在APK本地resource定义，支持国际化。</li>
+<li>需要自动下载的APK对设备来讲必须是在PlayStore发布的，并且对该地区用户可见</li>
+<li>不能定义permissions/activities/其他receivers/content provider/services</li>
+</ul>
+<p>在这个APK里就要写需要下载的APK信息了，基本格式如下：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">参数screen是第几屏，x,y是在屏幕的位置，从0开始。</span><br><span class="line"><span class="tag">&lt;<span class="name">workspace</span>&gt;</span></span><br><span class="line">    autoinstall开头是需要PlayStore下载的，</span><br><span class="line">    <span class="tag">&lt;<span class="name">autoinstall</span> <span class="attr">className</span>=<span class="string">"com.watchdox.android.activity.LaunchActivity"</span> <span class="attr">packageName</span>=<span class="string">"com.watchdox.android"</span> <span class="attr">screen</span>=<span class="string">"1"</span> <span class="attr">x</span>=<span class="string">"1"</span> <span class="attr">y</span>=<span class="string">"2"</span> <span class="attr">requiredPreload</span>=<span class="string">"true"</span> <span class="attr">installByDefault</span>=<span class="string">"true"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    appwidget开头是桌面控件。span属性设定控件的宽高</span><br><span class="line">    <span class="tag">&lt;<span class="name">appwidget</span> <span class="attr">screen</span>=<span class="string">"0"</span> <span class="attr">x</span>=<span class="string">"0"</span> <span class="attr">y</span>=<span class="string">"0"</span> <span class="attr">spanX</span>=<span class="string">"5"</span> <span class="attr">spanY</span>=<span class="string">"1"</span> <span class="attr">packageName</span>=<span class="string">"com.google.android.googlequicksearchbox"</span> <span class="attr">className</span>=<span class="string">"com.google.android.googlequicksearchbox.SearchWidgetProvider"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">    appicon就是纯粹摆放APP的位置</span><br><span class="line">    <span class="tag">&lt;<span class="name">appicon</span> <span class="attr">screen</span>=<span class="string">"0"</span> <span class="attr">x</span>=<span class="string">"3"</span> <span class="attr">y</span>=<span class="string">"3"</span> <span class="attr">packageName</span>=<span class="string">"com.google.android.apps.photos"</span> <span class="attr">className</span>=<span class="string">"com.google.android.apps.photos.home.HomeActivity"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    folder是文件夹，里面可以放多个app</span><br><span class="line">    <span class="tag">&lt;<span class="name">folder</span> <span class="attr">screen</span>=<span class="string">"0"</span> <span class="attr">x</span>=<span class="string">"1"</span> <span class="attr">y</span>=<span class="string">"4"</span> <span class="attr">title</span>=<span class="string">"@string/google_collection_folder"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">appicon</span> <span class="attr">packageName</span>=<span class="string">"com.google.android.googlequicksearchbox"</span> <span class="attr">className</span>=<span class="string">"com.google.android.googlequicksearchbox.SearchActivity"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">folder</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">    action是shortcut快捷键，key是LAUNCHER里面定义的</span><br><span class="line">    <span class="tag">&lt;<span class="name">action</span> <span class="attr">screen</span>=<span class="string">"2"</span> <span class="attr">x</span>=<span class="string">"0"</span> <span class="attr">y</span>=<span class="string">"3"</span> <span class="attr">key</span>=<span class="string">"CREATE_NOTE"</span> /&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!-- Dock icons --&gt;</span></span><br><span class="line">    （按顺序？或者按照rank属性决定）最后四个是DOCKER的app icon</span><br><span class="line">    <span class="tag">&lt;<span class="name">appicon</span> <span class="attr">rank</span>=<span class="string">"0"</span> <span class="attr">container</span>=<span class="string">"hotseat"</span> <span class="attr">packageName</span>=<span class="string">"com.android.dialer"</span> <span class="attr">className</span>=<span class="string">"com.android.dialer.DialtactsActivity"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">appicon</span> <span class="attr">rank</span>=<span class="string">"1"</span> <span class="attr">container</span>=<span class="string">"hotseat"</span> <span class="attr">packageName</span>=<span class="string">"com.blackberry.hub"</span> <span class="attr">className</span>=<span class="string">"com.xyz.hub.ui.IntroActivity"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">appicon</span> <span class="attr">rank</span>=<span class="string">"3"</span> <span class="attr">container</span>=<span class="string">"hotseat"</span> <span class="attr">packageName</span>=<span class="string">"com.android.chrome"</span> <span class="attr">className</span>=<span class="string">"com.google.android.apps.chrome.Main"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">appicon</span> <span class="attr">rank</span>=<span class="string">"4"</span> <span class="attr">container</span>=<span class="string">"hotseat"</span> <span class="attr">packageName</span>=<span class="string">"com.blackberry.camera"</span> <span class="attr">className</span>=<span class="string">"com.xyz.camera.ui.coordination.MainActivity"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">workspace</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>代码结构</p>
+<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI06.png?raw=true" alt=""></p>
+<p>在res-PAI目录中，xml有两个，default_layout中要填写<autoinstall>的应用（需要从PlayStore自动下载的应用），然后再oem_layout填写该应用的位置。如果其他途径也会下载应用，只需要把应用信息写在oem_layout即可。</autoinstall></p>
+<h2 id="验证流程"><a href="#验证流程" class="headerlink" title="验证流程"></a>验证流程</h2><p>烧一个新手机，启动进SetupWizard，在过程中联网，登录谷歌帐号（现在这一步不必要了）。在设置好谷歌帐号之后，就会自动下载PAI apk到手机，替换默认的stub生效。等到进入Launcher界面，Launcher就会加载这个apk，把icon配置到对应位置上。与此同时，PlayStore会下载配置的App。</p>
+<p> 从工作流程看，如果想调试界面，就可以不reset手机，直接把编译好的APK替换默认的stub。这时候因为launcher已经启动过，所以不会主动加载配置的apk，需要从settings清空launcher数据，强制加载，就可以看到修改的界面了。</p>
+<h2 id="更多"><a href="#更多" class="headerlink" title="更多"></a>更多</h2><p>Launcher里面有AutoInstallsLayout.java ，可以阅读了解。</p>
+<p>从上面配置可以看出，写配置需要了解应用的包名，主Activity的类名，所以需要用到am和pm命令去查找，所以写了一个脚本方便获取APK的信息。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="function"><span class="title">help_info</span></span>()&#123;</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"-a get current activity"</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"-p list packages in device, can add a package name"</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"-m dump apk's AndroidManifest, need add a APK"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ <span class="variable">$#</span> -eq 0 ]</span><br><span class="line"><span class="keyword">then</span></span><br><span class="line">    help_info</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"arg count is <span class="variable">$#</span>"</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">case</span> <span class="string">"<span class="variable">$1</span>"</span> <span class="keyword">in</span></span><br><span class="line">    -a)</span><br><span class="line">	adb shell dumpsys activity activities</span><br><span class="line">	;;</span><br><span class="line">    -p)</span><br><span class="line">	<span class="keyword">if</span> [ <span class="variable">$#</span> -eq 2 ]</span><br><span class="line">	<span class="keyword">then</span></span><br><span class="line">	    adb shell pm list packages -f <span class="string">"<span class="variable">$2</span>"</span></span><br><span class="line">	<span class="keyword">elif</span> [ <span class="variable">$#</span> -eq 1 ]</span><br><span class="line">	<span class="keyword">then</span></span><br><span class="line">	    adb shell pm list packages</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"check the arguement"</span></span><br><span class="line">	<span class="keyword">fi</span></span><br><span class="line">	;;</span><br><span class="line">    -m)</span><br><span class="line">	<span class="keyword">if</span> [ <span class="variable">$#</span> -eq 2 ]</span><br><span class="line">	<span class="keyword">then</span></span><br><span class="line">	aapt dump xmltree <span class="string">"<span class="variable">$2</span>"</span> AndroidManifest.xml</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"need file path"</span></span><br><span class="line">	<span class="keyword">fi</span></span><br><span class="line"><span class="keyword">esac</span></span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Wossoneri
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://wossoneri.github.io/2017/06/19/[Android][Framework]PlayAutoInstall/" title="[Android][Framework] PlayAutoInstall配置流程总结">http://wossoneri.github.io/2017/06/19/[Android][Framework]PlayAutoInstall/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+          
+            <a href="/tags/Framework/" rel="tag"><i class="fa fa-tag"></i> Framework</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/04/11/[Design-Pattern]Factory/" rel="next" title="[设计模式]之二十二:工厂方法模式">
+                <i class="fa fa-chevron-left"></i> [设计模式]之二十二:工厂方法模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/27/[LeetCode]001_TwoSum/" rel="prev" title="[LeetCode] Two Sum">
+                [LeetCode] Two Sum <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460"
+                alt="Wossoneri" />
+            
+              <p class="site-author-name" itemprop="name">Wossoneri</p>
+              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">76</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">76</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+            <div class="cc-license motion-element" itemprop="license">
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+              </a>
+            </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-globe"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是PAI"><span class="nav-number">1.</span> <span class="nav-text">什么是PAI</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PAI-流程"><span class="nav-number">2.</span> <span class="nav-text">PAI 流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置菜单"><span class="nav-number">3.</span> <span class="nav-text">配置菜单</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Config-APK"><span class="nav-number">4.</span> <span class="nav-text">Config APK</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PlayAutoInstallConfig-apk"><span class="nav-number">5.</span> <span class="nav-text">PlayAutoInstallConfig.apk</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#验证流程"><span class="nav-number">6.</span> <span class="nav-text">验证流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更多"><span class="nav-number">7.</span> <span class="nav-text">更多</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: '1497866100000', 
+            owner: 'wossoneri',
+            repo: 'wossoneri.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
+            
+                client_id: '40b6c719a11e3fca29e8'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("RHlsmdBRQUmQMHNOl3U1ocam-gzGzoHsz", "RU2vFPiDzi68XGHCgJXtBAqo");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/love.js"></script>
