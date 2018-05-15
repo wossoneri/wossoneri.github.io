@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android,Database," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="做Gallery的时候经常会看图片数据库，随便整理了一些数据库表的含义">
+<meta name="keywords" content="Android,Database">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Android]多媒体数据库">
+<meta property="og:url" content="http://wossoneri.github.io/2016/10/15/[Android]Multimedia-database/index.html">
+<meta property="og:site_name" content="Wossoneri`s Blog">
+<meta property="og:description" content="做Gallery的时候经常会看图片数据库，随便整理了一些数据库表的含义">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-05-15T17:08:10.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[Android]多媒体数据库">
+<meta name="twitter:description" content="做Gallery的时候经常会看图片数据库，随便整理了一些数据库表的含义">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '6234852363740382000',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wossoneri.github.io/2016/10/15/[Android]Multimedia-database/"/>
+
+
+
+
+
+  <title>[Android]多媒体数据库 | Wossoneri`s Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-70716047-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/wossoneri"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wossoneri`s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2016/10/15/[Android]Multimedia-database/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wossoneri">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wossoneri`s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[Android]多媒体数据库</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-10-15T18:12:26+08:00">
+                2016-10-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/10/15/[Android]Multimedia-database/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2016/10/15/[Android]Multimedia-database/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2016/10/15/[Android]Multimedia-database/" class="leancloud_visitors" data-flag-title="[Android]多媒体数据库">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+	
+  		  <span class="post-letters-count">
+            &nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+                 <i class="fa fa-clock-o" ></i>
+            </span>
+		        <span class="post-meta-item-text">总记</span>
+            <span class="post-count">1,247 字</span>
+		        <span class="post-meta-item-text">读完需要</span>
+    		    <span class="post-count">5 分</span>
+  		  </span>
+           
+         
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  做Gallery的时候经常会看图片数据库，随便整理了一些数据库表的含义
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>多媒体数据库</p>
+<p>以 root 权限进入 adb shell， <strong>/data/data/com.android.providers.media/databases</strong> 目录下就是存放数据库的地方。</p>
+<p>以 external 开头的数据库存储的是 SD 卡媒体信息，一张卡对应一个，所以如果手机使用过多张卡会有多个数据库。以 internal<br>开头的数据库存储手机内部存储器的媒体信息。因为一般用户无法访问手机内部存储器，而且这两个数据库结构是大体上是相同的，所以只需要关注<br>external 数据库即可。</p>
+<h3 id="图片数据库"><a href="#图片数据库" class="headerlink" title="图片数据库"></a>图片数据库</h3><p>由两个表组成，images和thumbnails</p>
+<h4 id="images-图片"><a href="#images-图片" class="headerlink" title="images 图片"></a>images 图片</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>解析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>_id</td>
+<td>主键。图片 id，从 1 开始自增</td>
+</tr>
+<tr>
+<td>_data</td>
+<td>图片绝对路径</td>
+</tr>
+<tr>
+<td>_size</td>
+<td>文件大小，单位为 byte</td>
+</tr>
+<tr>
+<td>_display_name</td>
+<td>文件名</td>
+</tr>
+<tr>
+<td>mime_type</td>
+<td>类似于 image/jpeg 的 MIME 类型</td>
+</tr>
+<tr>
+<td>title</td>
+<td>不带扩展名的文件名（数据库里也存在部分带有扩展名的）</td>
+</tr>
+<tr>
+<td>date_added</td>
+<td>添加到数据库的时间，单位秒</td>
+</tr>
+<tr>
+<td>date_modified</td>
+<td>文件最后修改时间，单位秒</td>
+</tr>
+<tr>
+<td>description</td>
+<td></td>
+</tr>
+<tr>
+<td>picasa_id</td>
+<td>用于 picasa 网络相册</td>
+</tr>
+<tr>
+<td>isprivate</td>
+<td></td>
+</tr>
+<tr>
+<td>latitude</td>
+<td>纬度，需要照片有 GPS 信息</td>
+</tr>
+<tr>
+<td>longitude</td>
+<td>经度，需要照片有 GPS 信息</td>
+</tr>
+<tr>
+<td>datetaken</td>
+<td>取自 EXIF 照片拍摄时间，若为空则等于文件修改时间，单位毫秒</td>
+</tr>
+<tr>
+<td>orientation</td>
+<td>取自 EXIF 旋转角度，在图库旋转图片也会改变此值</td>
+</tr>
+<tr>
+<td>mini_thumb_magic</td>
+<td>取小缩略图时生成的一个随机数，见 MediaThumbRequest</td>
+</tr>
+<tr>
+<td>bucket_id</td>
+<td>相册（文件夹）id。等于 path.toLowerCase.hashCode()，见MediaProvider.computeBucketValues()</td>
+</tr>
+<tr>
+<td>bucket_display_name</td>
+<td>直接包含图片的文件夹就是该图片的 bucket，就是文件夹名</td>
+</tr>
+<tr>
+<td>width</td>
+<td>图片宽度</td>
+</tr>
+<tr>
+<td>height</td>
+<td>图片高度</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="thumbnails-缩略图"><a href="#thumbnails-缩略图" class="headerlink" title="thumbnails 缩略图"></a>thumbnails 缩略图</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>解析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>_id</td>
+<td>主键。缩略图 id，从 1 开始自增</td>
+</tr>
+<tr>
+<td>_data</td>
+<td>图片绝对路径</td>
+</tr>
+<tr>
+<td>image_id</td>
+<td>缩略图所对应图片的 id，依赖于 images 表 _id 字段，可建立外键</td>
+</tr>
+<tr>
+<td>kind</td>
+<td>缩略图类型，1 是大缩略图，2 基本不用，3 是微型缩略图但其信息不保存在数据库</td>
+</tr>
+<tr>
+<td>width</td>
+<td>缩略图宽度</td>
+</tr>
+<tr>
+<td>height</td>
+<td>缩略图高度</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="视频数据库"><a href="#视频数据库" class="headerlink" title="视频数据库"></a>视频数据库</h3><h4 id="video"><a href="#video" class="headerlink" title="video"></a>video</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>解析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>_id</td>
+<td>主键。视频 id</td>
+</tr>
+<tr>
+<td>_data</td>
+<td>视频绝对路径</td>
+</tr>
+<tr>
+<td>_display_name</td>
+<td>文件名</td>
+</tr>
+<tr>
+<td>_size</td>
+<td>文件大小，单位为 byte</td>
+</tr>
+<tr>
+<td>mime_type</td>
+<td>类似于 video/avi 的 MIME 类型</td>
+</tr>
+<tr>
+<td>date_added</td>
+<td>添加到数据库的时间，单位秒</td>
+</tr>
+<tr>
+<td>date_modified</td>
+<td>文件最后修改时间，单位秒</td>
+</tr>
+<tr>
+<td>title</td>
+<td>不带扩展名的文件名</td>
+</tr>
+<tr>
+<td>duration</td>
+<td>视频时长，单位毫秒</td>
+</tr>
+<tr>
+<td>artist</td>
+<td>艺术家</td>
+</tr>
+<tr>
+<td>album</td>
+<td>专辑名，一般为文件夹名</td>
+</tr>
+<tr>
+<td>resolution</td>
+<td>分辨率</td>
+</tr>
+<tr>
+<td>description</td>
+<td></td>
+</tr>
+<tr>
+<td>isprivate</td>
+<td></td>
+</tr>
+<tr>
+<td>tags</td>
+<td></td>
+</tr>
+<tr>
+<td>category</td>
+<td></td>
+</tr>
+<tr>
+<td>language</td>
+<td></td>
+</tr>
+<tr>
+<td>mini_thumb_data</td>
+<td></td>
+</tr>
+<tr>
+<td>latitude</td>
+<td>经度</td>
+</tr>
+<tr>
+<td>longitude</td>
+<td>纬度</td>
+</tr>
+<tr>
+<td>datetaken</td>
+<td>录制时间，单位毫秒</td>
+</tr>
+<tr>
+<td>mini_thumb_magic</td>
+<td>取小缩略图时生成的一个随机数，见 MediaThumbRequest</td>
+</tr>
+<tr>
+<td>bucket_id</td>
+<td>等于 path.toLowerCase.hashCode()，见 MediaProvider.computeBucketValues()</td>
+</tr>
+<tr>
+<td>bucket_display_name</td>
+<td>直接包含视频的文件夹就是该图片的 bucket，就是文件夹名</td>
+</tr>
+<tr>
+<td>bookmark</td>
+<td></td>
+</tr>
+<tr>
+<td>width</td>
+<td>视频宽度</td>
+</tr>
+<tr>
+<td>height</td>
+<td>视频高度</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="videothumbnails"><a href="#videothumbnails" class="headerlink" title="videothumbnails"></a>videothumbnails</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>解析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>_id</td>
+<td>主键。缩略图 id</td>
+</tr>
+<tr>
+<td>_data</td>
+<td>缩略图绝对路径</td>
+</tr>
+<tr>
+<td>video_id</td>
+<td>缩略图所对应视频的 id，依赖于 video 表 _id 字段</td>
+</tr>
+<tr>
+<td>kind</td>
+<td>缩略图类型，1 是大图，视频只能取类型 1</td>
+</tr>
+<tr>
+<td>width</td>
+<td>缩略图宽度</td>
+</tr>
+<tr>
+<td>height</td>
+<td>缩略图高度</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="音频数据库"><a href="#音频数据库" class="headerlink" title="音频数据库"></a>音频数据库</h3><p>这个比较复杂，由多个表组成</p>
+<h4 id="album-art：专辑封面"><a href="#album-art：专辑封面" class="headerlink" title="album_art：专辑封面"></a>album_art：专辑封面</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>解析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>album_id</td>
+<td>主键。专辑 id</td>
+</tr>
+<tr>
+<td>_data</td>
+<td>专辑封面缓存的路径</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="albums：专辑"><a href="#albums：专辑" class="headerlink" title="albums：专辑"></a>albums：专辑</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>解析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>album_id</td>
+<td>主键。专辑 id</td>
+</tr>
+<tr>
+<td>album_key</td>
+<td>全大写字母，用于字母索引</td>
+</tr>
+<tr>
+<td>album</td>
+<td>专辑名</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="album-info：专辑信息"><a href="#album-info：专辑信息" class="headerlink" title="album_info：专辑信息"></a>album_info：专辑信息</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>解析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>_id</td>
+<td>主键</td>
+</tr>
+<tr>
+<td>album</td>
+<td>专辑名</td>
+</tr>
+<tr>
+<td>album_key</td>
+<td>专辑key</td>
+</tr>
+<tr>
+<td>minyear</td>
+<td>年代</td>
+</tr>
+<tr>
+<td>maxyear</td>
+<td></td>
+</tr>
+<tr>
+<td>artist</td>
+<td>艺术家</td>
+</tr>
+<tr>
+<td>artist_id</td>
+<td>艺术家id</td>
+</tr>
+<tr>
+<td>artist_key</td>
+<td>艺术家key</td>
+</tr>
+<tr>
+<td>numsongs</td>
+<td>歌曲数量</td>
+</tr>
+<tr>
+<td>album_art</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="android-metadata：当前字符编码"><a href="#android-metadata：当前字符编码" class="headerlink" title="android_metadata：当前字符编码"></a>android_metadata：当前字符编码</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>解析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>locale</td>
+<td>默认字符编码，例如 zh_CN</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="artists：艺术家"><a href="#artists：艺术家" class="headerlink" title="artists：艺术家"></a>artists：艺术家</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>解析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>artist_id</td>
+<td>主键。艺术家 id</td>
+</tr>
+<tr>
+<td>artist_key</td>
+<td>全大写字母，用于字母索引</td>
+</tr>
+<tr>
+<td>artist</td>
+<td>艺术家</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="artist-info"><a href="#artist-info" class="headerlink" title="artist_info"></a>artist_info</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>解析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>_id</td>
+<td>主键。映射 id</td>
+</tr>
+<tr>
+<td>artist</td>
+<td>艺术家</td>
+</tr>
+<tr>
+<td>artist_key</td>
+<td></td>
+</tr>
+<tr>
+<td>number_of_albums</td>
+<td></td>
+</tr>
+<tr>
+<td>number_of_tracks</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="artists-albums-map"><a href="#artists-albums-map" class="headerlink" title="artists_albums_map"></a>artists_albums_map</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>解析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>artist_id</td>
+<td></td>
+</tr>
+<tr>
+<td>album_id</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="audio-genres：流派"><a href="#audio-genres：流派" class="headerlink" title="audio_genres：流派"></a>audio_genres：流派</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>解析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>_id</td>
+<td>主键。流派 id</td>
+</tr>
+<tr>
+<td>name</td>
+<td>流派名称</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="audio-genres-map：音频流派映射"><a href="#audio-genres-map：音频流派映射" class="headerlink" title="audio_genres_map：音频流派映射"></a>audio_genres_map：音频流派映射</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>解析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>_id</td>
+<td>主键。映射 id</td>
+</tr>
+<tr>
+<td>audio_id</td>
+<td>音频 id</td>
+</tr>
+<tr>
+<td>genre_id</td>
+<td>流派 id</td>
+</tr>
+</tbody>
+</table>
+</div>
+<blockquote>
+<p>为何要建立映射表：为了消除数据冗余。假如有大量音频属于同一流派，如果没有映射表则需要每个音频都需要记录同样的流派数据，有了映射表之后则只有一条记录就够了。这符合数据库设计的<a href="http://en.wikipedia.org/wiki/Third_normal_form" target="_blank" rel="external">第三范式（the 3rd normal form）</a></p>
+</blockquote>
+<h4 id="audio-meta：音频信息"><a href="#audio-meta：音频信息" class="headerlink" title="audio_meta：音频信息"></a>audio_meta：音频信息</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>解析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>_id</td>
+<td>主键。音频 id</td>
+</tr>
+<tr>
+<td>_data</td>
+<td>文件绝对路径</td>
+</tr>
+<tr>
+<td>_display_name</td>
+<td>文件名</td>
+</tr>
+<tr>
+<td>_size</td>
+<td>文件大小，单位 byte</td>
+</tr>
+<tr>
+<td>mime_type</td>
+<td>类似于 audio/mpeg 的 MIME 类型</td>
+</tr>
+<tr>
+<td>date_added</td>
+<td>添加到数据库的时间，单位秒</td>
+</tr>
+<tr>
+<td>is_drm</td>
+<td>是否有drm版权</td>
+</tr>
+<tr>
+<td>date_modified</td>
+<td>文件最后修改时间，单位秒</td>
+</tr>
+<tr>
+<td>title</td>
+<td>来自 ID3 信息的标题，无则为不带扩展名的文件名</td>
+</tr>
+<tr>
+<td>title_key</td>
+<td>全大写字母的标题</td>
+</tr>
+<tr>
+<td>duration</td>
+<td>时长</td>
+</tr>
+<tr>
+<td>artist_id</td>
+<td>艺术家 id</td>
+</tr>
+<tr>
+<td>composer</td>
+<td>来自 ID3 信息，作曲家</td>
+</tr>
+<tr>
+<td>album_id</td>
+<td>专辑 id</td>
+</tr>
+<tr>
+<td>track</td>
+<td>来自 ID3 信息，音轨</td>
+</tr>
+<tr>
+<td>year</td>
+<td>来自 ID3 信息，年代</td>
+</tr>
+<tr>
+<td>is_ringtone</td>
+<td>是否铃声，0 或 1</td>
+</tr>
+<tr>
+<td>is_music</td>
+<td>是否音乐，1 才会在音乐播放器显示</td>
+</tr>
+<tr>
+<td>is_alarm</td>
+<td>是否闹钟铃声</td>
+</tr>
+<tr>
+<td>is_notification</td>
+<td>是否通知铃声</td>
+</tr>
+<tr>
+<td>is_podcast</td>
+<td>是否 podcast</td>
+</tr>
+<tr>
+<td>bookmark</td>
+<td></td>
+</tr>
+<tr>
+<td>album_artist</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="audio-playlists：播放列表"><a href="#audio-playlists：播放列表" class="headerlink" title="audio_playlists：播放列表"></a>audio_playlists：播放列表</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>解析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>_id</td>
+<td>主键。播放列表 id</td>
+</tr>
+<tr>
+<td>_data</td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td>播放列表名</td>
+</tr>
+<tr>
+<td>date_added</td>
+<td></td>
+</tr>
+<tr>
+<td>date_modified</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="audio-playlists-map：音频播放列表映射"><a href="#audio-playlists-map：音频播放列表映射" class="headerlink" title="audio_playlists_map：音频播放列表映射"></a>audio_playlists_map：音频播放列表映射</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>解析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>_id</td>
+<td>主键。映射 id</td>
+</tr>
+<tr>
+<td>audio_id</td>
+<td>音频 id</td>
+</tr>
+<tr>
+<td>playlist_id</td>
+<td>播放列表 id</td>
+</tr>
+<tr>
+<td>play_order</td>
+<td>播放顺序</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Wossoneri
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://wossoneri.github.io/2016/10/15/[Android]Multimedia-database/" title="[Android]多媒体数据库">http://wossoneri.github.io/2016/10/15/[Android]Multimedia-database/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+          
+            <a href="/tags/Database/" rel="tag"><i class="fa fa-tag"></i> Database</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/30/[Objective-C]Chain-programming-using-Block/" rel="next" title="[Objective-C]用Block实现链式编程">
+                <i class="fa fa-chevron-left"></i> [Objective-C]用Block实现链式编程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/10/28/[Android][Framework]Provision/" rel="prev" title="[Android][Framework]Provision">
+                [Android][Framework]Provision <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460"
+                alt="Wossoneri" />
+            
+              <p class="site-author-name" itemprop="name">Wossoneri</p>
+              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">80</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">84</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+            <div class="cc-license motion-element" itemprop="license">
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+              </a>
+            </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-globe"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#图片数据库"><span class="nav-number">1.</span> <span class="nav-text">图片数据库</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#images-图片"><span class="nav-number">1.1.</span> <span class="nav-text">images 图片</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#thumbnails-缩略图"><span class="nav-number">1.2.</span> <span class="nav-text">thumbnails 缩略图</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#视频数据库"><span class="nav-number">2.</span> <span class="nav-text">视频数据库</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#video"><span class="nav-number">2.1.</span> <span class="nav-text">video</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#videothumbnails"><span class="nav-number">2.2.</span> <span class="nav-text">videothumbnails</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#音频数据库"><span class="nav-number">3.</span> <span class="nav-text">音频数据库</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#album-art：专辑封面"><span class="nav-number">3.1.</span> <span class="nav-text">album_art：专辑封面</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#albums：专辑"><span class="nav-number">3.2.</span> <span class="nav-text">albums：专辑</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#album-info：专辑信息"><span class="nav-number">3.3.</span> <span class="nav-text">album_info：专辑信息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#android-metadata：当前字符编码"><span class="nav-number">3.4.</span> <span class="nav-text">android_metadata：当前字符编码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#artists：艺术家"><span class="nav-number">3.5.</span> <span class="nav-text">artists：艺术家</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#artist-info"><span class="nav-number">3.6.</span> <span class="nav-text">artist_info</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#artists-albums-map"><span class="nav-number">3.7.</span> <span class="nav-text">artists_albums_map</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#audio-genres：流派"><span class="nav-number">3.8.</span> <span class="nav-text">audio_genres：流派</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#audio-genres-map：音频流派映射"><span class="nav-number">3.9.</span> <span class="nav-text">audio_genres_map：音频流派映射</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#audio-meta：音频信息"><span class="nav-number">3.10.</span> <span class="nav-text">audio_meta：音频信息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#audio-playlists：播放列表"><span class="nav-number">3.11.</span> <span class="nav-text">audio_playlists：播放列表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#audio-playlists-map：音频播放列表映射"><span class="nav-number">3.12.</span> <span class="nav-text">audio_playlists_map：音频播放列表映射</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: '1476526346000', 
+            owner: 'wossoneri',
+            repo: 'wossoneri.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
+            
+                client_id: '40b6c719a11e3fca29e8'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("RHlsmdBRQUmQMHNOl3U1ocam-gzGzoHsz", "RU2vFPiDzi68XGHCgJXtBAqo");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/love.js"></script>
