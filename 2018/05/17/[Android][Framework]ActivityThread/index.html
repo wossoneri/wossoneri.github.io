@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android,ActivityThread," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="Android ActivityThread介绍">
+<meta name="keywords" content="Android,ActivityThread">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Android][Framework]ActivityThread">
+<meta property="og:url" content="http://wossoneri.github.io/2018/05/17/[Android][Framework]ActivityThread/index.html">
+<meta property="og:site_name" content="Wossoneri`s Blog">
+<meta property="og:description" content="Android ActivityThread介绍">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-05-16T17:35:33.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[Android][Framework]ActivityThread">
+<meta name="twitter:description" content="Android ActivityThread介绍">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '6234852363740382000',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wossoneri.github.io/2018/05/17/[Android][Framework]ActivityThread/"/>
+
+
+
+
+
+  <title>[Android][Framework]ActivityThread | Wossoneri`s Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-70716047-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/wossoneri"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wossoneri`s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2018/05/17/[Android][Framework]ActivityThread/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wossoneri">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wossoneri`s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[Android][Framework]ActivityThread</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-17T16:22:26+08:00">
+                2018-05-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/05/17/[Android][Framework]ActivityThread/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/05/17/[Android][Framework]ActivityThread/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/05/17/[Android][Framework]ActivityThread/" class="leancloud_visitors" data-flag-title="[Android][Framework]ActivityThread">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+	
+  		  <span class="post-letters-count">
+            &nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+                 <i class="fa fa-clock-o" ></i>
+            </span>
+		        <span class="post-meta-item-text">总记</span>
+            <span class="post-count">2,339 字</span>
+		        <span class="post-meta-item-text">读完需要</span>
+    		    <span class="post-count">11 分</span>
+  		  </span>
+           
+         
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  Android ActivityThread介绍
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>前面介绍Handler机制的时候，遗留了一个问题：</p>
+<p>创建ActivityThread的时候为主线程加入了Main Looper，那么主线程是怎么创建的呢？</p>
+<h2 id="ActivityThread启动"><a href="#ActivityThread启动" class="headerlink" title="ActivityThread启动"></a>ActivityThread启动</h2><p>之前在介绍SystemServer启动的时候，在<a href="http://wossoneri.github.io/2018/03/25/[Android][Framework]start-of-SystemServer/#SystemServer-createSystemContext">createSystemContext</a>方法内做了如下操作：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">createSystemContext</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  	<span class="comment">// 创建系统上下文并设置主题</span></span><br><span class="line">    ActivityThread activityThread = ActivityThread.systemMain();</span><br><span class="line">    mSystemContext = activityThread.getSystemContext();</span><br><span class="line">    mSystemContext.setTheme(DEFAULT_SYSTEM_THEME);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> Context systemUiContext = activityThread.getSystemUiContext();</span><br><span class="line">    systemUiContext.setTheme(DEFAULT_SYSTEM_THEME);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后跟一下systemMain方法</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ActivityThread <span class="title">systemMain</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// The system process on low-memory devices do not get to use hardware</span></span><br><span class="line">    <span class="comment">// accelerated drawing, since this can add too much overhead to the</span></span><br><span class="line">    <span class="comment">// process.</span></span><br><span class="line">    <span class="keyword">if</span> (!ActivityManager.isHighEndGfx()) &#123;</span><br><span class="line">        ThreadedRenderer.disable(<span class="keyword">true</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        ThreadedRenderer.enableForegroundTrimming();</span><br><span class="line">    &#125;</span><br><span class="line">    ActivityThread thread = <span class="keyword">new</span> ActivityThread();</span><br><span class="line">    thread.attach(<span class="keyword">true</span>);</span><br><span class="line">    <span class="keyword">return</span> thread;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ActivityThread() &#123;</span><br><span class="line">    mResourcesManager = ResourcesManager.getInstance();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>所以这里并不是ActivityThread的执行入口。那么哪里才是入口呢？</p>
+<p>回想主线程添加Looper的地方，对， <code>main</code> 方法才是真正的入口。那么 <code>main</code> 方法是怎么调用的呢？</p>
+<p>通过搜索AOSP，发现在ActivityManagerService的<a href="http://androidxref.com/8.0.0_r4/xref/frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java#3914" target="_blank" rel="external">startProcessLocked</a>方法内出现了相关代码：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Start the process.  It will either succeed and return a result containing</span></span><br><span class="line"><span class="comment">// the PID of the new process, or else throw a RuntimeException.</span></span><br><span class="line"><span class="keyword">boolean</span> isActivityProcess = (entryPoint == <span class="keyword">null</span>);</span><br><span class="line"><span class="keyword">if</span> (entryPoint == <span class="keyword">null</span>) entryPoint = <span class="string">"android.app.ActivityThread"</span>;</span><br><span class="line">Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, <span class="string">"Start proc: "</span> +</span><br><span class="line">        app.processName);</span><br><span class="line">checkTime(startTime, <span class="string">"startProcess: asking zygote to start proc"</span>);</span><br><span class="line">ProcessStartResult startResult;</span><br><span class="line"><span class="keyword">if</span> (hostingType.equals(<span class="string">"webview_service"</span>)) &#123;</span><br><span class="line">    startResult = startWebView(entryPoint,</span><br><span class="line">            app.processName, uid, uid, gids, debugFlags, mountExternal,</span><br><span class="line">            app.info.targetSdkVersion, seInfo, requiredAbi, instructionSet,</span><br><span class="line">            app.info.dataDir, <span class="keyword">null</span>, entryPointArgs);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    startResult = Process.start(entryPoint,</span><br><span class="line">            app.processName, uid, uid, gids, debugFlags, mountExternal,</span><br><span class="line">            app.info.targetSdkVersion, seInfo, requiredAbi, instructionSet,</span><br><span class="line">            app.info.dataDir, invokeWith, entryPointArgs);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最终调用了 <code>Process.start(android.app.ActivityThread)</code> 方法，而后通过 <code>socket</code> 通信告知 <code>Zygote进程fork子进程</code> ，即app进程。进程创建后将 <code>ActivityThread</code> 加载进去，执行 <code>ActivityThread.main()</code> 方法。</p>
+<h2 id="ActivityThread执行"><a href="#ActivityThread执行" class="headerlink" title="ActivityThread执行"></a>ActivityThread执行</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line">    Looper.prepareMainLooper();</span><br><span class="line"></span><br><span class="line">    ActivityThread thread = <span class="keyword">new</span> ActivityThread();</span><br><span class="line">    thread.attach(<span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (sMainThreadHandler == <span class="keyword">null</span>) &#123;</span><br><span class="line">        sMainThreadHandler = thread.getHandler();</span><br><span class="line">    &#125;</span><br><span class="line">	...</span><br><span class="line">    Looper.loop();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Main thread loop unexpectedly exited"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">final</span> Handler <span class="title">getHandler</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> mH;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>main方法主要创建Handler以及looper，另一件事就是调用attach(false)方法</p>
+<p>这个attach做了什么呢？</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> ApplicationThread mAppThread = <span class="keyword">new</span> ApplicationThread();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">attach</span><span class="params">(<span class="keyword">boolean</span> system)</span> </span>&#123;</span><br><span class="line">    sCurrentActivityThread = <span class="keyword">this</span>; <span class="comment">// 对自己的引用</span></span><br><span class="line">    mSystemThread = system; <span class="comment">// 传入的bool参数，这里是false</span></span><br><span class="line">    <span class="keyword">if</span> (!system) &#123;</span><br><span class="line">        ViewRootImpl.addFirstDrawHandler(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                ensureJitEnabled(); <span class="comment">// 虚拟机JIT开启</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        android.ddm.DdmHandleAppName.setAppName(<span class="string">"&lt;pre-initialized&gt;"</span>,</span><br><span class="line">                                                UserHandle.myUserId());</span><br><span class="line">        RuntimeInit.setApplicationObject(mAppThread.asBinder());</span><br><span class="line">        <span class="comment">// 获取IActivityManager实例</span></span><br><span class="line">        <span class="keyword">final</span> IActivityManager mgr = ActivityManager.getService();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            mgr.attachApplication(mAppThread);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (RemoteException ex) &#123;</span><br><span class="line">            <span class="keyword">throw</span> ex.rethrowFromSystemServer();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// Watch for getting close to heap limit.</span></span><br><span class="line">		...</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		...</span><br><span class="line">    &#125;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>attach里面得到一个IActivityManager实例。</p>
+<p>这个类从命名看就知道是个AIDL接口，通过ActivityManager源码可知</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> IActivityManager <span class="title">getService</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> IActivityManagerSingleton.get();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Singleton&lt;IActivityManager&gt; IActivityManagerSingleton =</span><br><span class="line">        <span class="keyword">new</span> Singleton&lt;IActivityManager&gt;() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">protected</span> IActivityManager <span class="title">create</span><span class="params">()</span> </span>&#123;</span><br><span class="line">              	<span class="comment">// 通过activity service拿到IBinder实例</span></span><br><span class="line">                <span class="keyword">final</span> IBinder b = ServiceManager.getService(Context.ACTIVITY_SERVICE);</span><br><span class="line">                <span class="keyword">final</span> IActivityManager am = IActivityManager.Stub.asInterface(b);</span><br><span class="line">                <span class="keyword">return</span> am;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;;</span><br></pre></td></tr></table></figure>
+<p>这样看</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> IActivityManager mgr = ActivityManager.getService();</span><br><span class="line"><span class="comment">// 就相当于</span></span><br><span class="line"><span class="keyword">final</span> IBinder b = ServiceManager.getService(Context.ACTIVITY_SERVICE);</span><br><span class="line"><span class="keyword">final</span> IActivityManager mgr = IActivityManager.Stub.asInterface(b);</span><br></pre></td></tr></table></figure>
+<p>IBinder就要负责和AMS通信。</p>
+<p>attach方法的下一步是</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">mgr.attachApplication(mAppThread);</span><br></pre></td></tr></table></figure>
+<p>该方法在IActivityManager声明，在ActivityManagerService实现</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">attachApplication</span><span class="params">(IApplicationThread thread)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">            <span class="keyword">int</span> callingPid = Binder.getCallingPid();</span><br><span class="line">            <span class="keyword">final</span> <span class="keyword">long</span> origId = Binder.clearCallingIdentity();</span><br><span class="line">            attachApplicationLocked(thread, callingPid);</span><br><span class="line">            Binder.restoreCallingIdentity(origId);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">attachApplicationLocked</span><span class="params">(IApplicationThread thread,</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="keyword">int</span> pid)</span> </span>&#123;</span><br><span class="line">  		<span class="comment">// Find the application record that is being attached... </span></span><br><span class="line">  		...</span><br><span class="line">        <span class="comment">// 这里代码很多，关键在这一步</span></span><br><span class="line">        <span class="keyword">if</span> (app.instr != <span class="keyword">null</span>) &#123;</span><br><span class="line">                thread.bindApplication(processName, appInfo, providers,</span><br><span class="line">                        app.instr.mClass,</span><br><span class="line">                        profilerInfo, app.instr.mArguments,</span><br><span class="line">                        app.instr.mWatcher,</span><br><span class="line">                        app.instr.mUiAutomationConnection, testMode,</span><br><span class="line">                        mBinderTransactionTrackingEnabled, enableTrackAllocation,</span><br><span class="line">                        isRestrictedBackupMode || !normalMode, app.persistent,</span><br><span class="line">                        <span class="keyword">new</span> Configuration(getGlobalConfiguration()), app.compat,</span><br><span class="line">                        getCommonServicesLocked(app.isolated),</span><br><span class="line">                        mCoreSettingsObserver.getCoreSettingsLocked(),</span><br><span class="line">                        buildSerial);</span><br><span class="line">            &#125;</span><br><span class="line">        ...</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+<p>这个IApplicationThread是ActivityThread的内部私有类，其bindApplication方法如下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">ApplicationThread</span> <span class="keyword">extends</span> <span class="title">IApplicationThread</span>.<span class="title">Stub</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">bindApplication</span><span class="params">(String processName, ApplicationInfo appInfo,</span></span></span><br><span class="line"><span class="function"><span class="params">                List&lt;ProviderInfo&gt; providers, ComponentName instrumentationName,</span></span></span><br><span class="line"><span class="function"><span class="params">                ProfilerInfo profilerInfo, Bundle instrumentationArgs,</span></span></span><br><span class="line"><span class="function"><span class="params">                IInstrumentationWatcher instrumentationWatcher,</span></span></span><br><span class="line"><span class="function"><span class="params">                IUiAutomationConnection instrumentationUiConnection, <span class="keyword">int</span> debugMode,</span></span></span><br><span class="line"><span class="function"><span class="params">                <span class="keyword">boolean</span> enableBinderTracking, <span class="keyword">boolean</span> trackAllocation,</span></span></span><br><span class="line"><span class="function"><span class="params">                <span class="keyword">boolean</span> isRestrictedBackupMode, <span class="keyword">boolean</span> persistent, Configuration config,</span></span></span><br><span class="line"><span class="function"><span class="params">                CompatibilityInfo compatInfo, Map services, Bundle coreSettings,</span></span></span><br><span class="line"><span class="function"><span class="params">                String buildSerial)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (services != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="comment">// Setup the service cache in the ServiceManager</span></span><br><span class="line">                ServiceManager.initServiceCache(services);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            setCoreSettings(coreSettings);</span><br><span class="line"></span><br><span class="line">            AppBindData data = <span class="keyword">new</span> AppBindData();</span><br><span class="line">            data.processName = processName;</span><br><span class="line">			...</span><br><span class="line">            sendMessage(H.BIND_APPLICATION, data);</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后调用sendMessage。这个方法有多个重载方法，最终会调用到一个重载：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">sendMessage</span><span class="params">(<span class="keyword">int</span> what, Object obj, <span class="keyword">int</span> arg1, <span class="keyword">int</span> arg2, <span class="keyword">boolean</span> async)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (DEBUG_MESSAGES) Slog.v(</span><br><span class="line">        TAG, <span class="string">"SCHEDULE "</span> + what + <span class="string">" "</span> + mH.codeToString(what)</span><br><span class="line">        + <span class="string">": "</span> + arg1 + <span class="string">" / "</span> + obj);</span><br><span class="line">    Message msg = Message.obtain();</span><br><span class="line">    msg.what = what;</span><br><span class="line">    msg.obj = obj;</span><br><span class="line">    msg.arg1 = arg1;</span><br><span class="line">    msg.arg2 = arg2;</span><br><span class="line">    <span class="keyword">if</span> (async) &#123;</span><br><span class="line">        msg.setAsynchronous(<span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    mH.sendMessage(msg);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>看到熟悉的mH心里就应该会舒口气，因为调用马上结束了。</p>
+<p>在HandleMessage的地方，处理<code>H.BIND_APPLICATION</code>：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">case</span> BIND_APPLICATION:</span><br><span class="line">	Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, <span class="string">"bindApplication"</span>);</span><br><span class="line">	AppBindData data = (AppBindData)msg.obj;</span><br><span class="line">	handleBindApplication(data);</span><br><span class="line">	Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);</span><br><span class="line">	<span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">handleBindApplication</span><span class="params">(AppBindData data)</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line">	        <span class="comment">// Continue loading instrumentation.</span></span><br><span class="line">              	<span class="comment">// 创建instrumentation对象</span></span><br><span class="line">                <span class="keyword">final</span> ClassLoader cl = instrContext.getClassLoader();</span><br><span class="line">                mInstrumentation = (Instrumentation)</span><br><span class="line">                    cl.loadClass(data.instrumentationName.getClassName()).newInstance();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">final</span> ComponentName component = <span class="keyword">new</span> ComponentName(ii.packageName, ii.name);</span><br><span class="line">            mInstrumentation.init(<span class="keyword">this</span>, instrContext, appContext, component,</span><br><span class="line">                    data.instrumentationWatcher, data.instrumentationUiAutomationConnection);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">            <span class="comment">// If the app is being launched for full backup or restore, bring it up in</span></span><br><span class="line">            <span class="comment">// a restricted environment with the base application class.</span></span><br><span class="line">            <span class="comment">//在这里创建了上层开发者的代码中所涉及的Applicaiton类的对象</span></span><br><span class="line">            Application app = data.info.makeApplication(data.restrictedBackupMode, <span class="keyword">null</span>);</span><br><span class="line">            mInitialApplication = app;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Do this after providers, since instrumentation tests generally start their</span></span><br><span class="line">            <span class="comment">// test thread at this point, and we don't want that racing.</span></span><br><span class="line">                mInstrumentation.onCreate(data.instrumentationArgs);</span><br><span class="line"></span><br><span class="line">              	<span class="comment">//调Application的生命周期函数 onCreate()</span></span><br><span class="line">                mInstrumentation.callApplicationOnCreate(app);</span><br><span class="line"></span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面处理做了几个比较关键的事情：</p>
+<ol>
+<li>获取instrumentation实例</li>
+<li>获取Application对象</li>
+<li>instrumentation调用onCreate</li>
+</ol>
+<p>下面具体看这几个东西。</p>
+<h3 id="Instrumentation"><a href="#Instrumentation" class="headerlink" title="Instrumentation"></a>Instrumentation</h3><p>Class前的注释为：</p>
+<blockquote>
+<p>用于实现应用程序检测代码的基类。 当开启Instrumentation运行时，该类将在任何应用程序代码之前实例化，从而允许您监视系统与应用程序之间的所有交互。</p>
+</blockquote>
+<p>也就是说，只要开启instrumentation，就可以通过它来监视系统和Application之间的交互调用。</p>
+<p>查看源码方法列表，的确看到很多和Activity相关的方法。详细的不在这里讲了。</p>
+<p>看下实例化方法：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">mInstrumentation = (Instrumentation)</span><br><span class="line">                    cl.loadClass(data.instrumentationName.getClassName()).newInstance();</span><br></pre></td></tr></table></figure>
+<p>通过反射，从 <code>data.instrumentationName.getClassName()</code> 拿到instrumentation的name实例化。</p>
+<p>拿到实例，对其进行init初始化：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">mInstrumentation.init(<span class="keyword">this</span>, instrContext, appContext, component,</span><br><span class="line">                    data.instrumentationWatcher, data.instrumentationUiAutomationConnection);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/*package*/</span> <span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(ActivityThread thread,</span></span></span><br><span class="line"><span class="function"><span class="params">            Context instrContext, Context appContext, ComponentName component,</span></span></span><br><span class="line"><span class="function"><span class="params">            IInstrumentationWatcher watcher, IUiAutomationConnection uiAutomationConnection)</span> </span>&#123;</span><br><span class="line">        mThread = thread;</span><br><span class="line">        mMessageQueue = mThread.getLooper().myQueue();</span><br><span class="line">        mInstrContext = instrContext;</span><br><span class="line">        mAppContext = appContext;</span><br><span class="line">        mComponent = component;</span><br><span class="line">        mWatcher = watcher;</span><br><span class="line">        mUiAutomationConnection = uiAutomationConnection;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>instrumentation内部有一个mThread对象，它由init方法初始化，这里init时就把自身（即主线程）传递给instrumentation。</p>
+<p>下一步是调用onCreate方法</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">mInstrumentation.onCreate(data.instrumentationArgs);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Called when the instrumentation is starting, before any application code</span></span><br><span class="line"><span class="comment">     * has been loaded.  Usually this will be implemented to simply call</span></span><br><span class="line"><span class="comment">     * &#123;<span class="doctag">@link</span> #start&#125; to begin the instrumentation thread, which will then</span></span><br><span class="line"><span class="comment">     * continue execution in &#123;<span class="doctag">@link</span> #onStart&#125;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;If you do not need your own thread -- that is you are writing your</span></span><br><span class="line"><span class="comment">     * instrumentation to be completely asynchronous (returning to the event</span></span><br><span class="line"><span class="comment">     * loop so that the application can run), you can simply begin your</span></span><br><span class="line"><span class="comment">     * instrumentation here, for example call &#123;<span class="doctag">@link</span> Context#startActivity&#125; to</span></span><br><span class="line"><span class="comment">     * begin the appropriate first activity of the application.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> arguments Any additional arguments that were supplied when the</span></span><br><span class="line"><span class="comment">     *                  instrumentation was started.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle arguments)</span> </span>&#123;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>onCreate其实是个空方法，可以阅读注释了解详情。这之后调用一个最关键的方法：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">mInstrumentation.callApplicationOnCreate(app);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 执行application.onCreate方法</span></span><br><span class="line">	<span class="comment">// 这个方法会在onCreate方法（上面的空方法）后立即调用。instrumentation测试程序会在那个onCreate中创建测试线程，所以要注意可能的风险</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">callApplicationOnCreate</span><span class="params">(Application app)</span> </span>&#123;</span><br><span class="line">        app.onCreate();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Application.java</span></span><br><span class="line">	<span class="comment">// application启动时，在任何activity,service,receiver对象创建之前调用，其实现要越快越好，比如使用懒加载。否则会影响在进程内启动第一个Activity，Service或receiver的性能。重写该方法时需要调用super.onCreate()</span></span><br><span class="line">    <span class="meta">@CallSuper</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>所以最后就是调用到了Application的onCreate方法。</p>
+<p>说道这个方法，提个题外话，自己在写App的时候，有时候会想用到一些App全局的变量，比较常用的就是自己继承Application实现一些方法，比如：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainApplication</span> <span class="keyword">extends</span> <span class="title">Application</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Context sAppContext;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate();</span><br><span class="line">        sAppContext = <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 把manifest的application名称改掉</span></span><br><span class="line">&lt;application</span><br><span class="line">        android:name=<span class="string">".MainApplication"</span></span><br><span class="line">          .../&gt;</span><br><span class="line">          </span><br><span class="line"><span class="comment">// 使用</span></span><br><span class="line">Context context = MainApplication.sAppContext;</span><br></pre></td></tr></table></figure>
+<p>看了上面的过程就会理解为什么启动App后这个onCreate会最先调用。</p>
+<h3 id="LoadedApk"><a href="#LoadedApk" class="headerlink" title="LoadedApk"></a>LoadedApk</h3><p>下面在了解一下上面调用时传递的app参数是怎么来的。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// If the app is being launched for full backup or restore, bring it up in</span></span><br><span class="line"><span class="comment">// a restricted environment with the base application class.</span></span><br><span class="line">Application app = data.info.makeApplication(data.restrictedBackupMode, <span class="keyword">null</span>);</span><br></pre></td></tr></table></figure>
+<p>这个data就是封装在message里的数据，其具体数据来自AMS。但是info这个字段并不在AMS的数据中，查看data的类型，发现：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">AppBindData</span> </span>&#123;</span><br><span class="line">    LoadedApk info;</span><br><span class="line">    String processName;</span><br><span class="line">    ApplicationInfo appInfo;</span><br><span class="line">    List&lt;ProviderInfo&gt; providers;</span><br><span class="line">    ComponentName instrumentationName;</span><br><span class="line">    Bundle instrumentationArgs;</span><br><span class="line">    IInstrumentationWatcher instrumentationWatcher;</span><br><span class="line">    IUiAutomationConnection instrumentationUiAutomationConnection;</span><br><span class="line">    <span class="keyword">int</span> debugMode;</span><br><span class="line">    <span class="keyword">boolean</span> enableBinderTracking;</span><br><span class="line">    <span class="keyword">boolean</span> trackAllocation;</span><br><span class="line">    <span class="keyword">boolean</span> restrictedBackupMode;</span><br><span class="line">    <span class="keyword">boolean</span> persistent;</span><br><span class="line">    Configuration config;</span><br><span class="line">    CompatibilityInfo compatInfo;</span><br><span class="line">    String buildSerial;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** Initial values for &#123;<span class="doctag">@link</span> Profiler&#125;. */</span></span><br><span class="line">    ProfilerInfo initProfilerInfo;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"AppBindData&#123;appInfo="</span> + appInfo + <span class="string">"&#125;"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个AppBindData也是ActivityThread的内部类，info字段是LoadedApk类型。查找info的赋值，就发生在handleBindApplication方法内，在拿到instrumentation实例前完成：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">data.info = getPackageInfoNoCheck(data.appInfo, data.compatInfo);</span><br></pre></td></tr></table></figure>
+<p>这中间的实现就不分析了，看一下LoadedApk是怎么拿到application对象的</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// frameworks/base/core/java/android/app/LoadedApk.java</span></span><br><span class="line"><span class="comment">// Local state maintained about a currently loaded .apk. 如其名，就是当前加载的apk</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Application <span class="title">makeApplication</span><span class="params">(<span class="keyword">boolean</span> forceDefaultAppClass,</span></span></span><br><span class="line"><span class="function"><span class="params">            Instrumentation instrumentation)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (mApplication != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> mApplication;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Application app = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        String appClass = mApplicationInfo.className;</span><br><span class="line">        <span class="keyword">if</span> (forceDefaultAppClass || (appClass == <span class="keyword">null</span>)) &#123;</span><br><span class="line">            appClass = <span class="string">"android.app.Application"</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            java.lang.ClassLoader cl = getClassLoader();</span><br><span class="line">            <span class="keyword">if</span> (!mPackageName.equals(<span class="string">"android"</span>)) &#123;</span><br><span class="line">                initializeJavaContextClassLoader();</span><br><span class="line">            &#125;</span><br><span class="line">            ContextImpl appContext = ContextImpl.createAppContext(mActivityThread, <span class="keyword">this</span>);</span><br><span class="line">          	<span class="comment">// application还是从主线程里的instrumentation中得到的</span></span><br><span class="line">            app = mActivityThread.mInstrumentation.newApplication(</span><br><span class="line">                    cl, appClass, appContext);</span><br><span class="line">            appContext.setOuterContext(app);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        &#125;</span><br><span class="line">        mActivityThread.mAllApplications.add(app);</span><br><span class="line">        mApplication = app;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (instrumentation != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                instrumentation.callApplicationOnCreate(app);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Rewrite the R 'constants' for all library apks.</span></span><br><span class="line">		...</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> app;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>emmm….这个Application还是从主线程的instrumentation创造，再由instrumentation做onCreate…</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>再整理一遍ActivityThread的main函数执行：</p>
+<ul>
+<li>初始化main Looper</li>
+<li>实例化ActivityThread</li>
+<li>初始化H Handler</li>
+<li>调用attach(false)方法<ul>
+<li>得到IActivityManager，拿到AMS的binder</li>
+<li>调用AMS的attachApplication方法，拿到相关参数</li>
+<li>通过ApplicationThread实例作为参数，调用bindApplication方法，封装参数到data</li>
+<li>H handler发送H.BIND_APPLICATION消息，把data发送到ActivityThread，从Binder切换到主线程</li>
+<li>H handler在ActivityThread处理data</li>
+<li>从data.info拿到application对象，通过instrumentation调用callApplicationOnCreate(app)调用到onCreate完成application的创建。</li>
+</ul>
+</li>
+<li>Looper进入循环等待消息</li>
+</ul>
+<p>其实，主线程的启动和Activity的启动时息息相关的，后面就在此基础上跟踪一下Application以及App的main Activity是如何启动的。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Wossoneri
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://wossoneri.github.io/2018/05/17/[Android][Framework]ActivityThread/" title="[Android][Framework]ActivityThread">http://wossoneri.github.io/2018/05/17/[Android][Framework]ActivityThread/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+          
+            <a href="/tags/ActivityThread/" rel="tag"><i class="fa fa-tag"></i> ActivityThread</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/10/[Android]handler-message-delivery/" rel="next" title="[Android] Handler消息传递机制">
+                <i class="fa fa-chevron-left"></i> [Android] Handler消息传递机制
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460"
+                alt="Wossoneri" />
+            
+              <p class="site-author-name" itemprop="name">Wossoneri</p>
+              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">85</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+            <div class="cc-license motion-element" itemprop="license">
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+              </a>
+            </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-globe"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#ActivityThread启动"><span class="nav-number">1.</span> <span class="nav-text">ActivityThread启动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ActivityThread执行"><span class="nav-number">2.</span> <span class="nav-text">ActivityThread执行</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Instrumentation"><span class="nav-number">2.1.</span> <span class="nav-text">Instrumentation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LoadedApk"><span class="nav-number">2.2.</span> <span class="nav-text">LoadedApk</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: '1526545346000', 
+            owner: 'wossoneri',
+            repo: 'wossoneri.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
+            
+                client_id: '40b6c719a11e3fca29e8'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("RHlsmdBRQUmQMHNOl3U1ocam-gzGzoHsz", "RU2vFPiDzi68XGHCgJXtBAqo");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/love.js"></script>
