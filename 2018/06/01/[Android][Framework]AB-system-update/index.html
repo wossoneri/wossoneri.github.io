@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Java,Design pattern," />
+  <meta name="keywords" content="Android,OTA," />
 
 
 
@@ -81,20 +81,20 @@
 
 
 
-<meta name="description" content="简单介绍工厂方法模式">
-<meta name="keywords" content="Java,Design pattern">
+<meta name="description" content="Android N 之后新增一个A/B系统升级的OTA方案，最近因为有这个定制需求，所以了解了一下。仅记录一些我认为比较重要的部分。更多内容可以参考底部链接。">
+<meta name="keywords" content="Android,OTA">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[设计模式]之二十二:工厂方法模式">
-<meta property="og:url" content="http://wossoneri.github.io/2017/04/11/[Design-Pattern]Factory/index.html">
+<meta property="og:title" content="[Android][Framework]A&#x2F;B system update">
+<meta property="og:url" content="http://wossoneri.github.io/2018/06/01/[Android][Framework]AB-system-update/index.html">
 <meta property="og:site_name" content="Wossoneri`s Blog">
-<meta property="og:description" content="简单介绍工厂方法模式">
+<meta property="og:description" content="Android N 之后新增一个A/B系统升级的OTA方案，最近因为有这个定制需求，所以了解了一下。仅记录一些我认为比较重要的部分。更多内容可以参考底部链接。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/UML-factory.png?raw=true">
-<meta property="og:updated_time" content="2018-05-02T16:40:57.000Z">
+<meta property="og:image" content="https://github.com/guyongqiangx/blog/blob/dev/ab-ota/images/ab-system-example-scenarios.png?raw=true">
+<meta property="og:updated_time" content="2018-06-03T19:45:40.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="[设计模式]之二十二:工厂方法模式">
-<meta name="twitter:description" content="简单介绍工厂方法模式">
-<meta name="twitter:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/UML-factory.png?raw=true">
+<meta name="twitter:title" content="[Android][Framework]A&#x2F;B system update">
+<meta name="twitter:description" content="Android N 之后新增一个A/B系统升级的OTA方案，最近因为有这个定制需求，所以了解了一下。仅记录一些我认为比较重要的部分。更多内容可以参考底部链接。">
+<meta name="twitter:image" content="https://github.com/guyongqiangx/blog/blob/dev/ab-ota/images/ab-system-example-scenarios.png?raw=true">
 
 
 
@@ -124,13 +124,13 @@
 
 
 
-  <link rel="canonical" href="http://wossoneri.github.io/2017/04/11/[Design-Pattern]Factory/"/>
+  <link rel="canonical" href="http://wossoneri.github.io/2018/06/01/[Android][Framework]AB-system-update/"/>
 
 
 
 
 
-  <title>[设计模式]之二十二:工厂方法模式 | Wossoneri`s Blog</title>
+  <title>[Android][Framework]A/B system update | Wossoneri`s Blog</title>
   
 
 
@@ -277,7 +277,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2017/04/11/[Design-Pattern]Factory/">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2018/06/01/[Android][Framework]AB-system-update/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Wossoneri">
@@ -294,7 +294,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">[设计模式]之二十二:工厂方法模式</h1>
+          <h1 class="post-title" itemprop="name headline">[Android][Framework]A/B system update</h1>
         
 
         <div class="post-meta">
@@ -306,8 +306,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-11T11:11:11+08:00">
-                2017-04-11
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-06-01T12:32:26+08:00">
+                2018-06-01
               </time>
             
 
@@ -329,8 +329,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Design-pattern/" itemprop="url" rel="index">
-                    <span itemprop="name">Design pattern</span>
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
                   </a>
                 </span>
 
@@ -347,8 +347,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2017/04/11/[Design-Pattern]Factory/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count gitment-comments-count" data-xid="/2017/04/11/[Design-Pattern]Factory/" itemprop="commentsCount"></span>
+                <a href="/2018/06/01/[Android][Framework]AB-system-update/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/06/01/[Android][Framework]AB-system-update/" itemprop="commentsCount"></span>
                 </a>
               </span>
             
@@ -356,7 +356,7 @@
 
           
           
-             <span id="/2017/04/11/[Design-Pattern]Factory/" class="leancloud_visitors" data-flag-title="[设计模式]之二十二:工厂方法模式">
+             <span id="/2018/06/01/[Android][Framework]AB-system-update/" class="leancloud_visitors" data-flag-title="[Android][Framework]A/B system update">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -374,9 +374,9 @@
                  <i class="fa fa-clock-o" ></i>
             </span>
 		        <span class="post-meta-item-text">总记</span>
-            <span class="post-count">787 字</span>
+            <span class="post-count">2,737 字</span>
 		        <span class="post-meta-item-text">读完需要</span>
-    		    <span class="post-count">3 分</span>
+    		    <span class="post-count">10 分</span>
   		  </span>
            
          
@@ -387,7 +387,7 @@
 
           
               <div class="post-description">
-                  简单介绍工厂方法模式
+                  Android N 之后新增一个A/B系统升级的OTA方案，最近因为有这个定制需求，所以了解了一下。仅记录一些我认为比较重要的部分。更多内容可以参考底部链接。
               </div>
           
 
@@ -404,24 +404,165 @@
       
 
       
-        <h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>定义一个用于创建对象的接口，让子类决定实例化哪一个类。工厂方法使一个类的实例化延迟到其子类。</p>
-<p>工厂方法和简单工厂的区别就在于：</p>
-<p>简单工厂里的工厂类是全能类，也就是说生产新的产品，都在工厂代码（switch语句）里添加对应的处理。这样违反了开闭原则，不该修改原类的代码。</p>
-<p>所以工厂方法的策略是，把所有产品的工厂单独写成工厂类，这样添加新的产品，只要添加新的工厂类即可。</p>
-<h3 id="UML"><a href="#UML" class="headerlink" title="UML"></a>UML</h3><p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/UML-factory.png?raw=true" alt=""></p>
-<h3 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 产品为交通工具</span></span><br><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Transaction</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TCar</span> <span class="keyword">extends</span> <span class="title">Transaction</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">TCar</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">"Create a Car"</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TShip</span> <span class="keyword">extends</span> <span class="title">Transaction</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">TShip</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">"Create a Ship"</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//工厂通用接口</span></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">FactoryTrans</span> </span>&#123;</span><br><span class="line">	<span class="function">Transaction <span class="title">createTrans</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//为新产品创建工厂</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FactoryCar</span> <span class="keyword">implements</span> <span class="title">FactoryTrans</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Transaction <span class="title">createTrans</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">new</span> TCar();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FactoryShip</span> <span class="keyword">implements</span> <span class="title">FactoryTrans</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Transaction <span class="title">createTrans</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">new</span> TShip();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//像这样添加新的产品线，不需要修改任何代码，只要添加</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">	<span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">	FactoryCar FCar = <span class="keyword">new</span> FactoryCar();</span><br><span class="line">	TCar car = (TCar) FCar.createTrans();</span><br><span class="line">	</span><br><span class="line">	FactoryShip FShip = <span class="keyword">new</span> FactoryShip();</span><br><span class="line">	TShip ship = (TShip) FShip.createTrans();</span><br><span class="line">	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="评价"><a href="#评价" class="headerlink" title="评价"></a>评价</h3><p>优缺点</p>
-<p>优点</p>
-<ul>
-<li>在工厂方法模式中，工厂方法用来创建客户所需要的产品，同时还向客户隐藏了哪种具体产品类将被实例化这一细节，用户只需要关心所需产品对应的工厂，无须关心创建细节，甚至无须知道具体产品类的类名。</li>
-<li>基于工厂角色和产品角色的多态性设计是工厂方法模式的关键。它能够使工厂可以自主确定创建何种产品对象，而如何创建这个对象的细节则完全封装在具体工厂内部。工厂方法模式之所以又被称为多态工厂模式，是因为所有的具体工厂类都具有同一抽象父类。</li>
-<li>使用工厂方法模式的另一个优点是在系统中加入新产品时，无须修改抽象工厂和抽象产品提供的接口，无须修改客户端，也无须修改其他的具体工厂和具体产品，而只要添加一个具体工厂和具体产品就可以了。这样，系统的可扩展性也就变得非常好，完全符合“开闭原则”。</li>
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>A/B系统就是指手机上有A，B两套可用的系统（userdata只有一份）。这两份系统同一时间只运行一个，另外一个作为备份。这两个系统的版本可能一样，也可能不一样。</p>
+<blockquote>
+<p>这里称为一套（slot）系统，是因为Android系统由多个分区组成。对于A/B，分为system_a，vendor_a，boot_a和system_b，vendor_b，boot_b。所以一套就是一组完整的分区。</p>
+</blockquote>
+<h2 id="优势"><a href="#优势" class="headerlink" title="优势"></a>优势</h2><ul>
+<li>由于手机上有两套可以正常工作的系统，升级系统时总是存在一个可以运行的系统，减少手机变砖的可能性</li>
+<li>OTA在系统后台进行，所以更新时用户可以正常使用设备，升级完成后只需要重启一次进入新系统即可</li>
+<li>更新后重启系统的时间不会超过常规重启时间（传统OTA需要在recovery中升级，重启过程比较慢）</li>
+<li>如果更新的系统无法启动，设备将重启回到旧系统，然后尝试再次更新</li>
+<li>任何错误（例如 I/O 错误）都只会影响<strong>未使用</strong>的分区组，并且用户可以进行重试。由于 I/O 负载被特意控制在较低水平，以免影响用户体验，因此发生此类错误的可能性也会降低</li>
+<li>更新包可以流式传输到 A/B 设备，因此在安装之前不需要先下载更新包。流式更新意味着用户没有必要在 <code>/data</code> 或 <code>/cache</code> 上留出足够的可用空间来存储更新包</li>
+<li>cache分区不再用于存储 OTA 更新包，因此无需确保缓存分区的大小要足以应对日后的更新</li>
+<li>dm-verity 可保证设备将使用未损坏的启动映像。如果设备因 OTA 错误或 dm-verity 问题而无法启动，则可以重新启动到旧img</li>
 </ul>
-<p>缺点</p>
-<ul>
-<li>在添加新产品时，需要编写新的具体产品类，而且还要提供与之对应的具体工厂类，系统中类的个数将成对增加，在一定程度上增加了系统的复杂度，有更多的类需要编译和运行，会给系统带来一些额外的开销。</li>
-<li>由于考虑到系统的可扩展性，需要引入抽象层，在客户端代码中均使用抽象层进行定义，增加了系统的抽象性和理解难度，且在实现时可能需要用到DOM、反射等技术，增加了系统的实现难度。</li>
+<h2 id="与传统OTA差别"><a href="#与传统OTA差别" class="headerlink" title="与传统OTA差别"></a>与传统OTA差别</h2><ol>
+<li>系统的分区设置 <ul>
+<li>传统方式只有一套分区</li>
+<li><code>A/B</code>系统有两套分区，称为<code>slot A</code>和<code>slot B</code></li>
 </ul>
+</li>
+<li>跟bootloader沟通的方式 <ul>
+<li>传统方式bootloader通过读取<code>misc</code>分区信息来决定是进入Android主系统还是Recovery系统</li>
+<li><code>A/B</code>系统的bootloader通过特定的分区信息来决定从<code>slot A</code>还是<code>slot B</code>启动</li>
+</ul>
+</li>
+<li>系统的编译过程 <ul>
+<li>传统方式在编译时会生成<code>boot.img</code>和<code>recovery.img</code>分别用于Android主系统和Recovery系统的ramdisk</li>
+<li><code>A/B</code>系统只有<code>boot.img</code>，而不再生成单独的<code>recovery.img</code></li>
+</ul>
+</li>
+<li>OTA更新包的生成方式 <ul>
+<li><code>A/B</code>系统生成OTA包的工具和命令跟传统方式一样，但是生成内容的格式不一样了</li>
+</ul>
+</li>
+</ol>
+<p>分区具体差别：</p>
+<p>传统分区</p>
+<ul>
+<li><p>bootloader</p>
+<p>存放用于引导linux的bootloader</p>
+</li>
+<li><p>boot</p>
+<p>存放Android主系统linux kernel文件和用于挂载system和其他分区的ramdisk</p>
+</li>
+<li><p>system</p>
+<p>Android 主系统分区，包括Android 系统App和库文件</p>
+</li>
+<li><p>vendor</p>
+<p>Android主系统分区，主要是包含开发厂商定制的一些应用和库文件。tremble了解一下</p>
+</li>
+<li><p>userdata</p>
+<p>用户数据分区，存放用户数据，包括用户安装的App和使用时生成的数据</p>
+</li>
+<li><p>cache</p>
+<p>临时数据分区，通常存放OTA升级包</p>
+</li>
+<li><p>recovery</p>
+<p>存放recovery系统的linux kernel文件和ramdisk</p>
+</li>
+<li><p>misc</p>
+<p>存放Android主系统和Recovery系统跟bootloader通信的数据</p>
+</li>
+</ul>
+<p>A/B system分区</p>
+<ul>
+<li><p>bootloader</p>
+<p>存放用于引导linux的bootloader</p>
+</li>
+<li><p>boot_a和boot_b</p>
+<p>分别用于存放两套系统各自的linux kernel文件和用于挂载system和其他分区的ramdisk</p>
+</li>
+<li><p>system_a和system_b</p>
+<p>Android主系统分区，分别用于存放两套系统各自的系统App和库文件</p>
+</li>
+<li><p>vendor_a和vendor_b</p>
+<p>Android主系统分区，分别用于存放两套系统各自开发厂商定制的一些应用和库文件，很多时候开发厂商也直接将这个分区的内容直接放入system分区</p>
+</li>
+<li><p>userdata</p>
+<p>用户数据分区，存放用户数据，包括用户安装的App和使用时生成的数据</p>
+</li>
+<li><p>misc或其他名字分区</p>
+<p>存放Android主系统和Recovery系统跟bootloader通信的数据，由于存放方式和分区名字没有强制要求，所以部分实现上保留了<code>misc</code>分区（代码中可见<code>Brillo</code>和<code>Intel</code>的平台），另外部分实现采用其他分区存放数据（<code>Broadcom</code>机顶盒平台采用名为<code>eio</code>的分区）。</p>
+</li>
+</ul>
+<p>区别：</p>
+<ol>
+<li>boot， system， vendor变成两套分区，slot A和slot B</li>
+<li>不再需要cache和recovery分区</li>
+<li>misc分区不是必须的</li>
+</ol>
+<h2 id="更新流程"><a href="#更新流程" class="headerlink" title="更新流程"></a>更新流程</h2><p>可以参考代码 <a href="https://source.asrmicro.com:8443/adroid8.1/xref/hardware/libhardware/include/hardware/boot_control.h" target="_blank" rel="external">boot_control.h</a></p>
+<ol>
+<li>通过 <code>markBootSuccessful()</code> 将当前slot（或“源slot”）标记为成功（如果尚未标记）</li>
+<li>调用函数 <code>setSlotAsUnbootable()</code>，将未使用的slot（或“目标slot”）标记为不可启动。当前slot始终会在更新开始时被标记为成功，以防止引导加载程序回退到未使用的slot（该slot中很快将会有无效数据）。如果系统已做好准备，可以开始应用更新，那么即使其他主要组件出现损坏（例如界面陷入崩溃循环），当前slot也会被标记为成功，因为可以通过推送新软件来解决这些问题<ul>
+<li>元数据。元数据在更新有效负载中所占的比重相对较小，其中包含一系列用于在目标slot上生成和验证新版本的操作。例如，某项操作可能会解压缩特定 Blob 并将其写入到目标分区中的特定块，或者从源分区读取数据、应用二进制补丁程序，然后写入到目标分区中的特定块</li>
+<li>额外数据。与操作相关的额外数据在更新有效负载中占据了大部分比重，其中包含这些示例中的已压缩 Blob 或二进制补丁程序</li>
+</ul>
+</li>
+<li>下载有效负载元数据</li>
+<li>对于元数据中定义的每项操作，都将按顺序发生以下行为：将相关数据（如果有）下载到内存中、应用操作，然后释放关联的内存</li>
+<li>对照预期的哈希重新读取并验证所有分区</li>
+<li>运行安装后步骤（如果有）。如果在执行任何步骤期间出现错误，则更新失败，系统可能会通过其他有效负载重新尝试更新。如果上述所有步骤均已成功完成，则更新成功，系统会执行最后一个步骤</li>
+<li>调用 <code>setActiveBootSlot()</code>，将未使用的槽位标记为活动槽位。将未使用的槽位标记为活动槽位并不意味着它将完成启动。如果引导加载程序（或系统本身）未读取到“成功”状态，则可以将活动槽位切换回来</li>
+<li>安装后步骤（如下所述）包括从“新更新”版本中运行仍在旧版本中运行的程序。如果此步骤已在 OTA 更新包中定义，则为<strong>强制性</strong>步骤，且程序必须返回并显示退出代码 <code>0</code>，否则更新会失败</li>
+<li>在系统足够深入地成功启动到新槽位并完成重新启动后检查之后，系统会调用 <code>markBootSuccessful()</code>，将现在的当前槽位（原“目标槽位”）标记为成功</li>
+</ol>
+<p>用具体的示例介绍流程：</p>
+<p><img src="https://github.com/guyongqiangx/blog/blob/dev/ab-ota/images/ab-system-example-scenarios.png?raw=true" alt=""></p>
+<p>如图，每一个slot都有3个属性：</p>
+<ul>
+<li><p>active</p>
+<p>系统活动分区标识。同时只有一个slot是active状态，启动时就会启动标识为此的slot</p>
+</li>
+<li><p>bootable</p>
+<p>分区可启动标识。有此标识说明该分区包含一个完整可启动的系统</p>
+</li>
+<li><p>successful</p>
+<p>分区运行成功标识。说明该分区在上次或者当前启动可以正常运行</p>
+</li>
+</ul>
+<p>图中4个场景如下</p>
+<ol>
+<li><p>普通场景（<code>Normal cases</code>）</p>
+<p>最常见的情形，例如设备出厂时，A分区和B分区都可以成功启动并正确运行，所以两个分区都设置为<code>bootable</code>和<code>successful</code>，但由于是从B分区启动，所以只有B分区设置为<code>active</code>。</p>
+</li>
+<li><p>升级中（<code>Update in progress</code>）</p>
+<p>B分区检测到升级数据，在A分区进行升级，此时将A分区标识为<code>unbootable</code>，另外清除<code>successful</code>标识；B分区仍然为<code>active</code>，<code>bootable</code>和<code>successful</code>。</p>
+</li>
+<li><p>更新完成，等待重启（<code>Update applied, reboot pending</code>）</p>
+<p>B分区将A分区成功更新后，将A分区标识为<code>bootable</code>。另外，由于重启后需要从A分区启动，所以也需要将A分区设置为<code>active</code>，但是由于还没有验证过A分区是否能成功运行，所以不设置<code>successful</code>；B分区的状态变为<code>bootable</code>和<code>successful</code>，但没有<code>active</code>。</p>
+</li>
+<li><p>从新系统成功启动（<code>System rebooted into new update</code>）</p>
+<p>设备重启后，<code>bootloader</code>检测到A分区为<code>active</code>，所以加载A分区系统。进入A系统后如果能正确运行，需要将A分区标识为<code>successful</code>。对比第1个普通场景，A和B系统都设置为<code>bootable</code>和<code>successful</code>，但<code>active</code>从B分区切换到A分区。至此，B分区成功更新并切换到A分区，设备重新进入普通场景。</p>
+</li>
+</ol>
+<h2 id="分区烧写"><a href="#分区烧写" class="headerlink" title="分区烧写"></a>分区烧写</h2><p>首先A/B系统和传统OTA系统只能存在一个，在编译时选择。烧写A/B系统也和烧正常系统一样，指定ab分区即可。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">target reported max download size of 536870912 bytes</span><br><span class="line">erasing <span class="string">'system_a'</span>...</span><br><span class="line">OKAY [  0.023s]</span><br><span class="line">sending sparse <span class="string">'system_a'</span> 1/7 (516186 KB)...</span><br><span class="line">OKAY [ 17.114s]</span><br><span class="line">writing <span class="string">'system_a'</span> 1/7...</span><br><span class="line"></span><br><span class="line">target reported max download size of 536870912 bytes</span><br><span class="line">sending sparse <span class="string">'system_b'</span> 1/7 (516186 KB)...</span><br><span class="line">OKAY [ 16.368s]</span><br><span class="line">writing <span class="string">'system_b'</span> 1/7...</span><br></pre></td></tr></table></figure>
+<h2 id="Java接口使用方法"><a href="#Java接口使用方法" class="headerlink" title="Java接口使用方法"></a>Java接口使用方法</h2><p>Android提供了Java层的接口，<a href="http://androidxref.com/8.0.0_r4/xref/frameworks/base/core/java/android/os/UpdateEngine.java" target="_blank" rel="external">UpdateEngine.java</a></p>
+<p>接口很好用</p>
+<ol>
+<li>首先创建一个UpdateEngine的实例</li>
+<li>实现 <a href="http://androidxref.com/8.0.0_r4/xref/frameworks/base/core/java/android/os/UpdateEngineCallback.java" target="_blank" rel="external">UpdateEngineCallback</a> 回调接口</li>
+<li>调用bind方法绑定Callback</li>
+<li>调用applyPayload方法执行更新</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SystemApi</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">applyPayload</span><span class="params">(String url, <span class="keyword">long</span> offset, <span class="keyword">long</span> size, String[] headerKeyValuePairs)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        mUpdateEngine.applyPayload(url, offset, size, headerKeyValuePairs);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (RemoteException e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> e.rethrowFromSystemServer();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个方法是@SystemApi，调用它有两个方法：</p>
+<ul>
+<li>把APK放入源码环境，写Makefile进行编译</li>
+<li>独立APK，把系统framework.jar作为lib导入APK。（也可以只把UpdateEngine相关类打包编译）</li>
+</ul>
+<p>关于参数，第一个是差分包（zip包）的路径。第四个是差分包内部的一个文件，这个文件由做包工具生成，一般会保存为一个payload_properties.txt文件，文件大概内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">FILE_HASH=lURPCIkIAjtMOyB/EjQcl8zDzqtD6Ta3tJef6G/+z2k=</span><br><span class="line">FILE_SIZE=871903868</span><br><span class="line">METADATA_HASH=tBvj43QOB0Jn++JojcpVdbRLz0qdAuL+uTkSy7hokaw=</span><br><span class="line">METADATA_SIZE=70604</span><br></pre></td></tr></table></figure>
+<p>我们要做的就是把文件内容读出来，存在数组里作为第四个参数，形式如下。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">String[] pairs = &#123;</span><br><span class="line">    <span class="string">"FILE_HASH=lURPCIkIAjtMOyB/EjQcl8zDzqtD6Ta3tJef6G/+z2k="</span>,</span><br><span class="line">    <span class="string">"FILE_SIZE=871903868"</span>,</span><br><span class="line">    <span class="string">"METADATA_HASH=tBvj43QOB0Jn++JojcpVdbRLz0qdAuL+uTkSy7hokaw="</span>,</span><br><span class="line">    <span class="string">"METADATA_SIZE=70604"</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>然后贴一个我用的处理方法：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> String[] readHeaderKeyValuesFromZipFile(String file) &#123;</span><br><span class="line">    String[] values = <span class="keyword">new</span> String[<span class="number">4</span>];</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        ZipFile zf = <span class="keyword">new</span> ZipFile(file);</span><br><span class="line">        InputStream in = <span class="keyword">new</span> BufferedInputStream(<span class="keyword">new</span> FileInputStream(file));</span><br><span class="line">        ZipInputStream zin = <span class="keyword">new</span> ZipInputStream(in);</span><br><span class="line">        ZipEntry ze;</span><br><span class="line">        <span class="keyword">while</span> ((ze = zin.getNextEntry()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (ze.isDirectory()) &#123;</span><br><span class="line">                <span class="comment">//Do nothing</span></span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (ze.getName().contains(<span class="string">"payload_properties.txt"</span>)) &#123;</span><br><span class="line">                    BufferedReader br = <span class="keyword">new</span> BufferedReader(</span><br><span class="line">                        <span class="keyword">new</span> InputStreamReader(zf.getInputStream(ze)));</span><br><span class="line">                    String line;</span><br><span class="line">                    <span class="keyword">int</span> index = <span class="number">0</span>;</span><br><span class="line">                    <span class="keyword">while</span> ((line = br.readLine()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        values[index] = line;</span><br><span class="line">                        index++;</span><br><span class="line">                    &#125;</span><br><span class="line">                    br.close();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        zin.closeEntry();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> values;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://source.android.com/devices/tech/ota/ab/ab_implement" target="_blank" rel="external">https://source.android.com/devices/tech/ota/ab/ab_implement</a></p>
+<p><a href="https://blog.csdn.net/guyongqiangx/article/details/71334889" target="_blank" rel="external">https://blog.csdn.net/guyongqiangx/article/details/71334889</a></p>
 
       
     </div>
@@ -471,7 +612,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://wossoneri.github.io/2017/04/11/[Design-Pattern]Factory/" title="[设计模式]之二十二:工厂方法模式">http://wossoneri.github.io/2017/04/11/[Design-Pattern]Factory/</a>
+    <a href="http://wossoneri.github.io/2018/06/01/[Android][Framework]AB-system-update/" title="[Android][Framework]A/B system update">http://wossoneri.github.io/2018/06/01/[Android][Framework]AB-system-update/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -486,9 +627,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i> Java</a>
+            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
           
-            <a href="/tags/Design-pattern/" rel="tag"><i class="fa fa-tag"></i> Design pattern</a>
+            <a href="/tags/OTA/" rel="tag"><i class="fa fa-tag"></i> OTA</a>
           
         </div>
       
@@ -501,8 +642,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/04/10/[Design-Pattern]Prototype/" rel="next" title="[设计模式]之二十一:原型模式">
-                <i class="fa fa-chevron-left"></i> [设计模式]之二十一:原型模式
+              <a href="/2018/05/17/[Android][Framework]ActivityThread/" rel="next" title="[Android][Framework]ActivityThread">
+                <i class="fa fa-chevron-left"></i> [Android][Framework]ActivityThread
               </a>
             
           </div>
@@ -511,8 +652,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2017/06/19/[Android][Framework]PlayAutoInstall/" rel="prev" title="[Android][Framework] PlayAutoInstall配置流程总结">
-                [Android][Framework] PlayAutoInstall配置流程总结 <i class="fa fa-chevron-right"></i>
+              <a href="/2018/06/03/[Android][Framework]how-does-Activity-start/" rel="prev" title="[Android][Framework]Activity启动流程">
+                [Android][Framework]Activity启动流程 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -703,7 +844,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#定义"><span class="nav-number">1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UML"><span class="nav-number">2.</span> <span class="nav-text">UML</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码"><span class="nav-number">3.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#评价"><span class="nav-number">4.</span> <span class="nav-text">评价</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#优势"><span class="nav-number">2.</span> <span class="nav-text">优势</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#与传统OTA差别"><span class="nav-number">3.</span> <span class="nav-text">与传统OTA差别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更新流程"><span class="nav-number">4.</span> <span class="nav-text">更新流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分区烧写"><span class="nav-number">5.</span> <span class="nav-text">分区烧写</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java接口使用方法"><span class="nav-number">6.</span> <span class="nav-text">Java接口使用方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
             
 
           </div>
@@ -896,7 +1037,7 @@
       <script type="text/javascript">
       function renderGitment(){
         var gitment = new Gitmint({
-            id: '1491880271000', 
+            id: '1527827546000', 
             owner: 'wossoneri',
             repo: 'wossoneri.github.io',
             
