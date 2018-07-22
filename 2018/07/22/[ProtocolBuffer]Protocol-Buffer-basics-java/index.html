@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Java,Protocol Buffer," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="在Java使用Protocol Buffer的简单说明">
+<meta name="keywords" content="Java,Protocol Buffer">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Protocol Buffer]Java使用Protocol Buffer">
+<meta property="og:url" content="http://wossoneri.github.io/2018/07/22/[ProtocolBuffer]Protocol-Buffer-basics-java/index.html">
+<meta property="og:site_name" content="Wossoneri`s Blog">
+<meta property="og:description" content="在Java使用Protocol Buffer的简单说明">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-07-22T10:36:38.253Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[Protocol Buffer]Java使用Protocol Buffer">
+<meta name="twitter:description" content="在Java使用Protocol Buffer的简单说明">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '6234852363740382000',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wossoneri.github.io/2018/07/22/[ProtocolBuffer]Protocol-Buffer-basics-java/"/>
+
+
+
+
+
+  <title>[Protocol Buffer]Java使用Protocol Buffer | Wossoneri`s Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-70716047-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/wossoneri"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wossoneri`s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2018/07/22/[ProtocolBuffer]Protocol-Buffer-basics-java/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wossoneri">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wossoneri`s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[Protocol Buffer]Java使用Protocol Buffer</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-07-22T18:34:52+08:00">
+                2018-07-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Protocol-Buffer/" itemprop="url" rel="index">
+                    <span itemprop="name">Protocol Buffer</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/07/22/[ProtocolBuffer]Protocol-Buffer-basics-java/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/07/22/[ProtocolBuffer]Protocol-Buffer-basics-java/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/07/22/[ProtocolBuffer]Protocol-Buffer-basics-java/" class="leancloud_visitors" data-flag-title="[Protocol Buffer]Java使用Protocol Buffer">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+	
+  		  <span class="post-letters-count">
+            &nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+                 <i class="fa fa-clock-o" ></i>
+            </span>
+		        <span class="post-meta-item-text">总记</span>
+            <span class="post-count">4,176 字</span>
+		        <span class="post-meta-item-text">读完需要</span>
+    		    <span class="post-count">17 分</span>
+  		  </span>
+           
+         
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  在Java使用Protocol Buffer的简单说明
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="资料"><a href="#资料" class="headerlink" title="资料"></a>资料</h2><p><a href="https://developers.google.com/protocol-buffers/docs/proto" target="_blank" rel="external">Protocol Buffer 语法指南</a></p>
+<p><a href="https://developers.google.com/protocol-buffers/docs/reference/java/index.html" target="_blank" rel="external">Java API</a></p>
+<p><a href="https://developers.google.com/protocol-buffers/docs/reference/java-generated" target="_blank" rel="external">Java Generated Code Guide</a></p>
+<p><a href="https://developers.google.com/protocol-buffers/docs/encoding" target="_blank" rel="external">Encoding Reference</a></p>
+<h2 id="为何选择Protocol-Buffer"><a href="#为何选择Protocol-Buffer" class="headerlink" title="为何选择Protocol Buffer"></a>为何选择Protocol Buffer</h2><p>下面一个例子是一个简单的通讯录，可以读写人物信息到文件。每个人都有姓名，ID，email和电话号码。</p>
+<p>你会如何序列化和检索这样的结构化数据？下面有几种方案：</p>
+<ul>
+<li>使用Java序列化。因为它内置于语言中，所以是最常见的实现，但它有许多众所周知的问题。并且和使用C ++或Python编写的应用程序共享数据时效果并不好。</li>
+<li>你可以发明一种特殊的方法将数据项编码为单个字符串，比如4个int型的编码:”12:3:-23:67”。这是一个简单灵活的方案，虽然它确实需要编写一次性编码和解析代码，并且解析会产生很小的运行时间成本。这个很适合于编码很简单的数据。</li>
+<li>序列化数据到XML。由于XML的可读性，这个方案会更加受欢迎，而且有许多语言的绑定库。因此如果要与其他项目分享数据时就是一个好的选择。然而，XML是众所周知的空间密集型，并且编/解码会对应用程序造成巨大的性能损失。此外，遍历XML DOM树比通常在类中遍历简单字段要复杂得多。</li>
+</ul>
+<p>对于解决这个问题，Protocol Buffer是灵活，高效，自动化的解决方案。使用协议缓冲区，你可以编写.proto描述存储的数据结构。由此，Protocol Buffer编译器创建一个类，该类使用有效的二进制格式实现Protocol Buffer数据的自动编码和解析。生成的类为构成Protocol Buffer的字段提供getter和setter，并负责将Protocol Buffer作为一个单元进行读写的详细信息。重要的是，Protocol Buffer格式支持随着时间的推移扩展格式的想法，使得代码仍然可以读取用旧格式编码的数据。</p>
+<h2 id="定义你的Protocol格式"><a href="#定义你的Protocol格式" class="headerlink" title="定义你的Protocol格式"></a>定义你的Protocol格式</h2><p>要创建你的地址簿，你需要首先创建一个<code>.proto</code>文件。这个文件里的定义很简单：为每一个你需要序列化的数据结构添加一个消息，然后为消息中的每一个域指定一个name和type。</p>
+<p><code>addressbook.proto</code>：</p>
+<figure class="highlight protobuf"><table><tr><td class="code"><pre><span class="line">syntax = &quot;proto2&quot;;</span><br><span class="line"></span><br><span class="line">package tutorial;</span><br><span class="line"></span><br><span class="line">option java_package = &quot;com.example.tutorial&quot;;</span><br><span class="line">option java_outer_classname = &quot;AddressBookProtos&quot;;</span><br><span class="line"></span><br><span class="line">message Person &#123;</span><br><span class="line">    required string name = 1;</span><br><span class="line">    required int32 id = 2;</span><br><span class="line">    optional string email = 3;</span><br><span class="line">    </span><br><span class="line">    enum PhoneType &#123;</span><br><span class="line">        MOBILE = 0;</span><br><span class="line">        HOME = 1;</span><br><span class="line">        WORK = 2;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    message PhoneNumber &#123;</span><br><span class="line">        required string number = 1;</span><br><span class="line">        optional PhoneType type = 2 [default = HOME];</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    repeated PhoneNumber phones = 4;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">message AddressBook &#123;</span><br><span class="line">    repeated Person people = 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>文件语法类似于C++或Java，下面具体了解一下文件结构。</p>
+<p>文件由包声明开始，这有助于防止不同项目之间的命名冲突。在Java语言中，包名用作Java包，除非明确指定了一个<code>java_package</code>（如代码所做）。即使你定义了<code>java_package</code>，你也仍然要定义一个普通的<code>package</code>来避免在Protocol Buffer命名空间的名称冲突，尤其是在非Java语言中。</p>
+<p>包声明之后是两行Java的可选项：<code>java_package</code>和<code>java_outer_classname</code>。</p>
+<ul>
+<li><code>java_package</code>，指定生成的类应该以什么Java包名称存在。如果没有明确指定，它简单地匹配由<code>package</code>声明的包名，但这些名称通常不是合适的Java包名称（因为它们通常不以域名开头）。</li>
+<li><code>java_outer_classname</code>，定义应包含此文件中所有类的类名。如果没有显示指定<code>java_outer_classname</code>，它会把文件名转换为驼峰命名来生成。比如，”my_proto.proto”会转化成”MyProto”作为外部类名。</li>
+</ul>
+<p>下一行就是<code>message</code>的定义。消息只是包含一组类型字段的聚合。许多标准的简单数据类型都可用作字段类型，包括bool，int32，float，double和string。你也可以使用其他<code>message</code>类型作为域类型为当前<code>message</code>增加深层次的结构。上面例子中，Person message就包含了PhoneNumber message，同时，AddressBook message也包含了Person message。你甚至可以在其他message内定义内联的message类型，PhoneNumber就是这样的。如果你希望其中一个字段具有预定义的值列表之一，你可以使用enum实现。代码中PhoneNumber就是<code>MOBILE</code>,<code>HOME</code>或者<code>WORK</code>三种。</p>
+<p>每个元素的”=1”，”=2”标记标识该字段在二进制编码中使用的唯一“标记”。标记1-15比高的数字需要的编码少一个字节，因此，作为优化，您可以决定将这些标记用于常用或重复元素，将标记16和更高的数字留给不太常用的可选元素。重复字段中的每个元素都需要重新编码标记号，因此重复字段特别适合此优化。</p>
+<p>必须使用以下修饰符之一注释每个字段：</p>
+<ul>
+<li><p><code>required</code>：必须提供该字段的值，否则该消息将被视为未初始化(uninitialized)。如果编译一个未初始化的消息会抛出<code>RuntimeException</code>的异常。解析未初始化的消息会抛出<code>IOException</code>的异常。除此之外，<code>required</code>的字段和<code>optional</code>表现一致。</p>
+</li>
+<li><p><code>optional</code>：该字段可以不赋予初始值。如果一个<code>optional</code>字段值没有设置，会赋予一个默认值。对于简单的类型，你可以指定你自己的默认值，就像前面对PhoneNumber内type做的一样：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">optional PhoneType type = <span class="number">2</span> [<span class="keyword">default</span> = HOME];</span><br></pre></td></tr></table></figure>
+<p>否则，系统会给与一个默认值：数字是0，字符串是空字串，bool值是false。</p>
+<p>对于嵌入的message，默认值总是该message的默认实例或者<code>prototype</code>，该消息没有设置任何字段。调用accessor以获取尚未显式设置的<code>optional</code>（或<code>required</code>）字段的值始终返回该字段的默认值。</p>
+</li>
+<li><p><code>repeated</code>：该字段可以重复任意次数（包括零）。重复值的顺序将保留在协议缓冲区中。将重复字段视为动态大小的数组。</p>
+</li>
+</ul>
+<h2 id="编译Protocol-Buffers"><a href="#编译Protocol-Buffers" class="headerlink" title="编译Protocol Buffers"></a>编译Protocol Buffers</h2><p>现在有了一个<code>.proto</code>文件，你需要做的下一件事是生成读取和写入AddressBook（以及Person和PhoneNumber）消息所需的类。要完成它，你需要运行Protocol Buffer编译器<code>protoc</code>编译<code>.proto</code>文件：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">protoc -I=<span class="variable">$SRC_DIR</span> --java_out=<span class="variable">$DST_DIR</span> <span class="variable">$SRC_DIR</span>/addressbook.proto</span><br></pre></td></tr></table></figure>
+<p>比如我的环境下，</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&#123;18-07-20 15:08&#125;wOw-RMBP:~/Projects/Protobuf wow% ls</span><br><span class="line">addressbook.proto</span><br><span class="line">&#123;18-07-20 15:08&#125;wOw-RMBP:~/Projects/Protobuf wow% protoc -I=./ --java_out=./ ./addressbook.proto</span><br><span class="line">&#123;18-07-20 15:09&#125;wOw-RMBP:~/Projects/Protobuf wow% ls</span><br><span class="line">addressbook.proto com</span><br></pre></td></tr></table></figure>
+<p>生成的文件结构为</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">|____addressbook.proto</span><br><span class="line">|____com</span><br><span class="line">| |____example</span><br><span class="line">| | |____tutorial</span><br><span class="line">| | | |____AddressBookProtos.java</span><br></pre></td></tr></table></figure>
+<p>生成的java文件有2816行，就不贴出来了。下面会对java文件做一些解释。</p>
+<h2 id="Protocol-Buffer-API"><a href="#Protocol-Buffer-API" class="headerlink" title="Protocol Buffer API"></a>Protocol Buffer API</h2><p>从<code>AddressBookProtos.java</code>看到定义了一个<code>AddressBookProtos</code>类，其中嵌套了你在<code>addressbook.proto</code>中指定的每条消息的类。每个类都有自己的<code>Builder</code>类，你可以通过其创建实例。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">AddressBookProtos</span> </span>&#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">PersonOrBuilder</span> <span class="keyword">extends</span></span></span><br><span class="line">      // @@protoc_insertion_point(interface_extends:tutorial.Person)</span><br><span class="line">      com.google.protobuf.MessageOrBuilder &#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span>  <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> <span class="keyword">extends</span></span></span><br><span class="line"><span class="class">      <span class="title">com</span>.<span class="title">google</span>.<span class="title">protobuf</span>.<span class="title">GeneratedMessageV3</span> <span class="keyword">implements</span></span></span><br><span class="line">      // @@protoc_insertion_point(message_implements:tutorial.Person)</span><br><span class="line">      PersonOrBuilder &#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">PhoneNumberOrBuilder</span> <span class="keyword">extends</span></span></span><br><span class="line">        // @@protoc_insertion_point(interface_extends:tutorial.Person.PhoneNumber)</span><br><span class="line">        com.google.protobuf.MessageOrBuilder &#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span>  <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">PhoneNumber</span> <span class="keyword">extends</span></span></span><br><span class="line"><span class="class">        <span class="title">com</span>.<span class="title">google</span>.<span class="title">protobuf</span>.<span class="title">GeneratedMessageV3</span> <span class="keyword">implements</span></span></span><br><span class="line">        // @@protoc_insertion_point(message_implements:tutorial.Person.PhoneNumber)</span><br><span class="line">        PhoneNumberOrBuilder &#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">AddressBookOrBuilder</span> <span class="keyword">extends</span></span></span><br><span class="line">      // @@protoc_insertion_point(interface_extends:tutorial.AddressBook)</span><br><span class="line">      com.google.protobuf.MessageOrBuilder &#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span>  <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">AddressBook</span> <span class="keyword">extends</span></span></span><br><span class="line"><span class="class">      <span class="title">com</span>.<span class="title">google</span>.<span class="title">protobuf</span>.<span class="title">GeneratedMessageV3</span> <span class="keyword">implements</span></span></span><br><span class="line">      // @@protoc_insertion_point(message_implements:tutorial.AddressBook)</span><br><span class="line">      AddressBookOrBuilder &#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>messages和builders都为消息的每个字段都有自动生成的访问器方法;消息只有getter，而构建器有getter和setter。以下是Person类的一些访问器（为简洁起见省略了实现）：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// required string name = 1;</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasName</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// required int32 id = 2;</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasId</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getId</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// optional string email = 3;</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasEmail</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">getEmail</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// repeated .tutorial.Person.PhoneNumber phones = 4;</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> List&lt;PhoneNumber&gt; <span class="title">getPhonesList</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getPhonesCount</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> PhoneNumber <span class="title">getPhones</span><span class="params">(<span class="keyword">int</span> index)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>同时，Person.Builder也有相同的getter和setter</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// required string name = 1;</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasName</span><span class="params">()</span></span>;</span><br><span class="line"><span class="keyword">public</span> java.lang.<span class="function">String <span class="title">getName</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> Builder <span class="title">setName</span><span class="params">(String value)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> Builder <span class="title">clearName</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// required int32 id = 2;</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasId</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getId</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> Builder <span class="title">setId</span><span class="params">(<span class="keyword">int</span> value)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> Builder <span class="title">clearId</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// optional string email = 3;</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasEmail</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">getEmail</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> Builder <span class="title">setEmail</span><span class="params">(String value)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> Builder <span class="title">clearEmail</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// repeated .tutorial.Person.PhoneNumber phones = 4;</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> List&lt;PhoneNumber&gt; <span class="title">getPhonesList</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getPhonesCount</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> PhoneNumber <span class="title">getPhones</span><span class="params">(<span class="keyword">int</span> index)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> Builder <span class="title">setPhones</span><span class="params">(<span class="keyword">int</span> index, PhoneNumber value)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> Builder <span class="title">addPhones</span><span class="params">(PhoneNumber value)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> Builder <span class="title">addAllPhones</span><span class="params">(Iterable&lt;PhoneNumber&gt; value)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> Builder <span class="title">clearPhones</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+<p>每个字段都有简单的JavaBeans样式的getter和setter。每个单独的字段都有getter，如果已设置该字段，则返回true。最后，每个字段都有一个清除方法，将字段取消设置回其空状态。</p>
+<p>Repeated字段有一些额外的方法：一个<code>Count</code>方法（它只是列表大小的简写），getter和setter通过索引get或set列表的特定元素，<code>add</code>方法将新元素附加到列表，以及一个<code>addAll</code>方法，它将整个容器中的元素添加到列表中。</p>
+<p>注意这些accessor方法如何使用驼峰式命名，即使<code>.proto</code>文件使用带下划线的小写。此转换由Protocol Buffer编译器自动完成，以便生成的类与标准Java样式约定匹配。您应该始终在<code>.proto</code>文件中使用带有下划线的小写字母作为字段名称，这确保了所有生成语言的良好命名实践。有关良好的.proto样式的更多信息，请参阅<a href="https://developers.google.com/protocol-buffers/docs/style" target="_blank" rel="external">样式指南</a>。</p>
+<h3 id="Enums和内嵌类"><a href="#Enums和内嵌类" class="headerlink" title="Enums和内嵌类"></a>Enums和内嵌类</h3><p>生成的代码包含<code>PhoneType</code>集合，内嵌于<code>Person</code>类中。<br><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> PhoneType</span><br><span class="line">    implements com.google.protobuf.ProtocolMessageEnum &#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">       * &lt;code&gt;MOBILE = 0;&lt;/code&gt;</span></span><br><span class="line"><span class="comment">       */</span></span><br><span class="line">    MOBILE(<span class="number">0</span>),</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">       * &lt;code&gt;HOME = 1;&lt;/code&gt;</span></span><br><span class="line"><span class="comment">       */</span></span><br><span class="line">    HOME(<span class="number">1</span>),</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">       * &lt;code&gt;WORK = 2;&lt;/code&gt;</span></span><br><span class="line"><span class="comment">       */</span></span><br><span class="line">    WORK(<span class="number">2</span>),</span><br><span class="line">    ;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">       * &lt;code&gt;MOBILE = 0;&lt;/code&gt;</span></span><br><span class="line"><span class="comment">       */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MOBILE_VALUE = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">       * &lt;code&gt;HOME = 1;&lt;/code&gt;</span></span><br><span class="line"><span class="comment">       */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> HOME_VALUE = <span class="number">1</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">       * &lt;code&gt;WORK = 2;&lt;/code&gt;</span></span><br><span class="line"><span class="comment">       */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> WORK_VALUE = <span class="number">2</span>;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>内嵌类<code>Person.PhoneNumber</code>也一并生成，代码结构在前面API可以看到。</p>
+<h3 id="Builders-vs-Messages"><a href="#Builders-vs-Messages" class="headerlink" title="Builders vs. Messages"></a>Builders vs. Messages</h3><p>Protocol Buffer编译器生成的消息类都是不可变的。一旦构造了消息对象，就不能像Java String一样修改它。要构造消息，必须首先构造构建器，将要设置的任何字段设置为所选值，然后调用构建器的<code>build</code>方法。</p>
+<p>你可能已经注意到每个修改消息的构建器的方法都返回另一个构建器。返回的对象实际上是您调用该方法的同一个构建器。为方便起见，它会返回，以便您可以在一行代码中将多个setter串在一起。（链式编程）</p>
+<p>下面是个创建<code>Person</code>对象的例子：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Person john =</span><br><span class="line">  Person.newBuilder()</span><br><span class="line">    .setId(<span class="number">1234</span>)</span><br><span class="line">    .setName(<span class="string">"John Doe"</span>)</span><br><span class="line">    .setEmail(<span class="string">"jdoe@example.com"</span>)</span><br><span class="line">    .addPhones(</span><br><span class="line">      Person.PhoneNumber.newBuilder()</span><br><span class="line">        .setNumber(<span class="string">"555-4321"</span>)</span><br><span class="line">        .setType(Person.PhoneType.HOME))</span><br><span class="line">    .build();</span><br></pre></td></tr></table></figure>
+<h3 id="标准Message方法"><a href="#标准Message方法" class="headerlink" title="标准Message方法"></a>标准Message方法</h3><p>每个message和builder类还包含许多其他方法，可用于检查或操作整个消息，包括：</p>
+<ul>
+<li><code>isInitialized()</code>：检查是否已设置所有必填字段。</li>
+<li><code>toString()</code>：返回一个人类可读的消息表示，对调试特别有用。</li>
+<li><code>mergeFrom(Message other)</code>：(仅限构建器）将其他内容合并到此消息中，覆盖奇异标量字段，合并复合字段以及连接重复字段。</li>
+<li><code>clear()</code>：(仅限构建器）将所有字段清除回空状态。</li>
+</ul>
+<p>这些方法实现了所有Java消息和构建器共享的<code>Message</code>和<code>Message.Builder</code>接口。有关更多信息，请参阅<a href="https://developers.google.com/protocol-buffers/docs/reference/java/com/google/protobuf/Message" target="_blank" rel="external">Message的完整API文档</a>。</p>
+<h3 id="解析和序列化"><a href="#解析和序列化" class="headerlink" title="解析和序列化"></a>解析和序列化</h3><p>最后，每个Protocol Buffer类都有使用Protocol Buffer二进制格式编写和读取所选类型消息的方法。这些包括：</p>
+<ul>
+<li><code>byte [] toByteArray();</code>：序列化消息并返回包含其原始字节的字节数组。</li>
+<li><code>static Person parseFrom(byte[] data);</code>：解析来自给定字节数组的消息。</li>
+<li><code>void writeTo(OutputStream output);</code>：序列化消息并将其写入OutputStream。</li>
+<li><code>static Person parseFrom(InputStream input);</code>：读取并解析来自InputStream的消息。</li>
+</ul>
+<p>这些只是解析和序列化提供的几个选项。</p>
+<h2 id="编写一个Message"><a href="#编写一个Message" class="headerlink" title="编写一个Message"></a>编写一个Message</h2><p>现在让我们尝试使用生成的Protocol Buffer类。你希望地址簿应用程序能够做的第一件事是将个人详细信息写入你的地址簿文件。为此，你需要创建并填充Protocol Buffer类的实例，然后将它们写入输出流。</p>
+<p>这是一个从文件读取AddressBook的程序，根据用户输入向其添加一个新Person，并将新的AddressBook再次写回文件。直接调用或引用协议编译器生成的代码的部分将用*标识。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">* <span class="keyword">import</span> com.example.tutorial.AddressBookProtos.AddressBook;</span><br><span class="line">* <span class="keyword">import</span> com.example.tutorial.AddressBookProtos.Person;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.BufferedReader;</span><br><span class="line"><span class="keyword">import</span> java.io.FileInputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.FileNotFoundException;</span><br><span class="line"><span class="keyword">import</span> java.io.FileOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.InputStreamReader;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.PrintStream;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AddPerson</span> </span>&#123;</span><br><span class="line">  <span class="comment">// This function fills in a Person message based on user input.</span></span><br><span class="line">  <span class="function"><span class="keyword">static</span> Person <span class="title">PromptForAddress</span><span class="params">(BufferedReader stdin,</span></span></span><br><span class="line"><span class="function"><span class="params">                                 PrintStream stdout)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    * Person.Builder person = Person.newBuilder();</span><br><span class="line"></span><br><span class="line">    stdout.print(<span class="string">"Enter person ID: "</span>);</span><br><span class="line">    * person.setId(Integer.valueOf(stdin.readLine()));</span><br><span class="line"></span><br><span class="line">    stdout.print(<span class="string">"Enter name: "</span>);</span><br><span class="line">    * person.setName(stdin.readLine());</span><br><span class="line"></span><br><span class="line">    stdout.print(<span class="string">"Enter email address (blank for none): "</span>);</span><br><span class="line">    String email = stdin.readLine();</span><br><span class="line">    <span class="keyword">if</span> (email.length() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      * person.setEmail(email);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">      stdout.print(<span class="string">"Enter a phone number (or leave blank to finish): "</span>);</span><br><span class="line">      String number = stdin.readLine();</span><br><span class="line">      <span class="keyword">if</span> (number.length() == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      * Person.PhoneNumber.Builder phoneNumber =</span><br><span class="line">      *   Person.PhoneNumber.newBuilder().setNumber(number);</span><br><span class="line"></span><br><span class="line">      stdout.print(<span class="string">"Is this a mobile, home, or work phone? "</span>);</span><br><span class="line">      String type = stdin.readLine();</span><br><span class="line">      <span class="keyword">if</span> (type.equals(<span class="string">"mobile"</span>)) &#123;</span><br><span class="line">        * phoneNumber.setType(Person.PhoneType.MOBILE);</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (type.equals(<span class="string">"home"</span>)) &#123;</span><br><span class="line">        * phoneNumber.setType(Person.PhoneType.HOME);</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (type.equals(<span class="string">"work"</span>)) &#123;</span><br><span class="line">        * phoneNumber.setType(Person.PhoneType.WORK);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        stdout.println(<span class="string">"Unknown phone type.  Using default."</span>);</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      * person.addPhones(phoneNumber);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    * <span class="keyword">return</span> person.build();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Main function:  Reads the entire address book from a file,</span></span><br><span class="line">  <span class="comment">//   adds one person based on user input, then writes it back out to the same</span></span><br><span class="line">  <span class="comment">//   file.</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (args.length != <span class="number">1</span>) &#123;</span><br><span class="line">      System.err.println(<span class="string">"Usage:  AddPerson ADDRESS_BOOK_FILE"</span>);</span><br><span class="line">      System.exit(-<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    * AddressBook.Builder addressBook = AddressBook.newBuilder();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Read the existing address book.</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      * addressBook.mergeFrom(<span class="keyword">new</span> FileInputStream(args[<span class="number">0</span>]));</span><br><span class="line">    &#125; <span class="keyword">catch</span> (FileNotFoundException e) &#123;</span><br><span class="line">      System.out.println(args[<span class="number">0</span>] + <span class="string">": File not found.  Creating a new file."</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Add an address.</span></span><br><span class="line">    * addressBook.addPeople(</span><br><span class="line">      PromptForAddress(<span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(System.in)),</span><br><span class="line">                       System.out));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Write the new address book back to disk.</span></span><br><span class="line">    FileOutputStream output = <span class="keyword">new</span> FileOutputStream(args[<span class="number">0</span>]);</span><br><span class="line">    * addressBook.build().writeTo(output);</span><br><span class="line">    output.close();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="读取一个Message"><a href="#读取一个Message" class="headerlink" title="读取一个Message"></a>读取一个Message</h2><p>当然，如果你无法从中获取任何信息，那么地址簿就不会有多大用处！此示例读取上面示例创建的文件并打印其中的所有信息。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">* <span class="keyword">import</span> com.example.tutorial.AddressBookProtos.AddressBook;</span><br><span class="line">* <span class="keyword">import</span> com.example.tutorial.AddressBookProtos.Person;</span><br><span class="line"><span class="keyword">import</span> java.io.FileInputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.PrintStream;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ListPeople</span> </span>&#123;</span><br><span class="line">  <span class="comment">// Iterates though all people in the AddressBook and prints info about them.</span></span><br><span class="line">  <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Print</span><span class="params">(AddressBook addressBook)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (Person person: addressBook.getPeopleList()) &#123;</span><br><span class="line">      System.out.println(<span class="string">"Person ID: "</span> + * person.getId());</span><br><span class="line">      System.out.println(<span class="string">"  Name: "</span> + * person.getName());</span><br><span class="line">      <span class="keyword">if</span> (person.hasEmail()) &#123;</span><br><span class="line">        System.out.println(<span class="string">"  E-mail address: "</span> + * person.getEmail());</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">for</span> (* Person.PhoneNumber phoneNumber : person.getPhonesList()) &#123;</span><br><span class="line">        <span class="keyword">switch</span> (* phoneNumber.getType()) &#123;</span><br><span class="line">          <span class="keyword">case</span> * MOBILE:</span><br><span class="line">            System.out.print(<span class="string">"  Mobile phone #: "</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">          <span class="keyword">case</span> * HOME:</span><br><span class="line">            System.out.print(<span class="string">"  Home phone #: "</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">          <span class="keyword">case</span> * WORK:</span><br><span class="line">            System.out.print(<span class="string">"  Work phone #: "</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(* phoneNumber.getNumber());</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Main function:  Reads the entire address book from a file and prints all</span></span><br><span class="line">  <span class="comment">//   the information inside.</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (args.length != <span class="number">1</span>) &#123;</span><br><span class="line">      System.err.println(<span class="string">"Usage:  ListPeople ADDRESS_BOOK_FILE"</span>);</span><br><span class="line">      System.exit(-<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Read the existing address book.</span></span><br><span class="line">    * AddressBook addressBook =</span><br><span class="line">    *   AddressBook.parseFrom(<span class="keyword">new</span> FileInputStream(args[<span class="number">0</span>]));</span><br><span class="line"></span><br><span class="line">    Print(addressBook);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="拓展一个Protocol-Buffer"><a href="#拓展一个Protocol-Buffer" class="headerlink" title="拓展一个Protocol Buffer"></a>拓展一个Protocol Buffer</h2><p>在释放使用Protocol Buffer的代码之后，你无疑会想要“改进”Protocol Buffer的定义。如果你希望你的新缓冲区向后兼容，并且你的旧缓冲区是向前兼容的 - 而且你几乎肯定想要这个 - 那么你需要遵循一些规则。在新版本的协议缓冲区中：</p>
+<ul>
+<li>不得更改任何现有字段的标记号。</li>
+<li>不得添加或删除任何必填字段。</li>
+<li>可以删除可选或重复的字段。</li>
+<li>可以添加新的可选或重复字段，但必须使用新的标记号（即从未在此Protocol Buffer中使用的标记号，甚至不包括已删除的字段）。</li>
+</ul>
+<p>如果你遵循这些规则，旧代码将可以阅读新消息并简单地忽略任何新字段。对于旧代码，已删除的可选字段将只具有其默认值，删除的重复字段将为空。新代码也将透明地读取旧消息。但是，请记住旧的消息中不会出现新的可选字段，因此您需要明确检查它们是否设置为<code>has_</code>，或者使用<code>[default = value]</code>在<code>.proto</code>文件中提供合理的默认值。标签号后面。如果未为可选元素指定默认值，则使用特定于类型的默认值：对于string，默认值为空字符串。对于boolean，默认值为false。对于numeric，默认值为零。另请注意，如果添加了新的重复字段，则新代码将无法判断它是否为空（通过新代码）或从未设置（通过旧代码），因为它没有<code>has_</code>标志。</p>
+<h2 id="进阶用法"><a href="#进阶用法" class="headerlink" title="进阶用法"></a>进阶用法</h2><p>Protocol Buffer 的用途不仅仅是简单的访问器和序列化。请务必浏览<a href="https://developers.google.com/protocol-buffers/docs/reference/java/index.html" target="_blank" rel="external">Java API参考</a>，以了解你可以使用它们做些什么。</p>
+<p>Protocol Buffer类提供的一个关键特性是反射。你可以迭代消息的字段并操纵它们的值，而无需针对任何特定的消息类型编写代码。使用反射的一种非常有用的方法是将Protocol Buffer 转换为其他编码，例如XML或JSON。更高级的反射用法可能是找到两个相同类型的消息之间的差异，或者开发一种“Protocol Buffer的正则表达式”，你可以在其中编写与某些消息内容匹配的表达式。如果你运用自己的想象力，可以将Protocol Buffer应用于比你最初预期更广泛的问题！</p>
+<p>反射是作为<code>Message</code>和<code>Message.Builder</code>接口的一部分提供的。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Wossoneri
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://wossoneri.github.io/2018/07/22/[ProtocolBuffer]Protocol-Buffer-basics-java/" title="[Protocol Buffer]Java使用Protocol Buffer">http://wossoneri.github.io/2018/07/22/[ProtocolBuffer]Protocol-Buffer-basics-java/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i> Java</a>
+          
+            <a href="/tags/Protocol-Buffer/" rel="tag"><i class="fa fa-tag"></i> Protocol Buffer</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/05/[Android][Framework]系统手势与状态栏/" rel="next" title="">
+                <i class="fa fa-chevron-left"></i> 
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460"
+                alt="Wossoneri" />
+            
+              <p class="site-author-name" itemprop="name">Wossoneri</p>
+              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">89</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">93</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+            <div class="cc-license motion-element" itemprop="license">
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+              </a>
+            </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-globe"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#资料"><span class="nav-number">1.</span> <span class="nav-text">资料</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为何选择Protocol-Buffer"><span class="nav-number">2.</span> <span class="nav-text">为何选择Protocol Buffer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#定义你的Protocol格式"><span class="nav-number">3.</span> <span class="nav-text">定义你的Protocol格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编译Protocol-Buffers"><span class="nav-number">4.</span> <span class="nav-text">编译Protocol Buffers</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Protocol-Buffer-API"><span class="nav-number">5.</span> <span class="nav-text">Protocol Buffer API</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Enums和内嵌类"><span class="nav-number">5.1.</span> <span class="nav-text">Enums和内嵌类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Builders-vs-Messages"><span class="nav-number">5.2.</span> <span class="nav-text">Builders vs. Messages</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#标准Message方法"><span class="nav-number">5.3.</span> <span class="nav-text">标准Message方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解析和序列化"><span class="nav-number">5.4.</span> <span class="nav-text">解析和序列化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编写一个Message"><span class="nav-number">6.</span> <span class="nav-text">编写一个Message</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#读取一个Message"><span class="nav-number">7.</span> <span class="nav-text">读取一个Message</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拓展一个Protocol-Buffer"><span class="nav-number">8.</span> <span class="nav-text">拓展一个Protocol Buffer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进阶用法"><span class="nav-number">9.</span> <span class="nav-text">进阶用法</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: '1532255692000', 
+            owner: 'wossoneri',
+            repo: 'wossoneri.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
+            
+                client_id: '40b6c719a11e3fca29e8'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("RHlsmdBRQUmQMHNOl3U1ocam-gzGzoHsz", "RU2vFPiDzi68XGHCgJXtBAqo");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/love.js"></script>
