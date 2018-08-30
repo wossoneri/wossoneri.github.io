@@ -89,7 +89,7 @@
 <meta property="og:site_name" content="Wossoneri`s Blog">
 <meta property="og:description" content="Android Provision介绍">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-05-15T17:19:23.000Z">
+<meta property="og:updated_time" content="2018-07-31T06:19:38.232Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Android][Framework]Provision">
 <meta name="twitter:description" content="Android Provision介绍">
@@ -372,9 +372,9 @@
                  <i class="fa fa-clock-o" ></i>
             </span>
 		        <span class="post-meta-item-text">总记</span>
-            <span class="post-count">1,025 字</span>
+            <span class="post-count">1,017 字</span>
 		        <span class="post-meta-item-text">读完需要</span>
-    		    <span class="post-count">6 分</span>
+    		    <span class="post-count">5 分</span>
   		  </span>
            
          
@@ -415,7 +415,7 @@
 <li><code>&lt;intent-filter android:priority=&quot;1&quot;&gt;</code> 优先级高于<code>Launcher</code>，所以会先于<code>Launcher</code>启动(因为系统Launcher没有显式设置priority值，所以默认是0)</li>
 <li><code>category.HOME</code> 桌面程序标记，和<code>Launcher</code>属于一个级别</li>
 </ul>
-<h4 id="Activity"><a href="#Activity" class="headerlink" title="Activity"></a>Activity</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">//Edited by mythou</span></span><br><span class="line"><span class="comment">//http://www.cnblogs.com/mythou/</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DefaultActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle icicle)</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">      <span class="keyword">super</span>.onCreate(icicle);</span><br><span class="line"></span><br><span class="line">      <span class="comment">// Add a persistent setting to allow other apps to know the device has been provisioned.</span></span><br><span class="line">      Settings.Secure.putInt(getContentResolver(), Settings.Secure.DEVICE_PROVISIONED, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">      <span class="comment">// remove this activity from the package manager.</span></span><br><span class="line">      PackageManager pm = getPackageManager();</span><br><span class="line">      ComponentName name = <span class="keyword">new</span> ComponentName(<span class="keyword">this</span>, DefaultActivity.class);</span><br><span class="line">      pm.setComponentEnabledSetting(name, PackageManager.COMPONENT_ENABLED_STATE_DISABLED,</span><br><span class="line">          PackageManager.DONT_KILL_APP);</span><br><span class="line"></span><br><span class="line">      <span class="comment">// terminate the activity.</span></span><br><span class="line">      finish();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Activity"><a href="#Activity" class="headerlink" title="Activity"></a>Activity</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DefaultActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle icicle)</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">      <span class="keyword">super</span>.onCreate(icicle);</span><br><span class="line"></span><br><span class="line">      <span class="comment">// Add a persistent setting to allow other apps to know the device has been provisioned.</span></span><br><span class="line">      Settings.Secure.putInt(getContentResolver(), Settings.Secure.DEVICE_PROVISIONED, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">      <span class="comment">// remove this activity from the package manager.</span></span><br><span class="line">      PackageManager pm = getPackageManager();</span><br><span class="line">      ComponentName name = <span class="keyword">new</span> ComponentName(<span class="keyword">this</span>, DefaultActivity.class);</span><br><span class="line">      pm.setComponentEnabledSetting(name, PackageManager.COMPONENT_ENABLED_STATE_DISABLED,</span><br><span class="line">          PackageManager.DONT_KILL_APP);</span><br><span class="line"></span><br><span class="line">      <span class="comment">// terminate the activity.</span></span><br><span class="line">      finish();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>源生代码很简单<br>做了两件事：</p>
 <ol>
 <li>设置<code>DEVICE_PROVISIONED</code>标记</li>
@@ -427,9 +427,9 @@
 <p><strong>class Settings</strong></p>
 <p>The Settings provider contains global system-level device preferences.</p>
 <p><strong>class Secure</strong></p>
-<p>Secure system settings, containing system preferences that applications<br>can read but are not allowed to write.  These are for preferences that<br>the user must explicitly modify through the system UI or specialized<br>APIs for those values, not modified directly by applications.</p>
+<p>Secure system settings, containing system preferences that applications can read but are not allowed to write.  These are for preferences that the user must explicitly modify through the system UI or specialized APIs for those values, not modified directly by applications.</p>
 <p><strong>public static boolean putInt(ContentResolver cr, String name, int value)</strong></p>
-<p>Convenience function for updating a single settings value as an<br>integer. This will either create a new entry in the table if the<br>given name does not exist, or modify the value of the existing row<br>with that name.  Note that internally setting values are always<br>stored as strings, so this function converts the given value to a<br>string before storing it.</p>
+<p>Convenience function for updating a single settings value as an integer. This will either create a new entry in the table if the given name does not exist, or modify the value of the existing row with that name.  Note that internally setting values are always stored as strings, so this function converts the given value to a string before storing it.</p>
 <ul>
 <li>@param cr The ContentResolver to access.</li>
 <li>@param name The name of the setting to modify.</li>
@@ -439,17 +439,24 @@
 </blockquote>
 <p>禁止组件的功能<br><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">pm.setComponentEnabledSetting(name, PackageManager.COMPONENT_ENABLED_STATE_DISABLED,</span><br><span class="line">    PackageManager.DONT_KILL_APP);</span><br></pre></td></tr></table></figure></p>
 <blockquote>
-<p><strong>public abstract void setComponentEnabledSetting(ComponentName componentName,<br>            int newState, int flags);</strong></p>
-<p>Set the enabled setting for a package component (activity, receiver, service, provider).<br>This setting will override any enabled state which may have been set by the component in its manifest.</p>
+<p><strong>public abstract void setComponentEnabledSetting(ComponentName componentName,</strong><br>          <strong>int newState, int flags);</strong></p>
+<p>Set the enabled setting for a package component (activity, receiver, service, provider). This setting will override any enabled state which may have been set by the component in its manifest.</p>
 <ul>
-<li>@param componentName The component to enable</li>
-<li>@param newState The new enabled state for the component.  The legal values for this state are:<ul>
-<li>COMPONENT_ENABLED_STATE_ENABLED</li>
-<li>COMPONENT_ENABLED_STATE_DISABLED</li>
-<li>COMPONENT_ENABLED_STATE_DEFAULT<br>The last one removes the setting, thereby restoring the component’s state to<br>whatever was set in it’s manifest (or enabled, by default).</li>
+<li><p>@param componentName The component to enable</p>
+</li>
+<li><p>@param newState The new enabled state for the component.  The legal values for this state are:</p>
+<ul>
+<li><p>COMPONENT_ENABLED_STATE_ENABLED</p>
+</li>
+<li><p>COMPONENT_ENABLED_STATE_DISABLED</p>
+</li>
+<li><p>COMPONENT_ENABLED_STATE_DEFAULT</p>
+<p>The last one removes the setting, thereby restoring the component’s state to whatever was set in it’s manifest (or enabled, by default).</p>
+</li>
 </ul>
 </li>
-<li>@param flags Optional behavior flags: DONT_KILL_APP or 0.</li>
+<li><p>@param flags Optional behavior flags: DONT_KILL_APP or 0.</p>
+</li>
 </ul>
 </blockquote>
 <p>功能禁止后，系统package信息会记录下来，保存在 <code>/data/system/packages.xml</code></p>
@@ -638,7 +645,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">89</span>
+                  <span class="site-state-item-count">90</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -660,7 +667,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">93</span>
+                  <span class="site-state-item-count">95</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
