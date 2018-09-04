@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Android,Framework,SystemServer,系统裁剪,SystemFeature," />
+  <meta name="keywords" content="Android,Framework,系统裁剪,SystemFeature,SystemServer," />
 
 
 
@@ -82,7 +82,7 @@
 
 
 <meta name="description" content="有时候因为系统应用场景不同，需要的功能也不一样。所以就会有很多不需要的服务或者进程存在，因此将这些不需要的东西裁减掉也是必须面对的问题。本文就是对裁剪服务部分的一些简单整理。">
-<meta name="keywords" content="Android,Framework,SystemServer,系统裁剪,SystemFeature">
+<meta name="keywords" content="Android,Framework,系统裁剪,SystemFeature,SystemServer">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[Android][Framework]裁剪SystemServer服务以及关闭SystemFeature">
 <meta property="og:url" content="http://wossoneri.github.io/2018/08/30/[Android][Framework]crop-SystemServer-and-SystemFeature/index.html">
@@ -90,7 +90,7 @@
 <meta property="og:description" content="有时候因为系统应用场景不同，需要的功能也不一样。所以就会有很多不需要的服务或者进程存在，因此将这些不需要的东西裁减掉也是必须面对的问题。本文就是对裁剪服务部分的一些简单整理。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/SystemFeature.png?raw=true">
-<meta property="og:updated_time" content="2018-08-30T11:41:50.595Z">
+<meta property="og:updated_time" content="2018-09-04T03:50:33.090Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Android][Framework]裁剪SystemServer服务以及关闭SystemFeature">
 <meta name="twitter:description" content="有时候因为系统应用场景不同，需要的功能也不一样。所以就会有很多不需要的服务或者进程存在，因此将这些不需要的东西裁减掉也是必须面对的问题。本文就是对裁剪服务部分的一些简单整理。">
@@ -374,7 +374,7 @@
                  <i class="fa fa-clock-o" ></i>
             </span>
 		        <span class="post-meta-item-text">总记</span>
-            <span class="post-count">2,047 字</span>
+            <span class="post-count">2,080 字</span>
 		        <span class="post-meta-item-text">读完需要</span>
     		    <span class="post-count">10 分</span>
   		  </span>
@@ -404,7 +404,8 @@
       
 
       
-        <h2 id="SystemServer服务裁剪"><a href="#SystemServer服务裁剪" class="headerlink" title="SystemServer服务裁剪"></a>SystemServer服务裁剪</h2><p>有些系统，因为应用场景的不同，需要的服务也不一样。比如Android Things，为了应对IOT的应用场景，它就裁剪掉了很多服务。下面介绍一下裁剪服务的方法。</p>
+        <p>我的博客即将搬运同步至腾讯云+社区，邀请大家一同入驻：<a href="https://cloud.tencent.com/developer/support-plan?invite_code=2m9rytyjmp6o0" target="_blank" rel="external">https://cloud.tencent.com/developer/support-plan?invite_code=2m9rytyjmp6o0</a></p>
+<h2 id="SystemServer服务裁剪"><a href="#SystemServer服务裁剪" class="headerlink" title="SystemServer服务裁剪"></a>SystemServer服务裁剪</h2><p>有些系统，因为应用场景的不同，需要的服务也不一样。比如Android Things，为了应对IOT的应用场景，它就裁剪掉了很多服务。下面介绍一下裁剪服务的方法。</p>
 <p>关于服务，要提一下SystemServer，具体介绍见<a href="http://wossoneri.github.io/2018/03/25/[Android][Framework]start-of-SystemServer/">另一篇文章：http://wossoneri.github.io</a>。SystemServer启动了系统的核心服务，除此之外，SystemServer还启动了很多其他服务，具体是在startOtherServices()方法中。我们要裁剪不需要的服务就可以从这里入手。</p>
 <p>比如要关闭打印机服务：</p>
 <p>可以直接把相关启动服务的代码注释掉：</p>
@@ -536,11 +537,11 @@
           
             <a href="/tags/Framework/" rel="tag"><i class="fa fa-tag"></i> Framework</a>
           
-            <a href="/tags/SystemServer/" rel="tag"><i class="fa fa-tag"></i> SystemServer</a>
-          
             <a href="/tags/系统裁剪/" rel="tag"><i class="fa fa-tag"></i> 系统裁剪</a>
           
             <a href="/tags/SystemFeature/" rel="tag"><i class="fa fa-tag"></i> SystemFeature</a>
+          
+            <a href="/tags/SystemServer/" rel="tag"><i class="fa fa-tag"></i> SystemServer</a>
           
         </div>
       
