@@ -90,7 +90,7 @@
 <meta property="og:description" content="有时候因为系统应用场景不同，需要的功能也不一样。所以就会有很多不需要的服务或者进程存在，因此将这些不需要的东西裁减掉也是必须面对的问题。本文就是对裁剪服务部分的一些简单整理。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/SystemFeature.png?raw=true">
-<meta property="og:updated_time" content="2018-09-04T03:50:33.090Z">
+<meta property="og:updated_time" content="2018-09-11T13:02:04.120Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Android][Framework]裁剪SystemServer服务以及关闭SystemFeature">
 <meta name="twitter:description" content="有时候因为系统应用场景不同，需要的功能也不一样。所以就会有很多不需要的服务或者进程存在，因此将这些不需要的东西裁减掉也是必须面对的问题。本文就是对裁剪服务部分的一些简单整理。">
@@ -374,7 +374,7 @@
                  <i class="fa fa-clock-o" ></i>
             </span>
 		        <span class="post-meta-item-text">总记</span>
-            <span class="post-count">2,080 字</span>
+            <span class="post-count">2,093 字</span>
 		        <span class="post-meta-item-text">读完需要</span>
     		    <span class="post-count">10 分</span>
   		  </span>
@@ -469,6 +469,9 @@
 <p>查找MakeFile，找到如下:</p>
 <figure class="highlight mk"><table><tr><td class="code"><pre><span class="line">PRODUCT_COPY_FILES := \ frameworks/native/data/etc/handheld_core_hardware.xml:system/etc/permissions/handheld_core_hardware.xml</span><br></pre></td></tr></table></figure>
 <p>这个文件在源码中的位置是<code>frameworks/native/data/etc/</code>。找到该源码文件，将不要的Feature注释掉，然后重新编译源码，启动系统，一切正常！打印机相关的服务彻底被屏蔽掉了，系统启动速度，资源消耗又变小了一点点。嗯，是很小的一点点，我们还可以把VR，红外线等等很多服务裁剪掉，以适应不同应用场景下的精简系统。</p>
+<blockquote>
+<p>具体的feature说明可以看<a href="https://developer.android.com/guide/topics/manifest/uses-feature-element" target="_blank" rel="external">官方文档</a></p>
+</blockquote>
 
       
     </div>
@@ -564,6 +567,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2018/09/15/[Android][Framework]create-system-service/" rel="prev" title="[Android][Framework] 添加系统服务">
+                [Android][Framework] 添加系统服务 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -650,7 +657,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">90</span>
+                  <span class="site-state-item-count">91</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
