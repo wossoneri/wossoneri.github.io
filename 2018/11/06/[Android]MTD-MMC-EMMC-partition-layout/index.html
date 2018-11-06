@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android,Recovery," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="研究flash_image脚本时，了解到设备有MTD，EMMC，MMC三种差异，而flash_image仅仅适用于MTD设备。下面记录如何查看这三种设备内部的分区情况">
+<meta name="keywords" content="Android,Recovery">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Android] 查看MTD，EMMC，MMC三种设备的分区">
+<meta property="og:url" content="http://wossoneri.github.io/2018/11/06/[Android]MTD-MMC-EMMC-partition-layout/index.html">
+<meta property="og:site_name" content="Wossoneri`s Blog">
+<meta property="og:description" content="研究flash_image脚本时，了解到设备有MTD，EMMC，MMC三种差异，而flash_image仅仅适用于MTD设备。下面记录如何查看这三种设备内部的分区情况">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://iwf1.com/wordpress/wp-content/uploads/2016/02/Android-repartition-parted-print-partitions-table.jpg">
+<meta property="og:image" content="https://iwf1.com/wordpress/wp-content/uploads/2016/02/Android-repartition-parted-help.jpg">
+<meta property="og:updated_time" content="2018-11-06T11:01:16.203Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[Android] 查看MTD，EMMC，MMC三种设备的分区">
+<meta name="twitter:description" content="研究flash_image脚本时，了解到设备有MTD，EMMC，MMC三种差异，而flash_image仅仅适用于MTD设备。下面记录如何查看这三种设备内部的分区情况">
+<meta name="twitter:image" content="https://iwf1.com/wordpress/wp-content/uploads/2016/02/Android-repartition-parted-print-partitions-table.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '6234852363740382000',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wossoneri.github.io/2018/11/06/[Android]MTD-MMC-EMMC-partition-layout/"/>
+
+
+
+
+
+  <title>[Android] 查看MTD，EMMC，MMC三种设备的分区 | Wossoneri`s Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-70716047-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/wossoneri"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wossoneri`s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2018/11/06/[Android]MTD-MMC-EMMC-partition-layout/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wossoneri">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wossoneri`s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[Android] 查看MTD，EMMC，MMC三种设备的分区</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-06T18:58:00+08:00">
+                2018-11-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/11/06/[Android]MTD-MMC-EMMC-partition-layout/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/11/06/[Android]MTD-MMC-EMMC-partition-layout/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/11/06/[Android]MTD-MMC-EMMC-partition-layout/" class="leancloud_visitors" data-flag-title="[Android] 查看MTD，EMMC，MMC三种设备的分区">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+	
+  		  <span class="post-letters-count">
+            &nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+                 <i class="fa fa-clock-o" ></i>
+            </span>
+		        <span class="post-meta-item-text">总记</span>
+            <span class="post-count">2,712 字</span>
+		        <span class="post-meta-item-text">读完需要</span>
+    		    <span class="post-count">14 分</span>
+  		  </span>
+           
+         
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  研究flash_image脚本时，了解到设备有MTD，EMMC，MMC三种差异，而flash_image仅仅适用于MTD设备。下面记录如何查看这三种设备内部的分区情况
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Begining"><a href="#Begining" class="headerlink" title="Begining"></a>Begining</h1><p>因为在做系统升级，AOSP的recovery下有一个flash_image工具，这个工具可以在开机状态下刷写系统分区。源码位置在/bootable/recovery/mtdutils/flash_image.c。</p>
+<p>但在实际操作中，发现flash_image会报错：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">error scanning partitions: No such file or directory</span><br></pre></td></tr></table></figure>
+<p>说找不到分区。调查源码发现</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// flash_image.c</span></span><br><span class="line"><span class="keyword">if</span> (mtd_scan_partitions() &lt;= <span class="number">0</span>) die(<span class="string">"error scanning partitions"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// mtdutils.c  mtd_scan_partitions()</span></span><br><span class="line"><span class="comment">/* Parse the contents of the file, which looks like:</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *     # cat /proc/mtd</span></span><br><span class="line"><span class="comment"> *     dev:    size   erasesize  name</span></span><br><span class="line"><span class="comment"> *     mtd0: 00080000 00020000 "bootloader"</span></span><br><span class="line"><span class="comment"> *     mtd1: 00400000 00020000 "mfg_and_gsm"</span></span><br><span class="line"><span class="comment"> *     mtd2: 00400000 00020000 "0000000c"</span></span><br><span class="line"><span class="comment"> *     mtd3: 00200000 00020000 "0000000d"</span></span><br><span class="line"><span class="comment"> *     mtd4: 04000000 00020000 "system"</span></span><br><span class="line"><span class="comment"> *     mtd5: 03280000 00020000 "userdata"</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+<p>大概就是会通过<code>/proc/mtd</code>这个文件查找分区信息，然后进行刷写。然后我去找这个文件，结果发现设备里面并没有这个文件。于是开始查找这个mtd相关信息。</p>
+<p>Android设备有多个分区存储不同的数据，通常的分区有recovery，boot，system，data和cache分区。几乎每个设备都有它自己的分区设计，这个和生产商有关，但常见的有MTD，EMMC和MMC设备。</p>
+<h1 id="MTD"><a href="#MTD" class="headerlink" title="MTD"></a>MTD</h1><p>Memory Technology Device，内存技术设备，是用于访问memory设备（ROM、flash）的Linux子系统。MTD的主要目的是为了使新的memory设备的驱动更加简单，为此它在硬件和上层之间提供了一个抽象的接口，并进行了一个层次划分，层次从上到下大致为：设备文件、MTD设备层、MTD原始设备层、硬件驱动层。MTD的所有源代码在/drivers/mtd子目录下。</p>
+<blockquote>
+<p>更详细的MTD设备分析见<a href="https://opensourceforu.com/2012/01/working-with-mtd-devices/" target="_blank" rel="external">https://opensourceforu.com/2012/01/working-with-mtd-devices/</a></p>
+</blockquote>
+<h2 id="MTD设备文件"><a href="#MTD设备文件" class="headerlink" title="MTD设备文件"></a>MTD设备文件</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">~ $ ls /dev/mtd* -l</span><br><span class="line">crw-rw----    1 root     root      90,   0 Jan  1 00:00 /dev/mtd0</span><br><span class="line">crw-rw----    1 root     root      90,   1 Jan  1 00:00 /dev/mtd0ro</span><br><span class="line">crw-rw----    1 root     root      90,   2 Jan  1 00:00 /dev/mtd1</span><br><span class="line">crw-rw----    1 root     root      90,   3 Jan  1 00:00 /dev/mtd1ro</span><br><span class="line">crw-rw----    1 root     root      90,   4 Jan  1 00:00 /dev/mtd2</span><br><span class="line">crw-rw----    1 root     root      90,   5 Jan  1 00:00 /dev/mtd2ro</span><br><span class="line">crw-rw----    1 root     root      90,   6 Jan  1 00:00 /dev/mtd3</span><br><span class="line">crw-rw----    1 root     root      90,   7 Jan  1 00:00 /dev/mtd3ro</span><br><span class="line">brw-rw----    1 root     root      31,   0 Jan  1 00:00 /dev/mtdblock0</span><br><span class="line">brw-rw----    1 root     root      31,   1 Jan  1 00:00 /dev/mtdblock1</span><br><span class="line">brw-rw----    1 root     root      31,   2 Jan  1 00:00 /dev/mtdblock2</span><br><span class="line">brw-rw----    1 root     root      31,   3 Jan  1 00:00 /dev/mtdblock3</span><br><span class="line"></span><br><span class="line">/dev/mtd:</span><br><span class="line">crw-rw-rw-    1 root     root      90,   0 Jan  1 00:00 0</span><br><span class="line">cr--r--r--    1 root     root      90,   1 Jan  1 00:00 0ro</span><br><span class="line">crw-rw-rw-    1 root     root      90,   2 Jan  1 00:00 1</span><br><span class="line">cr--r--r--    1 root     root      90,   3 Jan  1 00:00 1ro</span><br><span class="line">crw-rw-rw-    1 root     root      90,   4 Jan  1 00:00 2</span><br><span class="line">cr--r--r--    1 root     root      90,   5 Jan  1 00:00 2ro</span><br><span class="line">crw-rw-rw-    1 root     root      90,   6 Jan  1 00:00 3</span><br><span class="line">cr--r--r--    1 root     root      90,   7 Jan  1 00:00 3ro</span><br><span class="line"></span><br><span class="line">/dev/mtdblock:</span><br><span class="line">brw-------    1 root     root      31,   0 Jan  1 00:00 0</span><br><span class="line">brw-------    1 root     root      31,   1 Jan  1 00:00 1</span><br><span class="line">brw-------    1 root     root      31,   2 Jan  1 00:00 2</span><br><span class="line">brw-------    1 root     root      31,   3 Jan  1 00:00 3</span><br></pre></td></tr></table></figure>
+<p>可以看到有mtdN和对应的/dev/mtd/N、mtdblockN和对应的/dev/mtdblock/N两类MTD设备，分别是字符设备，主设备号90和块设备，主设备号31。其中/dev/mtd0和/dev/mtd/0是完全等价的，/dev/mtdblock0和/dev/mtdblock/0是完全等价的，而/dev/mtd0和/dev/mtdblock0则是同一个MTD分区的两种不同应用描述，操作上是有区别的。</p>
+<h3 id="dev-mtdN设备"><a href="#dev-mtdN设备" class="headerlink" title="/dev/mtdN设备"></a>/dev/mtdN设备</h3><p>/dev/mtdN 是MTD架构中实现的mtd分区所对应的字符设备(将mtd设备分成多个区，每个区就为一个字符设备)，其里面添加了一些ioctl，支持很多命令，如MEMGETINFO，MEMERASE等。</p>
+<p>mtd-utils中的flash_eraseall等工具，就是以这些ioctl为基础而实现的工具，实现一些关于Flash的操作。比如，mtd 工具中 flash_eraseall中：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">if (ioctl(fd, MEMGETINFO, &amp;meminfo) != 0) </span><br><span class="line">&#123;</span><br><span class="line">   fprintf(stderr, "%s: %s: unable to get MTD device info\n",exe_name, mtd_device);</span><br><span class="line">   return 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>MEMGETINFO是Linux MTD中的drivers/mtd/mtdchar.c中的ioctl命令，使用mtd字符设备需要加载mtdchar内核模块。该代码解释了上面的第一个现象。</p>
+<h3 id="dev-mtdblockN设备"><a href="#dev-mtdblockN设备" class="headerlink" title="/dev/mtdblockN设备"></a>/dev/mtdblockN设备</h3><p>/dev/mtdblockN，是<strong>Flash驱动</strong>中用add_mtd_partitions()添加MTD设备分区，而生成的对应的块设备。MTD块设备驱动程序可以让flash器件伪装成块设备，实际上它通过把整块的erase block放到ram里面进行访问，然后再更新到flash，用户可以在这个块设备上创建通常的文件系统。</p>
+<p>而对于MTD块设备，MTD设备层是不提供ioctl的实现方法的，也就不会有对应的MEMGETINFO命令之类，因此不能使用nandwrite,flash_eraseall,flash_erase等工具去对/dev/mtdblockN去进行操作，否则就会出现上面的现象一，同时也解释了现象3——用mtd2擦除分区后，在用mtdblock2进行umount就会造成混乱。</p>
+<p>mtd块设备的大小可以通过proc文件系统进行查看：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">~ $ cat /proc/partitions</span><br><span class="line">major minor  #blocks  name</span><br><span class="line"></span><br><span class="line">  31     0        512 mtdblock0</span><br><span class="line">  31     1       1024 mtdblock1</span><br><span class="line">  31     2       5632 mtdblock2</span><br><span class="line">  31     3       9216 mtdblock3</span><br><span class="line"> 254     0   30760960 mmcblk0    </span><br><span class="line"> 254     1   30756864 mmcblk0p1</span><br></pre></td></tr></table></figure>
+<p>后面的两个是SD块设备的分区大小。每个block的大小是1KB。</p>
+<h2 id="MTD设备分区"><a href="#MTD设备分区" class="headerlink" title="MTD设备分区"></a>MTD设备分区</h2><p>通过proc文件系统查看mtd设备的分区情况：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">~ $ cat /proc/mtd</span><br><span class="line">dev:    size   erasesize  name</span><br><span class="line">mtd0: 00080000 00020000 "boot"</span><br><span class="line">mtd1: 00100000 00020000 "kernel"</span><br><span class="line">mtd2: 00580000 00020000 "roofs70"</span><br><span class="line">mtd3: 00900000 00020000 "app"</span><br></pre></td></tr></table></figure>
+<p>可以发现，实际上mtdN和mtdblockN描述的是同一个MTD分区，对应同一个硬件分区，两者的大小是一样的，只不过是MTD设备层提供给上层的视图不一样，给上层提供了字符和块设备两种操作视图——为了上层使用的便利和需要，比如mount命令的需求，你只能挂载块设备(有文件系统)，而不能对字符设备进行挂载，否则会出现上面的现象2:无效参数。</p>
+<p>这里对于mtd和mtdblock设备的使用场景进行简单总结：</p>
+<ol>
+<li>mtd-utils工具只能应用与/dev/mtdN的MTD字符设备</li>
+<li>mount、umount命令只对/dev/mtdblockN的MTD块设备有效</li>
+<li>/dev/mtdN和/dev/mtdblockN是同一个MTD设备的同一个分区（N一样）</li>
+</ol>
+<h1 id="EMMC"><a href="#EMMC" class="headerlink" title="EMMC"></a>EMMC</h1><p>Embedded MultiMedia Card</p>
+<p>分区信息可以从<code>/proc/emmc</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cat /proc/emmc</span><br><span class="line">dev:        size     erasesize name</span><br><span class="line">mmcblk0p17: 00040000 00000200 "misc"</span><br><span class="line">mmcblk0p21: 0087f400 00000200 "recovery"</span><br><span class="line">mmcblk0p22: 00400000 00000200 "boot"</span><br><span class="line">mmcblk0p25: 22dffe00 00000200 "system"</span><br><span class="line">mmcblk0p29: 002ffc00 00000200 "local"</span><br><span class="line">mmcblk0p27: 090ffe00 00000200 "cache"</span><br><span class="line">mmcblk0p26: 496ffe00 00000200 "userdata"</span><br><span class="line">mmcblk0p30: 014bfe00 00000200 "devlog"</span><br><span class="line">mmcblk0p31: 00040000 00000200 "pdata"</span><br><span class="line">mmcblk0p28: 09800000 00000200 "lib"</span><br></pre></td></tr></table></figure>
+<p>来获取。</p>
+<h1 id="MMC"><a href="#MMC" class="headerlink" title="MMC"></a>MMC</h1><p>MultiMedia Card</p>
+<p>它的分区信息只能从<code>/proc/partitions</code>获得：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cat /proc/partitions</span><br><span class="line">major minor  #blocks  name</span><br><span class="line"> 254        0     524288 zram0</span><br><span class="line"> 179        0   15388672 mmcblk0</span><br><span class="line"> 179        1      86016 mmcblk0p1</span><br><span class="line"> 179        2          1 mmcblk0p2</span><br><span class="line"> 179        3          8 mmcblk0p3</span><br><span class="line"> 179        4        512 mmcblk0p4</span><br><span class="line"> 179        5        512 mmcblk0p5</span><br><span class="line"> 179        6        512 mmcblk0p6</span><br><span class="line"> 179        7        512 mmcblk0p7</span><br><span class="line"> 179        8       2048 mmcblk0p8</span><br><span class="line"> 179        9       2048 mmcblk0p9</span><br><span class="line"> 179       10        256 mmcblk0p10</span><br><span class="line"> 179       11        256 mmcblk0p11</span><br><span class="line"> 179       12      16384 mmcblk0p12</span><br><span class="line"> 179       13       1536 mmcblk0p13</span><br><span class="line"> 179       14       1536 mmcblk0p14</span><br><span class="line"> 179       15         32 mmcblk0p15</span><br><span class="line"> 179       16       1536 mmcblk0p16</span><br><span class="line"> 179       17         16 mmcblk0p17</span><br><span class="line"> 179       18      33792 mmcblk0p18</span><br><span class="line"> 179       19       1024 mmcblk0p19</span><br><span class="line"> 179       20       1024 mmcblk0p20</span><br><span class="line"> 179       21      65536 mmcblk0p21</span><br><span class="line"> 179       22      65536 mmcblk0p22</span><br><span class="line"> 179       23       1024 mmcblk0p23</span><br><span class="line"> 179       24    2883584 mmcblk0p24</span><br><span class="line"> 179       25     262144 mmcblk0p25</span><br><span class="line"> 179       26      32768 mmcblk0p26</span><br><span class="line"> 179       27       1024 mmcblk0p27</span><br><span class="line"> 179       28        512 mmcblk0p28</span><br><span class="line"> 179       29         32 mmcblk0p29</span><br><span class="line"> 179       30     524288 mmcblk0p30</span><br><span class="line"> 179       31         32 mmcblk0p31</span><br><span class="line"> 259        0        512 mmcblk0p32</span><br><span class="line"> 259        1       1024 mmcblk0p33</span><br><span class="line"> 259        2      32768 mmcblk0p34</span><br><span class="line"> 259        3        512 mmcblk0p35</span><br><span class="line"> 259        4       4096 mmcblk0p36</span><br><span class="line"> 259        5        256 mmcblk0p37</span><br><span class="line"> 259        6        256 mmcblk0p38</span><br><span class="line"> 259        7        256 mmcblk0p39</span><br><span class="line"> 259        8        256 mmcblk0p40</span><br><span class="line"> 259        9        256 mmcblk0p41</span><br><span class="line"> 259       10        256 mmcblk0p42</span><br><span class="line"> 259       11        256 mmcblk0p43</span><br><span class="line"> 259       12        256 mmcblk0p44</span><br><span class="line"> 259       13          8 mmcblk0p45</span><br><span class="line"> 259       14      65536 mmcblk0p46</span><br><span class="line"> 259       15        512 mmcblk0p47</span><br><span class="line"> 259       16        512 mmcblk0p48</span><br><span class="line"> 259       17   10670063 mmcblk0p49</span><br><span class="line"> 179       32       4096 mmcblk0rpmb</span><br><span class="line"> 179       64   30375936 mmcblk1</span><br><span class="line"> 179       65   30371840 mmcblk1p1</span><br><span class="line"> 253        0   10670047 dm-0</span><br></pre></td></tr></table></figure>
+<p>但这里显示的一堆盘符并不直观，所以还需要通过name表找到盘符对应分区关系：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">msm8937_32:/ # ls -l /dev/block/platform/soc/7824900.sdhci/by-name/</span><br><span class="line">total 0</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 DDR -&gt; /dev/block/mmcblk0p15</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 aboot -&gt; /dev/block/mmcblk0p19</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 abootbak -&gt; /dev/block/mmcblk0p20</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 apdp -&gt; /dev/block/mmcblk0p43</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 boot -&gt; /dev/block/mmcblk0p21</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 cache -&gt; /dev/block/mmcblk0p25</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 cmnlib -&gt; /dev/block/mmcblk0p37</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 cmnlib64 -&gt; /dev/block/mmcblk0p39</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 cmnlib64bak -&gt; /dev/block/mmcblk0p40</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 cmnlibbak -&gt; /dev/block/mmcblk0p38</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 config -&gt; /dev/block/mmcblk0p29</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 devcfg -&gt; /dev/block/mmcblk0p10</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 devcfgbak -&gt; /dev/block/mmcblk0p11</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 devinfo -&gt; /dev/block/mmcblk0p23</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 dip -&gt; /dev/block/mmcblk0p33</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 dpo -&gt; /dev/block/mmcblk0p45</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 dsp -&gt; /dev/block/mmcblk0p12</span><br><span class="line">lrwxrwxrwx 1 root root 20 1970-01-01 09:07 fsc -&gt; /dev/block/mmcblk0p2</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 fsg -&gt; /dev/block/mmcblk0p16</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 keymaster -&gt; /dev/block/mmcblk0p41</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 keymasterbak -&gt; /dev/block/mmcblk0p42</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 keystore -&gt; /dev/block/mmcblk0p28</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 limits -&gt; /dev/block/mmcblk0p31</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 logdump -&gt; /dev/block/mmcblk0p46</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 mcfg -&gt; /dev/block/mmcblk0p36</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 mdtp -&gt; /dev/block/mmcblk0p34</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 misc -&gt; /dev/block/mmcblk0p27</span><br><span class="line">lrwxrwxrwx 1 root root 20 1970-01-01 09:07 modem -&gt; /dev/block/mmcblk0p1</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 modemst1 -&gt; /dev/block/mmcblk0p13</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 modemst2 -&gt; /dev/block/mmcblk0p14</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 mota -&gt; /dev/block/mmcblk0p32</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 msadp -&gt; /dev/block/mmcblk0p44</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 odm -&gt; /dev/block/mmcblk0p47</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 oem -&gt; /dev/block/mmcblk0p30</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 persist -&gt; /dev/block/mmcblk0p26</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 recovery -&gt; /dev/block/mmcblk0p22</span><br><span class="line">lrwxrwxrwx 1 root root 20 1970-01-01 09:07 rpm -&gt; /dev/block/mmcblk0p6</span><br><span class="line">lrwxrwxrwx 1 root root 20 1970-01-01 09:07 rpmbak -&gt; /dev/block/mmcblk0p7</span><br><span class="line">lrwxrwxrwx 1 root root 20 1970-01-01 09:07 sbl1 -&gt; /dev/block/mmcblk0p4</span><br><span class="line">lrwxrwxrwx 1 root root 20 1970-01-01 09:07 sbl1bak -&gt; /dev/block/mmcblk0p5</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 sec -&gt; /dev/block/mmcblk0p17</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 splash -&gt; /dev/block/mmcblk0p18</span><br><span class="line">lrwxrwxrwx 1 root root 20 1970-01-01 09:07 ssd -&gt; /dev/block/mmcblk0p3</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 ssign -&gt; /dev/block/mmcblk0p48</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 syscfg -&gt; /dev/block/mmcblk0p35</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 system -&gt; /dev/block/mmcblk0p24</span><br><span class="line">lrwxrwxrwx 1 root root 20 1970-01-01 09:07 tz -&gt; /dev/block/mmcblk0p8</span><br><span class="line">lrwxrwxrwx 1 root root 20 1970-01-01 09:07 tzbak -&gt; /dev/block/mmcblk0p9</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 userdata -&gt; /dev/block/mmcblk0p49</span><br></pre></td></tr></table></figure>
+<p>这样结合两个表就可以找到对应的盘符了。</p>
+<p>比如，<code>system</code>分区对应着<code>mmcblk0p24</code>。</p>
+<p>如果设备里有<code>parted</code>工具，就可以看更多信息</p>
+<h2 id="parted-工具"><a href="#parted-工具" class="headerlink" title="parted 工具"></a>parted 工具</h2><p>从上面的<code>cat /proc/partitions</code>看到<strong>mmcblk0</strong>是储存所有分区信息的主block，如果设备root过，就可以通过<code>parted</code>获取上面的信息：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">parted /dev/block/mmcblk0</span><br></pre></td></tr></table></figure>
+<p>使用参数p(rint)打印信息</p>
+<p><img src="https://iwf1.com/wordpress/wp-content/uploads/2016/02/Android-repartition-parted-print-partitions-table.jpg" alt=""></p>
+<p>上面打印出来的大小单位都不统一，所以可以改成用<strong>unit b</strong>将单位统一成bytes，这样看起来会更加方便。</p>
+<p>help查看可用参数</p>
+<p><img src="https://iwf1.com/wordpress/wp-content/uploads/2016/02/Android-repartition-parted-help.jpg" alt=""></p>
+<blockquote>
+<p>更多parted操作见<a href="https://iwf1.com/how-to-re-partition-your-android-tablet-or-smartphone-all-options-included-change-size-fs-type-etc/2" target="_blank" rel="external">https://iwf1.com/how-to-re-partition-your-android-tablet-or-smartphone-all-options-included-change-size-fs-type-etc/2</a></p>
+</blockquote>
+<p>Reference</p>
+<p><a href="https://my.oschina.net/shelllife/blog/123482" target="_blank" rel="external">https://my.oschina.net/shelllife/blog/123482</a></p>
+<p><a href="https://www.cnblogs.com/shangdawei/p/4514128.html" target="_blank" rel="external">https://www.cnblogs.com/shangdawei/p/4514128.html</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Wossoneri
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://wossoneri.github.io/2018/11/06/[Android]MTD-MMC-EMMC-partition-layout/" title="[Android] 查看MTD，EMMC，MMC三种设备的分区">http://wossoneri.github.io/2018/11/06/[Android]MTD-MMC-EMMC-partition-layout/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+          
+            <a href="/tags/Recovery/" rel="tag"><i class="fa fa-tag"></i> Recovery</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/02/[Android][Recovery]recovery-cannot-locate-sdcard/" rel="next" title="[Android][Recovery] Recovery下找不到sdcard路径">
+                <i class="fa fa-chevron-left"></i> [Android][Recovery] Recovery下找不到sdcard路径
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460"
+                alt="Wossoneri" />
+            
+              <p class="site-author-name" itemprop="name">Wossoneri</p>
+              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">94</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">96</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+            <div class="cc-license motion-element" itemprop="license">
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+              </a>
+            </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-globe"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Begining"><span class="nav-number">1.</span> <span class="nav-text">Begining</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MTD"><span class="nav-number">2.</span> <span class="nav-text">MTD</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MTD设备文件"><span class="nav-number">2.1.</span> <span class="nav-text">MTD设备文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#dev-mtdN设备"><span class="nav-number">2.1.1.</span> <span class="nav-text">/dev/mtdN设备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dev-mtdblockN设备"><span class="nav-number">2.1.2.</span> <span class="nav-text">/dev/mtdblockN设备</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MTD设备分区"><span class="nav-number">2.2.</span> <span class="nav-text">MTD设备分区</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#EMMC"><span class="nav-number">3.</span> <span class="nav-text">EMMC</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MMC"><span class="nav-number">4.</span> <span class="nav-text">MMC</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#parted-工具"><span class="nav-number">4.1.</span> <span class="nav-text">parted 工具</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: '1541501880000', 
+            owner: 'wossoneri',
+            repo: 'wossoneri.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
+            
+                client_id: '40b6c719a11e3fca29e8'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("RHlsmdBRQUmQMHNOl3U1ocam-gzGzoHsz", "RU2vFPiDzi68XGHCgJXtBAqo");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/love.js"></script>
