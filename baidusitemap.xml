@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://wossoneri.github.io/2018/11/14/%5BAndroid%5D%5BFramework%5DSet-default-wifi-ap-conf/</loc>
+    <lastmod>2018-11-14T10:05:45.766Z</lastmod>
+  </url>  <url>
+    <loc>http://wossoneri.github.io/2018/11/14/%5BAndroid%5D%5BFramework%5DSystemProperties/</loc>
+    <lastmod>2018-11-14T08:34:26.201Z</lastmod>
+  </url>  <url>
+    <loc>http://wossoneri.github.io/2018/06/01/%5BAndroid%5D%5BFramework%5DAB-system-update/</loc>
+    <lastmod>2018-11-14T08:30:26.481Z</lastmod>
+  </url>  <url>
     <loc>http://wossoneri.github.io/2018/11/06/%5BAndroid%5DMTD-MMC-EMMC-partition-layout/</loc>
     <lastmod>2018-11-06T11:01:16.203Z</lastmod>
   </url>  <url>
@@ -39,9 +48,6 @@
   </url>  <url>
     <loc>http://wossoneri.github.io/2018/06/05/%5BLinux%5Destablish-rstp-server/</loc>
     <lastmod>2018-06-04T17:46:15.000Z</lastmod>
-  </url>  <url>
-    <loc>http://wossoneri.github.io/2018/06/01/%5BAndroid%5D%5BFramework%5DAB-system-update/</loc>
-    <lastmod>2018-06-03T19:45:40.000Z</lastmod>
   </url>  <url>
     <loc>http://wossoneri.github.io/2018/06/03/%5BAndroid%5D%5BFramework%5Dhow-does-Activity-start/</loc>
     <lastmod>2018-06-03T19:33:04.000Z</lastmod>

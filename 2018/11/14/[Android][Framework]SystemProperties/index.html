@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android,SystemProperties," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="Android系统里面的系统属性也是很有意思的一套逻辑。虽然上层不需要特别在意底层的实现，但是还是要弄清楚这些属性是怎么增加配置的。">
+<meta name="keywords" content="Android,SystemProperties">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Android][Framework]SystemProperties">
+<meta property="og:url" content="http://wossoneri.github.io/2018/11/14/[Android][Framework]SystemProperties/index.html">
+<meta property="og:site_name" content="Wossoneri`s Blog">
+<meta property="og:description" content="Android系统里面的系统属性也是很有意思的一套逻辑。虽然上层不需要特别在意底层的实现，但是还是要弄清楚这些属性是怎么增加配置的。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-11-14T08:34:26.201Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[Android][Framework]SystemProperties">
+<meta name="twitter:description" content="Android系统里面的系统属性也是很有意思的一套逻辑。虽然上层不需要特别在意底层的实现，但是还是要弄清楚这些属性是怎么增加配置的。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '6234852363740382000',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wossoneri.github.io/2018/11/14/[Android][Framework]SystemProperties/"/>
+
+
+
+
+
+  <title>[Android][Framework]SystemProperties | Wossoneri`s Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-70716047-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/wossoneri"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wossoneri`s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2018/11/14/[Android][Framework]SystemProperties/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wossoneri">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wossoneri`s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[Android][Framework]SystemProperties</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-14T16:31:26+08:00">
+                2018-11-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/11/14/[Android][Framework]SystemProperties/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/11/14/[Android][Framework]SystemProperties/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/11/14/[Android][Framework]SystemProperties/" class="leancloud_visitors" data-flag-title="[Android][Framework]SystemProperties">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+	
+  		  <span class="post-letters-count">
+            &nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+                 <i class="fa fa-clock-o" ></i>
+            </span>
+		        <span class="post-meta-item-text">总记</span>
+            <span class="post-count">2,192 字</span>
+		        <span class="post-meta-item-text">读完需要</span>
+    		    <span class="post-count">10 分</span>
+  		  </span>
+           
+         
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  Android系统里面的系统属性也是很有意思的一套逻辑。虽然上层不需要特别在意底层的实现，但是还是要弄清楚这些属性是怎么增加配置的。
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="属性简介"><a href="#属性简介" class="headerlink" title="属性简介"></a>属性简介</h1><p>在Android 系统中，为统一管理系统的属性，设计了一个统一的属性系统。每个属性都有一个名称和值，他们都是字符串格式。属性被大量使用在Android系统中，用来记录系统设置或进程之间的信息交换。属性是在整个系统中全局可见的。每个进程可以get/set属性。在编译的过程中会将各种系统参数汇总到build.prop 以及default.prop 这两个文件中，主要属性集中在build.prop中。</p>
+<p>系统在开机后将读取配置信息并构建共享缓冲区，加快查询速度。另外一个方面，SettingsProvider会在系统第一次初始化时(刷机第一次启动)后，将从Defaults.xml中读取数据然后写入数据库Settings.db 目录。并构建一个缓冲系统供其他应用查询。下面将详细讲述。</p>
+<h1 id="属性类型"><a href="#属性类型" class="headerlink" title="属性类型"></a>属性类型</h1><p>系统属性根据不同的应用类型，分为：</p>
+<ul>
+<li><p>不可变型</p>
+<p>属性名称以“ro.”开头，那么这个属性被视为只读属性。一旦设置，属性值不能改变。</p>
+</li>
+<li><p>持久型</p>
+<p>属性名称以“persist.”开头，当设置这个属性时，其值也将写入/data/property。</p>
+</li>
+<li><p>网络型</p>
+<p>属性名称以“net.”开头，当设置这个属性时，“net.change”属性将会自动设置，以加入到最后修改的属性名。（这是很巧妙的。 netresolve模块的使用这个属性来追踪在net.*属性上的任何变化。）</p>
+</li>
+<li><p>启动和停止服务</p>
+<p>属性“ ctrl.start ”和“ ctrl.stop ”是用来启动和停止服务。每一项服务必须在/init.rc中定义.系统启动时，与init守护进程将解析init.rc和启动属性服务。一旦收到设置“ ctrl.start ”属性的请求，属性服务将使用该属性值作为服务名找到该服务，启动该服务。这项服务的启动结果将会放入“ init.svc.&lt;服务名&gt;“属性中 。客户端应用程序可以轮询那个属性值，以确定结果。</p>
+</li>
+</ul>
+<h1 id="源码流程"><a href="#源码流程" class="headerlink" title="源码流程"></a>源码流程</h1><p>首先，关于属性，是有长度定义的：</p>
+<p>Bionic/libc/include/sys/system_properties.h</p>
+<figure class="highlight h"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PROP_NAME_MAX	32</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PROP_VALUE_MAX	92</span></span><br></pre></td></tr></table></figure>
+<p>即属性名长度最大32字节，属性值长度最大92字节。</p>
+<p>如果把属性值修改超出最大长度，会报错：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">error: ro.product.model cannot exceed 91 bytes: xxxxxxxxxxxxx...xxxxxxxxx</span><br></pre></td></tr></table></figure>
+<p>在系统初始化过程中，Android系统会分配一块共享内存用来存储properties。这些是由<code>init</code>守护进程完成的，其源代码位于：<code>system/core/init</code>。<code>init</code>守护进程将启动一个属性服务。</p>
+<p>属性服务在<code>init</code>守护进程中运行。每一个客户端想要设置属性时，必须连接属性服务，再向其发送信息。属性服务将会在共享内存区中修改和创建属性。客户端想获得属性信息，可以从共享内存直接读取。这提高了读取性能。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// system/core/init/init.cpp</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span>** argv)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">if</span> (!is_first_stage) &#123;</span><br><span class="line">        property_init();</span><br><span class="line">    &#125;</span><br><span class="line">    ....</span><br><span class="line">    property_load_boot_defaults();</span><br><span class="line">    ...</span><br><span class="line">    start_property_service();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>看具体调用</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// system/core/init/property_service.cpp</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">property_init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (__system_property_area_init()) &#123; <span class="comment">// 分配内存</span></span><br><span class="line">        ERROR(<span class="string">"Failed to initialize property area\n"</span>);</span><br><span class="line">        <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">property_load_boot_defaults</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    load_properties_from_file(PROP_PATH_RAMDISK_DEFAULT, <span class="literal">NULL</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Filter is used to decide which properties to load: NULL loads all keys,</span></span><br><span class="line"><span class="comment"> * "ro.foo.*" is a prefix match, and "ro.foo.bar" is an exact match.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">load_properties_from_file</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* filename, <span class="keyword">const</span> <span class="keyword">char</span>* filter)</span> </span>&#123;</span><br><span class="line">    Timer t;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">string</span> data;</span><br><span class="line">    <span class="keyword">if</span> (read_file(filename, &amp;data)) &#123;</span><br><span class="line">        data.push_back(<span class="string">'\n'</span>);</span><br><span class="line">        load_properties(&amp;data[<span class="number">0</span>], filter);</span><br><span class="line">    &#125;</span><br><span class="line">    NOTICE(<span class="string">"(Loading properties from %s took %.2fs.)\n"</span>, filename, t.duration());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在加载默认属性的时候property_load_boot_defaults，读取的<code>PROP_PATH_RAMDISK_DEFAULT</code>来自于</p>
+<figure class="highlight h"><table><tr><td class="code"><pre><span class="line"><span class="comment">// bionic/libc/include/sys/_system_properties.h</span></span><br><span class="line"><span class="comment">/* 旧版本 */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PROP_PATH_RAMDISK_DEFAULT  <span class="meta-string">"/default.prop"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PROP_PATH_SYSTEM_BUILD     <span class="meta-string">"/system/build.prop"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PROP_PATH_SYSTEM_DEFAULT   <span class="meta-string">"/system/default.prop"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PROP_PATH_LOCAL_OVERRIDE   <span class="meta-string">"/data/local.prop"</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 新版本 N+ */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PROP_PATH_RAMDISK_DEFAULT	<span class="meta-string">"/default.prop"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PROP_PATH_SYSTEM_BUILD		<span class="meta-string">"/system/build.prop"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PROP_PATH_VENDOR_BUILD		<span class="meta-string">"/vendor/build.prop"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PROP_PATH_LOCAL_OVERRIDE	<span class="meta-string">"/data/local.prop"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PROP_PATH_FACTORY			<span class="meta-string">"/factory/factory.prop"</span></span></span><br></pre></td></tr></table></figure>
+<p>在builtins.cpp中会从系统文件中读取默认的属性，并写入共享内存中。相同的属性会被后读入的属性替换。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// system/core/init/property_service.cpp</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">load_system_props</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    load_properties_from_file(PROP_PATH_SYSTEM_BUILD, <span class="literal">NULL</span>);</span><br><span class="line">    load_properties_from_file(PROP_PATH_VENDOR_BUILD, <span class="literal">NULL</span>);</span><br><span class="line">    load_properties_from_file(PROP_PATH_FACTORY, <span class="string">"ro.*"</span>);</span><br><span class="line">    load_recovery_id_prop();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>再看上层如何访问属性的。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// SystemProperties.java 定义了get和set方法</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">native</span> String <span class="title">native_get</span><span class="params">(String key)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">native</span> String <span class="title">native_get</span><span class="params">(String key, String def)</span></span>;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Get the value for the given key.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> an empty string if the key isn't found</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> IllegalArgumentException if the key exceeds 32 characters</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">get</span><span class="params">(String key)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (key.length() &gt; PROP_NAME_MAX) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"key.length &gt; "</span> + PROP_NAME_MAX);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> native_get(key);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Get the value for the given key.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> if the key isn't found, return def if it isn't null, or an empty string otherwise</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> IllegalArgumentException if the key exceeds 32 characters</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">get</span><span class="params">(String key, String def)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (key.length() &gt; PROP_NAME_MAX) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"key.length &gt; "</span> + PROP_NAME_MAX);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> native_get(key, def);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该接口类在初始化运行环境中注册对应的cpp接口android_os_SystemProperties.cpp，实际操作通过JNI调用的是cpp文件对应的接口：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// frameworks/base/core/jni/AndroidRuntime.cpp</span></span><br><span class="line"><span class="keyword">namespace</span> android &#123;</span><br><span class="line"><span class="function"><span class="keyword">extern</span> <span class="keyword">int</span> <span class="title">register_android_os_SystemProperties</span><span class="params">(JNIEnv *env)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">// frameworks/base/core/jni/android_os_SystemProperties.cpp</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">SystemProperties_set</span><span class="params">(JNIEnv *env, jobject clazz, jstring keyJ, jstring valJ)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> err;</span><br><span class="line">	<span class="keyword">const</span> <span class="keyword">char</span>* key;</span><br><span class="line">	<span class="keyword">const</span> <span class="keyword">char</span>* val;</span><br><span class="line">	key = env-&gt;GetStringUTFChars(keyJ, <span class="literal">NULL</span>);</span><br><span class="line">	<span class="keyword">if</span> (valJ == <span class="literal">NULL</span>) &#123;</span><br><span class="line">		val = <span class="string">""</span>;       <span class="comment">/* NULL pointer not allowed here */</span></span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		val = env-&gt;GetStringUTFChars(valJ, <span class="literal">NULL</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	err = property_set(key, val);</span><br><span class="line">	env-&gt;ReleaseStringUTFChars(keyJ, key);        </span><br><span class="line">	<span class="keyword">if</span> (valJ != <span class="literal">NULL</span>) &#123;</span><br><span class="line">		env-&gt;ReleaseStringUTFChars(valJ, val);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>设置key的value时，需要作鉴权，根据设置程序所在进程的fd获知uid值，比如system server进程可以设置net打头的key，不可以设置gsm打头的key，相关的定义如下：</p>
+<figure class="highlight h"><table><tr><td class="code"><pre><span class="line">system/core/include/<span class="keyword">private</span>/android_filesystem_config.h</span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_ROOT             0  <span class="comment">/* traditional unix root user */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_SYSTEM        1000  <span class="comment">/* system server */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_RADIO         1001  <span class="comment">/* telephony subsystem, RIL */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_DHCP          1014  <span class="comment">/* dhcp client */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_SHELL         2000  <span class="comment">/* adb and debug shell user */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_CACHE         2001  <span class="comment">/* cache access */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_APP          10000 <span class="comment">/* first app user */</span></span></span><br></pre></td></tr></table></figure>
+<p>通过查看property_service.c，我们可以明确以下事实：</p>
+<p>1、  属性名不是随意取的。在property_perms数组中定义了当前系统上可用的所有属性的前缀，以及相对应的存取权限UID。对属性的设置要满足权限要求，同时命名也要在这些定义的范围内。</p>
+<p>2、  PA_COUNT_MAX指定了系统（共享内存区域中）最多能存储多少个属性。</p>
+<p>这一段可以从property_set_impl方法逻辑看property前缀</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* White list of permissions for setting property services. */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *prefix;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> uid;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">int</span> gid;</span><br><span class="line">&#125; property_perms[] = &#123;</span><br><span class="line">    &#123; <span class="string">"net.rmnet0."</span>,      AID_RADIO,    <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"net.gprs."</span>,        AID_RADIO,    <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"net.ppp"</span>,          AID_RADIO,    <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"net.qmi"</span>,          AID_RADIO,    <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"net.lte"</span>,          AID_RADIO,    <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"net.cdma"</span>,         AID_RADIO,    <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"ril."</span>,             AID_RADIO,    <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"gsm."</span>,             AID_RADIO,    <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"persist.radio"</span>,    AID_RADIO,    <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"net.dns"</span>,          AID_RADIO,    <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"sys.usb.config"</span>,   AID_RADIO,    <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"net."</span>,             AID_SYSTEM,   <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"dev."</span>,             AID_SYSTEM,   <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"runtime."</span>,         AID_SYSTEM,   <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"hw."</span>,              AID_SYSTEM,   <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"sys."</span>,             AID_SYSTEM,   <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"sys.powerctl"</span>,     AID_SHELL,    <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"service."</span>,         AID_SYSTEM,   <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"wlan."</span>,            AID_SYSTEM,   <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"gps."</span>,             AID_GPS,      <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"bluetooth."</span>,       AID_BLUETOOTH,   <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"dhcp."</span>,            AID_SYSTEM,   <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"dhcp."</span>,            AID_DHCP,     <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"debug."</span>,           AID_SYSTEM,   <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"debug."</span>,           AID_SHELL,    <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"log."</span>,             AID_SHELL,    <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"service.adb.root"</span>, AID_SHELL,    <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"service.adb.tcp.port"</span>, AID_SHELL,    <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"persist.logd.size"</span>,AID_SYSTEM,   <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"persist.sys."</span>,     AID_SYSTEM,   <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"persist.service."</span>, AID_SYSTEM,   <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"persist.security."</span>, AID_SYSTEM,   <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"persist.gps."</span>,      AID_GPS,      <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"persist.service.bdroid."</span>, AID_BLUETOOTH,   <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"selinux."</span>         , AID_SYSTEM,   <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"wc_transport."</span>,     AID_BLUETOOTH,   AID_SYSTEM &#125;,</span><br><span class="line">    &#123; <span class="string">"build.fingerprint"</span>, AID_SYSTEM,   <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="string">"partition."</span>        , AID_SYSTEM,   <span class="number">0</span>&#125;,</span><br><span class="line">#ifdef DOLBY_UDC</span><br><span class="line">    &#123; <span class="string">"dolby.audio"</span>,      AID_MEDIA,    <span class="number">0</span> &#125;,</span><br><span class="line">#endif <span class="comment">// DOLBY_UDC</span></span><br><span class="line">#ifdef DOLBY_DAP</span><br><span class="line">    <span class="comment">// used for setting Dolby specific properties</span></span><br><span class="line">    &#123; <span class="string">"dolby."</span>, AID_SYSTEM,   <span class="number">0</span> &#125;,</span><br><span class="line">#endif <span class="comment">// DOLBY_DAP</span></span><br><span class="line">    &#123; <span class="string">"sys.audio.init"</span>,   AID_MEDIA,    <span class="number">0</span> &#125;,</span><br><span class="line">    &#123; <span class="literal">NULL</span>, <span class="number">0</span>, <span class="number">0</span> &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>在开机启动后的init操作中，会执行一个loop循环，当检测到有新的设置时，进入设置流程，鉴权失败会提示相关的异常，如sys_prop: permission denied uid:1000  name:gsm.phone.id</p>
+<h1 id="system-build-prop"><a href="#system-build-prop" class="headerlink" title="system/build.prop"></a>system/build.prop</h1><h2 id="system-build-prop文件"><a href="#system-build-prop文件" class="headerlink" title="system/build.prop文件"></a>system/build.prop文件</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> ADDITIONAL_BUILD_PROPERTIES</span></span><br><span class="line"><span class="meta">#</span><span class="bash"></span></span><br><span class="line">...</span><br><span class="line">dalvik.vm.heapminfree=6m</span><br><span class="line">dalvik.vm.heapstartsize=14m</span><br><span class="line">dalvik.vm.heapgrowthlimit=192m</span><br><span class="line">dalvik.vm.heapsize=512m</span><br><span class="line">dalvik.vm.heaptargetutilization=0.75</span><br><span class="line">dalvik.vm.heapmaxfree=8m</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">import /system/vendor/vendor.prop</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">IMPORT REGIONALIZATION VENDOR PROP PATH LAST IN ORDER TO OVERRIDE PROPERTIES<span class="comment">#</span></span></span><br><span class="line">import /persist/speccfg/vendor_persist.prop</span><br><span class="line"></span><br><span class="line">import /system/vendor/default.prop</span><br><span class="line"></span><br><span class="line">import /system/vendor/power.prop</span><br></pre></td></tr></table></figure>
+<h2 id="system-build-prop生成过程"><a href="#system-build-prop生成过程" class="headerlink" title="system/build.prop生成过程"></a>system/build.prop生成过程</h2><p>从build.prop输出，从注释内容可以看到：</p>
+<ol>
+<li>执行build/tools/buildinfo.sh</li>
+<li>把device/qcom/msmxxxx/system.prop的内容拷贝到$(OUT_TARGET_DEVICE)/system/build.prop</li>
+<li>将ADDITIONAL_BUILD_PROPERTIES也添加到$(OUT_TARGET_DEVICE)/system/build.prop</li>
+</ol>
+<h2 id="在system-build-prop添加自定义属性"><a href="#在system-build-prop添加自定义属性" class="headerlink" title="在system/build.prop添加自定义属性"></a>在system/build.prop添加自定义属性</h2><ol>
+<li>在buildinfo.sh中添加自定义property</li>
+<li>最简单的就是在system.prop里添加一行，然后编译会将其追加到目标文件的</li>
+<li>ADDITIONAL_BUILD_PROPERTIES 是MakeFile的一个声明，也就是在MakeFile中通过<code>ADDITIONAL_BUILD_PROPERTIES += persist.sys.xxxx=1</code>这种方式就可以添加自定义的属性。</li>
+</ol>
+<h1 id="和自定属性相关的实例"><a href="#和自定属性相关的实例" class="headerlink" title="和自定属性相关的实例"></a>和自定属性相关的实例</h1><p>可以使用System Properties记录用户习惯。</p>
+<p>比如，我的设备需要提供Wifi热点功能，当用户主动打开热点后，需要用一个属性记录用户习惯，当设备关机重启后，根据该属性自动打开热点。</p>
+<p>所以首先创建一个persist属性，写在<code>/device/平台/型号/system.prop</code>文件最后。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">persist.sys.hotspot.enable=off</span><br></pre></td></tr></table></figure>
+<p>然后在手动开关热点的时候，记录用户的操作到该属性中：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// ConnectivityManager.java</span></span><br><span class="line"><span class="meta">@SystemApi</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">startTethering</span><span class="params">(<span class="keyword">int</span> type, <span class="keyword">boolean</span> showProvisioningUi,</span></span></span><br><span class="line"><span class="function"><span class="params">		<span class="keyword">final</span> OnStartTetheringCallback callback, Handler handler)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">if</span> (type == ConnectivityManager.TETHERING_WIFI) &#123;</span><br><span class="line">        SystemProperties.set(<span class="string">"persist.sys.hotspot.enable"</span>, <span class="string">"on"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@SystemApi</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">stopTethering</span><span class="params">(<span class="keyword">int</span> type)</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line">	<span class="keyword">if</span> (type == ConnectivityManager.TETHERING_WIFI) &#123;</span><br><span class="line">		SystemProperties.set(<span class="string">"persist.sys.hotspot.enable"</span>, <span class="string">"off"</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后在开机的时候根据记录的用户习惯，自动打开热点：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">startWifiTether</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    String state = SystemProperties.get(<span class="string">"persist.sys.hotspot.enable"</span>, <span class="string">"off"</span>);</span><br><span class="line">    <span class="keyword">if</span> (TextUtils.equals(state, <span class="string">"on"</span>)) &#123;</span><br><span class="line">        WifiManager wifimanager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);</span><br><span class="line">        wifimanager.setWifiEnabled(<span class="keyword">false</span>); <span class="comment">// disable wifi when using wifi hotspot</span></span><br><span class="line">        wifimanager.setWifiApEnabled(<span class="keyword">null</span>, <span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Ref</p>
+<p><a href="https://www.cnblogs.com/l2rf/p/6610348.html" target="_blank" rel="external">https://www.cnblogs.com/l2rf/p/6610348.html</a></p>
+<p><a href="https://www.cnblogs.com/Peter-Chen/p/3946129.html" target="_blank" rel="external">https://www.cnblogs.com/Peter-Chen/p/3946129.html</a></p>
+<p><a href="https://blog.csdn.net/ameyume/article/details/8056492" target="_blank" rel="external">https://blog.csdn.net/ameyume/article/details/8056492</a></p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Wossoneri
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://wossoneri.github.io/2018/11/14/[Android][Framework]SystemProperties/" title="[Android][Framework]SystemProperties">http://wossoneri.github.io/2018/11/14/[Android][Framework]SystemProperties/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+          
+            <a href="/tags/SystemProperties/" rel="tag"><i class="fa fa-tag"></i> SystemProperties</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/06/[Android]MTD-MMC-EMMC-partition-layout/" rel="next" title="[Android] 查看MTD，EMMC，MMC三种设备的分区">
+                <i class="fa fa-chevron-left"></i> [Android] 查看MTD，EMMC，MMC三种设备的分区
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/11/14/[Android][Framework]Set-default-wifi-ap-conf/" rel="prev" title="[Android][Framework]设置默认WiFi配置">
+                [Android][Framework]设置默认WiFi配置 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460"
+                alt="Wossoneri" />
+            
+              <p class="site-author-name" itemprop="name">Wossoneri</p>
+              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">96</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">98</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+            <div class="cc-license motion-element" itemprop="license">
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+              </a>
+            </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-globe"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#属性简介"><span class="nav-number">1.</span> <span class="nav-text">属性简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#属性类型"><span class="nav-number">2.</span> <span class="nav-text">属性类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#源码流程"><span class="nav-number">3.</span> <span class="nav-text">源码流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#system-build-prop"><span class="nav-number">4.</span> <span class="nav-text">system/build.prop</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#system-build-prop文件"><span class="nav-number">4.1.</span> <span class="nav-text">system/build.prop文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#system-build-prop生成过程"><span class="nav-number">4.2.</span> <span class="nav-text">system/build.prop生成过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在system-build-prop添加自定义属性"><span class="nav-number">4.3.</span> <span class="nav-text">在system/build.prop添加自定义属性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#和自定属性相关的实例"><span class="nav-number">5.</span> <span class="nav-text">和自定属性相关的实例</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: '1542184286000', 
+            owner: 'wossoneri',
+            repo: 'wossoneri.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
+            
+                client_id: '40b6c719a11e3fca29e8'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("RHlsmdBRQUmQMHNOl3U1ocam-gzGzoHsz", "RU2vFPiDzi68XGHCgJXtBAqo");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/love.js"></script>
