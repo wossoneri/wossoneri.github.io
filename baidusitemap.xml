@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://wossoneri.github.io/2018/12/09/%5BAndroid%5D%5BFramework%5Dmastering-system-jar-and-sdk/</loc>
+    <lastmod>2018-12-09T18:06:52.501Z</lastmod>
+  </url>  <url>
+    <loc>http://wossoneri.github.io/2018/12/09/%5BAndroid%5D%5BFramework%5Dsystem-AlertDialog-and-WindowManager/</loc>
+    <lastmod>2018-12-09T11:15:46.078Z</lastmod>
+  </url>  <url>
     <loc>http://wossoneri.github.io/2018/11/14/%5BAndroid%5D%5BFramework%5DSet-default-wifi-ap-conf/</loc>
     <lastmod>2018-11-14T10:05:45.766Z</lastmod>
   </url>  <url>
