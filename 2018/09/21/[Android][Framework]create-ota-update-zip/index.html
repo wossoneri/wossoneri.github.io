@@ -394,7 +394,7 @@
         <h1 id="OTA-软件包工具"><a href="#OTA-软件包工具" class="headerlink" title="OTA 软件包工具"></a>OTA 软件包工具</h1><p><code>build/tools/releasetools</code> 中提供的 ota_from_target_files 工具可以构建两种类型的软件包：完整更新软件包和增量更新软件包。该工具将 Android 构建系统生成的 target_files .zip 文件作为输入文件。</p>
 <h2 id="完整更新"><a href="#完整更新" class="headerlink" title="完整更新"></a>完整更新</h2><p>完整更新是指软件包将对设备的整个最终状态（system分区、boot分区和recovery分区）进行更新。只要设备能够接收软件包并启动恢复系统，软件包就可以安装所需的版本，而不受设备当前状态的影响。</p>
 <p>示例：使用发布工具为假设的 <strong>msm8953_32</strong> 设备构建完整更新：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> first, build the target-files .zip</span></span><br><span class="line">. build/envsetup.sh &amp;&amp; lunch msm8953_32-user</span><br><span class="line">mkdir dist_output</span><br><span class="line">make dist DIST_DIR=dist_output</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span> first, build the target-files .zip</span><br><span class="line">. build/envsetup.sh &amp;&amp; lunch msm8953_32-user</span><br><span class="line">mkdir dist_output</span><br><span class="line">make dist DIST_DIR=dist_output</span><br></pre></td></tr></table></figure>
 <p>target_files .zip 包含构建 OTA 软件包所需的所有内容。</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">./build/tools/releasetools/ota_from_target_files dist_output/tardis-target_files.zip ota_update.zip</span><br></pre></td></tr></table></figure>
 <p>ota_update.zip 现已准备就绪，可以发送到测试设备（所有内容均使用测试密钥进行签名）。</p>
@@ -612,7 +612,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">98</span>
+                  <span class="site-state-item-count">100</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

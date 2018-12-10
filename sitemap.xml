@@ -2,6 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://wossoneri.github.io/2018/12/10/%5BAndroid%5D%5BRecovery%5Denable-shell-in-recovery/</loc>
+    
+    <lastmod>2018-12-10T04:31:51.609Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/12/10/%5BAndroid%5D%5BFramework%5Dadd-system-jar/</loc>
+    
+    <lastmod>2018-12-09T18:33:38.785Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://wossoneri.github.io/2018/12/09/%5BAndroid%5D%5BFramework%5Dmastering-system-jar-and-sdk/</loc>
     
     <lastmod>2018-12-09T18:06:52.501Z</lastmod>
