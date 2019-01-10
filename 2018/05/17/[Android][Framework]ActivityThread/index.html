@@ -6,10 +6,10 @@
 
 
 <html class="theme-next mist use-motion" lang="zh-Hans">
-<head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="theme-color" content="#222">
 
 
@@ -20,8 +20,8 @@
 
 
 
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
 
 
 
@@ -40,7 +40,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
 
 
 
@@ -48,9 +48,9 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
 
-<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
 
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
@@ -68,13 +68,13 @@
 
 
 
-  <meta name="keywords" content="Android,ActivityThread," />
+  <meta name="keywords" content="Android,ActivityThread,">
 
 
 
 
 
-  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml" />
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml">
 
 
 
@@ -122,7 +122,7 @@
 
 
 
-  <link rel="canonical" href="http://wossoneri.github.io/2018/05/17/[Android][Framework]ActivityThread/"/>
+  <link rel="canonical" href="http://wossoneri.github.io/2018/05/17/[Android][Framework]ActivityThread/">
 
 
 
@@ -159,7 +159,7 @@
 
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
 
   
   
@@ -170,13 +170,13 @@
     <div class="headband"></div>
     <a href="https://github.com/wossoneri"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
 
-    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
   <div class="site-meta ">
     
 
     <div class="custom-logo-site-title">
-      <a href="/"  class="brand" rel="start">
+      <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">Wossoneri`s Blog</span>
         <span class="logo-line-after"><i></i></span>
@@ -206,7 +206,7 @@
         <li class="menu-item menu-item-home">
           <a href="/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
             
             首页
           </a>
@@ -216,7 +216,7 @@
         <li class="menu-item menu-item-categories">
           <a href="/categories/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
             
             分类
           </a>
@@ -226,7 +226,7 @@
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
             
             归档
           </a>
@@ -236,7 +236,7 @@
         <li class="menu-item menu-item-tags">
           <a href="/tags/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
             
             标签
           </a>
@@ -270,20 +270,20 @@
   
   
 
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
   
   
   
   <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2018/05/17/[Android][Framework]ActivityThread/">
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Wossoneri">
       <meta itemprop="description" content="">
       <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
     </span>
 
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="Wossoneri`s Blog">
     </span>
 
@@ -315,7 +315,7 @@
           </span>
 
           
-            <span class="post-category" >
+            <span class="post-category">
             
               <span class="post-meta-divider">|</span>
             
@@ -326,7 +326,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
                   <a href="/categories/Android/" itemprop="url" rel="index">
                     <span itemprop="name">Android</span>
                   </a>
@@ -358,7 +358,7 @@
   		  <span class="post-letters-count">
             &nbsp; | &nbsp;
             <span class="post-meta-item-icon">
-                 <i class="fa fa-clock-o" ></i>
+                 <i class="fa fa-clock-o"></i>
             </span>
 		        <span class="post-meta-item-text">总记</span>
             <span class="post-count">2,339 字</span>
@@ -399,7 +399,7 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ActivityThread <span class="title">systemMain</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// The system process on low-memory devices do not get to use hardware</span></span><br><span class="line">    <span class="comment">// accelerated drawing, since this can add too much overhead to the</span></span><br><span class="line">    <span class="comment">// process.</span></span><br><span class="line">    <span class="keyword">if</span> (!ActivityManager.isHighEndGfx()) &#123;</span><br><span class="line">        ThreadedRenderer.disable(<span class="keyword">true</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        ThreadedRenderer.enableForegroundTrimming();</span><br><span class="line">    &#125;</span><br><span class="line">    ActivityThread thread = <span class="keyword">new</span> ActivityThread();</span><br><span class="line">    thread.attach(<span class="keyword">true</span>);</span><br><span class="line">    <span class="keyword">return</span> thread;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ActivityThread() &#123;</span><br><span class="line">    mResourcesManager = ResourcesManager.getInstance();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>所以这里并不是ActivityThread的执行入口。那么哪里才是入口呢？</p>
 <p>回想主线程添加Looper的地方，对， <code>main</code> 方法才是真正的入口。那么 <code>main</code> 方法是怎么调用的呢？</p>
-<p>通过搜索AOSP，发现在ActivityManagerService的<a href="http://androidxref.com/8.0.0_r4/xref/frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java#3914" target="_blank" rel="external">startProcessLocked</a>方法内出现了相关代码：</p>
+<p>通过搜索AOSP，发现在ActivityManagerService的<a href="http://androidxref.com/8.0.0_r4/xref/frameworks/base/services/core/java/com/android/server/am/ActivityManagerService.java#3914" target="_blank" rel="noopener">startProcessLocked</a>方法内出现了相关代码：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Start the process.  It will either succeed and return a result containing</span></span><br><span class="line"><span class="comment">// the PID of the new process, or else throw a RuntimeException.</span></span><br><span class="line"><span class="keyword">boolean</span> isActivityProcess = (entryPoint == <span class="keyword">null</span>);</span><br><span class="line"><span class="keyword">if</span> (entryPoint == <span class="keyword">null</span>) entryPoint = <span class="string">"android.app.ActivityThread"</span>;</span><br><span class="line">Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, <span class="string">"Start proc: "</span> +</span><br><span class="line">        app.processName);</span><br><span class="line">checkTime(startTime, <span class="string">"startProcess: asking zygote to start proc"</span>);</span><br><span class="line">ProcessStartResult startResult;</span><br><span class="line"><span class="keyword">if</span> (hostingType.equals(<span class="string">"webview_service"</span>)) &#123;</span><br><span class="line">    startResult = startWebView(entryPoint,</span><br><span class="line">            app.processName, uid, uid, gids, debugFlags, mountExternal,</span><br><span class="line">            app.info.targetSdkVersion, seInfo, requiredAbi, instructionSet,</span><br><span class="line">            app.info.dataDir, <span class="keyword">null</span>, entryPointArgs);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    startResult = Process.start(entryPoint,</span><br><span class="line">            app.processName, uid, uid, gids, debugFlags, mountExternal,</span><br><span class="line">            app.info.targetSdkVersion, seInfo, requiredAbi, instructionSet,</span><br><span class="line">            app.info.dataDir, invokeWith, entryPointArgs);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>最终调用了 <code>Process.start(android.app.ActivityThread)</code> 方法，而后通过 <code>socket</code> 通信告知 <code>Zygote进程fork子进程</code> ，即app进程。进程创建后将 <code>ActivityThread</code> 加载进去，执行 <code>ActivityThread.main()</code> 方法。</p>
 <h2 id="ActivityThread执行"><a href="#ActivityThread执行" class="headerlink" title="ActivityThread执行"></a>ActivityThread执行</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line">    Looper.prepareMainLooper();</span><br><span class="line"></span><br><span class="line">    ActivityThread thread = <span class="keyword">new</span> ActivityThread();</span><br><span class="line">    thread.attach(<span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (sMainThreadHandler == <span class="keyword">null</span>) &#123;</span><br><span class="line">        sMainThreadHandler = thread.getHandler();</span><br><span class="line">    &#125;</span><br><span class="line">	...</span><br><span class="line">    Looper.loop();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Main thread loop unexpectedly exited"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">final</span> Handler <span class="title">getHandler</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> mH;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -496,14 +496,14 @@
 
     
       <div id="wechat" style="display: inline-block">
-        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付"/>
+        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付">
         <p>微信支付</p>
       </div>
     
 
     
       <div id="alipay" style="display: inline-block">
-        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝"/>
+        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝">
         <p>支付宝</p>
       </div>
     
@@ -638,11 +638,9 @@
 
       <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
             
-              <img class="site-author-image" itemprop="image"
-                src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460"
-                alt="Wossoneri" />
+              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460" alt="Wossoneri">
             
               <p class="site-author-name" itemprop="name">Wossoneri</p>
               <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
@@ -716,7 +714,7 @@
           
             <div class="cc-license motion-element" itemprop="license">
               <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
-                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
               </a>
             </div>
           

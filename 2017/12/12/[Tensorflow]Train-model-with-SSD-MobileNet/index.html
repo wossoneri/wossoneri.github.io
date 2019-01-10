@@ -6,10 +6,10 @@
 
 
 <html class="theme-next mist use-motion" lang="zh-Hans">
-<head>
-  <meta charset="UTF-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="theme-color" content="#222">
 
 
@@ -20,8 +20,8 @@
 
 
 
-<meta http-equiv="Cache-Control" content="no-transform" />
-<meta http-equiv="Cache-Control" content="no-siteapp" />
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
 
 
 
@@ -40,7 +40,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
 
 
 
@@ -48,9 +48,9 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
 
-<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
 
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
@@ -68,13 +68,13 @@
 
 
 
-  <meta name="keywords" content="Machine Learning,Tensorflow,python," />
+  <meta name="keywords" content="Machine Learning,Tensorflow,python,">
 
 
 
 
 
-  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml" />
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml">
 
 
 
@@ -124,7 +124,7 @@
 
 
 
-  <link rel="canonical" href="http://wossoneri.github.io/2017/12/12/[Tensorflow]Train-model-with-SSD-MobileNet/"/>
+  <link rel="canonical" href="http://wossoneri.github.io/2017/12/12/[Tensorflow]Train-model-with-SSD-MobileNet/">
 
 
 
@@ -161,7 +161,7 @@
 
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
 
   
   
@@ -172,13 +172,13 @@
     <div class="headband"></div>
     <a href="https://github.com/wossoneri"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
 
-    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
   <div class="site-meta ">
     
 
     <div class="custom-logo-site-title">
-      <a href="/"  class="brand" rel="start">
+      <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">Wossoneri`s Blog</span>
         <span class="logo-line-after"><i></i></span>
@@ -208,7 +208,7 @@
         <li class="menu-item menu-item-home">
           <a href="/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
             
             首页
           </a>
@@ -218,7 +218,7 @@
         <li class="menu-item menu-item-categories">
           <a href="/categories/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
             
             分类
           </a>
@@ -228,7 +228,7 @@
         <li class="menu-item menu-item-archives">
           <a href="/archives/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
             
             归档
           </a>
@@ -238,7 +238,7 @@
         <li class="menu-item menu-item-tags">
           <a href="/tags/" rel="section">
             
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
             
             标签
           </a>
@@ -272,20 +272,20 @@
   
   
 
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
   
   
   
   <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2017/12/12/[Tensorflow]Train-model-with-SSD-MobileNet/">
 
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Wossoneri">
       <meta itemprop="description" content="">
       <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
     </span>
 
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
       <meta itemprop="name" content="Wossoneri`s Blog">
     </span>
 
@@ -317,7 +317,7 @@
           </span>
 
           
-            <span class="post-category" >
+            <span class="post-category">
             
               <span class="post-meta-divider">|</span>
             
@@ -328,7 +328,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
                   <a href="/categories/Machine-Learning/" itemprop="url" rel="index">
                     <span itemprop="name">Machine Learning</span>
                   </a>
@@ -360,7 +360,7 @@
   		  <span class="post-letters-count">
             &nbsp; | &nbsp;
             <span class="post-meta-item-icon">
-                 <i class="fa fa-clock-o" ></i>
+                 <i class="fa fa-clock-o"></i>
             </span>
 		        <span class="post-meta-item-text">总记</span>
             <span class="post-count">1,637 字</span>
@@ -395,9 +395,9 @@
       
         <h3 id="使用SSD-MobileNet训练模型"><a href="#使用SSD-MobileNet训练模型" class="headerlink" title="使用SSD-MobileNet训练模型"></a>使用SSD-MobileNet训练模型</h3><p>因为Android Demo里的模型是已经训练好的，模型保存的label都是固定的，所以我们在使用的时候会发现还有很多东西它识别不出来。那么我们就需要用它来训练我们自己的数据。下面就是使用SSD-MobileNet训练模型的方法。</p>
 <h4 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h4><ul>
-<li>到Github上下载/克隆<a href="https://github.com/tensorflow/models" target="_blank" rel="external">TensorModels</a>，后面的操作都要在这个目录下执行</li>
-<li>下载数据集(数据集应该是自己制作的，制作数据集需要用到一些工具，另外介绍)，我们使用<a href="http://cvlab.postech.ac.kr/~mooyeol/pascal_voc_2012/VOCtrainval_11-May-2012.tar" target="_blank" rel="external">VOC2012</a>数据集</li>
-<li>下载<a href="http://download.tensorflow.org/models/object_detection/ssd_mobilenet_v1_coco_11_06_2017.tar.gz" target="_blank" rel="external">SSD-MobileNet</a>，我们做得，相当于在这个基础上进行再次训练(retrain)</li>
+<li>到Github上下载/克隆<a href="https://github.com/tensorflow/models" target="_blank" rel="noopener">TensorModels</a>，后面的操作都要在这个目录下执行</li>
+<li>下载数据集(数据集应该是自己制作的，制作数据集需要用到一些工具，另外介绍)，我们使用<a href="http://cvlab.postech.ac.kr/~mooyeol/pascal_voc_2012/VOCtrainval_11-May-2012.tar" target="_blank" rel="noopener">VOC2012</a>数据集</li>
+<li>下载<a href="http://download.tensorflow.org/models/object_detection/ssd_mobilenet_v1_coco_11_06_2017.tar.gz" target="_blank" rel="noopener">SSD-MobileNet</a>，我们做得，相当于在这个基础上进行再次训练(retrain)</li>
 </ul>
 <h4 id="环境设置"><a href="#环境设置" class="headerlink" title="环境设置"></a>环境设置</h4><p>进入下载的Model目录：</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> models/research/</span><br><span class="line"><span class="comment"># 执行</span></span><br><span class="line">protoc object_detection/protos/*.proto --python_out=.</span><br><span class="line"><span class="built_in">export</span> PYTHONPATH=<span class="string">"<span class="variable">$&#123;PYTHONPATH&#125;</span>:/home/Github/models:/home/Github/models/research/slim/"</span></span><br></pre></td></tr></table></figure>
@@ -435,8 +435,8 @@
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 前一个错</span></span><br><span class="line">pip install --upgrade tensorflow==1.2.0</span><br><span class="line"><span class="comment"># 后一个错</span></span><br><span class="line">pip install --upgrade tensorflow==1.4.0</span><br></pre></td></tr></table></figure>
 <h4 id="测试模型"><a href="#测试模型" class="headerlink" title="测试模型"></a>测试模型</h4><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> cv2</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="keyword">from</span> object_detection.utils <span class="keyword">import</span> label_map_util</span><br><span class="line"><span class="keyword">from</span> object_detection.utils <span class="keyword">import</span> visualization_utils <span class="keyword">as</span> vis_util</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TOD</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.PATH_TO_CKPT = <span class="string">'/home/wow/Github/models/research/object_detection/ssd_model/model/frozen_inference_graph.pb'</span></span><br><span class="line">        self.PATH_TO_LABELS = <span class="string">'/home/wow/Github/models/research/object_detection/ssd_model/pascal_label_map.pbtxt'</span></span><br><span class="line">        self.NUM_CLASSES = <span class="number">1</span></span><br><span class="line">        self.detection_graph = self._load_model()</span><br><span class="line">        self.category_index = self._load_label_map()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_load_model</span><span class="params">(self)</span>:</span></span><br><span class="line">        detection_graph = tf.Graph()</span><br><span class="line">        <span class="keyword">with</span> detection_graph.as_default():</span><br><span class="line">            od_graph_def = tf.GraphDef()</span><br><span class="line">            <span class="keyword">with</span> tf.gfile.GFile(self.PATH_TO_CKPT, <span class="string">'rb'</span>) <span class="keyword">as</span> fid:</span><br><span class="line">                serialized_graph = fid.read()</span><br><span class="line">                od_graph_def.ParseFromString(serialized_graph)</span><br><span class="line">                tf.import_graph_def(od_graph_def, name=<span class="string">''</span>)</span><br><span class="line">        <span class="keyword">return</span> detection_graph</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_load_label_map</span><span class="params">(self)</span>:</span></span><br><span class="line">        label_map = label_map_util.load_labelmap(self.PATH_TO_LABELS)</span><br><span class="line">        categories = label_map_util.convert_label_map_to_categories(label_map,</span><br><span class="line">                                                                    max_num_classes=self.NUM_CLASSES,</span><br><span class="line">                                                                    use_display_name=<span class="keyword">True</span>)</span><br><span class="line">        category_index = label_map_util.create_category_index(categories)</span><br><span class="line">        <span class="keyword">return</span> category_index</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">detect</span><span class="params">(self, image)</span>:</span></span><br><span class="line">        <span class="keyword">with</span> self.detection_graph.as_default():</span><br><span class="line">            <span class="keyword">with</span> tf.Session(graph=self.detection_graph) <span class="keyword">as</span> sess:</span><br><span class="line">                <span class="comment"># Expand dimensions since the model expects images to have shape: [1, None, None, 3]</span></span><br><span class="line">                image_np_expanded = np.expand_dims(image, axis=<span class="number">0</span>)</span><br><span class="line">                image_tensor = self.detection_graph.get_tensor_by_name(<span class="string">'image_tensor:0'</span>)</span><br><span class="line">                boxes = self.detection_graph.get_tensor_by_name(<span class="string">'detection_boxes:0'</span>)</span><br><span class="line">                scores = self.detection_graph.get_tensor_by_name(<span class="string">'detection_scores:0'</span>)</span><br><span class="line">                classes = self.detection_graph.get_tensor_by_name(<span class="string">'detection_classes:0'</span>)</span><br><span class="line">                num_detections = self.detection_graph.get_tensor_by_name(<span class="string">'num_detections:0'</span>)</span><br><span class="line">                <span class="comment"># Actual detection.</span></span><br><span class="line">                (boxes, scores, classes, num_detections) = sess.run(</span><br><span class="line">                    [boxes, scores, classes, num_detections],</span><br><span class="line">                    feed_dict=&#123;image_tensor: image_np_expanded&#125;)</span><br><span class="line">                <span class="comment"># Visualization of the results of a detection.</span></span><br><span class="line">                vis_util.visualize_boxes_and_labels_on_image_array(</span><br><span class="line">                    image,</span><br><span class="line">                    np.squeeze(boxes),</span><br><span class="line">                    np.squeeze(classes).astype(np.int32),</span><br><span class="line">                    np.squeeze(scores),</span><br><span class="line">                    self.category_index,</span><br><span class="line">                    use_normalized_coordinates=<span class="keyword">True</span>,</span><br><span class="line">                    line_thickness=<span class="number">8</span>)</span><br><span class="line"></span><br><span class="line">        cv2.namedWindow(<span class="string">"detection"</span>, cv2.WINDOW_NORMAL)</span><br><span class="line">        cv2.imshow(<span class="string">"detection"</span>, image)</span><br><span class="line">        cv2.waitKey(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    image = cv2.imread(<span class="string">'/home/wow/Github/models/research/object_detection/ssd_model/img/cow-in-pasture.jpg'</span>)</span><br><span class="line">    detecotr = TOD()</span><br><span class="line">    detecotr.detect(image)</span><br></pre></td></tr></table></figure>
 <p>效果：<br><img src="./img/detection_screenshot_27.11.2017.png" alt=""></p>
-<h4 id="数据制作"><a href="#数据制作" class="headerlink" title="数据制作"></a>数据制作</h4><p>安装<a href="https://github.com/tzutalin/labelImg" target="_blank" rel="external">labelImg</a>工具,进行图片的标注.标注后的是<code>xml</code>格式的文件,将这些文件按照一定比例分到<code>train</code>和<code>test</code>目录.</p>
-<p>下载<a href="https://github.com/datitran/raccoon_dataset" target="_blank" rel="external">datitran</a>,作者自己写了一套<code>xml</code>转<code>csv</code>再转为<code>record</code>文件的脚本.比SSD的脚本方便使用.</p>
+<h4 id="数据制作"><a href="#数据制作" class="headerlink" title="数据制作"></a>数据制作</h4><p>安装<a href="https://github.com/tzutalin/labelImg" target="_blank" rel="noopener">labelImg</a>工具,进行图片的标注.标注后的是<code>xml</code>格式的文件,将这些文件按照一定比例分到<code>train</code>和<code>test</code>目录.</p>
+<p>下载<a href="https://github.com/datitran/raccoon_dataset" target="_blank" rel="noopener">datitran</a>,作者自己写了一套<code>xml</code>转<code>csv</code>再转为<code>record</code>文件的脚本.比SSD的脚本方便使用.</p>
 <p>首先编辑xml_to_csv.py,修改main函数:<br><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="comment">#image_path = os.path.join(os.getcwd(), 'annotations')</span></span><br><span class="line">    image_path = os.path.join(<span class="string">'/home/Github/models/research/object_detection/ssd_model/MyImgs/labels/test'</span>)</span><br><span class="line">    xml_df = xml_to_csv(image_path)</span><br><span class="line">    <span class="comment">#xml_df.to_csv('raccoon_labels.csv', index=None)</span></span><br><span class="line">    xml_df.to_csv(<span class="string">'fish_test_labels.csv'</span>, index=<span class="keyword">None</span>)</span><br><span class="line">    print(<span class="string">'Successfully converted xml to csv.'</span>)</span><br></pre></td></tr></table></figure></p>
 <p>执行<br><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">python xml_to_csv.py</span><br></pre></td></tr></table></figure></p>
 <p>会生成test的csv,同样,修改代码,生成train的csv.</p>
@@ -448,8 +448,8 @@
 <p>再把所有<code>PATH_TO_BE_CONFIGURED</code>的地方改掉,就可以用前面的命令进行训练.</p>
 <p>训练时会遇到这个错误:<br><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">INFO:tensorflow:Restoring parameters from object_detection/train/model.ckpt-5390</span><br><span class="line">INFO:tensorflow:Error reported to Coordinator: &lt;class <span class="string">'tensorflow.python.framework.errors_impl.InvalidArgumentError'</span>&gt;, Assign requires shapes of both tensors to match. lhs shape= [1,1,128,12] rhs shape= [1,1,128,126]</span><br></pre></td></tr></table></figure></p>
 <p>这是因为之前我有训练过模型,训练到5390次就停了.这里配置写的是200k次,所以它会接着之前的结果继续跑.但我们的数据发生了变化,所以会出现这个错误.解决方法就是把train目录删掉,重新生成即可</p>
-<h4 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h4><p><a href="https://cloud.tencent.com/community/article/351424" target="_blank" rel="external">深度学习入门篇—手把手教你用 TensorFlow 训练模型</a></p>
-<p><a href="http://blog.csdn.net/u010302327/article/details/78248394" target="_blank" rel="external">tensorflow ssd mobilenet模型训练</a></p>
+<h4 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h4><p><a href="https://cloud.tencent.com/community/article/351424" target="_blank" rel="noopener">深度学习入门篇—手把手教你用 TensorFlow 训练模型</a></p>
+<p><a href="http://blog.csdn.net/u010302327/article/details/78248394" target="_blank" rel="noopener">tensorflow ssd mobilenet模型训练</a></p>
 
       
     </div>
@@ -470,14 +470,14 @@
 
     
       <div id="wechat" style="display: inline-block">
-        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付"/>
+        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付">
         <p>微信支付</p>
       </div>
     
 
     
       <div id="alipay" style="display: inline-block">
-        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝"/>
+        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝">
         <p>支付宝</p>
       </div>
     
@@ -614,11 +614,9 @@
 
       <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
             
-              <img class="site-author-image" itemprop="image"
-                src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460"
-                alt="Wossoneri" />
+              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460" alt="Wossoneri">
             
               <p class="site-author-name" itemprop="name">Wossoneri</p>
               <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
@@ -692,7 +690,7 @@
           
             <div class="cc-license motion-element" itemprop="license">
               <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
-                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons" />
+                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
               </a>
             </div>
           
