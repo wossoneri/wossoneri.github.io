@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android,Framework,permission,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="近期处理了很多Android文件权限相关的问题，遂趁热打铁，将这部分知识整理出来。">
+<meta name="keywords" content="Android,Framework,permission">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Android][Framework] 全方位理解Android权限之底层实现概览">
+<meta property="og:url" content="http://wossoneri.github.io/2019/01/11/[Android][Framework]A-glance-of-Android-permission/index.html">
+<meta property="og:site_name" content="Wossoneri`s Blog">
+<meta property="og:description" content="近期处理了很多Android文件权限相关的问题，遂趁热打铁，将这部分知识整理出来。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/tbc.png?raw=true">
+<meta property="og:updated_time" content="2019-01-11T14:00:04.133Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[Android][Framework] 全方位理解Android权限之底层实现概览">
+<meta name="twitter:description" content="近期处理了很多Android文件权限相关的问题，遂趁热打铁，将这部分知识整理出来。">
+<meta name="twitter:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/tbc.png?raw=true">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '6234852363740382000',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wossoneri.github.io/2019/01/11/[Android][Framework]A-glance-of-Android-permission/">
+
+
+
+
+
+  <title>[Android][Framework] 全方位理解Android权限之底层实现概览 | Wossoneri`s Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-70716047-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/wossoneri"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wossoneri`s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2019/01/11/[Android][Framework]A-glance-of-Android-permission/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wossoneri">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wossoneri`s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[Android][Framework] 全方位理解Android权限之底层实现概览</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-01-11T19:30:00+08:00">
+                2019-01-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/01/11/[Android][Framework]A-glance-of-Android-permission/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2019/01/11/[Android][Framework]A-glance-of-Android-permission/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+	
+  		  <span class="post-letters-count">
+            &nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+                 <i class="fa fa-clock-o"></i>
+            </span>
+		        <span class="post-meta-item-text">总记</span>
+            <span class="post-count">6,294 字</span>
+		        <span class="post-meta-item-text">读完需要</span>
+    		    <span class="post-count">33 分</span>
+  		  </span>
+           
+         
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  近期处理了很多Android文件权限相关的问题，遂趁热打铁，将这部分知识整理出来。
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="0000"><a href="#0000" class="headerlink" title="0000"></a>0000</h1><p>这个阶段搞了很多和Android文件权限相关的问题，虽然一知半解，但也算是对Android权限机制有一些自己的理解。遂将这些内容整理出来。因为权限这部分涉及到的内容很多，故将知识分为几块内容分别去整理。目前能想到的概要如下：</p>
+<ol>
+<li>Android 权限底层实现原理概述</li>
+<li>Android uid，gid的生成与权限机制的联系</li>
+<li>Android packageManagerService与权限的千丝万缕（源码解析）</li>
+<li>Android 从recovery模式下的OTA升级理解权限</li>
+<li>Android ROOT 原理</li>
+<li>Android 签名</li>
+<li>Android 权限大杀器 — Selinux的策略</li>
+</ol>
+<p>这是第一篇。2，3，4已经有一些草稿了，但离发出来还有一些时间。5，6，7还在规划中。可以关注新弄的公众号softard，后面比较完善的文章都会在这个号上及时更新。</p>
+<p>这里再推荐一本书<android security="" internals="">，这也是查资料找到的一本宝贝，非常牛逼。</android></p>
+<h1 id="0001-Overview"><a href="#0001-Overview" class="headerlink" title="0001 Overview"></a>0001 Overview</h1><h2 id="Linux-File-Permission"><a href="#Linux-File-Permission" class="headerlink" title="Linux File Permission"></a>Linux File Permission</h2><p>众所周知，Android的内核是linux的内核。对于linux来说，系统的一切都是文件。同时，linux为文件系统设计了一套完善的权限机制。下面简单提一下linux文件权限的核心：</p>
+<p>比如在Android手机adb shell下查看一个目录</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span> ls -ld data/data/</span><br><span class="line">drwxrwx--x 113 system system 4096 1970-01-01 15:08 data/data/</span><br></pre></td></tr></table></figure>
+<p>其中，<code>drwxrwx--x</code>这10位代表文件权限，第一位文件类型可以忽略（这里类型是文件夹），后面每三位代表文件拥有的权限，包括rwx（可读，可写，可执行）。<code>system system</code>表示文件属于system用户和属于system组。</p>
+<p>翻译过来是，system用户对该文件拥有读写执行权限，system组对该文件拥有读写执行权限，其他用户对该文件拥有执行权限。简单来说就是771权限。</p>
+<h2 id="Android-Permission"><a href="#Android-Permission" class="headerlink" title="Android Permission"></a>Android Permission</h2><p>Permission权限是Android系统定义的一套权限机制，用于控制APP访问某个硬件设备或某个Android系统的组件。<br>举两个常见的例子： </p>
+<ol>
+<li>如果你的App想要访问存储卡，你需要在你的AndroidManifest文件中使用对应的permission用于向系统请求权限 。</li>
+<li>你可以给你的Activity组件加个自定义的访问权限，这样任何想启动该Activity的程序必须在它的AndroidManifest中进行权限的请求。见<a href="">Android自定义权限</a>。</li>
+</ol>
+<p>那么为什么你在AndroidManifest文件请求storage权限你就可以访问设备文件？linux文件属性的权限和Permission到底是怎么联系起来的呢？下面我们来具体来讲。</p>
+<h1 id="0010-packages-list-amp-packages-xml"><a href="#0010-packages-list-amp-packages-xml" class="headerlink" title="0010 packages.list &amp; packages.xml"></a>0010 packages.list &amp; packages.xml</h1><p>Android开机阶段会扫描所有App，从Manifest文件中把App信息和权限存到<code>packages.xml</code>和<code>packages.list</code>文件中，具体的处理过程会在后面第三篇去分析。</p>
+<p>因为文件包含所有已安装应用的信息，所以我们尝试安装一个App（com.softard.test），并且查看其信息：</p>
+<p><strong>packages.list</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">com.softard.test 10052 1 /data/user/0/com.softard.test default none</span><br></pre></td></tr></table></figure>
+<p>这里10052是uid，至于其怎么生成的后面第二篇再详谈。</p>
+<p><strong>packages.xml</strong></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">package</span> <span class="attr">name</span>=<span class="string">"com.softard.test"</span> <span class="attr">codePath</span>=<span class="string">"/data/app/com.softard.test-1"</span> <span class="attr">nativeLibraryPath</span>=<span class="string">"/data/app/com.softard.test-1/lib"</span> <span class="attr">publicFlags</span>=<span class="string">"944291654"</span> <span class="attr">privateFlags</span>=<span class="string">"0"</span> <span class="attr">ft</span>=<span class="string">"8bbd70"</span> <span class="attr">it</span>=<span class="string">"89023c"</span> <span class="attr">ut</span>=<span class="string">"8bc04d"</span> <span class="attr">version</span>=<span class="string">"1"</span> <span class="attr">userId</span>=<span class="string">"10052"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">sigs</span> <span class="attr">count</span>=<span class="string">"1"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">cert</span> <span class="attr">index</span>=<span class="string">"10"</span> <span class="attr">key</span>=<span class="string">"308..../&gt;</span></span></span><br><span class="line"><span class="tag"><span class="string">        &lt;/sigs&gt;</span></span></span><br><span class="line"><span class="tag"><span class="string">        &lt;proper-signing-keyset identifier="</span><span class="attr">11</span>" /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">package</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>然后对App做个修改，将其改成系统App并签名放到<code>system/app/Test</code>下，再看这两个文件：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">com.softard.test 1000 0 /data/user/0/com.softard.test platform 3009,3002,1023,1015,3003,3001,1021,1000,2002,2950,1010,1007</span><br></pre></td></tr></table></figure>
+<p>看到uid变成了1000，selinux从default变成platform，权限组从none变成3009,3002,1023,1015,3003,3001,1021,1000,2002,2950,1010,1007。而且应用一下子增加了一堆权限：<br><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">package</span> <span class="attr">name</span>=<span class="string">"com.softard.test"</span> <span class="attr">codePath</span>=<span class="string">"/system/app/Test"</span> <span class="attr">nativeLibraryPath</span>=<span class="string">"/system/app/Test/lib"</span> <span class="attr">primaryCpuAbi</span>=<span class="string">"armeabi-v7a"</span> <span class="attr">publicFlags</span>=<span class="string">"944291397"</span> <span class="attr">privateFlags</span>=<span class="string">"0"</span> <span class="attr">ft</span>=<span class="string">"1683b80c790"</span> <span class="attr">it</span>=<span class="string">"1683b80c790"</span> <span class="attr">ut</span>=<span class="string">"1683b80c790"</span> <span class="attr">version</span>=<span class="string">"1"</span> <span class="attr">sharedUserId</span>=<span class="string">"1000"</span> <span class="attr">isOrphaned</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">sigs</span> <span class="attr">count</span>=<span class="string">"1"</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">cert</span> <span class="attr">index</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">       <span class="tag">&lt;/<span class="name">sigs</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">perms</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.BIND_INCALL_SERVICE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.WRITE_SETTINGS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.CONFIGURE_WIFI_DISPLAY"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.CONFIGURE_DISPLAY_COLOR_MODE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.ACCESS_WIMAX_STATE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.RECOVERY"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"com.qualcomm.permission.READPROC"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.USE_CREDENTIALS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.MODIFY_AUDIO_SETTINGS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.ACCESS_CHECKIN_PROPERTIES"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"com.zqautomotive.oris.wechat.provider.WRITE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.INSTALL_LOCATION_PROVIDER"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.MANAGE_ACCOUNTS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.SYSTEM_ALERT_WINDOW"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.BROADCAST_PHONE_ACCOUNT_REGISTRATION"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.CONTROL_LOCATION_UPDATES"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.CLEAR_APP_USER_DATA"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"com.zqautomotive.oris.wechat.provider.READ"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.BROADCAST_CALLLOG_INFO"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.NFC"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.CALL_PRIVILEGED"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.CHANGE_NETWORK_STATE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.MASTER_CLEAR"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.WRITE_SYNC_SETTINGS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.RECEIVE_BOOT_COMPLETED"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.PEERS_MAC_ADDRESS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.DEVICE_POWER"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.MANAGE_PROFILE_AND_DEVICE_OWNERS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.READ_PROFILE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.BLUETOOTH"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.WRITE_MEDIA_STORAGE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.WRITE_BLOCKED_NUMBERS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"com.qualcomm.permission.USE_QCRIL_MSG_TUNNEL"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.ACCESS_SURFACE_FLINGER"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"com.zqautomotive.voice_controller.GET_SPEECH_RESULT"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.AUTHENTICATE_ACCOUNTS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.INTERNET"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.REORDER_TASKS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"zq.permissio.CONNECTION_MQTT_SERVICE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.BLUETOOTH_ADMIN"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.CONTROL_VPN"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.UPDATE_DEVICE_STATS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.MANAGE_FINGERPRINT"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"com.qualcomm.permission.IZAT"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.BIND_CONNECTION_SERVICE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.MANAGE_USB"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.INTERACT_ACROSS_USERS_FULL"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.STOP_APP_SWITCHES"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.BATTERY_STATS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.PACKAGE_USAGE_STATS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.MOUNT_UNMOUNT_FILESYSTEMS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.TETHER_PRIVILEGED"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.WRITE_SECURE_SETTINGS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.MOVE_PACKAGE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.READ_BLOCKED_NUMBERS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"com.qualcomm.permission.wfd.QC_WFD"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.READ_SEARCH_INDEXABLES"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.ACCESS_IMS_CALL_SERVICE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.BLUETOOTH_PRIVILEGED"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.HARDWARE_TEST"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.intent.category.MASTER_CLEAR.permission.C2D_MESSAGE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.BIND_JOB_SERVICE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.CONFIRM_FULL_BACKUP"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.SET_TIME"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.WRITE_APN_SETTINGS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.CHANGE_WIFI_STATE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.MANAGE_USERS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.SET_PREFERRED_APPLICATIONS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.DELETE_CACHE_FILES"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.ACCESS_NETWORK_STATE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"zq.permissio.CONNECTION_ACTIVATION_SERVICE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.DISABLE_KEYGUARD"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.BACKUP"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.CHANGE_CONFIGURATION"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.USER_ACTIVITY"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.READ_LOGS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.COPY_PROTECTED_DATA"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.INTERACT_ACROSS_USERS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.SET_KEYBOARD_LAYOUT"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.USE_FINGERPRINT"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.WRITE_USER_DICTIONARY"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.READ_SYNC_STATS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.REBOOT"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.OEM_UNLOCK_STATE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.MANAGE_DEVICE_ADMINS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.CHANGE_APP_IDLE_STATE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.SET_POINTER_SPEED"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.MANAGE_NOTIFICATIONS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.READ_SYNC_SETTINGS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.OVERRIDE_WIFI_CONFIG"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.FORCE_STOP_PACKAGES"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.ACCESS_NOTIFICATIONS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.VIBRATE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"com.android.certinstaller.INSTALL_AS_USER"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.READ_USER_DICTIONARY"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.ACCESS_WIFI_STATE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.CHANGE_WIMAX_STATE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.MODIFY_PHONE_STATE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.STATUS_BAR"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.READ_FRAME_BUFFER"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.LOCATION_HARDWARE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.WAKE_LOCK"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.INJECT_EVENTS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.DELETE_PACKAGES"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">       <span class="tag">&lt;/<span class="name">perms</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">proper-signing-keyset</span> <span class="attr">identifier</span>=<span class="string">"1"</span> /&gt;</span></span><br><span class="line">   <span class="tag">&lt;/<span class="name">package</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>所以问题来了，改成系统应用后uid为什么变成1000？后面代表权限组的一串数字又都是什么？</p>
+<h1 id="0011-Android-File-Permission"><a href="#0011-Android-File-Permission" class="headerlink" title="0011 Android File Permission"></a>0011 Android File Permission</h1><h2 id="android-filesystem-config-h"><a href="#android-filesystem-config-h" class="headerlink" title="android_filesystem_config.h"></a>android_filesystem_config.h</h2><p>在Android中，所有权限的定义都在：<code>system/core/include/private/android_filesystem_config.h</code></p>
+<p>在这个头文件中定义了Android系统的一些用户，包含root用户，system用户，shell用户所对应的值等等。</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* This is the master Users and Groups config for the platform.</span></span><br><span class="line"><span class="comment"> * DO NOT EVER RENUMBER</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_ROOT             0  <span class="comment">/* traditional unix root user */</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_SYSTEM        1000  <span class="comment">/* system server */</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_RADIO         1001  <span class="comment">/* telephony subsystem, RIL */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_BLUETOOTH     1002  <span class="comment">/* bluetooth subsystem */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_GRAPHICS      1003  <span class="comment">/* graphics devices */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_INPUT         1004  <span class="comment">/* input devices */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_AUDIO         1005  <span class="comment">/* audio devices */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_CAMERA        1006  <span class="comment">/* camera devices */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_LOG           1007  <span class="comment">/* log devices */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_COMPASS       1008  <span class="comment">/* compass device */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_MOUNT         1009  <span class="comment">/* mountd socket */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_WIFI          1010  <span class="comment">/* wifi subsystem */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_ADB           1011  <span class="comment">/* android debug bridge (adbd) */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_INSTALL       1012  <span class="comment">/* group for installing packages */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_MEDIA         1013  <span class="comment">/* mediaserver process */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_DHCP          1014  <span class="comment">/* dhcp client */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_SDCARD_RW     1015  <span class="comment">/* external storage write access */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_VPN           1016  <span class="comment">/* vpn system */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_KEYSTORE      1017  <span class="comment">/* keystore subsystem */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_USB           1018  <span class="comment">/* USB devices */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_DRM           1019  <span class="comment">/* DRM server */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_MDNSR         1020  <span class="comment">/* MulticastDNSResponder (service discovery) */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_GPS           1021  <span class="comment">/* GPS daemon */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_UNUSED1       1022  <span class="comment">/* deprecated, DO NOT USE */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_MEDIA_RW      1023  <span class="comment">/* internal media storage write access */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_MTP           1024  <span class="comment">/* MTP USB driver access */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_UNUSED2       1025  <span class="comment">/* deprecated, DO NOT USE */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_DRMRPC        1026  <span class="comment">/* group for drm rpc */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_NFC           1027  <span class="comment">/* nfc subsystem */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_SDCARD_R      1028  <span class="comment">/* external storage read access */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_CLAT          1029  <span class="comment">/* clat part of nat464 */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_LOOP_RADIO    1030  <span class="comment">/* loop radio devices */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_MEDIA_DRM     1031  <span class="comment">/* MediaDrm plugins */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_PACKAGE_INFO  1032  <span class="comment">/* access to installed package details */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_SDCARD_PICS   1033  <span class="comment">/* external storage photos access */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_SDCARD_AV     1034  <span class="comment">/* external storage audio/video access */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_SDCARD_ALL    1035  <span class="comment">/* access all users external storage */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_LOGD          1036  <span class="comment">/* log daemon */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_SHARED_RELRO  1037  <span class="comment">/* creator of shared GNU RELRO files */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_DBUS          1038  <span class="comment">/* dbus-daemon IPC broker process */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_TLSDATE       1039  <span class="comment">/* tlsdate unprivileged user */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_MEDIA_EX      1040  <span class="comment">/* mediaextractor process */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_AUDIOSERVER   1041  <span class="comment">/* audioserver process */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_METRICS_COLL  1042  <span class="comment">/* metrics_collector process */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_METRICSD      1043  <span class="comment">/* metricsd process */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_WEBSERV       1044  <span class="comment">/* webservd process */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_DEBUGGERD     1045  <span class="comment">/* debuggerd unprivileged user */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_MEDIA_CODEC   1046  <span class="comment">/* mediacodec process */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_CAMERASERVER  1047  <span class="comment">/* cameraserver process */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_FIREWALL      1048  <span class="comment">/* firewalld process */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_TRUNKS        1049  <span class="comment">/* trunksd process (TPM daemon) */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_NVRAM         1050  <span class="comment">/* Access-controlled NVRAM */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_DNS           1051  <span class="comment">/* DNS resolution daemon (system: netd) */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_DNS_TETHER    1052  <span class="comment">/* DNS resolution daemon (tether: dnsmasq) */</span></span></span><br><span class="line"><span class="comment">/* Changes to this file must be made in AOSP, *not* in internal branches. */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_SHELL         2000  <span class="comment">/* adb and debug shell user */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_CACHE         2001  <span class="comment">/* cache access */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_DIAG          2002  <span class="comment">/* access to diagnostic resources */</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* The range 2900-2999 is reserved for OEM, and must never be</span></span><br><span class="line"><span class="comment"> * used here */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_OEM_RESERVED_START 2900</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_OEM_RESERVED_END   2999</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* The 3000 series are intended for use as supplemental group id's only.</span></span><br><span class="line"><span class="comment"> * They indicate special Android capabilities that the kernel is aware of. */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_NET_BT_ADMIN  3001  <span class="comment">/* bluetooth: create any socket */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_NET_BT        3002  <span class="comment">/* bluetooth: create sco, rfcomm or l2cap sockets */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_INET          3003  <span class="comment">/* can create AF_INET and AF_INET6 sockets */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_NET_RAW       3004  <span class="comment">/* can create raw INET sockets */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_NET_ADMIN     3005  <span class="comment">/* can configure interfaces and routing tables. */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_NET_BW_STATS  3006  <span class="comment">/* read bandwidth statistics */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_NET_BW_ACCT   3007  <span class="comment">/* change bandwidth statistics accounting */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_NET_BT_STACK  3008  <span class="comment">/* bluetooth: access config files */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_READPROC      3009  <span class="comment">/* Allow /proc read access */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_WAKELOCK      3010  <span class="comment">/* Allow system wakelock read/write access */</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* The range 5000-5999 is also reserved for OEM, and must never be used here. */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_OEM_RESERVED_2_START 5000</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_OEM_RESERVED_2_END   5999</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_EVERYBODY     9997  <span class="comment">/* shared between all apps in the same profile */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_MISC          9998  <span class="comment">/* access to misc storage */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_NOBODY        9999</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_APP          10000  <span class="comment">/* first app user */</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_ISOLATED_START 99000 <span class="comment">/* start of uids for fully isolated sandboxed processes */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_ISOLATED_END   99999 <span class="comment">/* end of uids for fully isolated sandboxed processes */</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_USER        100000  <span class="comment">/* offset for uid ranges for each user */</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_SHARED_GID_START 50000 <span class="comment">/* start of gids for apps in each user to share */</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AID_SHARED_GID_END   59999 <span class="comment">/* start of gids for apps in each user to share */</span></span></span><br></pre></td></tr></table></figure>
+<p>从头文件定义，就知道每个权限组都是由一串数字代表的。除了数字，该文件还定义了一个结构体数组，映射数字对应的字符串：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">android_id_info</span> <span class="title">android_ids</span>[] = &#123;</span></span><br><span class="line">    &#123; <span class="string">"root"</span>,          AID_ROOT, &#125;,</span><br><span class="line"></span><br><span class="line">    &#123; <span class="string">"system"</span>,        AID_SYSTEM, &#125;,</span><br><span class="line"></span><br><span class="line">    &#123; <span class="string">"radio"</span>,         AID_RADIO, &#125;,</span><br><span class="line">    &#123; <span class="string">"bluetooth"</span>,     AID_BLUETOOTH, &#125;,</span><br><span class="line">    &#123; <span class="string">"graphics"</span>,      AID_GRAPHICS, &#125;,</span><br><span class="line">    &#123; <span class="string">"input"</span>,         AID_INPUT, &#125;,</span><br><span class="line">    &#123; <span class="string">"audio"</span>,         AID_AUDIO, &#125;,</span><br><span class="line">    &#123; <span class="string">"camera"</span>,        AID_CAMERA, &#125;,</span><br><span class="line">    &#123; <span class="string">"log"</span>,           AID_LOG, &#125;,</span><br><span class="line">    &#123; <span class="string">"compass"</span>,       AID_COMPASS, &#125;,</span><br><span class="line">    &#123; <span class="string">"mount"</span>,         AID_MOUNT, &#125;,</span><br><span class="line">    &#123; <span class="string">"wifi"</span>,          AID_WIFI, &#125;,</span><br><span class="line">    &#123; <span class="string">"adb"</span>,           AID_ADB, &#125;,</span><br><span class="line">    &#123; <span class="string">"install"</span>,       AID_INSTALL, &#125;,</span><br><span class="line">    &#123; <span class="string">"media"</span>,         AID_MEDIA, &#125;,</span><br><span class="line">    &#123; <span class="string">"dhcp"</span>,          AID_DHCP, &#125;,</span><br><span class="line">    &#123; <span class="string">"sdcard_rw"</span>,     AID_SDCARD_RW, &#125;,</span><br><span class="line">    &#123; <span class="string">"vpn"</span>,           AID_VPN, &#125;,</span><br><span class="line">    &#123; <span class="string">"keystore"</span>,      AID_KEYSTORE, &#125;,</span><br><span class="line">    &#123; <span class="string">"usb"</span>,           AID_USB, &#125;,</span><br><span class="line">    &#123; <span class="string">"drm"</span>,           AID_DRM, &#125;,</span><br><span class="line">    &#123; <span class="string">"mdnsr"</span>,         AID_MDNSR, &#125;,</span><br><span class="line">    &#123; <span class="string">"gps"</span>,           AID_GPS, &#125;,</span><br><span class="line">    <span class="comment">// AID_UNUSED1</span></span><br><span class="line">    &#123; <span class="string">"media_rw"</span>,      AID_MEDIA_RW, &#125;,</span><br><span class="line">    &#123; <span class="string">"mtp"</span>,           AID_MTP, &#125;,</span><br><span class="line">    <span class="comment">// AID_UNUSED2</span></span><br><span class="line">    &#123; <span class="string">"drmrpc"</span>,        AID_DRMRPC, &#125;,</span><br><span class="line">    &#123; <span class="string">"nfc"</span>,           AID_NFC, &#125;,</span><br><span class="line">    &#123; <span class="string">"sdcard_r"</span>,      AID_SDCARD_R, &#125;,</span><br><span class="line">    &#123; <span class="string">"clat"</span>,          AID_CLAT, &#125;,</span><br><span class="line">    &#123; <span class="string">"loop_radio"</span>,    AID_LOOP_RADIO, &#125;,</span><br><span class="line">    &#123; <span class="string">"mediadrm"</span>,      AID_MEDIA_DRM, &#125;,</span><br><span class="line">    &#123; <span class="string">"package_info"</span>,  AID_PACKAGE_INFO, &#125;,</span><br><span class="line">    &#123; <span class="string">"sdcard_pics"</span>,   AID_SDCARD_PICS, &#125;,</span><br><span class="line">    &#123; <span class="string">"sdcard_av"</span>,     AID_SDCARD_AV, &#125;,</span><br><span class="line">    &#123; <span class="string">"sdcard_all"</span>,    AID_SDCARD_ALL, &#125;,</span><br><span class="line">    &#123; <span class="string">"logd"</span>,          AID_LOGD, &#125;,</span><br><span class="line">    &#123; <span class="string">"shared_relro"</span>,  AID_SHARED_RELRO, &#125;,</span><br><span class="line">    &#123; <span class="string">"dbus"</span>,          AID_DBUS, &#125;,</span><br><span class="line">    &#123; <span class="string">"tlsdate"</span>,       AID_TLSDATE, &#125;,</span><br><span class="line">    &#123; <span class="string">"mediaex"</span>,       AID_MEDIA_EX, &#125;,</span><br><span class="line">    &#123; <span class="string">"audioserver"</span>,   AID_AUDIOSERVER, &#125;,</span><br><span class="line">    &#123; <span class="string">"metrics_coll"</span>,  AID_METRICS_COLL &#125;,</span><br><span class="line">    &#123; <span class="string">"metricsd"</span>,      AID_METRICSD &#125;,</span><br><span class="line">    &#123; <span class="string">"webserv"</span>,       AID_WEBSERV &#125;,</span><br><span class="line">    &#123; <span class="string">"debuggerd"</span>,     AID_DEBUGGERD, &#125;,</span><br><span class="line">    &#123; <span class="string">"mediacodec"</span>,    AID_MEDIA_CODEC, &#125;,</span><br><span class="line">    &#123; <span class="string">"cameraserver"</span>,  AID_CAMERASERVER, &#125;,</span><br><span class="line">    &#123; <span class="string">"firewall"</span>,      AID_FIREWALL, &#125;,</span><br><span class="line">    &#123; <span class="string">"trunks"</span>,        AID_TRUNKS, &#125;,</span><br><span class="line">    &#123; <span class="string">"nvram"</span>,         AID_NVRAM, &#125;,</span><br><span class="line">    &#123; <span class="string">"dns"</span>,           AID_DNS, &#125;,</span><br><span class="line">    &#123; <span class="string">"dns_tether"</span>,    AID_DNS_TETHER, &#125;,</span><br><span class="line"></span><br><span class="line">    &#123; <span class="string">"shell"</span>,         AID_SHELL, &#125;,</span><br><span class="line">    &#123; <span class="string">"cache"</span>,         AID_CACHE, &#125;,</span><br><span class="line">    &#123; <span class="string">"diag"</span>,          AID_DIAG, &#125;,</span><br><span class="line"></span><br><span class="line">    &#123; <span class="string">"net_bt_admin"</span>,  AID_NET_BT_ADMIN, &#125;,</span><br><span class="line">    &#123; <span class="string">"net_bt"</span>,        AID_NET_BT, &#125;,</span><br><span class="line">    &#123; <span class="string">"inet"</span>,          AID_INET, &#125;,</span><br><span class="line">    &#123; <span class="string">"net_raw"</span>,       AID_NET_RAW, &#125;,</span><br><span class="line">    &#123; <span class="string">"net_admin"</span>,     AID_NET_ADMIN, &#125;,</span><br><span class="line">    &#123; <span class="string">"net_bw_stats"</span>,  AID_NET_BW_STATS, &#125;,</span><br><span class="line">    &#123; <span class="string">"net_bw_acct"</span>,   AID_NET_BW_ACCT, &#125;,</span><br><span class="line">    &#123; <span class="string">"net_bt_stack"</span>,  AID_NET_BT_STACK, &#125;,</span><br><span class="line">    &#123; <span class="string">"readproc"</span>,      AID_READPROC, &#125;,</span><br><span class="line">    &#123; <span class="string">"wakelock"</span>,      AID_WAKELOCK, &#125;,</span><br><span class="line"></span><br><span class="line">    &#123; <span class="string">"everybody"</span>,     AID_EVERYBODY, &#125;,</span><br><span class="line">    &#123; <span class="string">"misc"</span>,          AID_MISC, &#125;,</span><br><span class="line">    &#123; <span class="string">"nobody"</span>,        AID_NOBODY, &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>好了，了解这个文件我们再来看我们应用的信息：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">com.softard.test 1000 0 /data/user/0/com.softard.test platform 3009,3002,1023,1015,3003,3001,1021,1000,2002,1010,1007</span><br></pre></td></tr></table></figure>
+<p>我们把数字对应的信息截取下来：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">#define AID_SYSTEM        1000  "system"	/* system server */		</span><br><span class="line">#define AID_LOG           1007  "log"		/* log devices */		</span><br><span class="line">#define AID_WIFI          1010  "wifi"		/* wifi subsystem */	</span><br><span class="line">#define AID_SDCARD_RW     1015  "sdcard_rw"	/* external storage write access */</span><br><span class="line">#define AID_GPS           1021  "gps"		/* GPS daemon */</span><br><span class="line">#define AID_MEDIA_RW      1023  "media_rw"	/* internal media storage write access */</span><br><span class="line">#define AID_DIAG          2002  "diag"		/* access to diagnostic resources */</span><br><span class="line">#define AID_NET_BT_ADMIN  3001  "net_bt_admin"/* bluetooth: create any socket */</span><br><span class="line">#define AID_NET_BT        3002  "net_bt"	/* bluetooth: create sco, rfcomm or l2cap sockets */</span><br><span class="line">#define AID_INET          3003  "inet"		/* can create AF_INET and AF_INET6 sockets */</span><br><span class="line">#define AID_READPROC      3009  "readproc"	/* Allow /proc read access */</span><br></pre></td></tr></table></figure>
+<p>所以，当我指定应用为系统应用时，就将uid指定为了1000。并且拥有了各种属于系统的权限组。</p>
+<p>那么，指定系统应用后是怎么获得这一系列的gid呢？这一块源码流程很多，放到后面集中分析。</p>
+<p>好了，现在我们了解<code>system/core/include/private/android_filesystem_config.h</code>文件定义以后，其实就前进了一大步。注意一下代码所在源码位置，位于<code>system/core</code>下，其实它已经是Android内核部分了，所以后面涉及到权限内容，都会导入这个头文件。</p>
+<p>现在来看一段源码再来熟悉一下这部分内容：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">FileUtils.setPermissions(fstr.getFD(), <span class="number">0640</span>, SYSTEM_UID, PACKAGE_INFO_GID);</span><br></pre></td></tr></table></figure>
+<p>这是位于<code>frameworks/base/services/core/java/com/android/server/pm/Settings.java</code>的一段代码，功能就是创建<code>packages.list</code>文件。从函数名称和参数可以知道，它是给文件添加权限的，通过这段代码可以推测出：它给packages.list文件赋予了0640的权限，权限隶属于system，权限组为package_info。</p>
+<p>然后我们进入系统看一看是不是这样：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">/data/system # ls -l packages.list</span><br><span class="line">-rw-r----- 1 system package_info 13627 1970-01-01 11:27 packages.list</span><br></pre></td></tr></table></figure>
+<p>有没有发现原来Android底层权限其实也不是很难理解嘛？</p>
+<p>这时，又有一个问题了，创建文件你可以这样设定权限，但系统文件/文件夹的默认权限又是从哪来的？这就要引入另外一个文件了。</p>
+<h2 id="fs-config-c"><a href="#fs-config-c" class="headerlink" title="fs_config.c"></a>fs_config.c</h2><p>写过Android App的你肯定知道，App的一些数据都放在<code>/data/data</code>目录下。正常情况下这个目录是不可以访问的：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">/data/data $ ls</span><br><span class="line">ls: .: Permission denied</span><br></pre></td></tr></table></figure>
+<p>我们看一下这个目录的权限：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">/data/data $ ls -ld</span><br><span class="line">drwxrwx--x 310 system system 12288 2019-01-11 09:51 .</span><br></pre></td></tr></table></figure>
+<p>我们作为shell用户，只有一个x权限， 当然访问不了。那如果我要给shell赋予访问权限改怎么改呢？</p>
+<p>这就需要了解一下<code>system/core/libcutils/fs_config.c</code>文件了。系统目录和文件的用户组以及权限都是在这个文件里定义的：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">/* Rules for directories.</span></span><br><span class="line"><span class="comment">** These rules are applied based on "first match", so they</span></span><br><span class="line"><span class="comment">** should start with the most specific path and work their</span></span><br><span class="line"><span class="comment">** way up to the root.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">fs_path_config</span> <span class="title">android_dirs</span>[] = &#123;</span></span><br><span class="line">    &#123; <span class="number">00770</span>, AID_SYSTEM, AID_CACHE,  <span class="number">0</span>, <span class="string">"cache"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00500</span>, AID_ROOT,   AID_ROOT,   <span class="number">0</span>, <span class="string">"config"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00771</span>, AID_SYSTEM, AID_SYSTEM, <span class="number">0</span>, <span class="string">"data/app"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00771</span>, AID_SYSTEM, AID_SYSTEM, <span class="number">0</span>, <span class="string">"data/app-private"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00771</span>, AID_SYSTEM, AID_SYSTEM, <span class="number">0</span>, <span class="string">"data/app-ephemeral"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00771</span>, AID_ROOT,   AID_ROOT,   <span class="number">0</span>, <span class="string">"data/dalvik-cache"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00771</span>, AID_SYSTEM, AID_SYSTEM, <span class="number">0</span>, <span class="string">"data/data"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00771</span>, AID_SHELL,  AID_SHELL,  <span class="number">0</span>, <span class="string">"data/local/tmp"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00771</span>, AID_SHELL,  AID_SHELL,  <span class="number">0</span>, <span class="string">"data/local"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">01771</span>, AID_SYSTEM, AID_MISC,   <span class="number">0</span>, <span class="string">"data/misc"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00770</span>, AID_DHCP,   AID_DHCP,   <span class="number">0</span>, <span class="string">"data/misc/dhcp"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00771</span>, AID_SHARED_RELRO, AID_SHARED_RELRO, <span class="number">0</span>, <span class="string">"data/misc/shared_relro"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00775</span>, AID_MEDIA_RW, AID_MEDIA_RW, <span class="number">0</span>, <span class="string">"data/media"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00775</span>, AID_MEDIA_RW, AID_MEDIA_RW, <span class="number">0</span>, <span class="string">"data/media/Music"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00750</span>, AID_ROOT,   AID_SHELL,  <span class="number">0</span>, <span class="string">"data/nativetest"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00750</span>, AID_ROOT,   AID_SHELL,  <span class="number">0</span>, <span class="string">"data/nativetest64"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00775</span>, AID_ROOT,   AID_ROOT,   <span class="number">0</span>, <span class="string">"data/preloads"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00771</span>, AID_SYSTEM, AID_SYSTEM, <span class="number">0</span>, <span class="string">"data"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00755</span>, AID_ROOT,   AID_SYSTEM, <span class="number">0</span>, <span class="string">"mnt"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00755</span>, AID_ROOT,   AID_ROOT,   <span class="number">0</span>, <span class="string">"root"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00750</span>, AID_ROOT,   AID_SHELL,  <span class="number">0</span>, <span class="string">"sbin"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00751</span>, AID_ROOT,   AID_SDCARD_R, <span class="number">0</span>, <span class="string">"storage"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00755</span>, AID_ROOT,   AID_SHELL,  <span class="number">0</span>, <span class="string">"system/bin"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00755</span>, AID_ROOT,   AID_SHELL,  <span class="number">0</span>, <span class="string">"system/vendor"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00755</span>, AID_ROOT,   AID_SHELL,  <span class="number">0</span>, <span class="string">"system/xbin"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00755</span>, AID_ROOT,   AID_ROOT,   <span class="number">0</span>, <span class="string">"system/etc/ppp"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00755</span>, AID_ROOT,   AID_SHELL,  <span class="number">0</span>, <span class="string">"vendor"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00777</span>, AID_ROOT,   AID_ROOT,   <span class="number">0</span>, <span class="string">"sdcard"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00755</span>, AID_ROOT,   AID_ROOT,   <span class="number">0</span>, <span class="number">0</span> &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Rules for files.</span></span><br><span class="line"><span class="comment">** These rules are applied based on "first match", so they</span></span><br><span class="line"><span class="comment">** should start with the most specific path and work their</span></span><br><span class="line"><span class="comment">** way up to the root. Prefixes ending in * denotes wildcard</span></span><br><span class="line"><span class="comment">** and will allow partial matches.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">char</span> conf_dir[] = <span class="string">"/system/etc/fs_config_dirs"</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">char</span> conf_file[] = <span class="string">"/system/etc/fs_config_files"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">fs_path_config</span> <span class="title">android_files</span>[] = &#123;</span></span><br><span class="line">    &#123; <span class="number">00440</span>, AID_ROOT,      AID_SHELL,     <span class="number">0</span>, <span class="string">"system/etc/init.goldfish.rc"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00550</span>, AID_ROOT,      AID_SHELL,     <span class="number">0</span>, <span class="string">"system/etc/init.goldfish.sh"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00550</span>, AID_ROOT,      AID_SHELL,     <span class="number">0</span>, <span class="string">"system/etc/init.ril"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00555</span>, AID_ROOT,      AID_ROOT,      <span class="number">0</span>, <span class="string">"system/etc/ppp/*"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00555</span>, AID_ROOT,      AID_ROOT,      <span class="number">0</span>, <span class="string">"system/etc/rc.*"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00440</span>, AID_ROOT,      AID_ROOT,      <span class="number">0</span>, <span class="string">"system/etc/recovery.img"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00444</span>, AID_ROOT,      AID_ROOT,      <span class="number">0</span>, conf_dir + <span class="number">1</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00444</span>, AID_ROOT,      AID_ROOT,      <span class="number">0</span>, conf_file + <span class="number">1</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00644</span>, AID_SYSTEM,    AID_SYSTEM,    <span class="number">0</span>, <span class="string">"data/app/*"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00644</span>, AID_MEDIA_RW,  AID_MEDIA_RW,  <span class="number">0</span>, <span class="string">"data/media/*"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00644</span>, AID_SYSTEM,    AID_SYSTEM,    <span class="number">0</span>, <span class="string">"data/app-private/*"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00644</span>, AID_SYSTEM,    AID_SYSTEM,    <span class="number">0</span>, <span class="string">"data/app-ephemeral/*"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00644</span>, AID_APP,       AID_APP,       <span class="number">0</span>, <span class="string">"data/data/*"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00640</span>, AID_ROOT,      AID_SHELL,     <span class="number">0</span>, <span class="string">"data/nativetest/tests.txt"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00640</span>, AID_ROOT,      AID_SHELL,     <span class="number">0</span>, <span class="string">"data/nativetest64/tests.txt"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00750</span>, AID_ROOT,      AID_SHELL,     <span class="number">0</span>, <span class="string">"data/nativetest/*"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00750</span>, AID_ROOT,      AID_SHELL,     <span class="number">0</span>, <span class="string">"data/nativetest64/*"</span> &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* the following two files are INTENTIONALLY set-uid, but they</span></span><br><span class="line"><span class="comment">     * are NOT included on user builds. */</span></span><br><span class="line">    &#123; <span class="number">04750</span>, AID_ROOT,      AID_SHELL,     <span class="number">0</span>, <span class="string">"system/xbin/su"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">06755</span>, AID_ROOT,      AID_ROOT,      <span class="number">0</span>, <span class="string">"system/xbin/procmem"</span> &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* the following files have enhanced capabilities and ARE included in user builds. */</span></span><br><span class="line">    &#123; <span class="number">00750</span>, AID_ROOT,      AID_SHELL,     CAP_MASK_LONG(CAP_SETUID) | CAP_MASK_LONG(CAP_SETGID), <span class="string">"system/bin/run-as"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00700</span>, AID_SYSTEM,    AID_SHELL,     CAP_MASK_LONG(CAP_BLOCK_SUSPEND), <span class="string">"system/bin/inputflinger"</span> &#125;,</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Support FIFO scheduling mode in SurfaceFlinger. */</span></span><br><span class="line">    &#123; <span class="number">00755</span>, AID_SYSTEM,    AID_GRAPHICS,     CAP_MASK_LONG(CAP_SYS_NICE), <span class="string">"system/bin/surfaceflinger"</span> &#125;,</span><br><span class="line"></span><br><span class="line">    &#123; <span class="number">00750</span>, AID_ROOT,      AID_ROOT,      <span class="number">0</span>, <span class="string">"system/bin/uncrypt"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00750</span>, AID_ROOT,      AID_ROOT,      <span class="number">0</span>, <span class="string">"system/bin/install-recovery.sh"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00755</span>, AID_ROOT,      AID_SHELL,     <span class="number">0</span>, <span class="string">"system/bin/*"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00755</span>, AID_ROOT,      AID_ROOT,      <span class="number">0</span>, <span class="string">"system/lib/valgrind/*"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00755</span>, AID_ROOT,      AID_ROOT,      <span class="number">0</span>, <span class="string">"system/lib64/valgrind/*"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00755</span>, AID_ROOT,      AID_SHELL,     <span class="number">0</span>, <span class="string">"system/xbin/*"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00755</span>, AID_ROOT,      AID_SHELL,     <span class="number">0</span>, <span class="string">"system/vendor/bin/*"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00755</span>, AID_ROOT,      AID_SHELL,     <span class="number">0</span>, <span class="string">"system/vendor/xbin/*"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00755</span>, AID_ROOT,      AID_SHELL,     <span class="number">0</span>, <span class="string">"vendor/bin/*"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00755</span>, AID_ROOT,      AID_SHELL,     <span class="number">0</span>, <span class="string">"vendor/xbin/*"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00750</span>, AID_ROOT,      AID_SHELL,     <span class="number">0</span>, <span class="string">"sbin/*"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00755</span>, AID_ROOT,      AID_ROOT,      <span class="number">0</span>, <span class="string">"bin/*"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00750</span>, AID_ROOT,      AID_SHELL,     <span class="number">0</span>, <span class="string">"init*"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00750</span>, AID_ROOT,      AID_SHELL,     <span class="number">0</span>, <span class="string">"sbin/fs_mgr"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00640</span>, AID_ROOT,      AID_SHELL,     <span class="number">0</span>, <span class="string">"fstab.*"</span> &#125;,</span><br><span class="line">    &#123; <span class="number">00644</span>, AID_ROOT,      AID_ROOT,      <span class="number">0</span>, <span class="number">0</span> &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>感觉也不用多说，<code>android_dirs[]</code>负责文件夹的权限配置，<code>android_files[]</code>负责文件的权限配置。</p>
+<p>从里面定义找找刚提到的<code>/data/data</code>目录</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">&#123; <span class="number">00771</span>, AID_SYSTEM, AID_SYSTEM, <span class="number">0</span>, <span class="string">"data/data"</span> &#125;,</span><br></pre></td></tr></table></figure>
+<p>你看，就是这么回事儿而已。如果要改成shell权限的话，只需要这样改就可以了：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">&#123; <span class="number">00771</span>, AID_SYSTEM, AID_SHELL, <span class="number">0</span>, <span class="string">"data/data"</span> &#125;,</span><br></pre></td></tr></table></figure>
+<p>当然，如果系统里还要添加其他目录、文件需要指定权限，只需要在这个文件里添加一行即可。</p>
+<h1 id="0100-Android-App-Permission"><a href="#0100-Android-App-Permission" class="headerlink" title="0100 Android App Permission"></a>0100 Android App Permission</h1><p>讲到这里，还遗留一个开头提出的问题：</p>
+<blockquote>
+<p>为什么你在AndroidManifest文件请求storage权限你就可以访问设备文件？</p>
+</blockquote>
+<p>0010里提到过，PackageManagerService在启动后会扫描所有已经安装的App，然后加载和解析他们的Androidmanifest文件，生成<code>packages.list</code>和<code>packages.xml</code>等文件。解析过程就包括了permission的解析与拦截。</p>
+<p><code>frameworks/base/core/res/AndroidManifest.xml</code> 这个文件中定义了Permission拦截规则，下面列举几个：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Allows an application to read from external storage.</span></span><br><span class="line"><span class="comment">     &lt;p&gt;Any app that declares the &#123;@link #WRITE_EXTERNAL_STORAGE&#125; permission is implicitly</span></span><br><span class="line"><span class="comment">     granted this permission.&lt;/p&gt;</span></span><br><span class="line"><span class="comment">     &lt;p&gt;This permission is enforced starting in API level 19.  Before API level 19, this</span></span><br><span class="line"><span class="comment">     permission is not enforced and all apps still have access to read from external storage.</span></span><br><span class="line"><span class="comment">     You can test your app with the permission enforced by enabling &lt;em&gt;Protect USB</span></span><br><span class="line"><span class="comment">     storage&lt;/em&gt; under Developer options in the Settings app on a device running Android 4.1 or</span></span><br><span class="line"><span class="comment">     higher.&lt;/p&gt;</span></span><br><span class="line"><span class="comment">     &lt;p&gt;Also starting in API level 19, this permission is &lt;em&gt;not&lt;/em&gt; required to</span></span><br><span class="line"><span class="comment">     read/write files in your application-specific directories returned by</span></span><br><span class="line"><span class="comment">     &#123;@link android.content.Context#getExternalFilesDir&#125; and</span></span><br><span class="line"><span class="comment">     &#123;@link android.content.Context#getExternalCacheDir&#125;.</span></span><br><span class="line"><span class="comment">     &lt;p class="note"&gt;&lt;strong&gt;<span class="doctag">Note:</span>&lt;/strong&gt; If &lt;em&gt;both&lt;/em&gt; your &lt;a</span></span><br><span class="line"><span class="comment">     href="&#123;@docRoot&#125;guide/topics/manifest/uses-sdk-element.html#min"&gt;&#123;@code</span></span><br><span class="line"><span class="comment">     minSdkVersion&#125;&lt;/a&gt; and &lt;a</span></span><br><span class="line"><span class="comment">     href="&#123;@docRoot&#125;guide/topics/manifest/uses-sdk-element.html#target"&gt;&#123;@code</span></span><br><span class="line"><span class="comment">     targetSdkVersion&#125;&lt;/a&gt; values are set to 3 or lower, the system implicitly</span></span><br><span class="line"><span class="comment">     grants your app this permission. If you don't need this permission, be sure your &lt;a</span></span><br><span class="line"><span class="comment">     href="&#123;@docRoot&#125;guide/topics/manifest/uses-sdk-element.html#target"&gt;&#123;@code</span></span><br><span class="line"><span class="comment">     targetSdkVersion&#125;&lt;/a&gt; is 4 or higher.</span></span><br><span class="line"><span class="comment">     &lt;p&gt;Protection level: dangerous</span></span><br><span class="line"><span class="comment">--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.READ_EXTERNAL_STORAGE"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:permissionGroup</span>=<span class="string">"android.permission-group.STORAGE"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:label</span>=<span class="string">"@string/permlab_sdcardRead"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:description</span>=<span class="string">"@string/permdesc_sdcardRead"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:protectionLevel</span>=<span class="string">"dangerous"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- Allows applications to access information about Wi-Fi networks.</span></span><br><span class="line"><span class="comment">         &lt;p&gt;Protection level: normal</span></span><br><span class="line"><span class="comment">--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.ACCESS_WIFI_STATE"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:description</span>=<span class="string">"@string/permdesc_accessWifiState"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:label</span>=<span class="string">"@string/permlab_accessWifiState"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:protectionLevel</span>=<span class="string">"normal"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- @SystemApi Allows applications to set the system time.</span></span><br><span class="line"><span class="comment">    &lt;p&gt;Not for use by third-party applications. --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.SET_TIME"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:protectionLevel</span>=<span class="string">"signature|privileged"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这里看一下<code>protectionLevel</code>，normal是一般权限，即不需要动态申请，直接在Manifest里注册即可获得的权限。dangerous是敏感权限，需要动态申请告知用户才能获取的权限。signature|privileged一般是系统priv-app才拥有的权限，也就是拥有系统签名的系统应用。</p>
+<p>他的拦截规则大概是，如果App申请了signature|privileged权限，但他是普通开发者的三方App，PMS就会将其从申请权限的列表里将该权限删除。这样你的App实际上就没有获得对应的权限了。</p>
+<p>那么，文件属性的权限是怎么和Permission联系起来的？不出意外，系统也有一个关联文件的定义<code>frameworks/base/data/etc/platform.xml</code>：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- This file is used to define the mappings between lower-level system</span></span><br><span class="line"><span class="comment">     user and group IDs and the higher-level permission names managed</span></span><br><span class="line"><span class="comment">     by the platform.</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">     Be VERY careful when editing this file!  Mistakes made here can open</span></span><br><span class="line"><span class="comment">     big security holes.</span></span><br><span class="line"><span class="comment">--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">permissions</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- ================================================================== --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- ================================================================== --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- ================================================================== --&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- The following tags are associating low-level group IDs with</span></span><br><span class="line"><span class="comment">         permission names.  By specifying such a mapping, you are saying</span></span><br><span class="line"><span class="comment">         that any application process granted the given permission will</span></span><br><span class="line"><span class="comment">         also be running with the given group ID attached to its process,</span></span><br><span class="line"><span class="comment">         so it can perform any filesystem (read, write, execute) operations</span></span><br><span class="line"><span class="comment">         allowed for that group. --&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">permission</span> <span class="attr">name</span>=<span class="string">"android.permission.BLUETOOTH_ADMIN"</span> &gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">group</span> <span class="attr">gid</span>=<span class="string">"net_bt_admin"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">permission</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">permission</span> <span class="attr">name</span>=<span class="string">"android.permission.BLUETOOTH"</span> &gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">group</span> <span class="attr">gid</span>=<span class="string">"net_bt"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">permission</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">permission</span> <span class="attr">name</span>=<span class="string">"android.permission.BLUETOOTH_STACK"</span> &gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">group</span> <span class="attr">gid</span>=<span class="string">"net_bt_stack"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">group</span> <span class="attr">gid</span>=<span class="string">"wakelock"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">permission</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">permission</span> <span class="attr">name</span>=<span class="string">"android.permission.NET_TUNNELING"</span> &gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">group</span> <span class="attr">gid</span>=<span class="string">"vpn"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">permission</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">permission</span> <span class="attr">name</span>=<span class="string">"android.permission.INTERNET"</span> &gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">group</span> <span class="attr">gid</span>=<span class="string">"inet"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">permission</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">permission</span> <span class="attr">name</span>=<span class="string">"android.permission.READ_LOGS"</span> &gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">group</span> <span class="attr">gid</span>=<span class="string">"log"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">permission</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">permission</span> <span class="attr">name</span>=<span class="string">"android.permission.WRITE_MEDIA_STORAGE"</span> &gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">group</span> <span class="attr">gid</span>=<span class="string">"media_rw"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">group</span> <span class="attr">gid</span>=<span class="string">"sdcard_rw"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">permission</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">permission</span> <span class="attr">name</span>=<span class="string">"android.permission.ACCESS_MTP"</span> &gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">group</span> <span class="attr">gid</span>=<span class="string">"mtp"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">permission</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">permission</span> <span class="attr">name</span>=<span class="string">"android.permission.NET_ADMIN"</span> &gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">group</span> <span class="attr">gid</span>=<span class="string">"net_admin"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">permission</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- The group that /cache belongs to, linked to the permission</span></span><br><span class="line"><span class="comment">         set on the applications that can access /cache --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">permission</span> <span class="attr">name</span>=<span class="string">"android.permission.ACCESS_CACHE_FILESYSTEM"</span> &gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">group</span> <span class="attr">gid</span>=<span class="string">"cache"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">permission</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- RW permissions to any system resources owned by group 'diag'.</span></span><br><span class="line"><span class="comment">         This is for carrier and manufacture diagnostics tools that must be</span></span><br><span class="line"><span class="comment">         installable from the framework. Be careful. --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">permission</span> <span class="attr">name</span>=<span class="string">"android.permission.DIAGNOSTIC"</span> &gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">group</span> <span class="attr">gid</span>=<span class="string">"input"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">group</span> <span class="attr">gid</span>=<span class="string">"diag"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">permission</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- Group that can read detailed network usage statistics --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">permission</span> <span class="attr">name</span>=<span class="string">"android.permission.READ_NETWORK_USAGE_HISTORY"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">group</span> <span class="attr">gid</span>=<span class="string">"net_bw_stats"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">permission</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- Group that can modify how network statistics are accounted --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">permission</span> <span class="attr">name</span>=<span class="string">"android.permission.MODIFY_NETWORK_ACCOUNTING"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">group</span> <span class="attr">gid</span>=<span class="string">"net_bw_acct"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">permission</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">permission</span> <span class="attr">name</span>=<span class="string">"android.permission.LOOP_RADIO"</span> &gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">group</span> <span class="attr">gid</span>=<span class="string">"loop_radio"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">permission</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- Hotword training apps sometimes need a GID to talk with low-level</span></span><br><span class="line"><span class="comment">         hardware; give them audio for now until full HAL support is added. --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">permission</span> <span class="attr">name</span>=<span class="string">"android.permission.MANAGE_VOICE_KEYPHRASES"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">group</span> <span class="attr">gid</span>=<span class="string">"audio"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">permission</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">permission</span> <span class="attr">name</span>=<span class="string">"android.permission.ACCESS_FM_RADIO"</span> &gt;</span></span><br><span class="line">        <span class="comment">&lt;!-- /dev/fm is gid media, not audio --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">group</span> <span class="attr">gid</span>=<span class="string">"media"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">permission</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- These are permissions that were mapped to gids but we need</span></span><br><span class="line"><span class="comment">         to keep them here until an upgrade from L to the current</span></span><br><span class="line"><span class="comment">         version is to be supported. These permissions are built-in</span></span><br><span class="line"><span class="comment">         and in L were not stored in packages.xml as a result if they</span></span><br><span class="line"><span class="comment">         are not defined here while parsing packages.xml we would</span></span><br><span class="line"><span class="comment">         ignore these permissions being granted to apps and not</span></span><br><span class="line"><span class="comment">         propagate the granted state. From N we are storing the</span></span><br><span class="line"><span class="comment">         built-in permissions in packages.xml as the saved storage</span></span><br><span class="line"><span class="comment">         is negligible (one tag with the permission) compared to</span></span><br><span class="line"><span class="comment">         the fragility as one can remove a built-in permission which</span></span><br><span class="line"><span class="comment">         no longer needs to be mapped to gids and break grant propagation. --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">permission</span> <span class="attr">name</span>=<span class="string">"android.permission.READ_EXTERNAL_STORAGE"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">permission</span> <span class="attr">name</span>=<span class="string">"android.permission.WRITE_EXTERNAL_STORAGE"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- ================================================================== --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- ================================================================== --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- ================================================================== --&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- The following tags are assigning high-level permissions to specific</span></span><br><span class="line"><span class="comment">         user IDs.  These are used to allow specific core system users to</span></span><br><span class="line"><span class="comment">         perform the given operations with the higher-level framework.  For</span></span><br><span class="line"><span class="comment">         example, we give a wide variety of permissions to the shell user</span></span><br><span class="line"><span class="comment">         since that is the user the adb shell runs under and developers and</span></span><br><span class="line"><span class="comment">         others should have a fairly open environment in which to</span></span><br><span class="line"><span class="comment">         interact with the system. --&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">assign-permission</span> <span class="attr">name</span>=<span class="string">"android.permission.MODIFY_AUDIO_SETTINGS"</span> <span class="attr">uid</span>=<span class="string">"media"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">assign-permission</span> <span class="attr">name</span>=<span class="string">"android.permission.ACCESS_SURFACE_FLINGER"</span> <span class="attr">uid</span>=<span class="string">"media"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">assign-permission</span> <span class="attr">name</span>=<span class="string">"android.permission.WAKE_LOCK"</span> <span class="attr">uid</span>=<span class="string">"media"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">assign-permission</span> <span class="attr">name</span>=<span class="string">"android.permission.UPDATE_DEVICE_STATS"</span> <span class="attr">uid</span>=<span class="string">"media"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">assign-permission</span> <span class="attr">name</span>=<span class="string">"android.permission.UPDATE_APP_OPS_STATS"</span> <span class="attr">uid</span>=<span class="string">"media"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">assign-permission</span> <span class="attr">name</span>=<span class="string">"android.permission.GET_PROCESS_STATE_AND_OOM_SCORE"</span> <span class="attr">uid</span>=<span class="string">"media"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">assign-permission</span> <span class="attr">name</span>=<span class="string">"android.permission.MODIFY_AUDIO_SETTINGS"</span> <span class="attr">uid</span>=<span class="string">"audioserver"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">assign-permission</span> <span class="attr">name</span>=<span class="string">"android.permission.ACCESS_SURFACE_FLINGER"</span> <span class="attr">uid</span>=<span class="string">"audioserver"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">assign-permission</span> <span class="attr">name</span>=<span class="string">"android.permission.WAKE_LOCK"</span> <span class="attr">uid</span>=<span class="string">"audioserver"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">assign-permission</span> <span class="attr">name</span>=<span class="string">"android.permission.UPDATE_DEVICE_STATS"</span> <span class="attr">uid</span>=<span class="string">"audioserver"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">assign-permission</span> <span class="attr">name</span>=<span class="string">"android.permission.UPDATE_APP_OPS_STATS"</span> <span class="attr">uid</span>=<span class="string">"audioserver"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">assign-permission</span> <span class="attr">name</span>=<span class="string">"android.permission.MODIFY_AUDIO_SETTINGS"</span> <span class="attr">uid</span>=<span class="string">"cameraserver"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">assign-permission</span> <span class="attr">name</span>=<span class="string">"android.permission.ACCESS_SURFACE_FLINGER"</span> <span class="attr">uid</span>=<span class="string">"cameraserver"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">assign-permission</span> <span class="attr">name</span>=<span class="string">"android.permission.WAKE_LOCK"</span> <span class="attr">uid</span>=<span class="string">"cameraserver"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">assign-permission</span> <span class="attr">name</span>=<span class="string">"android.permission.UPDATE_DEVICE_STATS"</span> <span class="attr">uid</span>=<span class="string">"cameraserver"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">assign-permission</span> <span class="attr">name</span>=<span class="string">"android.permission.UPDATE_APP_OPS_STATS"</span> <span class="attr">uid</span>=<span class="string">"cameraserver"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">assign-permission</span> <span class="attr">name</span>=<span class="string">"android.permission.ACCESS_SURFACE_FLINGER"</span> <span class="attr">uid</span>=<span class="string">"graphics"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- This is a list of all the libraries available for application</span></span><br><span class="line"><span class="comment">         code to link against. --&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">library</span> <span class="attr">name</span>=<span class="string">"android.test.runner"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">file</span>=<span class="string">"/system/framework/android.test.runner.jar"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">library</span> <span class="attr">name</span>=<span class="string">"javax.obex"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">file</span>=<span class="string">"/system/framework/javax.obex.jar"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">library</span> <span class="attr">name</span>=<span class="string">"org.apache.http.legacy"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">file</span>=<span class="string">"/system/framework/org.apache.http.legacy.jar"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- These are the standard packages that are white-listed to always have internet</span></span><br><span class="line"><span class="comment">         access while in power save mode, even if they aren't in the foreground. --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">allow-in-power-save</span> <span class="attr">package</span>=<span class="string">"com.android.providers.downloads"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- These are the standard packages that are white-listed to always have internet</span></span><br><span class="line"><span class="comment">         access while in data mode, even if they aren't in the foreground. --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">allow-in-data-usage-save</span> <span class="attr">package</span>=<span class="string">"com.android.providers.downloads"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- These are the packages that are white-listed to be able to run as system user --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">system-user-whitelisted-app</span> <span class="attr">package</span>=<span class="string">"com.android.settings"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- These are the packages that shouldn't run as system user --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">system-user-blacklisted-app</span> <span class="attr">package</span>=<span class="string">"com.android.wallpaper.livepicker"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">permissions</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这个文件定义了所有权限所属的gid。从里面找一下<code>READ_EXTERNAL_STORAGE</code>权限，emmmm，什么都没做。这是因为6.0之后存储权限变成动态，需要用户确认才可以获取权限，所以这里不作处理。动态权限这部分代码先不分析了，来看一下老版本的文件：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">permission</span> <span class="attr">name</span>=<span class="string">"android.permission.READ_EXTERNAL_STORAGE"</span> &gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">group</span> <span class="attr">gid</span>=<span class="string">"sdcard_r"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">permission</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>那明确了，<code>READ_EXTERNAL_STORAGE</code>权限获取的gid是<code>sdcard_r</code>，然后查看上面的文件定义，对应<code>AID_SDCARD_R</code>，数值是1028。实际上在7.0上得到的是<code>sdcard_rw</code>，即1015。</p>
+<p>PMS在解析每个Permission时会根据这个文件将Permission关联的gid 加入到一个gid的数组中去，从而硬件设备所对应的设备文件就能被该应用程序访问。这块具体代码流程放到下一篇去分析。想自己跟代码的话可以从该函数看起：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">grantRequestedRuntimePermissions</span><span class="params">(PackageParser.Package pkg, <span class="keyword">int</span>[] userIds,</span></span></span><br><span class="line"><span class="function"><span class="params">                                              String[] grantedPermissions)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> userId : userIds) &#123;</span><br><span class="line">        grantRequestedRuntimePermissionsForUser(pkg, userId, grantedPermissions);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// We could have touched GID membership, so flush out packages.list</span></span><br><span class="line">    <span class="keyword">synchronized</span> (mPackages) &#123;</span><br><span class="line">        mSettings.writePackageListLPr();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>回到存储权限，既然系统会根据permission给App添加合适的gid，那么我们在看下内置存储的权限为</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">/sdcard # ls -ld</span><br><span class="line">drwxrwx--x 27 root sdcard_rw 4096 1970-01-01 18:30 .</span><br></pre></td></tr></table></figure>
+<p>所以获得<code>sdcard_rw</code>权限组的应用才可以访问内置存储。</p>
+<p>到此Android权限的底层实现原理简单介绍完了，不过目前这里还留有一个坑，那就是我在测试App里添加STORAGE权限后，安装到设备里，通过查看进程属性，发现：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span> ps | grep softard</span><br><span class="line">u0_a53    3530  638   969076 30720 binder_thr b07244fc S com.softard.test</span><br><span class="line"><span class="meta">#</span> cat /proc/3530/status</span><br><span class="line">Name:	com.softard.test</span><br><span class="line">State:	S (sleeping)</span><br><span class="line">Tgid:	3530</span><br><span class="line">Pid:	3530</span><br><span class="line">PPid:	638</span><br><span class="line">TracerPid:	0</span><br><span class="line">Uid:	10053	10053	10053	10053</span><br><span class="line">Gid:	10053	10053	10053	10053</span><br><span class="line">Ngid:	0</span><br><span class="line">FDSize:	256</span><br><span class="line">Groups:	9997 50053</span><br></pre></td></tr></table></figure>
+<p>Groups没有对应的gid，但是程序的确可以访问<code>/sdcard</code></p>
+<p>然后我又给App系统签名，作为系统应用放进去再看，</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span> ps | grep soft</span><br><span class="line">system    3560  629   985352 49184 SyS_epoll_ abea53b8 S com.softard.test</span><br><span class="line"><span class="meta">#</span> cat /proc/3560/status</span><br><span class="line">Name:	com.softard.test</span><br><span class="line">State:	S (sleeping)</span><br><span class="line">Tgid:	3560</span><br><span class="line">Pid:	3560</span><br><span class="line">PPid:	629</span><br><span class="line">TracerPid:	0</span><br><span class="line">Uid:	1000	1000	1000	1000</span><br><span class="line">Gid:	1000	1000	1000	1000</span><br><span class="line">Ngid:	0</span><br><span class="line">FDSize:	256</span><br><span class="line">Groups:	1000 1007 1010 1015 1021 1023 2002 2950 3001 3002 3003 3009 9997 41000</span><br></pre></td></tr></table></figure>
+<p>这时候Groups有sdcard_rw权限了。然后从设置里手动关掉存储权限，App无法读取文件，再次检查gid发现这个1015依旧存在。</p>
+<p>WTF，7.0的表现跟5.0完全不一样？又是一个坑…后面抽空再填吧…</p>
+<p>行吧，这篇概览就这样了，后面就开始从眼花缭乱的源码角度去看这一切的实现。</p>
+<h1 id="0101-Reference"><a href="#0101-Reference" class="headerlink" title="0101 Reference"></a>0101 Reference</h1><p><a href="https://blog.csdn.net/xiong521hua/article/details/70186065" target="_blank" rel="noopener">Android文件属性的权限和Permission的联系</a></p>
+<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/tbc.png?raw=true" alt=""></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Wossoneri
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://wossoneri.github.io/2019/01/11/[Android][Framework]A-glance-of-Android-permission/" title="[Android][Framework] 全方位理解Android权限之底层实现概览">http://wossoneri.github.io/2019/01/11/[Android][Framework]A-glance-of-Android-permission/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+          
+            <a href="/tags/Framework/" rel="tag"><i class="fa fa-tag"></i> Framework</a>
+          
+            <a href="/tags/permission/" rel="tag"><i class="fa fa-tag"></i> permission</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/04/[Android][Framework]A-wired-bug-related-uri/" rel="next" title="[Android][Framework]记一个Uri相关的奇葩bug">
+                <i class="fa fa-chevron-left"></i> [Android][Framework]记一个Uri相关的奇葩bug
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460" alt="Wossoneri">
+            
+              <p class="site-author-name" itemprop="name">Wossoneri</p>
+              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">103</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">105</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+            <div class="cc-license motion-element" itemprop="license">
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
+              </a>
+            </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-globe"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0000"><span class="nav-number">1.</span> <span class="nav-text">0000</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0001-Overview"><span class="nav-number">2.</span> <span class="nav-text">0001 Overview</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux-File-Permission"><span class="nav-number">2.1.</span> <span class="nav-text">Linux File Permission</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Android-Permission"><span class="nav-number">2.2.</span> <span class="nav-text">Android Permission</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0010-packages-list-amp-packages-xml"><span class="nav-number">3.</span> <span class="nav-text">0010 packages.list &amp; packages.xml</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0011-Android-File-Permission"><span class="nav-number">4.</span> <span class="nav-text">0011 Android File Permission</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#android-filesystem-config-h"><span class="nav-number">4.1.</span> <span class="nav-text">android_filesystem_config.h</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fs-config-c"><span class="nav-number">4.2.</span> <span class="nav-text">fs_config.c</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0100-Android-App-Permission"><span class="nav-number">5.</span> <span class="nav-text">0100 Android App Permission</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0101-Reference"><span class="nav-number">6.</span> <span class="nav-text">0101 Reference</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: '1547206200000', 
+            owner: 'wossoneri',
+            repo: 'wossoneri.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
+            
+                client_id: '40b6c719a11e3fca29e8'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
