@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://wossoneri.github.io/2019/11/05/%5BAndroid%5D%5BFramework%5DAndroidManifest%E8%A7%A3%E6%9E%90/</loc>
+    <lastmod>2019-11-05</lastmod>
+  </url>  <url>
+    <loc>http://wossoneri.github.io/2018/09/15/%5BAndroid%5D%5BFramework%5Dcreate-system-service/</loc>
+    <lastmod>2019-10-16</lastmod>
+  </url>  <url>
+    <loc>http://wossoneri.github.io/2018/05/10/%5BAndroid%5Dhandler-message-delivery/</loc>
+    <lastmod>2019-10-13</lastmod>
+  </url>  <url>
+    <loc>http://wossoneri.github.io/2017/06/19/%5BAndroid%5D%5BFramework%5DPlayAutoInstall/</loc>
+    <lastmod>2019-02-14</lastmod>
+  </url>  <url>
     <loc>http://wossoneri.github.io/2019/01/11/%5BAndroid%5D%5BFramework%5DAndroid-permission-1/</loc>
     <lastmod>2019-01-11</lastmod>
   </url>  <url>
@@ -40,9 +52,6 @@
     <loc>http://wossoneri.github.io/2018/09/21/%5BAndroid%5D%5BFramework%5Dcreate-ota-update-zip/</loc>
     <lastmod>2018-09-21</lastmod>
   </url>  <url>
-    <loc>http://wossoneri.github.io/2018/09/15/%5BAndroid%5D%5BFramework%5Dcreate-system-service/</loc>
-    <lastmod>2018-09-15</lastmod>
-  </url>  <url>
     <loc>http://wossoneri.github.io/2018/04/09/%5BAndroid%5D%5BFramework%5Da-issue-of-SIMToolKit/</loc>
     <lastmod>2018-09-15</lastmod>
   </url>  <url>
@@ -81,12 +90,6 @@
   </url>  <url>
     <loc>http://wossoneri.github.io/2018/05/04/%5BMachineLearning%5Dtesseract-tutorial/</loc>
     <lastmod>2018-05-15</lastmod>
-  </url>  <url>
-    <loc>http://wossoneri.github.io/2018/05/10/%5BAndroid%5Dhandler-message-delivery/</loc>
-    <lastmod>2018-05-15</lastmod>
-  </url>  <url>
-    <loc>http://wossoneri.github.io/2017/06/19/%5BAndroid%5D%5BFramework%5DPlayAutoInstall/</loc>
-    <lastmod>2018-05-09</lastmod>
   </url>  <url>
     <loc>http://wossoneri.github.io/2018/05/08/%5BJava%5DCountDownLatch-and-CyclicBarrier/</loc>
     <lastmod>2018-05-09</lastmod>

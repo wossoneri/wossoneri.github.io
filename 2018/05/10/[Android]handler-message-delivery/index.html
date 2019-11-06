@@ -90,7 +90,7 @@
 <meta property="og:description" content="今天看文章的时候看到一个对Android消息传递机制的描述，回想了一下这块的知识点，感觉有必要再细致地整理一番">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/handler.png?raw=true">
-<meta property="og:updated_time" content="2018-05-15T16:57:49.000Z">
+<meta property="og:updated_time" content="2019-10-13T09:20:18.025Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Android] Handler消息传递机制">
 <meta name="twitter:description" content="今天看文章的时候看到一个对Android消息传递机制的描述，回想了一下这块的知识点，感觉有必要再细致地整理一番">
@@ -402,7 +402,7 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> Handler uiHandler = <span class="keyword">new</span> Handler() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">switch</span> (msg.what) &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            Message msg = uiHandler.obtainMessage();</span><br><span class="line">            msg.what = <span class="number">1</span>;</span><br><span class="line">            uiHandler.sendMessage(msg);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;).start();</span><br></pre></td></tr></table></figure>
 <p>即在主线程中创建Handler接收处理消息，在子线程用handler发送消息。</p>
 <p>上面的Handler是在主线程中创建的，当我们在子线程创建一个Handler时，运行程序会报错：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">java.lang.RuntimeException: Can<span class="string">'t create handler inside thread that has not called Looper.prepare()</span></span><br><span class="line"><span class="string">    at android.os.Handler.&lt;init&gt;(Handler.java:203)</span></span><br><span class="line"><span class="string">	at android.os.Handler.&lt;init&gt;(Handler.java:117)</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">java.lang.RuntimeException: Can<span class="string">'t create handler inside thread that has not called Looper.prepare()</span></span><br><span class="line"><span class="string">  at android.os.Handler.&lt;init&gt;(Handler.java:203)</span></span><br><span class="line"><span class="string">	at android.os.Handler.&lt;init&gt;(Handler.java:117)</span></span><br></pre></td></tr></table></figure>
 <p>这是因为主线程是自带Looper的，而子线程需要我们自己添加Looper。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LooperThread</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</span><br><span class="line">	<span class="keyword">public</span> Handler mHandler;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  		Looper.prepare();</span><br><span class="line"></span><br><span class="line">		mHandler = <span class="keyword">new</span> Handler() &#123;</span><br><span class="line">			<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</span><br><span class="line">			<span class="comment">// process incoming messages here</span></span><br><span class="line">			&#125;</span><br><span class="line">		&#125;;</span><br><span class="line"></span><br><span class="line">		Looper.loop();</span><br><span class="line">      	<span class="comment">// loop就进入死循环，loop之后的代码不会执行，除非loop结束。</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>看到这里，虽然说代码会写，功能会实现，但是很多问题却无法准确回答。</p>
@@ -735,7 +735,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">103</span>
+                  <span class="site-state-item-count">104</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -757,7 +757,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">105</span>
+                  <span class="site-state-item-count">107</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

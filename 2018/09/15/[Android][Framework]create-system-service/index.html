@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Android,Framework,Service,">
+  <meta name="keywords" content="Android,Service,Framework,">
 
 
 
@@ -82,14 +82,14 @@
 
 
 <meta name="description" content="以添加Demo service为例，希望可以通过这个服务获取系统的CPU温度">
-<meta name="keywords" content="Android,Framework,Service">
+<meta name="keywords" content="Android,Service,Framework">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[Android][Framework] 添加系统服务">
 <meta property="og:url" content="http://wossoneri.github.io/2018/09/15/[Android][Framework]create-system-service/index.html">
 <meta property="og:site_name" content="Wossoneri`s Blog">
 <meta property="og:description" content="以添加Demo service为例，希望可以通过这个服务获取系统的CPU温度">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-09-15T10:38:13.197Z">
+<meta property="og:updated_time" content="2019-10-16T15:39:35.665Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Android][Framework] 添加系统服务">
 <meta name="twitter:description" content="以添加Demo service为例，希望可以通过这个服务获取系统的CPU温度">
@@ -415,7 +415,7 @@
 </li>
 <li><p>注册系统服务</p>
 <p>frameworks/base/core/java/android/app/SystemServiceRegistry.java</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">registerService(Context.ORISLINK_SERVICE, DemoManager.class,</span><br><span class="line">    <span class="keyword">new</span> CachedServiceFetcher&lt;DemoManager&gt;() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> DemoManager <span class="title">createService</span><span class="params">(ContextImpl ctx)</span> </span>&#123;</span><br><span class="line">            IBinder b = ServiceManager.getService(Context.DEMO_SERVICE);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> DemoManager(ctx, IDemoManager.Stub.asInterface(b));</span><br><span class="line">&#125;&#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">registerService(Context.DEMO_SERVICE, DemoManager.class,</span><br><span class="line">    <span class="keyword">new</span> CachedServiceFetcher&lt;DemoManager&gt;() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> DemoManager <span class="title">createService</span><span class="params">(ContextImpl ctx)</span> </span>&#123;</span><br><span class="line">            IBinder b = ServiceManager.getService(Context.DEMO_SERVICE);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> DemoManager(ctx, IDemoManager.Stub.asInterface(b));</span><br><span class="line">&#125;&#125;);</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>开机启动服务</p>
 <p>frameworks/base/services/java/com/android/server/SystemServer.java</p>
@@ -504,9 +504,9 @@
           
             <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
           
-            <a href="/tags/Framework/" rel="tag"><i class="fa fa-tag"></i> Framework</a>
-          
             <a href="/tags/Service/" rel="tag"><i class="fa fa-tag"></i> Service</a>
+          
+            <a href="/tags/Framework/" rel="tag"><i class="fa fa-tag"></i> Framework</a>
           
         </div>
       
@@ -608,7 +608,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">103</span>
+                  <span class="site-state-item-count">104</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -630,7 +630,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">105</span>
+                  <span class="site-state-item-count">107</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android,Framework,PMS,PackageParser,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="你知道AndroidManifest.xml是怎么起作用的吗？">
+<meta name="keywords" content="Android,Framework,PMS,PackageParser">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Android][Framework] AndroidManifest的解析">
+<meta property="og:url" content="http://wossoneri.github.io/2019/11/05/[Android][Framework]AndroidManifest解析/index.html">
+<meta property="og:site_name" content="Wossoneri`s Blog">
+<meta property="og:description" content="你知道AndroidManifest.xml是怎么起作用的吗？">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-11-05T10:09:44.145Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[Android][Framework] AndroidManifest的解析">
+<meta name="twitter:description" content="你知道AndroidManifest.xml是怎么起作用的吗？">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '6234852363740382000',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wossoneri.github.io/2019/11/05/[Android][Framework]AndroidManifest解析/">
+
+
+
+
+
+  <title>[Android][Framework] AndroidManifest的解析 | Wossoneri`s Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-70716047-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/wossoneri"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wossoneri`s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2019/11/05/[Android][Framework]AndroidManifest解析/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wossoneri">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wossoneri`s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[Android][Framework] AndroidManifest的解析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-05T18:08:00+08:00">
+                2019-11-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/11/05/[Android][Framework]AndroidManifest解析/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2019/11/05/[Android][Framework]AndroidManifest解析/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+	
+  		  <span class="post-letters-count">
+            &nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+                 <i class="fa fa-clock-o"></i>
+            </span>
+		        <span class="post-meta-item-text">总记</span>
+            <span class="post-count">3,083 字</span>
+		        <span class="post-meta-item-text">读完需要</span>
+    		    <span class="post-count">17 分</span>
+  		  </span>
+           
+         
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  你知道AndroidManifest.xml是怎么起作用的吗？
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="PackageManagerService-之AndroidManifest解析"><a href="#PackageManagerService-之AndroidManifest解析" class="headerlink" title="PackageManagerService 之AndroidManifest解析"></a>PackageManagerService 之AndroidManifest解析</h1><h2 id="前因"><a href="#前因" class="headerlink" title="前因"></a>前因</h2><p>最近遇到一个问题，涉及到一个三方应用在系统中的方向显示。三方应用设置了强制竖屏，我需要将其变成横屏。</p>
+<p>应用设置屏幕方向有两种方式，一种是在Manifest文件里配置：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">android:screenOrientation="portrait"</span><br></pre></td></tr></table></figure>
+<p>另一种是通过接口设置。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">setRequestedOrientation(<span class="keyword">int</span> orientation)</span><br></pre></td></tr></table></figure>
+<p>通过命令查看三方应用的AndroidManifest.xml文件：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">aapt dump xmltree xxxx.apk AndroidManifest.xml</span><br></pre></td></tr></table></figure>
+<p>看到应用是在其AndroidManifest.xml文件中指定了应用的方向。</p>
+<p>所以，要解决这个问题，就涉及到一个知识点：<code>Andriod系统是如何解析AndroidManifest文件的?</code>或者说，<code>AndroidManifest是怎么起作用的?</code></p>
+<h2 id="PMS启动后的部分工作"><a href="#PMS启动后的部分工作" class="headerlink" title="PMS启动后的部分工作"></a>PMS启动后的部分工作</h2><p>PMS启动之后，首先会设置各种要扫描的目录，然后通过<code>scanDirLI</code>方法对一些目录比如<strong>system/app,data/app,vendor/app</strong>进行apk的扫描。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">scanDirLI</span><span class="params">(File dir, <span class="keyword">final</span> <span class="keyword">int</span> parseFlags, <span class="keyword">int</span> scanFlags, <span class="keyword">long</span> currentTime)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> File[] files = dir.listFiles();</span><br><span class="line">        <span class="keyword">for</span> (File file : files) &#123;</span><br><span class="line">            <span class="keyword">final</span> <span class="keyword">boolean</span> isPackage = (isApkFile(file) || file.isDirectory())</span><br><span class="line">                    &amp;&amp; !PackageInstallerService.isStageName(file.getName());</span><br><span class="line">            <span class="keyword">if</span> (!isPackage) &#123;</span><br><span class="line">                <span class="comment">// Ignore entries which are not packages</span></span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">//扫描安装</span></span><br><span class="line">                scanPackageTracedLI(file, parseFlags | PackageParser.PARSE_MUST_BE_APK,</span><br><span class="line">                        scanFlags, currentTime, <span class="keyword">null</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (PackageManagerException e) &#123;</span><br><span class="line">                Slog.w(TAG, <span class="string">"Failed to parse "</span> + file + <span class="string">": "</span> + e.getMessage());</span><br><span class="line"></span><br><span class="line">                <span class="comment">//删除无效应用的用户数据</span></span><br><span class="line">                <span class="keyword">if</span> ((parseFlags &amp; PackageParser.PARSE_IS_SYSTEM) == <span class="number">0</span> &amp;&amp;</span><br><span class="line">                        e.error == PackageManager.INSTALL_FAILED_INVALID_APK) &#123;</span><br><span class="line">                    logCriticalInfo(Log.WARN, <span class="string">"Deleting invalid package at "</span> + file);</span><br><span class="line">                    removeCodePathLI(file);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>其中调用了scanPackageTracedLI方法，其实就是跟踪package扫描：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     *  Traces a package scan.</span></span><br><span class="line"><span class="comment">     *  <span class="doctag">@see</span> #scanPackageLI(File, int, int, long, UserHandle)</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="keyword">private</span> PackageParser.<span class="function">Package <span class="title">scanPackageTracedLI</span><span class="params">(File scanFile, <span class="keyword">final</span> <span class="keyword">int</span> parseFlags,</span></span></span><br><span class="line"><span class="function"><span class="params">                                                  <span class="keyword">int</span> scanFlags, <span class="keyword">long</span> currentTime, UserHandle user)</span> <span class="keyword">throws</span> PackageManagerException </span>&#123;</span><br><span class="line">  Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, <span class="string">"scanPackage"</span>);</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> scanPackageLI(scanFile, parseFlags, scanFlags, currentTime, user);</span><br><span class="line">  &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接着进入</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     *  Traces a package scan.</span></span><br><span class="line"><span class="comment">     *  <span class="doctag">@see</span> #scanPackageLI(File, int, int, long, UserHandle)</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="keyword">private</span> PackageParser.<span class="function">Package <span class="title">scanPackageTracedLI</span><span class="params">(File scanFile, <span class="keyword">final</span> <span class="keyword">int</span> parseFlags,</span></span></span><br><span class="line"><span class="function"><span class="params">                                                  <span class="keyword">int</span> scanFlags, <span class="keyword">long</span> currentTime, UserHandle user)</span> <span class="keyword">throws</span> PackageManagerException </span>&#123;</span><br><span class="line">  Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, <span class="string">"scanPackage"</span>);</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> scanPackageLI(scanFile, parseFlags, scanFlags, currentTime, user);</span><br><span class="line">  &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接着进入scanPackageLI。这个方法有两个实现：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> PackageParser.<span class="function">Package <span class="title">scanPackageLI</span><span class="params">(File scanFile, <span class="keyword">int</span> parseFlags, <span class="keyword">int</span> scanFlags,</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="keyword">long</span> currentTime, UserHandle user)</span></span>;</span><br><span class="line"><span class="keyword">private</span> PackageParser.<span class="function">Package <span class="title">scanPackageLI</span><span class="params">(PackageParser.Package pkg, <span class="keyword">int</span> parseFlags,</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="keyword">int</span> scanFlags, <span class="keyword">long</span> currentTime, UserHandle user)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>两者唯一的区别是签名列表中第一个参数，第一种实现为File类型的对象，而第二种实现为PackageParser.Package类型的对象。在具体解析某个文件时会先调用第一种实现解析apk文件，再调用第二种实现将解析后的信息保存至PMS：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> PackageParser.<span class="function">Package <span class="title">scanPackageLI</span><span class="params">(File scanFile, <span class="keyword">int</span> parseFlags, <span class="keyword">int</span> scanFlags,</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="keyword">long</span> currentTime, UserHandle user)</span> <span class="keyword">throws</span> PackageManagerException </span>&#123;</span><br><span class="line">    <span class="comment">//创建PackageParser</span></span><br><span class="line">    PackageParser pp = <span class="keyword">new</span> PackageParser();</span><br><span class="line">    <span class="keyword">final</span> PackageParser.Package pkg;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">//调用PackageParser的parsePackage方法解析APK文件</span></span><br><span class="line">        pkg = pp.parsePackage(scanFile, parseFlags);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (PackageParserException e) &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//调用该方法的第二种实现，将解析后的信息保存至PMS</span></span><br><span class="line">    PackageParser.Package scannedPkg = scanPackageLI(pkg, parseFlags, scanFlags</span><br><span class="line">            | SCAN_UPDATE_SIGNATURE, currentTime, user);</span><br><span class="line">    <span class="keyword">return</span> scannedPkg;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里就调用到了PackageParser类的parsePackage方法进行对APK的解析。</p>
+<h2 id="PackageParser类"><a href="#PackageParser类" class="headerlink" title="PackageParser类"></a>PackageParser类</h2><p>PackageParser类主要负责对应用AndroidManifest.xml文件的解析工作，所以第一个常亮定义就是：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String ANDROID_MANIFEST_FILENAME = <span class="string">"AndroidManifest.xml"</span>;</span><br></pre></td></tr></table></figure>
+<p>解析AndroidManifest文件需要对不同xml节点分别解析，所以PackageParser部分的结构是如下形式：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PackageParser</span> </span>&#123;</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Component</span>&lt;<span class="title">II</span> <span class="keyword">extends</span> <span class="title">IntentInfo</span>&gt; </span>&#123;&#125;</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Activity</span> <span class="keyword">extends</span> <span class="title">Component</span>&lt;<span class="title">ActivityIntentInfo</span>&gt; </span>&#123;&#125;</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Instrumentation</span> <span class="keyword">extends</span> <span class="title">Component</span>&lt;<span class="title">IntentInfo</span>&gt; </span>&#123;&#125;</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Permission</span> <span class="keyword">extends</span> <span class="title">Component</span>&lt;<span class="title">IntentInfo</span>&gt; </span>&#123;&#125;</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">PermissionGroup</span> <span class="keyword">extends</span> <span class="title">Component</span>&lt;<span class="title">IntentInfo</span>&gt; </span>&#123;&#125;</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Provider</span> <span class="keyword">extends</span> <span class="title">Component</span>&lt;<span class="title">ProviderIntentInfo</span>&gt; </span>&#123;&#125;</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Service</span> <span class="keyword">extends</span> <span class="title">Component</span>&lt;<span class="title">ServiceIntentInfo</span>&gt; </span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，PackageParser为Activity、Service、Provider、Permission等组件在其内部以内部类的方式创建了对应的类，按照解释器模式的定义，这些类其实都对应AndroidManifest.xml文件中的一个标签，其在对该配置文件解析时充分运用了解释器模式分离实现、解释执行的特性。</p>
+<p>好了，前面代码流程PMS走到了parsePackage的地方，这个方法是PackageParser最关键的方法，它的实现如下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Parse the package at the given location. Automatically detects if the</span></span><br><span class="line"><span class="comment">     * package is a monolithic style (single APK file) or cluster style</span></span><br><span class="line"><span class="comment">     * (directory of APKs).</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * This performs sanity checking on cluster style packages, such as</span></span><br><span class="line"><span class="comment">     * requiring identical package name and version codes, a single base APK,</span></span><br><span class="line"><span class="comment">     * and unique split names.</span></span><br><span class="line"><span class="comment">     * &lt;p&gt;</span></span><br><span class="line"><span class="comment">     * Note that this &lt;em&gt;does not&lt;/em&gt; perform signature verification; that</span></span><br><span class="line"><span class="comment">     * must be done separately in &#123;<span class="doctag">@link</span> #collectCertificates(Package, int)&#125;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@see</span> #parsePackageLite(File, int)</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Package <span class="title">parsePackage</span><span class="params">(File packageFile, <span class="keyword">int</span> flags)</span> <span class="keyword">throws</span> PackageParserException </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (packageFile.isDirectory()) &#123;</span><br><span class="line">    <span class="keyword">return</span> parseClusterPackage(packageFile, flags);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> parseMonolithicPackage(packageFile, flags);<span class="comment">//该方法已弃用</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面是parseClusterPackage方法：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * Parse all APKs contained in the given directory, treating them as a</span></span><br><span class="line"><span class="comment">  * single package. This also performs sanity checking, such as requiring</span></span><br><span class="line"><span class="comment">  * identical package name and version codes, a single base APK, and unique</span></span><br><span class="line"><span class="comment">  * split names.</span></span><br><span class="line"><span class="comment">  * &lt;p&gt;</span></span><br><span class="line"><span class="comment">  * Note that this &lt;em&gt;does not&lt;/em&gt; perform signature verification; that</span></span><br><span class="line"><span class="comment">  * must be done separately in &#123;<span class="doctag">@link</span> #collectCertificates(Package, int)&#125;.</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="function"><span class="keyword">private</span> Package <span class="title">parseClusterPackage</span><span class="params">(File packageDir, <span class="keyword">int</span> flags)</span> <span class="keyword">throws</span> PackageParserException </span>&#123;</span><br><span class="line">     <span class="keyword">final</span> PackageLite lite = parseClusterPackageLite(packageDir, <span class="number">0</span>);</span><br><span class="line">	<span class="comment">//...</span></span><br><span class="line">     <span class="keyword">final</span> AssetManager assets = <span class="keyword">new</span> AssetManager();</span><br><span class="line">     <span class="keyword">try</span> &#123;</span><br><span class="line">         <span class="comment">// Load the base and all splits into the AssetManager</span></span><br><span class="line">         <span class="comment">// so that resources can be overriden when parsing the manifests.</span></span><br><span class="line">         loadApkIntoAssetManager(assets, lite.baseCodePath, flags);</span><br><span class="line">			<span class="comment">//...</span></span><br><span class="line">         <span class="keyword">final</span> File baseApk = <span class="keyword">new</span> File(lite.baseCodePath);</span><br><span class="line">         <span class="keyword">final</span> Package pkg = parseBaseApk(baseApk, assets, flags);</span><br><span class="line">			<span class="comment">//...</span></span><br><span class="line">         <span class="keyword">if</span> (!ArrayUtils.isEmpty(lite.splitNames)) &#123;</span><br><span class="line">             <span class="keyword">final</span> <span class="keyword">int</span> num = lite.splitNames.length;</span><br><span class="line">             pkg.splitNames = lite.splitNames;</span><br><span class="line">             pkg.splitCodePaths = lite.splitCodePaths;</span><br><span class="line">             pkg.splitRevisionCodes = lite.splitRevisionCodes;</span><br><span class="line">             pkg.splitFlags = <span class="keyword">new</span> <span class="keyword">int</span>[num];</span><br><span class="line">             pkg.splitPrivateFlags = <span class="keyword">new</span> <span class="keyword">int</span>[num];</span><br><span class="line"></span><br><span class="line">             <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; num; i++) &#123;</span><br><span class="line">                 parseSplitApk(pkg, i, assets, flags);</span><br><span class="line">             &#125;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         pkg.setCodePath(packageDir.getAbsolutePath());</span><br><span class="line">         pkg.setUse32bitAbi(lite.use32bitAbi);</span><br><span class="line">         <span class="keyword">return</span> pkg;</span><br><span class="line">     &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">         IoUtils.closeQuietly(assets);</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>后面是很长的调用路线：</p>
+<p><code>parsePackage-&gt;parseClusterPackage-&gt;parseBaseApk-&gt;parseBaseApkCommon-&gt;parseBaseApkChild-&gt;parseBaseApplication-&gt;parseSplitApk</code></p>
+<p>其中最关键的一个解析方法是<strong>parseBaseApkCommon</strong>方法，这里就对每一个Tag分别调用对应的parse方法。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">  * This is the common parsing routing for handling parent and child</span></span><br><span class="line"><span class="comment">  * packages in a base APK. The difference between parent and child</span></span><br><span class="line"><span class="comment">  * parsing is that some tags are not supported by child packages as</span></span><br><span class="line"><span class="comment">  * well as some manifest attributes are ignored. The implementation</span></span><br><span class="line"><span class="comment">  * assumes the calling code has already handled the manifest tag if needed</span></span><br><span class="line"><span class="comment">  * (this applies to the parent only).</span></span><br><span class="line"><span class="comment">  *</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> pkg The package which to populate</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> acceptedTags Which tags to handle, null to handle all</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> res Resources against which to resolve values</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> parser Parser of the manifest</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> flags Flags about how to parse</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> outError Human readable error if parsing fails</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@return</span> The package if parsing succeeded or null.</span></span><br><span class="line"><span class="comment">  *</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@throws</span> XmlPullParserException</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@throws</span> IOException</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="function"><span class="keyword">private</span> Package <span class="title">parseBaseApkCommon</span><span class="params">(Package pkg, Set&lt;String&gt; acceptedTags, Resources res,</span></span></span><br><span class="line"><span class="function"><span class="params">         XmlResourceParser parser, <span class="keyword">int</span> flags, String[] outError)</span> <span class="keyword">throws</span> XmlPullParserException,</span></span><br><span class="line"><span class="function">         IOException </span>&#123;</span><br><span class="line">     mParseInstrumentationArgs = <span class="keyword">null</span>;</span><br><span class="line">     mParseActivityArgs = <span class="keyword">null</span>;</span><br><span class="line">     mParseServiceArgs = <span class="keyword">null</span>;</span><br><span class="line">     mParseProviderArgs = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">     <span class="keyword">int</span> type;</span><br><span class="line">     <span class="keyword">boolean</span> foundApp = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">     TypedArray sa = res.obtainAttributes(parser,</span><br><span class="line">             com.android.internal.R.styleable.AndroidManifest);</span><br><span class="line"></span><br><span class="line">     String str = sa.getNonConfigurationString(</span><br><span class="line">             com.android.internal.R.styleable.AndroidManifest_sharedUserId, <span class="number">0</span>);</span><br><span class="line">     <span class="keyword">if</span> (str != <span class="keyword">null</span> &amp;&amp; str.length() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">         String nameError = validateName(str, <span class="keyword">true</span>, <span class="keyword">false</span>);</span><br><span class="line">       	<span class="comment">//...</span></span><br><span class="line">         pkg.mSharedUserId = str.intern();</span><br><span class="line">         pkg.mSharedUserLabel = sa.getResourceId(</span><br><span class="line">                 com.android.internal.R.styleable.AndroidManifest_sharedUserLabel, <span class="number">0</span>);</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     pkg.installLocation = sa.getInteger(</span><br><span class="line">             com.android.internal.R.styleable.AndroidManifest_installLocation,</span><br><span class="line">             PARSE_DEFAULT_INSTALL_LOCATION);</span><br><span class="line">     pkg.applicationInfo.installLocation = pkg.installLocation;</span><br><span class="line">	<span class="comment">//...</span></span><br><span class="line">     <span class="comment">// Resource boolean are -1, so 1 means we don't know the value.</span></span><br><span class="line">     <span class="keyword">int</span> supportsSmallScreens = <span class="number">1</span>;</span><br><span class="line">     <span class="keyword">int</span> supportsNormalScreens = <span class="number">1</span>;</span><br><span class="line">     <span class="keyword">int</span> supportsLargeScreens = <span class="number">1</span>;</span><br><span class="line">     <span class="keyword">int</span> supportsXLargeScreens = <span class="number">1</span>;</span><br><span class="line">     <span class="keyword">int</span> resizeable = <span class="number">1</span>;</span><br><span class="line">     <span class="keyword">int</span> anyDensity = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">     <span class="keyword">int</span> outerDepth = parser.getDepth();</span><br><span class="line">     <span class="keyword">while</span> ((type = parser.next()) != XmlPullParser.END_DOCUMENT</span><br><span class="line">             &amp;&amp; (type != XmlPullParser.END_TAG || parser.getDepth() &gt; outerDepth)) &#123;</span><br><span class="line">         <span class="keyword">if</span> (type == XmlPullParser.END_TAG || type == XmlPullParser.TEXT) &#123;</span><br><span class="line">             <span class="keyword">continue</span>;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         String tagName = parser.getName();</span><br><span class="line"></span><br><span class="line">         <span class="keyword">if</span> (acceptedTags != <span class="keyword">null</span> &amp;&amp; !acceptedTags.contains(tagName)) &#123;</span><br><span class="line">             Slog.w(TAG, <span class="string">"Skipping unsupported element under &lt;manifest&gt;: "</span></span><br><span class="line">                     + tagName + <span class="string">" at "</span> + mArchiveSourcePath + <span class="string">" "</span></span><br><span class="line">                     + parser.getPositionDescription());</span><br><span class="line">             XmlUtils.skipCurrentTag(parser);</span><br><span class="line">             <span class="keyword">continue</span>;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         <span class="keyword">if</span> (tagName.equals(TAG_APPLICATION)) &#123;</span><br><span class="line">             <span class="comment">//...</span></span><br><span class="line">             <span class="keyword">if</span> (!parseBaseApplication(pkg, res, parser, flags, outError)) &#123;</span><br><span class="line">                 <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">             &#125;</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tagName.equals(TAG_OVERLAY)) &#123;</span><br><span class="line">             <span class="comment">//...</span></span><br><span class="line">             XmlUtils.skipCurrentTag(parser);</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tagName.equals(TAG_KEY_SETS)) &#123;</span><br><span class="line">             <span class="keyword">if</span> (!parseKeySets(pkg, res, parser, outError)) &#123;</span><br><span class="line">                 <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">             &#125;</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tagName.equals(TAG_PERMISSION_GROUP)) &#123;</span><br><span class="line">             <span class="keyword">if</span> (parsePermissionGroup(pkg, flags, res, parser, outError) == <span class="keyword">null</span>) &#123;</span><br><span class="line">                 <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">             &#125;</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tagName.equals(TAG_PERMISSION)) &#123;</span><br><span class="line">             <span class="keyword">if</span> (parsePermission(pkg, res, parser, outError) == <span class="keyword">null</span>) &#123;</span><br><span class="line">                 <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">             &#125;</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tagName.equals(TAG_PERMISSION_TREE)) &#123;</span><br><span class="line">             <span class="keyword">if</span> (parsePermissionTree(pkg, res, parser, outError) == <span class="keyword">null</span>) &#123;</span><br><span class="line">                 <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">             &#125;</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tagName.equals(TAG_USES_PERMISSION)) &#123;</span><br><span class="line">             <span class="keyword">if</span> (!parseUsesPermission(pkg, res, parser)) &#123;</span><br><span class="line">                 <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">             &#125;</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tagName.equals(TAG_USES_PERMISSION_SDK_M)</span><br><span class="line">                 || tagName.equals(TAG_USES_PERMISSION_SDK_23)) &#123;</span><br><span class="line">             <span class="keyword">if</span> (!parseUsesPermission(pkg, res, parser)) &#123;</span><br><span class="line">                 <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">             &#125;</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tagName.equals(TAG_USES_CONFIGURATION)) &#123;</span><br><span class="line">             <span class="comment">//...</span></span><br><span class="line">             XmlUtils.skipCurrentTag(parser);</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tagName.equals(TAG_USES_FEATURE)) &#123;</span><br><span class="line">             FeatureInfo fi = parseUsesFeature(res, parser);</span><br><span class="line">             pkg.reqFeatures = ArrayUtils.add(pkg.reqFeatures, fi);</span><br><span class="line">					<span class="comment">//...</span></span><br><span class="line">             XmlUtils.skipCurrentTag(parser);</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tagName.equals(TAG_FEATURE_GROUP)) &#123;</span><br><span class="line">             FeatureGroupInfo group = <span class="keyword">new</span> FeatureGroupInfo();</span><br><span class="line">             ArrayList&lt;FeatureInfo&gt; features = <span class="keyword">null</span>;</span><br><span class="line">             <span class="keyword">final</span> <span class="keyword">int</span> innerDepth = parser.getDepth();</span><br><span class="line">             <span class="keyword">while</span> ((type = parser.next()) != XmlPullParser.END_DOCUMENT</span><br><span class="line">                     &amp;&amp; (type != XmlPullParser.END_TAG || parser.getDepth() &gt; innerDepth)) &#123;</span><br><span class="line">                 <span class="keyword">final</span> String innerTagName = parser.getName();</span><br><span class="line">                 <span class="keyword">if</span> (innerTagName.equals(<span class="string">"uses-feature"</span>)) &#123;</span><br><span class="line">                     FeatureInfo featureInfo = parseUsesFeature(res, parser);</span><br><span class="line">									<span class="comment">//...</span></span><br><span class="line">                 &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                     Slog.w(TAG, <span class="string">"Unknown element under &lt;feature-group&gt;: "</span> + innerTagName +</span><br><span class="line">                             <span class="string">" at "</span> + mArchiveSourcePath + <span class="string">" "</span> +</span><br><span class="line">                             parser.getPositionDescription());</span><br><span class="line">                 &#125;</span><br><span class="line">                 XmlUtils.skipCurrentTag(parser);</span><br><span class="line">             &#125;</span><br><span class="line">					<span class="comment">//...</span></span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tagName.equals(TAG_USES_SDK)) &#123;</span><br><span class="line">         		<span class="comment">//...</span></span><br><span class="line">             XmlUtils.skipCurrentTag(parser);</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tagName.equals(TAG_SUPPORT_SCREENS)) &#123;</span><br><span class="line">         		<span class="comment">//...</span></span><br><span class="line">             XmlUtils.skipCurrentTag(parser);</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tagName.equals(TAG_PROTECTED_BROADCAST)) &#123;</span><br><span class="line">         		<span class="comment">//...</span></span><br><span class="line">             XmlUtils.skipCurrentTag(parser);</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tagName.equals(TAG_INSTRUMENTATION)) &#123;</span><br><span class="line">             <span class="keyword">if</span> (parseInstrumentation(pkg, res, parser, outError) == <span class="keyword">null</span>) &#123;</span><br><span class="line">                 <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">             &#125;</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tagName.equals(TAG_ORIGINAL_PACKAGE)) &#123;</span><br><span class="line">         		<span class="comment">//...</span></span><br><span class="line">             XmlUtils.skipCurrentTag(parser);</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tagName.equals(TAG_ADOPT_PERMISSIONS)) &#123;</span><br><span class="line">         		<span class="comment">//...</span></span><br><span class="line">             XmlUtils.skipCurrentTag(parser);</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tagName.equals(TAG_USES_GL_TEXTURE)) &#123;</span><br><span class="line">             <span class="comment">// Just skip this tag</span></span><br><span class="line">             XmlUtils.skipCurrentTag(parser);</span><br><span class="line">             <span class="keyword">continue</span>;</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tagName.equals(TAG_COMPATIBLE_SCREENS)) &#123;</span><br><span class="line">             <span class="comment">// Just skip this tag</span></span><br><span class="line">             XmlUtils.skipCurrentTag(parser);</span><br><span class="line">             <span class="keyword">continue</span>;</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tagName.equals(TAG_SUPPORTS_INPUT)) &#123;<span class="comment">//</span></span><br><span class="line">             XmlUtils.skipCurrentTag(parser);</span><br><span class="line">             <span class="keyword">continue</span>;</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tagName.equals(TAG_EAT_COMMENT)) &#123;</span><br><span class="line">             <span class="comment">// Just skip this tag</span></span><br><span class="line">             XmlUtils.skipCurrentTag(parser);</span><br><span class="line">             <span class="keyword">continue</span>;</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tagName.equals(TAG_PACKAGE)) &#123;</span><br><span class="line">             <span class="keyword">if</span> (!MULTI_PACKAGE_APK_ENABLED) &#123;</span><br><span class="line">                 XmlUtils.skipCurrentTag(parser);</span><br><span class="line">                 <span class="keyword">continue</span>;</span><br><span class="line">             &#125;</span><br><span class="line">             <span class="keyword">if</span> (!parseBaseApkChild(pkg, res, parser, flags, outError)) &#123;</span><br><span class="line">                 <span class="comment">// If parsing a child failed the error is already set</span></span><br><span class="line">                 <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">             &#125;</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (tagName.equals(TAG_RESTRICT_UPDATE)) &#123;</span><br><span class="line">         		<span class="comment">//...</span></span><br><span class="line">             XmlUtils.skipCurrentTag(parser);</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (RIGID_PARSER) &#123;</span><br><span class="line">             outError[<span class="number">0</span>] = <span class="string">"Bad element under &lt;manifest&gt;: "</span></span><br><span class="line">                 + parser.getName();</span><br><span class="line">             mParseError = PackageManager.INSTALL_PARSE_FAILED_MANIFEST_MALFORMED;</span><br><span class="line">             <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">         &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">             Slog.w(TAG, <span class="string">"Unknown element under &lt;manifest&gt;: "</span> + parser.getName()</span><br><span class="line">                     + <span class="string">" at "</span> + mArchiveSourcePath + <span class="string">" "</span></span><br><span class="line">                     + parser.getPositionDescription());</span><br><span class="line">             XmlUtils.skipCurrentTag(parser);</span><br><span class="line">             <span class="keyword">continue</span>;</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     <span class="comment">//...</span></span><br><span class="line">     <span class="keyword">return</span> pkg;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，parsePackage方法的主要作用其实就是对AndroidManifest.xml配置文件中manifest下的每个子节点进行解析，这里主要来看看parseActivity方法是如何对activity节点进行解析的：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Activity <span class="title">parseActivity</span><span class="params">(Package owner, Resources res,</span></span></span><br><span class="line"><span class="function"><span class="params">         XmlResourceParser parser, <span class="keyword">int</span> flags, String[] outError,</span></span></span><br><span class="line"><span class="function"><span class="params">         <span class="keyword">boolean</span> receiver, <span class="keyword">boolean</span> hardwareAccelerated)</span></span></span><br><span class="line"><span class="function">         <span class="keyword">throws</span> XmlPullParserException, IOException </span>&#123;</span><br><span class="line">     TypedArray sa = res.obtainAttributes(parser, R.styleable.AndroidManifestActivity);</span><br><span class="line"></span><br><span class="line">     <span class="keyword">if</span> (mParseActivityArgs == <span class="keyword">null</span>) &#123;</span><br><span class="line">         mParseActivityArgs = <span class="keyword">new</span> ParseComponentArgs(owner, outError,</span><br><span class="line">                 R.styleable.AndroidManifestActivity_name,</span><br><span class="line">                 R.styleable.AndroidManifestActivity_label,</span><br><span class="line">                 R.styleable.AndroidManifestActivity_icon,</span><br><span class="line">                 R.styleable.AndroidManifestActivity_roundIcon,</span><br><span class="line">                 R.styleable.AndroidManifestActivity_logo,</span><br><span class="line">                 R.styleable.AndroidManifestActivity_banner,</span><br><span class="line">                 mSeparateProcesses,</span><br><span class="line">                 R.styleable.AndroidManifestActivity_process,</span><br><span class="line">                 R.styleable.AndroidManifestActivity_description,</span><br><span class="line">                 R.styleable.AndroidManifestActivity_enabled);</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     mParseActivityArgs.tag = receiver ? <span class="string">"&lt;receiver&gt;"</span> : <span class="string">"&lt;activity&gt;"</span>;</span><br><span class="line">     mParseActivityArgs.sa = sa;</span><br><span class="line">     mParseActivityArgs.flags = flags;</span><br><span class="line"></span><br><span class="line">     Activity a = <span class="keyword">new</span> Activity(mParseActivityArgs, <span class="keyword">new</span> ActivityInfo());</span><br><span class="line">     <span class="keyword">if</span> (outError[<span class="number">0</span>] != <span class="keyword">null</span>) &#123;</span><br><span class="line">         sa.recycle();</span><br><span class="line">         <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     <span class="keyword">boolean</span> setExported = sa.hasValue(R.styleable.AndroidManifestActivity_exported);</span><br><span class="line">     <span class="keyword">if</span> (setExported) &#123;</span><br><span class="line">         a.info.exported = sa.getBoolean(R.styleable.AndroidManifestActivity_exported, <span class="keyword">false</span>);</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     a.info.theme = sa.getResourceId(R.styleable.AndroidManifestActivity_theme, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">     a.info.uiOptions = sa.getInt(R.styleable.AndroidManifestActivity_uiOptions,</span><br><span class="line">             a.info.applicationInfo.uiOptions);</span><br><span class="line"></span><br><span class="line">     String parentName = sa.getNonConfigurationString(</span><br><span class="line">             R.styleable.AndroidManifestActivity_parentActivityName,</span><br><span class="line">             Configuration.NATIVE_CONFIG_VERSION);</span><br><span class="line">     <span class="keyword">if</span> (parentName != <span class="keyword">null</span>) &#123;</span><br><span class="line">         String parentClassName = buildClassName(a.info.packageName, parentName, outError);</span><br><span class="line">         <span class="keyword">if</span> (outError[<span class="number">0</span>] == <span class="keyword">null</span>) &#123;</span><br><span class="line">             a.info.parentActivityName = parentClassName;</span><br><span class="line">         &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">             Log.e(TAG, <span class="string">"Activity "</span> + a.info.name + <span class="string">" specified invalid parentActivityName "</span> +</span><br><span class="line">                     parentName);</span><br><span class="line">             outError[<span class="number">0</span>] = <span class="keyword">null</span>;</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     String str;</span><br><span class="line">     str = sa.getNonConfigurationString(R.styleable.AndroidManifestActivity_permission, <span class="number">0</span>);</span><br><span class="line">     <span class="keyword">if</span> (str == <span class="keyword">null</span>) &#123;</span><br><span class="line">         a.info.permission = owner.applicationInfo.permission;</span><br><span class="line">     &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">         a.info.permission = str.length() &gt; <span class="number">0</span> ? str.toString().intern() : <span class="keyword">null</span>;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     str = sa.getNonConfigurationString(</span><br><span class="line">             R.styleable.AndroidManifestActivity_taskAffinity,</span><br><span class="line">             Configuration.NATIVE_CONFIG_VERSION);</span><br><span class="line">     a.info.taskAffinity = buildTaskAffinityName(owner.applicationInfo.packageName,</span><br><span class="line">             owner.applicationInfo.taskAffinity, str, outError);</span><br><span class="line"></span><br><span class="line">     a.info.flags = <span class="number">0</span>;</span><br><span class="line">     <span class="keyword">if</span> (sa.getBoolean(</span><br><span class="line">             R.styleable.AndroidManifestActivity_multiprocess, <span class="keyword">false</span>)) &#123;</span><br><span class="line">         a.info.flags |= ActivityInfo.FLAG_MULTIPROCESS;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     <span class="keyword">if</span> (sa.getBoolean(R.styleable.AndroidManifestActivity_finishOnTaskLaunch, <span class="keyword">false</span>)) &#123;</span><br><span class="line">         a.info.flags |= ActivityInfo.FLAG_FINISH_ON_TASK_LAUNCH;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     <span class="keyword">if</span> (sa.getBoolean(R.styleable.AndroidManifestActivity_clearTaskOnLaunch, <span class="keyword">false</span>)) &#123;</span><br><span class="line">         a.info.flags |= ActivityInfo.FLAG_CLEAR_TASK_ON_LAUNCH;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     <span class="keyword">if</span> (sa.getBoolean(R.styleable.AndroidManifestActivity_noHistory, <span class="keyword">false</span>)) &#123;</span><br><span class="line">         a.info.flags |= ActivityInfo.FLAG_NO_HISTORY;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     <span class="keyword">if</span> (sa.getBoolean(R.styleable.AndroidManifestActivity_alwaysRetainTaskState, <span class="keyword">false</span>)) &#123;</span><br><span class="line">         a.info.flags |= ActivityInfo.FLAG_ALWAYS_RETAIN_TASK_STATE;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     <span class="keyword">if</span> (sa.getBoolean(R.styleable.AndroidManifestActivity_stateNotNeeded, <span class="keyword">false</span>)) &#123;</span><br><span class="line">         a.info.flags |= ActivityInfo.FLAG_STATE_NOT_NEEDED;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     <span class="keyword">if</span> (sa.getBoolean(R.styleable.AndroidManifestActivity_excludeFromRecents, <span class="keyword">false</span>)) &#123;</span><br><span class="line">         a.info.flags |= ActivityInfo.FLAG_EXCLUDE_FROM_RECENTS;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     <span class="keyword">if</span> (sa.getBoolean(R.styleable.AndroidManifestActivity_allowTaskReparenting,</span><br><span class="line">             (owner.applicationInfo.flags&amp;ApplicationInfo.FLAG_ALLOW_TASK_REPARENTING) != <span class="number">0</span>)) &#123;</span><br><span class="line">         a.info.flags |= ActivityInfo.FLAG_ALLOW_TASK_REPARENTING;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     <span class="keyword">if</span> (sa.getBoolean(R.styleable.AndroidManifestActivity_finishOnCloseSystemDialogs, <span class="keyword">false</span>)) &#123;</span><br><span class="line">         a.info.flags |= ActivityInfo.FLAG_FINISH_ON_CLOSE_SYSTEM_DIALOGS;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     <span class="keyword">if</span> (sa.getBoolean(R.styleable.AndroidManifestActivity_showOnLockScreen, <span class="keyword">false</span>)</span><br><span class="line">             || sa.getBoolean(R.styleable.AndroidManifestActivity_showForAllUsers, <span class="keyword">false</span>)) &#123;</span><br><span class="line">         a.info.flags |= ActivityInfo.FLAG_SHOW_FOR_ALL_USERS;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     <span class="keyword">if</span> (sa.getBoolean(R.styleable.AndroidManifestActivity_immersive, <span class="keyword">false</span>)) &#123;</span><br><span class="line">         a.info.flags |= ActivityInfo.FLAG_IMMERSIVE;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     <span class="keyword">if</span> (sa.getBoolean(R.styleable.AndroidManifestActivity_systemUserOnly, <span class="keyword">false</span>)) &#123;</span><br><span class="line">         a.info.flags |= ActivityInfo.FLAG_SYSTEM_USER_ONLY;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     <span class="keyword">if</span> (!receiver) &#123;</span><br><span class="line">         <span class="keyword">if</span> (sa.getBoolean(R.styleable.AndroidManifestActivity_hardwareAccelerated,</span><br><span class="line">                 hardwareAccelerated)) &#123;</span><br><span class="line">             a.info.flags |= ActivityInfo.FLAG_HARDWARE_ACCELERATED;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         a.info.launchMode = sa.getInt(</span><br><span class="line">                 R.styleable.AndroidManifestActivity_launchMode, ActivityInfo.LAUNCH_MULTIPLE);</span><br><span class="line">         a.info.documentLaunchMode = sa.getInt(</span><br><span class="line">                 R.styleable.AndroidManifestActivity_documentLaunchMode,</span><br><span class="line">                 ActivityInfo.DOCUMENT_LAUNCH_NONE);</span><br><span class="line">         a.info.maxRecents = sa.getInt(</span><br><span class="line">                 R.styleable.AndroidManifestActivity_maxRecents,</span><br><span class="line">                 ActivityManager.getDefaultAppRecentsLimitStatic());</span><br><span class="line">         a.info.configChanges = sa.getInt(R.styleable.AndroidManifestActivity_configChanges, <span class="number">0</span>);</span><br><span class="line">         a.info.softInputMode = sa.getInt(</span><br><span class="line">                 R.styleable.AndroidManifestActivity_windowSoftInputMode, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">         a.info.persistableMode = sa.getInteger(</span><br><span class="line">                 R.styleable.AndroidManifestActivity_persistableMode,</span><br><span class="line">                 ActivityInfo.PERSIST_ROOT_ONLY);</span><br><span class="line"></span><br><span class="line">         <span class="keyword">if</span> (sa.getBoolean(R.styleable.AndroidManifestActivity_allowEmbedded, <span class="keyword">false</span>)) &#123;</span><br><span class="line">             a.info.flags |= ActivityInfo.FLAG_ALLOW_EMBEDDED;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         <span class="keyword">if</span> (sa.getBoolean(R.styleable.AndroidManifestActivity_autoRemoveFromRecents, <span class="keyword">false</span>)) &#123;</span><br><span class="line">             a.info.flags |= ActivityInfo.FLAG_AUTO_REMOVE_FROM_RECENTS;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         <span class="keyword">if</span> (sa.getBoolean(R.styleable.AndroidManifestActivity_relinquishTaskIdentity, <span class="keyword">false</span>)) &#123;</span><br><span class="line">             a.info.flags |= ActivityInfo.FLAG_RELINQUISH_TASK_IDENTITY;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         <span class="keyword">if</span> (sa.getBoolean(R.styleable.AndroidManifestActivity_resumeWhilePausing, <span class="keyword">false</span>)) &#123;</span><br><span class="line">             a.info.flags |= ActivityInfo.FLAG_RESUME_WHILE_PAUSING;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         a.info.screenOrientation = sa.getInt(</span><br><span class="line">                 R.styleable.AndroidManifestActivity_screenOrientation,</span><br><span class="line">                 SCREEN_ORIENTATION_UNSPECIFIED);</span><br><span class="line"></span><br><span class="line">         a.info.resizeMode = RESIZE_MODE_UNRESIZEABLE;</span><br><span class="line">         <span class="keyword">final</span> <span class="keyword">boolean</span> appDefault = (owner.applicationInfo.privateFlags</span><br><span class="line">                 &amp; PRIVATE_FLAG_RESIZEABLE_ACTIVITIES) != <span class="number">0</span>;</span><br><span class="line">         <span class="comment">// This flag is used to workaround the issue with ignored resizeableActivity param when</span></span><br><span class="line">         <span class="comment">// either targetSdkVersion is not set at all or &lt;uses-sdk&gt; tag is below &lt;application&gt;</span></span><br><span class="line">         <span class="comment">// tag in AndroidManifest. If this param was explicitly set to 'false' we need to set</span></span><br><span class="line">         <span class="comment">// corresponding resizeMode regardless of targetSdkVersion value at this point in time.</span></span><br><span class="line">         <span class="keyword">final</span> <span class="keyword">boolean</span> resizeableSetExplicitly</span><br><span class="line">                 = sa.hasValue(R.styleable.AndroidManifestActivity_resizeableActivity);</span><br><span class="line">         <span class="keyword">final</span> <span class="keyword">boolean</span> resizeable = sa.getBoolean(</span><br><span class="line">                 R.styleable.AndroidManifestActivity_resizeableActivity, appDefault);</span><br><span class="line"></span><br><span class="line">         <span class="keyword">if</span> (resizeable) &#123;</span><br><span class="line">             <span class="keyword">if</span> (sa.getBoolean(R.styleable.AndroidManifestActivity_supportsPictureInPicture,</span><br><span class="line">                     <span class="keyword">false</span>)) &#123;</span><br><span class="line">                 a.info.resizeMode = RESIZE_MODE_RESIZEABLE_AND_PIPABLE;</span><br><span class="line">             &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                 a.info.resizeMode = RESIZE_MODE_RESIZEABLE;</span><br><span class="line">             &#125;</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (owner.applicationInfo.targetSdkVersion &gt;= Build.VERSION_CODES.N</span><br><span class="line">                 || resizeableSetExplicitly) &#123;</span><br><span class="line">             a.info.resizeMode = RESIZE_MODE_UNRESIZEABLE;</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!a.info.isFixedOrientation() &amp;&amp; (a.info.flags &amp; FLAG_IMMERSIVE) == <span class="number">0</span>) &#123;</span><br><span class="line">             a.info.resizeMode = RESIZE_MODE_FORCE_RESIZEABLE;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         <span class="keyword">if</span> (sa.getBoolean(R.styleable.AndroidManifestActivity_alwaysFocusable, <span class="keyword">false</span>)) &#123;</span><br><span class="line">             a.info.flags |= FLAG_ALWAYS_FOCUSABLE;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         a.info.lockTaskLaunchMode =</span><br><span class="line">                 sa.getInt(R.styleable.AndroidManifestActivity_lockTaskMode, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">         a.info.encryptionAware = a.info.directBootAware = sa.getBoolean(</span><br><span class="line">                 R.styleable.AndroidManifestActivity_directBootAware,</span><br><span class="line">                 <span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line">         a.info.requestedVrComponent =</span><br><span class="line">             sa.getString(R.styleable.AndroidManifestActivity_enableVrMode);</span><br><span class="line">     &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">         a.info.launchMode = ActivityInfo.LAUNCH_MULTIPLE;</span><br><span class="line">         a.info.configChanges = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">         <span class="keyword">if</span> (sa.getBoolean(R.styleable.AndroidManifestActivity_singleUser, <span class="keyword">false</span>)) &#123;</span><br><span class="line">             a.info.flags |= ActivityInfo.FLAG_SINGLE_USER;</span><br><span class="line">             <span class="keyword">if</span> (a.info.exported &amp;&amp; (flags &amp; PARSE_IS_PRIVILEGED) == <span class="number">0</span>) &#123;</span><br><span class="line">                 Slog.w(TAG, <span class="string">"Activity exported request ignored due to singleUser: "</span></span><br><span class="line">                         + a.className + <span class="string">" at "</span> + mArchiveSourcePath + <span class="string">" "</span></span><br><span class="line">                         + parser.getPositionDescription());</span><br><span class="line">                 a.info.exported = <span class="keyword">false</span>;</span><br><span class="line">                 setExported = <span class="keyword">true</span>;</span><br><span class="line">             &#125;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         a.info.encryptionAware = a.info.directBootAware = sa.getBoolean(</span><br><span class="line">                 R.styleable.AndroidManifestActivity_directBootAware,</span><br><span class="line">                 <span class="keyword">false</span>);</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     <span class="keyword">if</span> (a.info.directBootAware) &#123;</span><br><span class="line">         owner.applicationInfo.privateFlags |=</span><br><span class="line">                 ApplicationInfo.PRIVATE_FLAG_PARTIALLY_DIRECT_BOOT_AWARE;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     sa.recycle();</span><br><span class="line"></span><br><span class="line">     <span class="keyword">if</span> (receiver &amp;&amp; (owner.applicationInfo.privateFlags</span><br><span class="line">             &amp;ApplicationInfo.PRIVATE_FLAG_CANT_SAVE_STATE) != <span class="number">0</span>) &#123;</span><br><span class="line">         <span class="comment">// A heavy-weight application can not have receives in its main process</span></span><br><span class="line">         <span class="comment">// We can do direct compare because we intern all strings.</span></span><br><span class="line">         <span class="keyword">if</span> (a.info.processName == owner.packageName) &#123;</span><br><span class="line">             outError[<span class="number">0</span>] = <span class="string">"Heavy-weight applications can not have receivers in main process"</span>;</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     <span class="keyword">if</span> (outError[<span class="number">0</span>] != <span class="keyword">null</span>) &#123;</span><br><span class="line">         <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     <span class="keyword">int</span> outerDepth = parser.getDepth();</span><br><span class="line">     <span class="keyword">int</span> type;</span><br><span class="line">     <span class="keyword">while</span> ((type=parser.next()) != XmlPullParser.END_DOCUMENT</span><br><span class="line">            &amp;&amp; (type != XmlPullParser.END_TAG</span><br><span class="line">                    || parser.getDepth() &gt; outerDepth)) &#123;</span><br><span class="line">         <span class="keyword">if</span> (type == XmlPullParser.END_TAG || type == XmlPullParser.TEXT) &#123;</span><br><span class="line">             <span class="keyword">continue</span>;</span><br><span class="line">         &#125;</span><br><span class="line"></span><br><span class="line">         <span class="keyword">if</span> (parser.getName().equals(<span class="string">"intent-filter"</span>)) &#123;</span><br><span class="line">             ActivityIntentInfo intent = <span class="keyword">new</span> ActivityIntentInfo(a);</span><br><span class="line">             <span class="keyword">if</span> (!parseIntent(res, parser, <span class="keyword">true</span>, <span class="keyword">true</span>, intent, outError)) &#123;</span><br><span class="line">                 <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">             &#125;</span><br><span class="line">             <span class="keyword">if</span> (intent.countActions() == <span class="number">0</span>) &#123;</span><br><span class="line">                 Slog.w(TAG, <span class="string">"No actions in intent filter at "</span></span><br><span class="line">                         + mArchiveSourcePath + <span class="string">" "</span></span><br><span class="line">                         + parser.getPositionDescription());</span><br><span class="line">             &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                 a.intents.add(intent);</span><br><span class="line">             &#125;</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!receiver &amp;&amp; parser.getName().equals(<span class="string">"preferred"</span>)) &#123;</span><br><span class="line">             ActivityIntentInfo intent = <span class="keyword">new</span> ActivityIntentInfo(a);</span><br><span class="line">             <span class="keyword">if</span> (!parseIntent(res, parser, <span class="keyword">false</span>, <span class="keyword">false</span>, intent, outError)) &#123;</span><br><span class="line">                 <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">             &#125;</span><br><span class="line">             <span class="keyword">if</span> (intent.countActions() == <span class="number">0</span>) &#123;</span><br><span class="line">                 Slog.w(TAG, <span class="string">"No actions in preferred at "</span></span><br><span class="line">                         + mArchiveSourcePath + <span class="string">" "</span></span><br><span class="line">                         + parser.getPositionDescription());</span><br><span class="line">             &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                 <span class="keyword">if</span> (owner.preferredActivityFilters == <span class="keyword">null</span>) &#123;</span><br><span class="line">                     owner.preferredActivityFilters = <span class="keyword">new</span> ArrayList&lt;ActivityIntentInfo&gt;();</span><br><span class="line">                 &#125;</span><br><span class="line">                 owner.preferredActivityFilters.add(intent);</span><br><span class="line">             &#125;</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (parser.getName().equals(<span class="string">"meta-data"</span>)) &#123;</span><br><span class="line">             <span class="keyword">if</span> ((a.metaData = parseMetaData(res, parser, a.metaData,</span><br><span class="line">                     outError)) == <span class="keyword">null</span>) &#123;</span><br><span class="line">                 <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">             &#125;</span><br><span class="line">         &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!receiver &amp;&amp; parser.getName().equals(<span class="string">"layout"</span>)) &#123;</span><br><span class="line">             parseLayout(res, parser, a);</span><br><span class="line">         &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">             <span class="keyword">if</span> (!RIGID_PARSER) &#123;</span><br><span class="line">                 Slog.w(TAG, <span class="string">"Problem in package "</span> + mArchiveSourcePath + <span class="string">":"</span>);</span><br><span class="line">                 <span class="keyword">if</span> (receiver) &#123;</span><br><span class="line">                     Slog.w(TAG, <span class="string">"Unknown element under &lt;receiver&gt;: "</span> + parser.getName()</span><br><span class="line">                             + <span class="string">" at "</span> + mArchiveSourcePath + <span class="string">" "</span></span><br><span class="line">                             + parser.getPositionDescription());</span><br><span class="line">                 &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                     Slog.w(TAG, <span class="string">"Unknown element under &lt;activity&gt;: "</span> + parser.getName()</span><br><span class="line">                             + <span class="string">" at "</span> + mArchiveSourcePath + <span class="string">" "</span></span><br><span class="line">                             + parser.getPositionDescription());</span><br><span class="line">                 &#125;</span><br><span class="line">                 XmlUtils.skipCurrentTag(parser);</span><br><span class="line">                 <span class="keyword">continue</span>;</span><br><span class="line">             &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                 <span class="keyword">if</span> (receiver) &#123;</span><br><span class="line">                     outError[<span class="number">0</span>] = <span class="string">"Bad element under &lt;receiver&gt;: "</span> + parser.getName();</span><br><span class="line">                 &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                     outError[<span class="number">0</span>] = <span class="string">"Bad element under &lt;activity&gt;: "</span> + parser.getName();</span><br><span class="line">                 &#125;</span><br><span class="line">                 <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">             &#125;</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     <span class="keyword">if</span> (!setExported) &#123;</span><br><span class="line">         a.info.exported = a.intents.size() &gt; <span class="number">0</span>;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     <span class="keyword">return</span> a;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>综上可以了解到，Android应用的AndroidManifest.xml文件是在PMS启动时，扫描Apk的过程中通过PackageParser对Apk进行解析处理。</p>
+<p>最后，回到开始的问题，我们需要处理的是对应应用的方向，所以在解析Activity的时候，解析到<code>a.info.screenOrientation</code>的时候，根据应用的packageName进行对screenOrientation赋值即可。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Wossoneri
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://wossoneri.github.io/2019/11/05/[Android][Framework]AndroidManifest解析/" title="[Android][Framework] AndroidManifest的解析">http://wossoneri.github.io/2019/11/05/[Android][Framework]AndroidManifest解析/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+          
+            <a href="/tags/Framework/" rel="tag"><i class="fa fa-tag"></i> Framework</a>
+          
+            <a href="/tags/PMS/" rel="tag"><i class="fa fa-tag"></i> PMS</a>
+          
+            <a href="/tags/PackageParser/" rel="tag"><i class="fa fa-tag"></i> PackageParser</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/11/[Android][Framework]Android-permission-1/" rel="next" title="[Android][Framework] 全方位理解Android权限之底层实现概览">
+                <i class="fa fa-chevron-left"></i> [Android][Framework] 全方位理解Android权限之底层实现概览
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460" alt="Wossoneri">
+            
+              <p class="site-author-name" itemprop="name">Wossoneri</p>
+              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">104</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">107</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+            <div class="cc-license motion-element" itemprop="license">
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
+              </a>
+            </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-globe"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#PackageManagerService-之AndroidManifest解析"><span class="nav-number">1.</span> <span class="nav-text">PackageManagerService 之AndroidManifest解析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前因"><span class="nav-number">1.1.</span> <span class="nav-text">前因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PMS启动后的部分工作"><span class="nav-number">1.2.</span> <span class="nav-text">PMS启动后的部分工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PackageParser类"><span class="nav-number">1.3.</span> <span class="nav-text">PackageParser类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">1.4.</span> <span class="nav-text">小结</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: '1572948480000', 
+            owner: 'wossoneri',
+            repo: 'wossoneri.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
+            
+                client_id: '40b6c719a11e3fca29e8'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
