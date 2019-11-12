@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android,Broadcast,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="在Android O遇到了一个广播不响应的问题，印象里Android O的广播系统有一次改动，于是翻了翻文档，做个系统整理。">
+<meta name="keywords" content="Android,Broadcast">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Android] Android O 广播限制">
+<meta property="og:url" content="http://wossoneri.github.io/2019/11/08/[Android][Framework]AndroidO-Broadcast-Limit/index.html">
+<meta property="og:site_name" content="Wossoneri`s Blog">
+<meta property="og:description" content="在Android O遇到了一个广播不响应的问题，印象里Android O的广播系统有一次改动，于是翻了翻文档，做个系统整理。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-11-12T12:10:20.627Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[Android] Android O 广播限制">
+<meta name="twitter:description" content="在Android O遇到了一个广播不响应的问题，印象里Android O的广播系统有一次改动，于是翻了翻文档，做个系统整理。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '6234852363740382000',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wossoneri.github.io/2019/11/08/[Android][Framework]AndroidO-Broadcast-Limit/">
+
+
+
+
+
+  <title>[Android] Android O 广播限制 | Wossoneri`s Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-70716047-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/wossoneri"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wossoneri`s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2019/11/08/[Android][Framework]AndroidO-Broadcast-Limit/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wossoneri">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wossoneri`s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[Android] Android O 广播限制</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-08T22:31:09+08:00">
+                2019-11-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/11/08/[Android][Framework]AndroidO-Broadcast-Limit/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2019/11/08/[Android][Framework]AndroidO-Broadcast-Limit/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+	
+  		  <span class="post-letters-count">
+            &nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+                 <i class="fa fa-clock-o"></i>
+            </span>
+		        <span class="post-meta-item-text">总记</span>
+            <span class="post-count">2,467 字</span>
+		        <span class="post-meta-item-text">读完需要</span>
+    		    <span class="post-count">9 分</span>
+  		  </span>
+           
+         
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  在Android O遇到了一个广播不响应的问题，印象里Android O的广播系统有一次改动，于是翻了翻文档，做个系统整理。
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><p>因为项目需要迁移到8.0平台，发现有一个系统应用打不开，从log发现如下描述：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">BroadcastQueue: Background execution not allowed: receiving Intent &#123;...&#125;</span><br></pre></td></tr></table></figure>
+<p>实际上，在Android O，像下面的隐式广播都不再起作用：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">sendBroadcast(<span class="keyword">new</span> Intent(<span class="string">"this.is.an.implicit.broadcast"</span>));</span><br></pre></td></tr></table></figure>
+<p>通常来讲，这个广播会被所有注册这个action的receiver接收到。即便是在Android O版本，还有两类receiver仍然会接收这个广播：</p>
+<ol>
+<li>targetSdkVersion &lt;= 25的应用</li>
+<li>通过registerReceiver()注册的并有已经启动的进程的应用</li>
+</ol>
+<p>但是通过Manifest文件静态注册的BroadcastReceiver是不会接收这个广播的，反而会打印出一些开头提到的log</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">W/BroadcastQueue: Background execution not allowed: receiving Intent &#123; act=android.intent.action.PACKAGE_REMOVED dat=package:com.commonsware.cwac.cam2.demo flg=0x4000010 (has extras) &#125; to com.commonsware.android.sysevents.pkg/.OnPackageChangeReceiver</span><br></pre></td></tr></table></figure>
+<h1 id="症结"><a href="#症结" class="headerlink" title="症结"></a>症结</h1><p>这个问题看起来可能与电池有关，因为自从Android 6.0中引入Doze模式以来，各种后台处理会引起类似现象。但事实上，电池问题是次要的，真正的原因是进程混乱。</p>
+<p>对此谷歌工程师是这样反馈的：</p>
+<blockquote>
+<p>为了帮助了解发生了什么，我需要澄清一下，此更改的目的并不直接与电池使用有关，而是要解决平台中长期存在的问题：处于内存压力下的设备可能会进入错误的内存抖动状态。这些状态通常是由于广播引起的：某些广播或广播的发送相对频繁，许多应用程序正在通过清单进行监听（因此需要启动以接收它），但是没有足够的RAM来保留所有状态这些应用程序的进程在缓存中进行处理，因此，每次发送广播时，系统最终都会不断地在各个进程中进行跳动。无论设备当前是否已接通电源，这都是一个问题。实际上，这在Android TV设备（始终插上电源）上可能经常会成为问题，因为它们的RAM往往很紧！</p>
+</blockquote>
+<p>这就好理解了，尤其是很多开发者为了唤醒自己的app，注册了非常多的静态广播（我看过喜马拉雅注册了100多个静态广播，毫无下限），每当系统发送一个广播时，就会出现唤醒很多app的情况，又因为系统内存有限，启动一些app后另一些app又被杀掉。这样不仅耗电，还影响使用性能。</p>
+<h1 id="Android-O-广播限制"><a href="#Android-O-广播限制" class="headerlink" title="Android O 广播限制"></a>Android O 广播限制</h1><p>如果应用注册了BroadcastReceiver，则每次发送广播的时候，应用的BroadcastReceiver都会消耗资源。如果多个应用注册了接收基于系统事件的广播，就会出现，触发广播的系统事件会导致所有应用快速的连续消耗资源，从而降低用户体验。为了缓解这个问题，Android N对广播施加了一些限制，而Android O让这些限制更加严格。</p>
+<h2 id="Android-N做的限制"><a href="#Android-N做的限制" class="headerlink" title="Android N做的限制"></a>Android N做的限制</h2><ul>
+<li>Android 7.0 及其更高版本不再接收 <code>CONNECTIVITY_ACTION</code> 的静态广播（在清单注册的receiver）。但是如果是通过 <code>Context.registerReceiver()</code> 注册的动态广播，相关BroadcastReceiver还是可以接收到 <code>CONNECTIVITY_ACTION</code> 广播。</li>
+<li>应用无法再发送或者接收 <code>ACTION_NEW_PICTURE</code> 或 <code>ACTION_NEW_VIDEO</code> 广播了。这项优化影响所有的App，不只是针对Android 7.0。</li>
+</ul>
+<h2 id="Android-O进一步的限制"><a href="#Android-O进一步的限制" class="headerlink" title="Android O进一步的限制"></a>Android O进一步的限制</h2><ul>
+<li><p>在Android 8.0 或更高版本的应用无法继续在其AndroidManifest中为隐式广播注册BroadcastReceiver。 <em>隐式广播</em>是一种不专门针对该应用的广播。 例如，<code>ACTION_PACKAGE_REPLACED</code> 就是一种隐式广播，因为该广播将被发送给所有已注册侦听器，让后者知道设备上的某些软件包已被替换。 不过，<code>ACTION_MY_PACKAGE_REPLACED</code> 不是隐式广播，因为不管已为该广播注册侦听器的其他应用有多少，它都会只被发送给软件包已被替换的应用。</p>
+</li>
+<li><p>应用可以继续在它们的清单中注册显式广播。</p>
+</li>
+<li>应用可以在运行时使用 <code>Context.registerReceiver()</code> 为任意广播（不管是隐式还是显式）注册接收器。</li>
+<li>需要<a href="https://developer.android.com/guide/topics/manifest/permission-element.html#plevel" target="_blank" rel="noopener">签名权限</a>的广播不受此限制所限，因为这些广播只会发送到使用相同证书签名的应用，而不是发送到设备上的所有应用。</li>
+</ul>
+<p>在许多情况下，之前注册隐式广播的应用使用 <code>JobScheduler</code> 作业可以获得类似的功能。 例如，一款社交照片应用可能需要不时地执行数据清理，并且倾向于在设备连接到充电器时执行此操作。 之前，应用已经在清单中为 <code>ACTION_POWER_CONNECTED</code> 注册了一个接收器；当应用接收到该广播时，它会检查清理是否必要。 为了迁移到 Android 8.0 或更高版本，应用将该接收器从其清单中移除。 应用将清理作业安排在设备处于空闲状态和充电时运行。</p>
+<h2 id="例外的隐式广播"><a href="#例外的隐式广播" class="headerlink" title="例外的隐式广播"></a>例外的隐式广播</h2><p>很多隐式广播当前已不受此限制所限。 应用可以继续在其清单中为这些广播注册接收器，不管应用适配哪个 API 级别。 </p>
+<blockquote>
+<p>注意：即使这些隐式广播仍然可以在后台工作，但你应该尽量避免对它们注册监听。</p>
+</blockquote>
+<ul>
+<li><p><strong>ACTION_LOCKED_BOOT_COMPLETED，ACTION_BOOT_COMPLETED</strong></p>
+<p>因为这些广播只在开机时发送一次，并且很多app需要接收这个广播来安排作业等操作。</p>
+</li>
+<li><p><strong>ACTION_USER_INITIALIZE，”android.intent.action.USER_ADDED”，”android.intent.action.USER_REMOVED”</strong></p>
+<p>这些广播被privileged权限所保护，大多数普通app并收不到这些广播。</p>
+</li>
+<li><p><strong>“android.intent.action.TIME_SET”， ACTION_TIMEZONE_CHANGED， ACTION_NEXT_ALARM_CLOCK_CHANGED</strong></p>
+<p>当时间、时区或闹钟有变化时，时钟应用会需要接收这些广播以更新时钟。</p>
+</li>
+<li><p><strong>ACTION_LOCALE_CHANGED</strong></p>
+<p>这个广播只会在定位变化的时候发送，并不会很频繁。有些应用会需要这些定位变化来更新数据。</p>
+</li>
+<li><p><strong>ACTION_USB_ACCESSORY_ATTACHED，ACTION_USB_ACCESSORY_DETACHED，ACTION_USB_DEVICE_ATTACHED，ACTION_USB_DEVICE_DETACHED</strong></p>
+<p>如果应用程序需要了解这些与USB相关的事件，那么除了注册广播之外，目前没有其他好的选择。</p>
+</li>
+<li><p><strong>ACTION_CONNECTION_STATE_CHANGED，ACTION_CONNECTION_STATE_CHANGED，ACTION_ACL_CONNECTED，ACTION_ACL_DISCONNECTED</strong></p>
+<p>如果应用收到这些蓝牙事件的广播，则用户体验不太可能会受到影响。</p>
+</li>
+<li><p><strong>ACTION_CARRIER_CONFIG_CHANGED，TelephonyIntents.ACTION_SUBSCRIPTION_CHANGED，TelephonyIntents.SECRET_CODE_ACTION，ACTION_PHONE_STATE_CHANGED，ACTION_PHONE_ACCOUNT_REGISTERED，ACTION_PHONE_ACCOUNT_UNREGISTERED</strong></p>
+<p>OEM电话应用程序可能需要接收这些广播。</p>
+</li>
+<li><p><strong>LOGIN_ACCOUNTS_CHANGED_ACTION</strong></p>
+<p>一些应用程序需要了解登录帐户的更改，以便它们可以为新帐户和更改的帐户设置计划的操作。</p>
+</li>
+<li><p><strong>ACTION_ACCOUNT_REMOVED</strong></p>
+<p>拥有帐户可见性的应用在删除帐户后会收到此广播。 如果这是应用程序需要执行的唯一帐户更改，则强烈建议应用程序使用此广播，而不要使用不建议使用的<code>LOGIN_ACCOUNTS_CHANGED_ACTION</code>。</p>
+</li>
+<li><p><strong>ACTION_PACKAGE_DATA_CLEARED</strong></p>
+<p>仅当用户从“设置”中明确清除其数据时才发送，因此广播接收器不太可能严重影响用户体验。</p>
+</li>
+<li><p><strong>ACTION_PACKAGE_FULLY_REMOVED</strong></p>
+<p>某些应用可能需要在删除另一个软件包后更新其存储的数据； 对于这些应用，没有什么好办法可以注册此广播。</p>
+<blockquote>
+<p><strong>Note:</strong> <em>其他</em>与包相关的广播（例如，ACTION_PACKAGE_REPLACED）不受新限制。 这些广播非常普遍，因此可能会对性能产生影响，因此将其排除在外。</p>
+</blockquote>
+</li>
+<li><p><strong>ACTION_NEW_OUTGOING_CALL</strong></p>
+<p>响应用户发出呼叫而采取行动的应用需要接收此广播。</p>
+</li>
+<li><p><strong>ACTION_DEVICE_OWNER_CHANGED</strong></p>
+<p>该广播不是经常发送； 一些应用程序需要接收它，以便他们知道设备的安全状态已更改。</p>
+</li>
+<li><p><strong>ACTION_EVENT_REMINDER</strong></p>
+<p>由calendar provider发送，以将事件提醒发布到日历应用程序。 由于日历提供程序不知道日历应用程序是什么，因此此广播必须是隐式的。</p>
+</li>
+<li><p><strong>ACTION_MEDIA_MOUNTED，ACTION_MEDIA_CHECKING，ACTION_MEDIA_UNMOUNTED，ACTION_MEDIA_EJECT，ACTION_MEDIA_UNMOUNTABLE，ACTION_MEDIA_REMOVED，ACTION_MEDIA_BAD_REMOVAL</strong></p>
+<p>这些广播是由于用户与设备的物理交互（安装或删除存储卷）或作为启动初始化的一部分（随着可用卷被挂载）而发送的，因此它们并不常见，通常在用户的控制之下 。</p>
+</li>
+<li><p><strong>SMS_RECEIVED_ACTION，WAP_PUSH_RECEIVED_ACTION</strong></p>
+<p>SMS收件人apps依赖这些广播。</p>
+</li>
+</ul>
+<h1 id="Android-O问题的解决方案"><a href="#Android-O问题的解决方案" class="headerlink" title="Android O问题的解决方案"></a>Android O问题的解决方案</h1><p>检查在应用的清单中定义的BroadcastReceiver。 如果清单里为显式广播声明了接收器，则必须予以替换。 可能的解决方法包括：</p>
+<ul>
+<li><p>通过调用 <code>Context.registerReceiver()</code> 动态创建BroadcastReceiver而不是在清单中声明一个静态的BroadcastReceiver。</p>
+</li>
+<li><p>使用JobSchedular检查条件是否会触发隐式广播。</p>
+</li>
+<li><p>如果在单个进程中使用广播在应用程序组件之间进行通信，请切换为使用LocalBroadcastManager。</p>
+</li>
+<li><p>如果使用广播在自己的多个进程中的应用程序组件之间进行通信，请切换为使用显式广播。</p>
+</li>
+<li><p>如果你想接收系统发送的隐式广播（例如ACTION_PACKAGE_ADDED），建议保持targetSdkVersion为25或更低。</p>
+</li>
+<li><p>如果非要发送隐式广播，则可以通过查找接收方并发送各个显式广播来突破禁令：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sendImplicitBroadcast</span><span class="params">(Context ctxt, Intent i)</span> </span>&#123;</span><br><span class="line">  PackageManager pm=ctxt.getPackageManager();</span><br><span class="line">  List&lt;ResolveInfo&gt; matches=pm.queryBroadcastReceivers(i, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (ResolveInfo resolveInfo : matches) &#123;</span><br><span class="line">    Intent explicit=<span class="keyword">new</span> Intent(i);</span><br><span class="line">    ComponentName cn=</span><br><span class="line">      <span class="keyword">new</span> ComponentName(resolveInfo.activityInfo.applicationInfo.packageName,</span><br><span class="line">        resolveInfo.activityInfo.name);</span><br><span class="line"></span><br><span class="line">    explicit.setComponent(cn);</span><br><span class="line">    ctxt.sendBroadcast(explicit);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>官方文档建议：在大多数情况下，应用都可以使用 <code>JobScheduler</code> 克服这些限制。 这种方法允许应用安排其在未活跃运行时执行工作，不过仍能够使系统可以在不影响用户体验的情况下安排这些作业。 Android 8.0 提供针对 <code>JobScheduler</code> 的多项改进，让用户可以更轻松地使用计划作业取代 Service 和BroadcastReceiver： <a href="https://developer.android.com/about/versions/oreo/android-8.0.html#jobscheduler" target="_blank" rel="noopener">JobScheduler 改进</a>。后面会整理一篇JobScheduler继续跟进这个问题。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://commonsware.com/blog/2017/04/11/android-o-implicit-broadcast-ban.html" target="_blank" rel="noopener">https://commonsware.com/blog/2017/04/11/android-o-implicit-broadcast-ban.html</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Wossoneri
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://wossoneri.github.io/2019/11/08/[Android][Framework]AndroidO-Broadcast-Limit/" title="[Android] Android O 广播限制">http://wossoneri.github.io/2019/11/08/[Android][Framework]AndroidO-Broadcast-Limit/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+          
+            <a href="/tags/Broadcast/" rel="tag"><i class="fa fa-tag"></i> Broadcast</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/11/05/[Android][Framework]HowDoesAndroidManifestWork/" rel="next" title="[Android][Framework] AndroidManifest的解析">
+                <i class="fa fa-chevron-left"></i> [Android][Framework] AndroidManifest的解析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460" alt="Wossoneri">
+            
+              <p class="site-author-name" itemprop="name">Wossoneri</p>
+              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">105</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">108</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+            <div class="cc-license motion-element" itemprop="license">
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
+              </a>
+            </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-globe"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#问题"><span class="nav-number">1.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#症结"><span class="nav-number">2.</span> <span class="nav-text">症结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Android-O-广播限制"><span class="nav-number">3.</span> <span class="nav-text">Android O 广播限制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Android-N做的限制"><span class="nav-number">3.1.</span> <span class="nav-text">Android N做的限制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Android-O进一步的限制"><span class="nav-number">3.2.</span> <span class="nav-text">Android O进一步的限制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#例外的隐式广播"><span class="nav-number">3.3.</span> <span class="nav-text">例外的隐式广播</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Android-O问题的解决方案"><span class="nav-number">4.</span> <span class="nav-text">Android O问题的解决方案</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: '1573223469000', 
+            owner: 'wossoneri',
+            repo: 'wossoneri.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
+            
+                client_id: '40b6c719a11e3fca29e8'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
