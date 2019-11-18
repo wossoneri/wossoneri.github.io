@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android,Framework,permission,AppOps,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="因为东忙西忙没时间整理这一块的东西，拖了有点久，现在继续更新">
+<meta name="keywords" content="Android,Framework,permission,AppOps">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Android][Framework] 全方位理解Android权限之Android权限系统1">
+<meta property="og:url" content="http://wossoneri.github.io/2019/11/17/[Android][Framework]Android-permission-2/index.html">
+<meta property="og:site_name" content="Wossoneri`s Blog">
+<meta property="og:description" content="因为东忙西忙没时间整理这一块的东西，拖了有点久，现在继续更新">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/appops.png?raw=true">
+<meta property="og:updated_time" content="2019-11-18T05:19:16.634Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[Android][Framework] 全方位理解Android权限之Android权限系统1">
+<meta name="twitter:description" content="因为东忙西忙没时间整理这一块的东西，拖了有点久，现在继续更新">
+<meta name="twitter:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/appops.png?raw=true">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '6234852363740382000',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wossoneri.github.io/2019/11/17/[Android][Framework]Android-permission-2/">
+
+
+
+
+
+  <title>[Android][Framework] 全方位理解Android权限之Android权限系统1 | Wossoneri`s Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-70716047-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/wossoneri"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wossoneri`s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2019/11/17/[Android][Framework]Android-permission-2/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wossoneri">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wossoneri`s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[Android][Framework] 全方位理解Android权限之Android权限系统1</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-17T19:30:00+08:00">
+                2019-11-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/11/17/[Android][Framework]Android-permission-2/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2019/11/17/[Android][Framework]Android-permission-2/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+	
+  		  <span class="post-letters-count">
+            &nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+                 <i class="fa fa-clock-o"></i>
+            </span>
+		        <span class="post-meta-item-text">总记</span>
+            <span class="post-count">4,453 字</span>
+		        <span class="post-meta-item-text">读完需要</span>
+    		    <span class="post-count">19 分</span>
+  		  </span>
+           
+         
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  因为东忙西忙没时间整理这一块的东西，拖了有点久，现在继续更新
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>系列目录请点击这里： <a href="http://wossoneri.github.io/2019/01/11/[Android][Framework]Android-permission-1/">全方位理解Android权限</a></p>
+<p>因为东忙西忙没时间整理这一块的东西，拖了有点久，现在继续更新</p>
+<h1 id="权限的性质"><a href="#权限的性质" class="headerlink" title="权限的性质"></a>权限的性质</h1><p>我们知道，Android应用都运行在沙盒中，默认情况下这些应用只能访问他们自己的域，即自己的文件和非常少量的系统服务。为了能够和系统或者其他应用交互，app就需要申请额外的一些权限。</p>
+<p>permission（权限）实际上就是一个简单的字串，申明需要做哪些类型的操作。</p>
+<p>比如文件读权限就是这么一个字串：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.WRITE_EXTERNAL_STORAGE"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String WRITE_EXTERNAL_STORAGE = <span class="string">"android.permission.WRITE_EXTERNAL_STORAGE"</span>;</span><br></pre></td></tr></table></figure>
+<p>Android系统预置了很多这样的权限，可以在官网查看文档：<a href="https://developer.android.com/reference/android/Manifest.permission.html" target="_blank" rel="noopener">Manifest.permission</a>。</p>
+<p>权限的定义是在<code>/frameworks/base/core/res/AndroidManifest.xml</code></p>
+<p>在AOSP的生成目录内<code>./out/target/common/R/android/Manifest.java</code>有对应定义（已删掉部分代码）：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> android;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Manifest</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">permission</span> </span>&#123;</span><br><span class="line">        <span class="meta">@android</span>.annotation.SystemApi</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String ACCESS_CACHE_FILESYSTEM=<span class="string">"android.permission.ACCESS_CACHE_FILESYSTEM"</span>;</span><br><span class="line">        <span class="meta">@android</span>.annotation.SystemApi</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String ACCESS_CHECKIN_PROPERTIES=<span class="string">"android.permission.ACCESS_CHECKIN_PROPERTIES"</span>;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String ACCESS_COARSE_LOCATION=<span class="string">"android.permission.ACCESS_COARSE_LOCATION"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">permission_group</span> </span>&#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String CALENDAR=<span class="string">"android.permission-group.CALENDAR"</span>;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String CAMERA=<span class="string">"android.permission-group.CAMERA"</span>;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String CONTACTS=<span class="string">"android.permission-group.CONTACTS"</span>;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String STORAGE=<span class="string">"android.permission-group.STORAGE"</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>如果要看系统内已知的权限列表，可以使用<code>pm list permissions</code>命令：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> adb shell pm list permissions</span></span><br><span class="line">All Permissions:</span><br><span class="line"></span><br><span class="line">permission:android.permission.REBOOT</span><br><span class="line">permission:android.permission.BIND_VPN_SERVICE</span><br><span class="line">permission:com.google.android.gallery3d.permission.GALLERY_PROVIDER</span><br><span class="line">permission:com.android.launcher3.permission.RECEIVE_LAUNCH_BROADCASTS</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>如果加上<code>-f</code>选项，可以打印出定义权限的package、label、description和protection level。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> adb shell pm list permissions -f</span></span><br><span class="line">All Permissions:</span><br><span class="line"></span><br><span class="line">+ permission:android.permission.REBOOT</span><br><span class="line">  package:android</span><br><span class="line">  label:null</span><br><span class="line">  description:null</span><br><span class="line">  protectionLevel:signature|privileged</span><br><span class="line">+ permission:android.permission.BIND_VPN_SERVICE</span><br><span class="line">  package:android</span><br><span class="line">  label:null</span><br><span class="line">  description:null</span><br><span class="line">  protectionLevel:signature</span><br><span class="line">+ permission:android.permission.GET_PACKAGE_SIZE</span><br><span class="line">  package:android</span><br><span class="line">  label:计算应用存储空间</span><br><span class="line">  description:允许应用检索其代码、数据和缓存大小</span><br><span class="line">  protectionLevel:normal</span><br><span class="line">+ permission:android.permission.BROADCAST_STICKY</span><br><span class="line">  package:android</span><br><span class="line">  label:发送持久广播</span><br><span class="line">  description:允许该应用发送持久广播消息，此类消息在广播结束后仍会保留。过度使用可能会导致手机使用过多内存，从而降低其速度或稳定性。</span><br><span class="line">  protectionLevel:normal</span><br></pre></td></tr></table></figure>
+<p>一般，权限名的前缀是定义它的包名+<code>.permission.</code>。因为内置的权限都定义在<code>android</code>包内，所以系统权限命名都是<code>android.permission.</code>开头。</p>
+<p>比如上面的例子，<strong>REBOOT</strong>和<strong>BIND_VPN_SERVICE</strong>都是系统内部权限，<strong>GALLERY_PROVIDER</strong>是Gallery应用定义的，<strong>RECEIVE_LAUNCH_BROADCASTS</strong>是默认launcher定义的。</p>
+<h1 id="申请权限"><a href="#申请权限" class="headerlink" title="申请权限"></a>申请权限</h1><p>一般权限是在AndroidManifest.xml文件中添加<code>&lt;uses-permission&gt;</code>标签完成，关于AndroidManifest可以参考我前面写的<a href="http://wossoneri.github.io/2019/11/05/[Android][Framework]HowDoesAndroidManifestWork/">AndroidManifest解析流程wossoneri.github.io</a>。当然也可以使用<code>&lt;permission&gt;</code>标签定义新的权限。</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span><br><span class="line"><span class="tag">&lt;<span class="name">manifest</span> <span class="attr">xmlns:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span> <span class="attr">xmlns:tools</span>=<span class="string">"http://schemas.android.com/tools"</span> <span class="attr">package</span>=<span class="string">"com.example.app"</span> <span class="attr">android:versionCode</span>=<span class="string">"1"</span> <span class="attr">android:versionName</span>=<span class="string">"1.0"</span> &gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.INTERNET"</span> /&gt;</span> </span><br><span class="line">  <span class="tag">&lt;<span class="name">uses-permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.WRITE_EXTERNAL_STORAGE"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">application</span> <span class="attr">android:name</span>=<span class="string">"SampleApp"</span> <span class="attr">...</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">application</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">manifest</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h1 id="权限管理"><a href="#权限管理" class="headerlink" title="权限管理"></a>权限管理</h1><p>在应用安装的时候，PackageManagerService就对每个应用授予了权限。package manager管理了一个数据库，用来维护预置或者用户安装的package。维护的内容包括：安装路径，版本号，签名证书，每个package拿到的权限列表和一个在本设备上定义的所有权限列表。</p>
+<blockquote>
+<p>其实pm list permissions命令就是通过package manager查询权限列表的</p>
+</blockquote>
+<p>这个package数据库保存在<em>/data/system/packages.xml</em>路径下，每当有应用安装，更新或者卸载的时候都会更新这个xml文件。</p>
+<p>看一下这个文件是怎么记录爱奇艺HD的：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">package</span> <span class="attr">name</span>=<span class="string">"com.qiyi.video.pad"</span> <span class="attr">codePath</span>=<span class="string">"/system/vendor/app/Aiqiyi"</span> <span class="attr">nativeLibraryPath</span>=<span class="string">"/system/vendor/app/Aiqiyi/lib"</span> <span class="attr">primaryCpuAbi</span>=<span class="string">"armeabi"</span> <span class="attr">publicFlags</span>=<span class="string">"945307205"</span> <span class="attr">privateFlags</span>=<span class="string">"0"</span> <span class="attr">ft</span>=<span class="string">"11e8dc5d800"</span> <span class="attr">it</span>=<span class="string">"11e8dc5d800"</span> <span class="attr">ut</span>=<span class="string">"11e8dc5d800"</span> <span class="attr">version</span>=<span class="string">"80740"</span> <span class="attr">userId</span>=<span class="string">"10031"</span> <span class="attr">isOrphaned</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">sigs</span> <span class="attr">count</span>=<span class="string">"1"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">cert</span> <span class="attr">index</span>=<span class="string">"2"</span> <span class="attr">key</span>=<span class="string">"e700f576394b490f8c2f1708c6040c10a9f337af87"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">sigs</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">perms</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.WRITE_SETTINGS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.MANAGE_ACCOUNTS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.SYSTEM_ALERT_WINDOW"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.CHANGE_NETWORK_STATE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.EXPAND_STATUS_BAR"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"com.android.launcher.permission.UNINSTALL_SHORTCUT"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.BLUETOOTH"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.CHANGE_WIFI_MULTICAST_STATE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.GET_TASKS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.AUTHENTICATE_ACCOUNTS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.INTERNET"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.CHANGE_WIFI_STATE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.ACCESS_NETWORK_STATE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.DISABLE_KEYGUARD"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"baidu.push.permission.WRITE_PUSHINFOPROVIDER.com.qiyi.video.pad"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"com.qiyi.video.pad.permission.MIPUSH_RECEIVE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.VIBRATE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.ACCESS_WIFI_STATE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.REQUEST_INSTALL_PACKAGES"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"com.android.launcher.permission.INSTALL_SHORTCUT"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.WAKE_LOCK"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">perms</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">proper-signing-keyset</span> <span class="attr">identifier</span>=<span class="string">"9"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">package</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这个xml文件还有很多譬如<code>&lt;shared-user&gt;</code>这类标签，这些在后面分析userId的地方再看。现在看一下permission相关的内容。</p>
+<p>每个package都是由一个<code>&lt;package&gt;</code>标签包裹，里面包含了</p>
+<ul>
+<li>分配的UID userId=”10031”</li>
+<li>签名证书 <code>&lt;cert&gt;</code>标签</li>
+<li>分配的权限 在<code>&lt;perm&gt;</code>标签下</li>
+</ul>
+<p>当用代码获取已安装的应用的信息时，得到的就是包含了<code>&lt;package&gt;</code>标签下面所有内容的<em>PackageInfo</em>实例对象。</p>
+<blockquote>
+<p>使用android.content.pm.PackageManager.getPackageInfo()通过代码获取</p>
+</blockquote>
+<h1 id="权限组"><a href="#权限组" class="headerlink" title="权限组"></a>权限组</h1><p>在权限定义文件里会定义权限组，然后在单独的权限中指定该权限属于哪个权限组。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">&lt;!-- Used <span class="keyword">for</span> runtime permissions related to the shared external storage. --&gt;</span><br><span class="line">&lt;permission-group android:name=<span class="string">"android.permission-group.STORAGE"</span></span><br><span class="line">    android:icon=<span class="string">"@drawable/perm_group_storage"</span></span><br><span class="line">    android:label=<span class="string">"@string/permgrouplab_storage"</span></span><br><span class="line">    android:description=<span class="string">"@string/permgroupdesc_storage"</span></span><br><span class="line">    android:priority=<span class="string">"900"</span> /&gt;</span><br><span class="line"></span><br><span class="line">&lt;permission android:name=<span class="string">"android.permission.READ_EXTERNAL_STORAGE"</span></span><br><span class="line">    android:permissionGroup=<span class="string">"android.permission-group.STORAGE"</span></span><br><span class="line">    android:label=<span class="string">"@string/permlab_sdcardRead"</span></span><br><span class="line">    android:description=<span class="string">"@string/permdesc_sdcardRead"</span></span><br><span class="line">    android:protectionLevel=<span class="string">"dangerous"</span> /&gt;</span><br><span class="line"></span><br><span class="line">&lt;permission android:name=<span class="string">"android.permission.WRITE_EXTERNAL_STORAGE"</span></span><br><span class="line">    android:permissionGroup=<span class="string">"android.permission-group.STORAGE"</span></span><br><span class="line">    android:label=<span class="string">"@string/permlab_sdcardWrite"</span></span><br><span class="line">    android:description=<span class="string">"@string/permdesc_sdcardWrite"</span></span><br><span class="line">    android:protectionLevel=<span class="string">"dangerous"</span> /&gt;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果应用没有获得与当前申请的权限在同一权限组的其他权限的授权，那么系统将以这个权限组的描述信息去提示用户，而不是具体申请的权限的描述信息。比如，一个应用申请了READ_CONTACTS权限，系统会提示用户”应用需要访问设备的联系人（包含读写）”，如果用户同意授权，系统只会赋予应用之前申请的权限（在这里就只是READ_CONTACTS）。</li>
+<li>如果应用已经获得了与正在申请的权限同一个权限组的其他权限的授权，那么系统会自动将正在申请的权限授予应用，不需要任何与用户的交互行为。比如，如果一个应用之前已经获得了READ_CONTACTS权限的授权，那么在之后应用请求WRITE_CONTACTS权限时，系统会自动将该权限授予应用。</li>
+</ul>
+<h1 id="权限保护等级ProtectionLevel"><a href="#权限保护等级ProtectionLevel" class="headerlink" title="权限保护等级ProtectionLevel"></a>权限保护等级ProtectionLevel</h1><p>在查看权限定义时<code>frameworks/base/core/res/AndroidManifest.xml</code>，可以看到有一个标签叫做<code>protectionLevel</code>，下面放一个典型例子<strong>SYSTEM_ALERT_WINDOW</strong>的权限定义：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">permission</span> <span class="attr">android:name</span>=<span class="string">"android.permission.SYSTEM_ALERT_WINDOW"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:label</span>=<span class="string">"@string/permlab_systemAlertWindow"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:description</span>=<span class="string">"@string/permdesc_systemAlertWindow"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:protectionLevel</span>=<span class="string">"signature|preinstalled|appop|pre23|development"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+<p><code>protectionLevel</code>是定义权限时的一个重要属性，它表示一个权限的级别，在很大程度上它也决定了一个权限被授权的方式（由系统安装时自动授权或者由用户来决定是否授权）。<br><code>protectionLevel</code>可以分为两类：<strong>基础权限级别</strong>和<strong>附加权限级别</strong>。</p>
+<h2 id="基础权限级别"><a href="#基础权限级别" class="headerlink" title="基础权限级别"></a>基础权限级别</h2><h3 id="normal"><a href="#normal" class="headerlink" title="normal"></a>normal</h3><p>这是个默认值，也就是没有指定<code>protectionLevel</code>的权限默认获得此level。它表示这是一个对系统和其他应用低风险的权限。有该标记的权限是不需要用户确认就可以直接赋予应用程序的。</p>
+<h3 id="dangerous"><a href="#dangerous" class="headerlink" title="dangerous"></a>dangerous</h3><p>较高风险的权限。该标记的权限一般涉及到访问用户的隐私数据或者其他一些控制设备的行为，可能会给用户带来影响。比如<strong>READ_SMS</strong>，读取短消息；比如<strong>CAMERA</strong>，允许使用摄像头。所以系统不会自动授权这类权限，而是会弹出对话框告诉用户，由用户进行选择是否授予权限。</p>
+<h3 id="signature"><a href="#signature" class="headerlink" title="signature"></a>signature</h3><p>如果请求权限的app与声明权限的app签名一致，系统会自动赋予权限，而不会通知用户或者征求用户的同意。 否则需要通过intent将用户引导到权限管理界面由用户决定是否授权。</p>
+<p>这属于最高级的权限等级，因为它需要有加密密钥的拥有权，而这个密钥只有这个app或者系统平台才会拥有。这也就意味着其他人无法随意使用这个权限。系统内置的signature权限一般都是由管理设备的系统App使用，也就是需要系统签名。</p>
+<h3 id="signatureOrSystem"><a href="#signatureOrSystem" class="headerlink" title="signatureOrSystem"></a>signatureOrSystem</h3><p>相当于<code>signature | privileged</code></p>
+<p>这个权限等级有两种应用可以自动获取该类型权限的授权：</p>
+<p>与定义这个权限的apk拥有相同的签名的应用（这一点和Signature类型的权限相同）。</p>
+<p>在/system/priv-app目录下的应用（即拥有超级权限的系统应用）。</p>
+<p>这可以让制造商的预置应用即使没有与该权限一致的签名也可以通过作为系统应用去使用该权限。</p>
+<h2 id="附加权限级别"><a href="#附加权限级别" class="headerlink" title="附加权限级别"></a>附加权限级别</h2><p>除了基础权限级别的其他权限级别都属于附加权限级别。它们必须附加在基础权限级别上使用。从目前系统定义的权限来看，附加权限级别基本都是与signature基础权限级别搭配使用。</p>
+<p>可以理解为附加权限级别是在为signature级别的权限开后门，使signature级别的权限在特定的条件下能够授权给特定类型的应用。</p>
+<ul>
+<li><strong>privileged</strong>：只能与signature同时使用。signature | privileged与<strong>signatureOrSystem</strong>意义相同。</li>
+<li><strong>system</strong>：与privileged相同，是privileged的老版本。</li>
+<li><strong>development</strong>：development applications可以被自动授予此权限。</li>
+<li><strong>appop</strong>：此类权限会与AppOpsManager来配合完成对应用操作的限制（AppOpsManager在后面的小节介绍）。</li>
+<li><strong>pre23</strong>：应用请求此类权限后，系统将在应用安装时自动授权给那些targetSdkVersion在23（Android 6.0）以下的应用。</li>
+<li><strong>installer</strong>：此类权限自动被授权给那些负责安装apk的系统app。</li>
+<li><strong>verifier</strong>：此类权限自动被授权给那些负责验证apk的系统app。</li>
+<li><strong>preinstalled</strong>：此类权限可以自动被授权给任何预安装在system image中的app，不只是privileged app。</li>
+<li><strong>setup</strong>：此类权限自动被授予安装向导app。</li>
+</ul>
+<p>可以通过dumpsys命令查看应用权限授予情况：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> dumpsys package com.xxxx.test</span></span><br><span class="line">requested permissions:</span><br><span class="line">      android.permission.SYSTEM_ALERT_WINDOW</span><br><span class="line">Shared users:</span><br><span class="line">  SharedUser [android.uid.system] (c5f2604):</span><br><span class="line">    userId=1000</span><br><span class="line">    install permissions:</span><br><span class="line">      android.permission.SYSTEM_ALERT_WINDOW: granted=true, flags=[ GRANTED_BY_DEFAULT ]</span><br></pre></td></tr></table></figure>
+<p>所以对于前面提到的<strong>SYSTEM_ALERT_WINDOW</strong>权限，因为其权限类别为：<code>&quot;signature|preinstalled|appop|pre23|development&quot;</code>，所以，如果不是系统应用，也不是预置应用，那么就可以通过把app的targetSdkVersion调至23以下，来默认获得此权限。这里面还有一个appop权限，稍后会介绍这个东西。</p>
+<h1 id="默认授予权限"><a href="#默认授予权限" class="headerlink" title="默认授予权限"></a>默认授予权限</h1><p>前面介绍<code>protectionLevel</code>的时候知道，只要App满足对应权限的保护级别，就可以默认获取对应权限。但是有一个没有提到，就是<strong>dangerous</strong>的权限。</p>
+<p>我们知道，<strong>dangerous</strong>权限是需要用户手动确认的，所以要怎样默认授予其对应权限呢？</p>
+<p>这个涉及到Framework层的修改。Framework中pm目录下有一个专门负责应用权限授予的类：</p>
+<p><em>frameworks/base/services/core/java/com/android/server/pm/DefaultPermissionGrantPolicy.java</em></p>
+<p>里面一个核心方法是<code>grantRuntimePermissionsLPw</code>。这篇主要做介绍，源码分析下一篇再做。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">grantRuntimePermissionsLPw</span><span class="params">(PackageParser.Package pkg, Set&lt;String&gt; permissions, <span class="keyword">boolean</span> systemFixed, <span class="keyword">boolean</span> isDefaultPhoneOrSms, <span class="keyword">int</span> userId)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (pkg.requestedPermissions.isEmpty()) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  List&lt;String&gt; requestedPermissions = pkg.requestedPermissions;</span><br><span class="line">  Set&lt;String&gt; grantablePermissions = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// If this is the default Phone or SMS app we grant permissions regardless</span></span><br><span class="line">  <span class="comment">// whether the version on the system image declares the permission as used since</span></span><br><span class="line">  <span class="comment">// selecting the app as the default Phone or SMS the user makes a deliberate</span></span><br><span class="line">  <span class="comment">// choice to grant this app the permissions needed to function. For all other</span></span><br><span class="line">  <span class="comment">// apps, (default grants on first boot and user creation) we don't grant default</span></span><br><span class="line">  <span class="comment">// permissions if the version on the system image does not declare them.</span></span><br><span class="line">  <span class="keyword">if</span> (!isDefaultPhoneOrSms &amp;&amp; pkg.isUpdatedSystemApp()) &#123;</span><br><span class="line">    PackageSetting sysPs = mService.mSettings.getDisabledSystemPkgLPr(pkg.packageName);</span><br><span class="line">    <span class="keyword">if</span> (sysPs != <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="keyword">if</span> (sysPs.pkg.requestedPermissions.isEmpty()) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (!requestedPermissions.equals(sysPs.pkg.requestedPermissions)) &#123;</span><br><span class="line">        grantablePermissions = <span class="keyword">new</span> ArraySet&lt;&gt;(requestedPermissions);</span><br><span class="line">        requestedPermissions = sysPs.pkg.requestedPermissions;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">final</span> <span class="keyword">int</span> grantablePermissionCount = requestedPermissions.size();</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; grantablePermissionCount; i++) &#123;</span><br><span class="line">    String permission = requestedPermissions.get(i);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// If there is a disabled system app it may request a permission the updated</span></span><br><span class="line">    <span class="comment">// version ot the data partition doesn't, In this case skip the permission.</span></span><br><span class="line">    <span class="keyword">if</span> (grantablePermissions != <span class="keyword">null</span> &amp;&amp; !grantablePermissions.contains(permission)) &#123;</span><br><span class="line">      <span class="keyword">continue</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (permissions.contains(permission)) &#123;</span><br><span class="line">      <span class="keyword">final</span> <span class="keyword">int</span> flags = mService.getPermissionFlags(permission, pkg.packageName, userId);</span><br><span class="line"></span><br><span class="line">      <span class="comment">// If any flags are set to the permission, then it is either set in</span></span><br><span class="line">      <span class="comment">// its current state by the system or device/profile owner or the user.</span></span><br><span class="line">      <span class="comment">// In all these cases we do not want to clobber the current state.</span></span><br><span class="line">      <span class="comment">// Unless the caller wants to override user choices. The override is</span></span><br><span class="line">      <span class="comment">// to make sure we can grant the needed permission to the default</span></span><br><span class="line">      <span class="comment">// sms and phone apps after the user chooses this in the UI.</span></span><br><span class="line">      <span class="keyword">if</span> (flags == <span class="number">0</span> || isDefaultPhoneOrSms) &#123;</span><br><span class="line">        <span class="comment">// Never clobber policy or system.</span></span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> fixedFlags = PackageManager.FLAG_PERMISSION_SYSTEM_FIXED</span><br><span class="line">          | PackageManager.FLAG_PERMISSION_POLICY_FIXED;</span><br><span class="line">        <span class="keyword">if</span> ((flags &amp; fixedFlags) != <span class="number">0</span>) &#123;</span><br><span class="line">          <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        mService.grantRuntimePermission(pkg.packageName, permission, userId);</span><br><span class="line">        <span class="keyword">if</span> (DEBUG) &#123;</span><br><span class="line">          Log.i(TAG, <span class="string">"Granted "</span> + (systemFixed ? <span class="string">"fixed "</span> : <span class="string">"not fixed "</span>)</span><br><span class="line">                + permission + <span class="string">" to default handler "</span> + pkg.packageName);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> newFlags = PackageManager.FLAG_PERMISSION_GRANTED_BY_DEFAULT;</span><br><span class="line">        <span class="keyword">if</span> (systemFixed) &#123;</span><br><span class="line">          newFlags |= PackageManager.FLAG_PERMISSION_SYSTEM_FIXED;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        mService.updatePermissionFlags(permission, pkg.packageName,</span><br><span class="line">                                       newFlags, newFlags, userId);</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="comment">// If a component gets a permission for being the default handler A</span></span><br><span class="line">      <span class="comment">// and also default handler B, we grant the weaker grant form.</span></span><br><span class="line">      <span class="keyword">if</span> ((flags &amp; PackageManager.FLAG_PERMISSION_GRANTED_BY_DEFAULT) != <span class="number">0</span></span><br><span class="line">          &amp;&amp; (flags &amp; PackageManager.FLAG_PERMISSION_SYSTEM_FIXED) != <span class="number">0</span></span><br><span class="line">          &amp;&amp; !systemFixed) &#123;</span><br><span class="line">        <span class="keyword">if</span> (DEBUG) &#123;</span><br><span class="line">          Log.i(TAG, <span class="string">"Granted not fixed "</span> + permission + <span class="string">" to default handler "</span></span><br><span class="line">                + pkg.packageName);</span><br><span class="line">        &#125;</span><br><span class="line">        mService.updatePermissionFlags(permission, pkg.packageName,</span><br><span class="line">                                       PackageManager.FLAG_PERMISSION_SYSTEM_FIXED, <span class="number">0</span>, userId);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="AppOps"><a href="#AppOps" class="headerlink" title="AppOps"></a>AppOps</h1><p>初次接触Appops是因为，现在国内很多App都要过多的权限，比如随便一个App都要访问手机号，不给它权限的话它就退出不让你使用。后来发现，可以通过Appops默默修改权限，比如第一次打开App的时候给它所有权限，然后再用Appops偷偷把权限禁用掉，这样App可以正常打开使用，但它也偷不到对应的信息了。</p>
+<p>它的使用也很简单，一条命令的事情：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">adb shell appops set com.tencent.gamehelper.smoba READ_EXTERNAL_STORAGE ignore</span><br></pre></td></tr></table></figure>
+<p>这样就禁掉了腾讯游戏对设备存储的访问。当然除了这种用法，对于一些特殊权限比如悬浮窗权限的授权也可以使用AppOps来解决。</p>
+<h2 id="AppOps-是什么"><a href="#AppOps-是什么" class="headerlink" title="AppOps 是什么"></a>AppOps 是什么</h2><p>Appops是Application Operations的简称，是关于应用权限管理的一套方案，但这里的应用指的是系统应用，这些API不对第三方应用开放。Google从4.3开始推出Appops, 但一直到最新的Android N都没有在Settings里面开放Appops的入口，但这套方案却一直在后台默默的运行着。</p>
+<p>上面的命令用到了<code>ignore</code>模式，具体在<em>AppOpsManager.java</em>有4种模式定义：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 允许执行相关权限</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MODE_ALLOWED = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 表示当前应用没有此权限，如果尝试使用该权限，就会静态地进入失败状态，出现应用莫名其妙crash。</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MODE_IGNORED = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 表示当前应用没有此权限，并且如果使用此权限会导致SecurityException  </span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MODE_ERRORED = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 表示默认值，应该使用其默认的安全检查。这个模式并不常用，它应该和appop权限一起使用，并且调用者必须显式地检查和使用它</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MODE_DEFAULT = <span class="number">3</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="AppOps工作流程"><a href="#AppOps工作流程" class="headerlink" title="AppOps工作流程"></a>AppOps工作流程</h2><p>Appops工作框架如下</p>
+<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/appops.png?raw=true" alt="appops"></p>
+<p>可以看到Appops的两个重要组成部分是<code>AppOpsManager</code>和<code>AppOpsService</code>,它们是典型的客户端和服务端设计，通过Binder跨进程调用。</p>
+<p><code>AppOpsService</code>是做最终检查的系统服务，它的注册名字是appops，应用可以类似于</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">mAppOps=(AppOpsManager)getContext().getSystemService(Context.APP_OPS_SERVICE);</span><br></pre></td></tr></table></figure>
+<p>的方式来获取这个服务。</p>
+<p><code>AppOpsManager</code>提供了接口，访问AppOpsService的核心方法。</p>
+<p><code>AppOpsService</code>是在AMS构造函数中启动的：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">mAppOpsService = <span class="keyword">new</span> AppOpsService(<span class="keyword">new</span> File(systemDir, <span class="string">"appops.xml"</span>), mHandler);</span><br><span class="line">mAppOpsService.startWatchingMode(AppOpsManager.OP_RUN_IN_BACKGROUND, <span class="keyword">null</span>,</span><br><span class="line">                                 <span class="keyword">new</span> IAppOpsCallback.Stub() &#123;</span><br><span class="line">	<span class="meta">@Override</span> </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">opChanged</span><span class="params">(<span class="keyword">int</span> op, <span class="keyword">int</span> uid, String packageName)</span> </span>&#123;</span><br><span class="line">	  <span class="keyword">if</span> (op == AppOpsManager.OP_RUN_IN_BACKGROUND &amp;&amp; packageName != <span class="keyword">null</span>) &#123;</span><br><span class="line">			<span class="keyword">if</span> (mAppOpsService.checkOperation(op, uid, packageName) </span><br><span class="line">          != AppOpsManager.MODE_ALLOWED) &#123;</span><br><span class="line">				runInBackgroundDisabled(uid);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>从启动来看，该服务创建了一个<code>appops.xml</code>，这个文件最终位于<code>/data/system/</code>目录下，用来存储各个app的权限设置和操作信息。</p>
+<p>我们可以看一下这个文件，以高德导航为例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;pkg n=&quot;com.autonavi.amapauto&quot;&gt;</span><br><span class="line">&lt;uid n=&quot;10033&quot; p=&quot;false&quot;&gt;</span><br><span class="line">&lt;op n=&quot;0&quot; t=&quot;1544544021632&quot; pu=&quot;0&quot; /&gt;</span><br><span class="line">&lt;op n=&quot;1&quot; t=&quot;1544544021448&quot; pu=&quot;0&quot; /&gt;</span><br><span class="line">&lt;op n=&quot;11&quot; m=&quot;1&quot; /&gt;</span><br><span class="line">&lt;op n=&quot;23&quot; r=&quot;1544544022096&quot; /&gt;</span><br><span class="line">&lt;op n=&quot;24&quot; m=&quot;2&quot; r=&quot;1544544006269&quot; /&gt;</span><br><span class="line">&lt;op n=&quot;51&quot; t=&quot;1544547622239&quot; pu=&quot;0&quot; /&gt;</span><br><span class="line">&lt;op n=&quot;59&quot; t=&quot;1544544022123&quot; pu=&quot;0&quot; /&gt;</span><br><span class="line">&lt;op n=&quot;60&quot; t=&quot;1544544022123&quot; pu=&quot;0&quot; /&gt;</span><br><span class="line">&lt;op n=&quot;63&quot; t=&quot;1544549408243&quot; pu=&quot;0&quot; /&gt;</span><br><span class="line">&lt;/uid&gt;</span><br><span class="line">&lt;/pkg&gt;</span><br></pre></td></tr></table></figure>
+<p>然后设置悬浮窗权限</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">adb shell appops set com.autonavi.amapauto SYSTEM_ALERT_WINDOW allow</span><br></pre></td></tr></table></figure>
+<p>再次查看高德导航的权限</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;pkg n=&quot;com.autonavi.amapauto&quot;&gt;</span><br><span class="line">&lt;uid n=&quot;10033&quot; p=&quot;false&quot;&gt;</span><br><span class="line">&lt;op n=&quot;0&quot; t=&quot;1544544021528&quot; pu=&quot;0&quot; /&gt;</span><br><span class="line">&lt;op n=&quot;1&quot; t=&quot;1544544021371&quot; pu=&quot;0&quot; /&gt;</span><br><span class="line">&lt;op n=&quot;11&quot; m=&quot;1&quot; /&gt;</span><br><span class="line">&lt;op n=&quot;23&quot; r=&quot;1544544022000&quot; /&gt;</span><br><span class="line">&lt;op n=&quot;24&quot; m=&quot;0&quot; r=&quot;1544544006269&quot; /&gt;  &lt;----------发生了变化</span><br><span class="line">&lt;op n=&quot;51&quot; t=&quot;1544544022020&quot; pu=&quot;0&quot; /&gt;</span><br><span class="line">&lt;op n=&quot;59&quot; t=&quot;1544544022016&quot; pu=&quot;0&quot; /&gt;</span><br><span class="line">&lt;op n=&quot;60&quot; t=&quot;1544544022016&quot; pu=&quot;0&quot; /&gt;</span><br><span class="line">&lt;op n=&quot;63&quot; t=&quot;1544544362713&quot; pu=&quot;0&quot; /&gt;</span><br><span class="line">&lt;/uid&gt;</span><br><span class="line">&lt;/pkg&gt;</span><br></pre></td></tr></table></figure>
+<p>从上面的定义来看，<code>m=&quot;0&quot;</code>指的是<code>mode=MODE_ALLOWED=0</code>。</p>
+<p>n=”24”指的是</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> OP_SYSTEM_ALERT_WINDOW = <span class="number">24</span>;</span><br></pre></td></tr></table></figure>
+<p>就是定义的悬浮窗权限了。</p>
+<h2 id="Api使用"><a href="#Api使用" class="headerlink" title="Api使用"></a>Api使用</h2><p>AppOpsManager提供标准的API供APP调用，但google有明确说明，大部分只针对系统应用。但是想使用的话，可以尝试把Android源码里AppOpsManager.java打包一下，把jar包导入自己的工程，就可以使用了。</p>
+<p><strong>int checkOp(Stringop, int uid,StringpackageName)</strong></p>
+<p>Op对应一个权限操作，该接口来检测应用是否具有该项操作权限。</p>
+<p><strong>int noteOp(Stringop, int uid,StringpackageName)</strong></p>
+<p>和checkOp基本相同，但是在检验后会做记录。</p>
+<p><strong>int checkOpNoThrow(Stringop, int uid,StringpackageName)</strong></p>
+<p>和checkOp类似，但是权限错误，不会抛出SecurityException，而是返回AppOpsManager.MODE_ERRORED。</p>
+<p><strong>int noteOpNoThrow(Stringop, int uid,StringpackageName)</strong></p>
+<p>类似noteOp，但不会抛出SecurityException。</p>
+<p><strong>void setMode( int code, int uid, String packageName, int mode)</strong></p>
+<p>code代表具体的操作权限，mode代表要更改成的类型（允许/禁止/提示）</p>
+<p>比较关键的就是这个setMode方法，比如通过代码设置悬浮窗权限的话，就需要这样：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">mAppOps = (AppOpsManager) mContext.getSystemService(Context.APP_OPS_SERVICE);</span><br><span class="line">mAppOps.setMode(AppOpsManager.OP_SYSTEM_ALERT_WINDOW, getAppUid(packageGaode), packageGaode, AppOpsManager.MODE_ALLOWED);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">getAppUid</span><span class="params">(String packageName)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">int</span> uid = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    PackageManager pm = mContext.getPackageManager();</span><br><span class="line">    ApplicationInfo ai = pm.getApplicationInfo(packageName, <span class="number">0</span>);</span><br><span class="line">    uid = ai.uid;</span><br><span class="line">  &#125; <span class="keyword">catch</span> (NameNotFoundException e) &#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> uid;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Wossoneri
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://wossoneri.github.io/2019/11/17/[Android][Framework]Android-permission-2/" title="[Android][Framework] 全方位理解Android权限之Android权限系统1">http://wossoneri.github.io/2019/11/17/[Android][Framework]Android-permission-2/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+          
+            <a href="/tags/Framework/" rel="tag"><i class="fa fa-tag"></i> Framework</a>
+          
+            <a href="/tags/permission/" rel="tag"><i class="fa fa-tag"></i> permission</a>
+          
+            <a href="/tags/AppOps/" rel="tag"><i class="fa fa-tag"></i> AppOps</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/11/05/[Android][Framework]HowDoesAndroidManifestWork/" rel="next" title="[Android][Framework] PackageManagerService之AndroidManifest的解析">
+                <i class="fa fa-chevron-left"></i> [Android][Framework] PackageManagerService之AndroidManifest的解析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460" alt="Wossoneri">
+            
+              <p class="site-author-name" itemprop="name">Wossoneri</p>
+              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">107</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">111</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+            <div class="cc-license motion-element" itemprop="license">
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
+              </a>
+            </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-globe"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#权限的性质"><span class="nav-number">1.</span> <span class="nav-text">权限的性质</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#申请权限"><span class="nav-number">2.</span> <span class="nav-text">申请权限</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#权限管理"><span class="nav-number">3.</span> <span class="nav-text">权限管理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#权限组"><span class="nav-number">4.</span> <span class="nav-text">权限组</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#权限保护等级ProtectionLevel"><span class="nav-number">5.</span> <span class="nav-text">权限保护等级ProtectionLevel</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基础权限级别"><span class="nav-number">5.1.</span> <span class="nav-text">基础权限级别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#normal"><span class="nav-number">5.1.1.</span> <span class="nav-text">normal</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dangerous"><span class="nav-number">5.1.2.</span> <span class="nav-text">dangerous</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#signature"><span class="nav-number">5.1.3.</span> <span class="nav-text">signature</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#signatureOrSystem"><span class="nav-number">5.1.4.</span> <span class="nav-text">signatureOrSystem</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#附加权限级别"><span class="nav-number">5.2.</span> <span class="nav-text">附加权限级别</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#默认授予权限"><span class="nav-number">6.</span> <span class="nav-text">默认授予权限</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AppOps"><span class="nav-number">7.</span> <span class="nav-text">AppOps</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#AppOps-是什么"><span class="nav-number">7.1.</span> <span class="nav-text">AppOps 是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AppOps工作流程"><span class="nav-number">7.2.</span> <span class="nav-text">AppOps工作流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Api使用"><span class="nav-number">7.3.</span> <span class="nav-text">Api使用</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: '1573990200000', 
+            owner: 'wossoneri',
+            repo: 'wossoneri.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
+            
+                client_id: '40b6c719a11e3fca29e8'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

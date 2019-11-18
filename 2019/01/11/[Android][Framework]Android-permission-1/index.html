@@ -90,7 +90,7 @@
 <meta property="og:description" content="近期处理了很多Android文件权限相关的问题，遂趁热打铁，将这部分知识整理出来。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/tbc.png?raw=true">
-<meta property="og:updated_time" content="2019-01-11T14:00:04.133Z">
+<meta property="og:updated_time" content="2019-11-15T04:22:09.745Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Android][Framework] 全方位理解Android权限之底层实现概览">
 <meta name="twitter:description" content="近期处理了很多Android文件权限相关的问题，遂趁热打铁，将这部分知识整理出来。">
@@ -363,7 +363,7 @@
                  <i class="fa fa-clock-o"></i>
             </span>
 		        <span class="post-meta-item-text">总记</span>
-            <span class="post-count">6,294 字</span>
+            <span class="post-count">6,308 字</span>
 		        <span class="post-meta-item-text">读完需要</span>
     		    <span class="post-count">33 分</span>
   		  </span>
@@ -393,9 +393,10 @@
       
 
       
-        <h1 id="0000"><a href="#0000" class="headerlink" title="0000"></a>0000</h1><p>这个阶段搞了很多和Android文件权限相关的问题，虽然一知半解，但也算是对Android权限机制有一些自己的理解。遂将这些内容整理出来。因为权限这部分涉及到的内容很多，故将知识分为几块内容分别去整理。目前能想到的概要如下：</p>
+        <h1 id="0000-目录"><a href="#0000-目录" class="headerlink" title="0000 目录"></a>0000 目录</h1><p>这个阶段搞了很多和Android文件权限相关的问题，虽然一知半解，但也算是对Android权限机制有一些自己的理解。遂将这些内容整理出来。因为权限这部分涉及到的内容很多，故将知识分为几块内容分别去整理。目前能想到的概要如下（现在因为进度原因有些修改）：</p>
 <ol>
-<li>Android 权限底层实现原理概述</li>
+<li><a href="http://wossoneri.github.io/2019/01/11/[Android][Framework]Android-permission-1/">Android 权限底层实现原理概述</a></li>
+<li>Android Permissions详解</li>
 <li>Android uid，gid的生成与权限机制的联系</li>
 <li>Android packageManagerService与权限的千丝万缕（源码解析）</li>
 <li>Android 从recovery模式下的OTA升级理解权限</li>
@@ -403,8 +404,7 @@
 <li>Android 签名</li>
 <li>Android 权限大杀器 — Selinux的策略</li>
 </ol>
-<p>这是第一篇。2，3，4已经有一些草稿了，但离发出来还有一些时间。5，6，7还在规划中。可以关注新弄的公众号softard，后面比较完善的文章都会在这个号上及时更新。</p>
-<p>这里再推荐一本书<android security="" internals="">，这也是查资料找到的一本宝贝，非常牛逼。</android></p>
+<p>这是第一篇。2，3，4已经有一些草稿了，但离发出来还有一些时间。5，6，7还在规划中。可以关注新弄的公众号softard，后面比较完善的文章都会在这个号上及时更新。当然一些普通的随笔还是在<a href="wossoneri.github.io">wossoneri.github.io</a>的博客更新。</p>
 <h1 id="0001-Overview"><a href="#0001-Overview" class="headerlink" title="0001 Overview"></a>0001 Overview</h1><h2 id="Linux-File-Permission"><a href="#Linux-File-Permission" class="headerlink" title="Linux File Permission"></a>Linux File Permission</h2><p>众所周知，Android的内核是linux的内核。对于linux来说，系统的一切都是文件。同时，linux为文件系统设计了一套完善的权限机制。下面简单提一下linux文件权限的核心：</p>
 <p>比如在Android手机adb shell下查看一个目录</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> ls -ld data/data/</span></span><br><span class="line">drwxrwx--x 113 system system 4096 1970-01-01 15:08 data/data/</span><br></pre></td></tr></table></figure>
@@ -667,7 +667,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">106</span>
+                  <span class="site-state-item-count">107</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -689,7 +689,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">110</span>
+                  <span class="site-state-item-count">111</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -769,7 +769,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0000"><span class="nav-number">1.</span> <span class="nav-text">0000</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0001-Overview"><span class="nav-number">2.</span> <span class="nav-text">0001 Overview</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux-File-Permission"><span class="nav-number">2.1.</span> <span class="nav-text">Linux File Permission</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Android-Permission"><span class="nav-number">2.2.</span> <span class="nav-text">Android Permission</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0010-packages-list-amp-packages-xml"><span class="nav-number">3.</span> <span class="nav-text">0010 packages.list &amp; packages.xml</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0011-Android-File-Permission"><span class="nav-number">4.</span> <span class="nav-text">0011 Android File Permission</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#android-filesystem-config-h"><span class="nav-number">4.1.</span> <span class="nav-text">android_filesystem_config.h</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fs-config-c"><span class="nav-number">4.2.</span> <span class="nav-text">fs_config.c</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0100-Android-App-Permission"><span class="nav-number">5.</span> <span class="nav-text">0100 Android App Permission</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0101-Reference"><span class="nav-number">6.</span> <span class="nav-text">0101 Reference</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0000-目录"><span class="nav-number">1.</span> <span class="nav-text">0000 目录</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0001-Overview"><span class="nav-number">2.</span> <span class="nav-text">0001 Overview</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux-File-Permission"><span class="nav-number">2.1.</span> <span class="nav-text">Linux File Permission</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Android-Permission"><span class="nav-number">2.2.</span> <span class="nav-text">Android Permission</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0010-packages-list-amp-packages-xml"><span class="nav-number">3.</span> <span class="nav-text">0010 packages.list &amp; packages.xml</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0011-Android-File-Permission"><span class="nav-number">4.</span> <span class="nav-text">0011 Android File Permission</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#android-filesystem-config-h"><span class="nav-number">4.1.</span> <span class="nav-text">android_filesystem_config.h</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fs-config-c"><span class="nav-number">4.2.</span> <span class="nav-text">fs_config.c</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0100-Android-App-Permission"><span class="nav-number">5.</span> <span class="nav-text">0100 Android App Permission</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0101-Reference"><span class="nav-number">6.</span> <span class="nav-text">0101 Reference</span></a></li></ol></div>
             
 
           </div>

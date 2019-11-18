@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Android,Framework,PMS,PackageParser,">
+  <meta name="keywords" content="Android,Framework,PackageManagerService,PackageParser,">
 
 
 
@@ -82,16 +82,16 @@
 
 
 <meta name="description" content="你知道AndroidManifest.xml是怎么起作用的吗？">
-<meta name="keywords" content="Android,Framework,PMS,PackageParser">
+<meta name="keywords" content="Android,Framework,PackageManagerService,PackageParser">
 <meta property="og:type" content="article">
-<meta property="og:title" content="[Android][Framework] AndroidManifest的解析">
+<meta property="og:title" content="[Android][Framework] PackageManagerService之AndroidManifest的解析">
 <meta property="og:url" content="http://wossoneri.github.io/2019/11/05/[Android][Framework]HowDoesAndroidManifestWork/index.html">
 <meta property="og:site_name" content="Wossoneri`s Blog">
 <meta property="og:description" content="你知道AndroidManifest.xml是怎么起作用的吗？">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-11-05T10:09:44.145Z">
+<meta property="og:updated_time" content="2019-11-15T03:52:30.394Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="[Android][Framework] AndroidManifest的解析">
+<meta name="twitter:title" content="[Android][Framework] PackageManagerService之AndroidManifest的解析">
 <meta name="twitter:description" content="你知道AndroidManifest.xml是怎么起作用的吗？">
 
 
@@ -128,7 +128,7 @@
 
 
 
-  <title>[Android][Framework] AndroidManifest的解析 | Wossoneri`s Blog</title>
+  <title>[Android][Framework] PackageManagerService之AndroidManifest的解析 | Wossoneri`s Blog</title>
   
 
 
@@ -292,7 +292,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">[Android][Framework] AndroidManifest的解析</h1>
+          <h1 class="post-title" itemprop="name headline">[Android][Framework] PackageManagerService之AndroidManifest的解析</h1>
         
 
         <div class="post-meta">
@@ -361,7 +361,7 @@
                  <i class="fa fa-clock-o"></i>
             </span>
 		        <span class="post-meta-item-text">总记</span>
-            <span class="post-count">3,083 字</span>
+            <span class="post-count">3,078 字</span>
 		        <span class="post-meta-item-text">读完需要</span>
     		    <span class="post-count">17 分</span>
   		  </span>
@@ -391,7 +391,7 @@
       
 
       
-        <h1 id="PackageManagerService-之AndroidManifest解析"><a href="#PackageManagerService-之AndroidManifest解析" class="headerlink" title="PackageManagerService 之AndroidManifest解析"></a>PackageManagerService 之AndroidManifest解析</h1><h2 id="前因"><a href="#前因" class="headerlink" title="前因"></a>前因</h2><p>最近遇到一个问题，涉及到一个三方应用在系统中的方向显示。三方应用设置了强制竖屏，我需要将其变成横屏。</p>
+        <h2 id="前因"><a href="#前因" class="headerlink" title="前因"></a>前因</h2><p>最近遇到一个问题，涉及到一个三方应用在系统中的方向显示。三方应用设置了强制竖屏，我需要将其变成横屏。</p>
 <p>应用设置屏幕方向有两种方式，一种是在Manifest文件里配置：</p>
 <figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">android:screenOrientation="portrait"</span><br></pre></td></tr></table></figure>
 <p>另一种是通过接口设置。</p>
@@ -477,7 +477,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://wossoneri.github.io/2019/11/05/[Android][Framework]HowDoesAndroidManifestWork/" title="[Android][Framework] AndroidManifest的解析">http://wossoneri.github.io/2019/11/05/[Android][Framework]HowDoesAndroidManifestWork/</a>
+    <a href="http://wossoneri.github.io/2019/11/05/[Android][Framework]HowDoesAndroidManifestWork/" title="[Android][Framework] PackageManagerService之AndroidManifest的解析">http://wossoneri.github.io/2019/11/05/[Android][Framework]HowDoesAndroidManifestWork/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -496,7 +496,7 @@
           
             <a href="/tags/Framework/" rel="tag"><i class="fa fa-tag"></i> Framework</a>
           
-            <a href="/tags/PMS/" rel="tag"><i class="fa fa-tag"></i> PMS</a>
+            <a href="/tags/PackageManagerService/" rel="tag"><i class="fa fa-tag"></i> PackageManagerService</a>
           
             <a href="/tags/PackageParser/" rel="tag"><i class="fa fa-tag"></i> PackageParser</a>
           
@@ -520,6 +520,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/11/17/[Android][Framework]Android-permission-2/" rel="prev" title="[Android][Framework] 全方位理解Android权限之Android权限系统1">
+                [Android][Framework] 全方位理解Android权限之Android权限系统1 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -605,7 +609,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">106</span>
+                  <span class="site-state-item-count">107</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -627,7 +631,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">110</span>
+                  <span class="site-state-item-count">111</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -707,7 +711,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#PackageManagerService-之AndroidManifest解析"><span class="nav-number">1.</span> <span class="nav-text">PackageManagerService 之AndroidManifest解析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前因"><span class="nav-number">1.1.</span> <span class="nav-text">前因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PMS启动后的部分工作"><span class="nav-number">1.2.</span> <span class="nav-text">PMS启动后的部分工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PackageParser类"><span class="nav-number">1.3.</span> <span class="nav-text">PackageParser类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">1.4.</span> <span class="nav-text">小结</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前因"><span class="nav-number">1.</span> <span class="nav-text">前因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PMS启动后的部分工作"><span class="nav-number">2.</span> <span class="nav-text">PMS启动后的部分工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PackageParser类"><span class="nav-number">3.</span> <span class="nav-text">PackageParser类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">4.</span> <span class="nav-text">小结</span></a></li></ol></div>
             
 
           </div>
