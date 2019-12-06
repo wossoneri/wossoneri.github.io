@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="Android,Framework,Activity,">
 
 
 
@@ -81,17 +81,18 @@
 
 
 
-<meta name="description" content="关于Activity回收你要知道的事情 之前分析过一篇:ActivityThread流程wossoneri.github.io，简单了解了从ActivityThread创建到Application的启动流程。 但毕竟Android源码是个大工程，分析流程的时候很多地方不会特别去关注，后来在解决问题的时候又发现一些很有意思的东西，所以拎出来整理一下。 ActivityThread创建之后首先创建Ha">
+<meta name="description" content="你知道Activity是怎么被回收的吗">
+<meta name="keywords" content="Android,Framework,Activity">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Wossoneri`s Blog">
+<meta property="og:title" content="[Android][Framework]关于Activity回收你要知道的事情">
 <meta property="og:url" content="http://wossoneri.github.io/2019/11/18/[Android][Framework]Something-about-activity-recycle/index.html">
 <meta property="og:site_name" content="Wossoneri`s Blog">
-<meta property="og:description" content="关于Activity回收你要知道的事情 之前分析过一篇:ActivityThread流程wossoneri.github.io，简单了解了从ActivityThread创建到Application的启动流程。 但毕竟Android源码是个大工程，分析流程的时候很多地方不会特别去关注，后来在解决问题的时候又发现一些很有意思的东西，所以拎出来整理一下。 ActivityThread创建之后首先创建Ha">
+<meta property="og:description" content="你知道Activity是怎么被回收的吗">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-11-21T12:01:09.526Z">
+<meta property="og:updated_time" content="2019-12-06T04:33:34.915Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Wossoneri`s Blog">
-<meta name="twitter:description" content="关于Activity回收你要知道的事情 之前分析过一篇:ActivityThread流程wossoneri.github.io，简单了解了从ActivityThread创建到Application的启动流程。 但毕竟Android源码是个大工程，分析流程的时候很多地方不会特别去关注，后来在解决问题的时候又发现一些很有意思的东西，所以拎出来整理一下。 ActivityThread创建之后首先创建Ha">
+<meta name="twitter:title" content="[Android][Framework]关于Activity回收你要知道的事情">
+<meta name="twitter:description" content="你知道Activity是怎么被回收的吗">
 
 
 
@@ -127,7 +128,7 @@
 
 
 
-  <title> | Wossoneri`s Blog</title>
+  <title>[Android][Framework]关于Activity回收你要知道的事情 | Wossoneri`s Blog</title>
   
 
 
@@ -291,7 +292,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline"></h1>
+          <h1 class="post-title" itemprop="name headline">[Android][Framework]关于Activity回收你要知道的事情</h1>
         
 
         <div class="post-meta">
@@ -303,7 +304,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-18T16:41:11+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-18T18:31:00+08:00">
                 2019-11-18
               </time>
             
@@ -313,6 +314,28 @@
             
           </span>
 
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -338,9 +361,9 @@
                  <i class="fa fa-clock-o"></i>
             </span>
 		        <span class="post-meta-item-text">总记</span>
-            <span class="post-count">2,496 字</span>
+            <span class="post-count">2,648 字</span>
 		        <span class="post-meta-item-text">读完需要</span>
-    		    <span class="post-count">12 分</span>
+    		    <span class="post-count">13 分</span>
   		  </span>
            
          
@@ -349,6 +372,10 @@
 
           
 
+          
+              <div class="post-description">
+                  你知道Activity是怎么被回收的吗
+              </div>
           
 
         </div>
@@ -364,8 +391,7 @@
       
 
       
-        <p>关于Activity回收你要知道的事情</p>
-<p>之前分析过一篇:<a href="http://wossoneri.github.io/2018/05/17/[Android][Framework]ActivityThread/">ActivityThread流程wossoneri.github.io</a>，简单了解了从ActivityThread创建到Application的启动流程。</p>
+        <p>之前分析过一篇:<a href="http://wossoneri.github.io/2018/05/17/[Android][Framework]ActivityThread/">ActivityThread流程wossoneri.github.io</a>，简单了解了从ActivityThread创建到Application的启动流程。</p>
 <p>但毕竟Android源码是个大工程，分析流程的时候很多地方不会特别去关注，后来在解决问题的时候又发现一些很有意思的东西，所以拎出来整理一下。</p>
 <p>ActivityThread创建之后首先创建Handler和获取Looper，之后就调用了非常重要的attach方法。</p>
 <h3 id="ActivityThread-attach"><a href="#ActivityThread-attach" class="headerlink" title="ActivityThread.attach()"></a>ActivityThread.attach()</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">attach</span><span class="params">(<span class="keyword">boolean</span> system)</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="keyword">final</span> IActivityManager mgr = ActivityManagerNative.getDefault();</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    mgr.attachApplication(mAppThread);</span><br><span class="line">  &#125; <span class="keyword">catch</span> (RemoteException ex) &#123;</span><br><span class="line">    <span class="keyword">throw</span> ex.rethrowFromSystemServer();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// Watch for getting close to heap limit.</span></span><br><span class="line">  <span class="comment">// 这里有一个watcher，上次分析被我忽略了...</span></span><br><span class="line">  BinderInternal.addGcWatcher(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      <span class="keyword">if</span> (!mSomeActivitiesChanged) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      Runtime runtime = Runtime.getRuntime();</span><br><span class="line">      <span class="keyword">long</span> dalvikMax = runtime.maxMemory();</span><br><span class="line">      <span class="keyword">long</span> dalvikUsed = runtime.totalMemory() - runtime.freeMemory();</span><br><span class="line">      <span class="keyword">if</span> (dalvikUsed &gt; ((<span class="number">3</span>*dalvikMax)/<span class="number">4</span>)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (DEBUG_MEMORY_TRIM) Slog.d(TAG, <span class="string">"Dalvik max="</span> + (dalvikMax/<span class="number">1024</span>)</span><br><span class="line">                                      + <span class="string">" total="</span> + (runtime.totalMemory()/<span class="number">1024</span>)</span><br><span class="line">                                      + <span class="string">" used="</span> + (dalvikUsed/<span class="number">1024</span>));</span><br><span class="line">        mSomeActivitiesChanged = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">          mgr.releaseSomeActivities(mAppThread);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (RemoteException e) &#123;</span><br><span class="line">          <span class="keyword">throw</span> e.rethrowFromSystemServer();</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -419,7 +445,12 @@
 <p>StackSupervisor 是什么？可以理解为activity任务栈的管理中心，系统所有应用的activity任务都在此管理.</p>
 <h3 id="ActivityStack-releaseSomeActivitiesLocked"><a href="#ActivityStack-releaseSomeActivitiesLocked" class="headerlink" title="ActivityStack.releaseSomeActivitiesLocked"></a>ActivityStack.releaseSomeActivitiesLocked</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">int</span> <span class="title">releaseSomeActivitiesLocked</span><span class="params">(ProcessRecord app, ArraySet&lt;TaskRecord&gt; tasks,</span></span></span><br><span class="line"><span class="function"><span class="params">                                      String reason)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// Iterate over tasks starting at the back (oldest) first.</span></span><br><span class="line">  <span class="keyword">if</span> (DEBUG_RELEASE) Slog.d(TAG_RELEASE, <span class="string">"Trying to release some activities in "</span> + app);</span><br><span class="line">  <span class="keyword">int</span> maxTasks = tasks.size() / <span class="number">4</span>;</span><br><span class="line">  <span class="keyword">if</span> (maxTasks &lt; <span class="number">1</span>) &#123;</span><br><span class="line">    maxTasks = <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">int</span> numReleased = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> taskNdx = <span class="number">0</span>; taskNdx &lt; mTaskHistory.size() &amp;&amp; maxTasks &gt; <span class="number">0</span>; taskNdx++) &#123;</span><br><span class="line">    <span class="keyword">final</span> TaskRecord task = mTaskHistory.get(taskNdx);</span><br><span class="line">    <span class="keyword">if</span> (!tasks.contains(task)) &#123;</span><br><span class="line">      <span class="keyword">continue</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (DEBUG_RELEASE) Slog.d(TAG_RELEASE, <span class="string">"Looking for activities to release in "</span> + task);</span><br><span class="line">    <span class="keyword">int</span> curNum = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">final</span> ArrayList&lt;ActivityRecord&gt; activities = task.mActivities;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> actNdx = <span class="number">0</span>; actNdx &lt; activities.size(); actNdx++) &#123;</span><br><span class="line">      <span class="keyword">final</span> ActivityRecord activity = activities.get(actNdx);</span><br><span class="line">      <span class="keyword">if</span> (activity.app == app &amp;&amp; activity.isDestroyable()) &#123;</span><br><span class="line">        <span class="keyword">if</span> (DEBUG_RELEASE) Slog.v(TAG_RELEASE, <span class="string">"Destroying "</span> + activity</span><br><span class="line">             + <span class="string">" in state "</span> + activity.state + <span class="string">" resumed="</span> + mResumedActivity</span><br><span class="line">             + <span class="string">" pausing="</span> + mPausingActivity + <span class="string">" for reason "</span> + reason);</span><br><span class="line">        destroyActivityLocked(activity, <span class="keyword">true</span>, reason);</span><br><span class="line">        <span class="keyword">if</span> (activities.get(actNdx) != activity) &#123;</span><br><span class="line">          <span class="comment">// Was removed from list, back up so we don't miss the next one.</span></span><br><span class="line">          actNdx--;</span><br><span class="line">        &#125;</span><br><span class="line">        curNum++;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (curNum &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      numReleased += curNum;</span><br><span class="line">      maxTasks--;</span><br><span class="line">      <span class="keyword">if</span> (mTaskHistory.get(taskNdx) != task) &#123;</span><br><span class="line">        <span class="comment">// The entire task got removed, back up so we don't miss the next one.</span></span><br><span class="line">        taskNdx--;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (DEBUG_RELEASE) Slog.d(TAG_RELEASE,</span><br><span class="line">            <span class="string">"Done releasing: did "</span> + numReleased + <span class="string">" activities"</span>);</span><br><span class="line">  <span class="keyword">return</span> numReleased;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>至此之后就会执行到Activity 的 performDestroy方法进行ondestroy，然后就等待GC回收的处理了。</p>
-<p><a href="https://juejin.im/post/5c343af5f265da615064a2cf" target="_blank" rel="noopener">https://juejin.im/post/5c343af5f265da615064a2cf</a></p>
+<p>总结</p>
+<ol>
+<li>对于非系统进程，通过BinderInternal.addGcWatcher添加了一个内存监测工具，后面会发现，这个工具的检测时机是每个GC节点。而对于我们上文说的回收不可见Task的时机是在关键点</li>
+<li>Java使用内存超过3/4的时候，调用AMS的<strong>releaseSomeActivities</strong>，尝试释放不可见Activity，当然，并非所有不可见的Activity会被回收，比如单栈的APP就不会销毁，多栈的也要分场景，可能选择性销毁不可见Activity，比如至少两个TaskRecord才有必要走Activity的销毁逻辑</li>
+<li>该回收机制利用了Java虚拟机的gc机finalize</li>
+</ol>
 
       
     </div>
@@ -469,7 +500,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://wossoneri.github.io/2019/11/18/[Android][Framework]Something-about-activity-recycle/" title="">http://wossoneri.github.io/2019/11/18/[Android][Framework]Something-about-activity-recycle/</a>
+    <a href="http://wossoneri.github.io/2019/11/18/[Android][Framework]Something-about-activity-recycle/" title="[Android][Framework]关于Activity回收你要知道的事情">http://wossoneri.github.io/2019/11/18/[Android][Framework]Something-about-activity-recycle/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>
@@ -481,6 +512,16 @@
     
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+          
+            <a href="/tags/Framework/" rel="tag"><i class="fa fa-tag"></i> Framework</a>
+          
+            <a href="/tags/Activity/" rel="tag"><i class="fa fa-tag"></i> Activity</a>
+          
+        </div>
       
 
       
@@ -607,7 +648,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">115</span>
+                  <span class="site-state-item-count">116</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -880,7 +921,7 @@
       <script type="text/javascript">
       function renderGitment(){
         var gitment = new Gitmint({
-            id: '1574066471465', 
+            id: '1574073060000', 
             owner: 'wossoneri',
             repo: 'wossoneri.github.io',
             
