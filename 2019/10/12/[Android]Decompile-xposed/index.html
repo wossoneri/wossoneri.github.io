@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android,逆向,xposed,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="简单介绍xposed逆向的一些思路">
+<meta name="keywords" content="Android,逆向,xposed">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Android] Android 逆向之 xposed">
+<meta property="og:url" content="http://wossoneri.github.io/2019/10/12/[Android]Decompile-xposed/index.html">
+<meta property="og:site_name" content="Wossoneri`s Blog">
+<meta property="og:description" content="简单介绍xposed逆向的一些思路">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-12-06T04:00:18.979Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[Android] Android 逆向之 xposed">
+<meta name="twitter:description" content="简单介绍xposed逆向的一些思路">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '6234852363740382000',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wossoneri.github.io/2019/10/12/[Android]Decompile-xposed/">
+
+
+
+
+
+  <title>[Android] Android 逆向之 xposed | Wossoneri`s Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-70716047-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wossoneri`s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2019/10/12/[Android]Decompile-xposed/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wossoneri">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wossoneri`s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[Android] Android 逆向之 xposed</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-12T23:00:00+08:00">
+                2019-10-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/10/12/[Android]Decompile-xposed/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2019/10/12/[Android]Decompile-xposed/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+	
+  		  <span class="post-letters-count">
+            &nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+                 <i class="fa fa-clock-o"></i>
+            </span>
+		        <span class="post-meta-item-text">总记</span>
+            <span class="post-count">2,570 字</span>
+		        <span class="post-meta-item-text">读完需要</span>
+    		    <span class="post-count">11 分</span>
+  		  </span>
+           
+         
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  简单介绍xposed逆向的一些思路
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="Xposed"><a href="#Xposed" class="headerlink" title="Xposed"></a>Xposed</h3><p>网上关于Xposed的介绍很多，但都是点到为止，比如：</p>
+<blockquote>
+<p> 在Android系统中，应用程序进程以及系统服务进程SystemServer都是由Zygote进程孵化出来的，而Zygote进程是由Init进程启动的，Zygote进程在启动时会创建一个Dalvik虚拟机实例，每当它孵化一个新的应用程序进程时，都会将这个Dalvik虚拟机实例复制到新的应用程序进程里面去，从而使得每一个应用程序进程都有一个独立的Dalvik虚拟机实例，这也是Xposed选择替换app_process的原因。</p>
+<p>Zygote进程在启动的过程中，除了会创建一个Dalvik虚拟机实例之外，还会注册一些Android核心类的JNI方法到Dalvik虚拟机实例中去，以及将Java运行时库加载到进程中来。而一个应用程序进程被Zygote进程孵化出来的时候，不仅会获得Zygote进程中的Dalvik虚拟机实例拷贝，还会与Zygote一起共享Java运行时库，这也就是可以将XposedBridge这个jar包加载到每一个Android应用程序中的原因，</p>
+</blockquote>
+<p>我当然不会满足于这么一点浅薄的介绍，既然用这个框架了，那就得把这个框架搞清楚对不？</p>
+<p>一句话原理：</p>
+<p>Xposed框架的原理是通过替换/system/bin/app_process程序控制zygote进程，使得app_process在启动过程中会加载XposedBridge.jar这个jar包，从而完成对Zygote进程及其创建的Dalvik虚拟机的劫持。</p>
+<p>为什么是app_process</p>
+<p>Android系统是基于Linux内核的，而在Linux系统中，所有的进程都是init进程的子孙进程，也就是说，所有的进程都是直接或者间接地由init进程fork出来的。Zygote进程也不例外，它是在系统启动的过程，由init进程创建的。在系统启动脚本system/core/rootdir/init.rc文件中，我们可以看到启动Zygote进程的脚本命令：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">service zygote /system/bin/app_process -Xzygote /system/bin --zygote --start-system-server</span><br><span class="line">    socket zygote stream 666</span><br><span class="line">    onrestart write /sys/android_power/request_state wake</span><br><span class="line">    onrestart write /sys/power/state on</span><br><span class="line">    onrestart restart media</span><br><span class="line">    onrestart restart netd</span><br></pre></td></tr></table></figure>
+<p>系统启动之后就可以在/dev/socket目录下看到有一个名为zygote的文件，就是zygote占用的socket端口。</p>
+<p>所以，zygote是由app_process启动的，替换app_process后，启动的就是Xposed之后的zygote了。</p>
+<p>为什么XposedBridge可以生效</p>
+<p>Xposed版zygote进程在启动时会创建一个Dalvik虚拟机实例，以及注册一些Android核心类的JNI方法到Dalvik虚拟机实例中去。同时Xposed版zygote把XposedBridge.jar添加到CLASSPATH环境变量，并将Java运行时库加载到进程中。一个应用程序进程被Zygote进程孵化出来的时候，不仅会获得Zygote进程中的Dalvik虚拟机实例拷贝，还会与Zygote一起共享Java运行时库，所以XposedBridge.jar可以被加载到每一个Android应用程序中。</p>
+<p>zygote进程加载XposedBridge将所有需要替换的Method通过JNI方法hookMethodNative指向Native方法<br> xposedCallHandler，xposedCallHandler在转入handleHookedMethod这个Java方法执行用户规定的Hook Func。</p>
+<p>Xposed版zygote在启动时还会获得一个JNIEnv实例，该实例描述的是zygote进程的主线程的JNI环境，Xposed版zygote进程通过JNIEnv实例的成员函数CallStaticVoidMethod()调用de.robv.android.xposed.XposedBridge的main函数作为java代码的入口点。</p>
+<p>de.robv.android.xposed.XposedBridge.main函数做了以下几件事：</p>
+<p>（1）    初始化xposed框架。</p>
+<p>（2）    调用initForZygote()方法hook应用进程创建时调用的一些关键函数，比如通过挂钩LoadedApk的构造函数获得应用进程的相关信息并保存至XC_LoadPackage.LoadPackageParam的实例中，该实例在后续hook应用程序中的函数时可用于获取应用程序相关信息。通过挂钩handleBindApplication方法，可以在应用程序启动时调用所有IXposedHookLoadPackage类型的钩子（其实最终调用的是IXposedHookLoadPackage的handleLoadPackage方法）。该类型的钩子用于对应用程序进行挂钩，假如要hook应用程序中的函数，我们编写的xposed插件中的钩子类必须实现IXposedHookLoadPackag接口，重写它的handleLoadPackage方法并在方法体中调用xposed框架提供的挂钩函数（比如findAndHookMethod）hook想要挂钩的应用程序函数。</p>
+<p>（3）    调用loadModules()加载所有的xposed插件，将这些插件中不同钩子类型的钩子分别保存起来。有三种类型的钩子，IXposedHookLoadPackage类型的钩子对应用程序挂钩，IXposedHookZygoteInit类型钩子对Zygote的初始化进行挂钩，IXposedHookInitPackageResources类型钩子对资源进行挂钩。</p>
+<p>（4）    最后再调用原始的ZygoteInit.main函数，完成zygote的全部初始化工作。</p>
+<p><a href="http://4hou.win/wordpress/?p=7516" target="_blank" rel="noopener">http://4hou.win/wordpress/?p=7516</a></p>
+<p><a href="https://blog.csdn.net/u014385722/article/details/82013306" target="_blank" rel="noopener">https://blog.csdn.net/u014385722/article/details/82013306</a></p>
+<h3 id="使用Java反射实现API-Hook"><a href="#使用Java反射实现API-Hook" class="headerlink" title="使用Java反射实现API Hook"></a>使用Java反射实现API Hook</h3><p>通过对 Android 平台的虚拟机注入与 Java 反射的方式，来改变 Android 虚拟机调用函数的方式（ClassLoader），从而达到 Java 函数重定向的目的，这里我们将此类操作称为 Java API Hook。</p>
+<p>先从简单的开始，比如尝试Hook按钮的点击事件。</p>
+<p>首先先看一下点击事件：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Interface definition for a callback to be invoked when a view is clicked.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">OnClickListener</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Called when a view has been clicked.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> v The view that was clicked.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们对Button绑定点击事件：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">mBtnHijack = findViewById(R.id.btn_hijack);</span><br><span class="line">mBtnHijack.setOnClickListener(v -&gt; &#123;</span><br><span class="line">  Toast.makeText(MainActivity.<span class="keyword">this</span>, <span class="string">"Click button"</span>, Toast.LENGTH_LONG).show();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>所以下一步是看setOnClickListener方法是怎么保存OnClickListener接口的：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setOnClickListener</span><span class="params">(@Nullable OnClickListener l)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!isClickable()) &#123;</span><br><span class="line">    setClickable(<span class="keyword">true</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  getListenerInfo().mOnClickListener = l;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>看到OnClickListener被保存到ListenerInfo的成员变量中：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function">ListenerInfo <span class="title">getListenerInfo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (mListenerInfo != <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> mListenerInfo;</span><br><span class="line">  &#125;</span><br><span class="line">  mListenerInfo = <span class="keyword">new</span> ListenerInfo();</span><br><span class="line">  <span class="keyword">return</span> mListenerInfo;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">ListenerInfo</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line">  <span class="keyword">public</span> OnClickListener mOnClickListener;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">protected</span> OnLongClickListener mOnLongClickListener;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">protected</span> OnContextClickListener mOnContextClickListener;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而ListenerInfo是View的一个内部类。</p>
+<p>既然知道OnClickListener的保存位置，那么我们要Hook点击事件，就是创建一个自己的点击事件，然后替换掉原来的事件即可。</p>
+<p>先创建一个实现自己功能的点击事件</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HookedOnClickListener</span> <span class="keyword">implements</span> <span class="title">View</span>.<span class="title">OnClickListener</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> View.OnClickListener origin; <span class="comment">// 原始的点击事件</span></span><br><span class="line"></span><br><span class="line">  HookedOnClickListener(View.OnClickListener origin) &#123;</span><br><span class="line">    <span class="keyword">this</span>.origin = origin;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(View v)</span> </span>&#123;</span><br><span class="line">    Toast.makeText(MainActivity.<span class="keyword">this</span>, <span class="string">"hook click"</span>, Toast.LENGTH_SHORT).show();</span><br><span class="line">    Log.i(<span class="string">"WOW"</span>, <span class="string">"Before click, do what you want to to."</span>);</span><br><span class="line">    <span class="keyword">if</span> (origin != <span class="keyword">null</span>) &#123;</span><br><span class="line">      origin.onClick(v); <span class="comment">// 执行原始的点击逻辑</span></span><br><span class="line">    &#125;</span><br><span class="line">    Log.i(<span class="string">"WOW"</span>, <span class="string">"After click, do what you want to to."</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后就是使用反射，用我们的OnClickListener替换原来注册的点击回调：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">hookOnClickListener</span><span class="params">(View view)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 得到 View 的 ListenerInfo 对象</span></span><br><span class="line">    Method getListenerInfo = View.class.getDeclaredMethod(<span class="string">"getListenerInfo"</span>);</span><br><span class="line">    <span class="comment">// 强制访问</span></span><br><span class="line">    getListenerInfo.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">    <span class="comment">// 执行getListenerInfo拿到对象</span></span><br><span class="line">    Object listenerInfo = getListenerInfo.invoke(view);</span><br><span class="line">    <span class="comment">// 得到 原始的 ListenerInfo 类</span></span><br><span class="line">    Class&lt;?&gt; listenerInfoClz = Class.forName(<span class="string">"android.view.View$ListenerInfo"</span>);</span><br><span class="line">    <span class="comment">// 从 ListenerInfo找到onClickListener属性</span></span><br><span class="line">    Field mOnClickListener = listenerInfoClz.getDeclaredField(<span class="string">"mOnClickListener"</span>);</span><br><span class="line">    mOnClickListener.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">    <span class="comment">// 用前面的listenerInfo对象获取原始的listener</span></span><br><span class="line">    View.OnClickListener originOnClickListener = (View.OnClickListener) mOnClickListener.get(listenerInfo);</span><br><span class="line">    <span class="comment">// 用自定义的 OnClickListener 替换原始的 OnClickListener</span></span><br><span class="line">    View.OnClickListener hookedOnClickListener = <span class="keyword">new</span> HookedOnClickListener(originOnClickListener);</span><br><span class="line">    mOnClickListener.set(listenerInfo, hookedOnClickListener);</span><br><span class="line">  &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    Log.w(<span class="string">"hook clickListener failed!"</span>, e);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>把这段代码放到按钮设置OnClickListener之后:</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">mBtnHijack.setOnClickListener(v -&gt; &#123;</span><br><span class="line">	Toast.makeText(MainActivity.<span class="keyword">this</span>, <span class="string">"Click button"</span>, Toast.LENGTH_LONG).show();</span><br><span class="line">&#125;);</span><br><span class="line">hookOnClickListener(mBtnHijack);</span><br></pre></td></tr></table></figure>
+<p>这样就完成了对按钮点击事件的Hook。</p>
+<p>但是这只能编码Hook自己的应用，这样做的意义是什么呢？</p>
+<p>当应用内接入了众多的 SDK，SDK 内部会使用系统服务 NotificationManager 发送通知，这就导致通知难以管理和控制。现在我们就用 Hook 技术拦截部分通知，限制应用内的通知发送操作。</p>
+<p>发送通知是由NotificationManager的notify方法实现，通过查看源码，定位到：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">notifyAsUser</span><span class="params">(String tag, <span class="keyword">int</span> id, Notification notification, UserHandle user)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        INotificationManager service = getService();</span><br><span class="line">        ...</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            service.enqueueNotificationWithTag(pkg, mContext.getOpPackageName(), tag, id, copy, user.getIdentifier());</span><br><span class="line">        &#125; <span class="keyword">catch</span> (RemoteException e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> e.rethrowFromSystemServer();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> INotificationManager sService;</span><br><span class="line"></span><br><span class="line"><span class="comment">/** <span class="doctag">@hide</span> */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">public</span> INotificationManager <span class="title">getService</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (sService != <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> sService;</span><br><span class="line">  &#125;</span><br><span class="line">  IBinder b = ServiceManager.getService(<span class="string">"notification"</span>);</span><br><span class="line">  sService = INotificationManager.Stub.asInterface(b);</span><br><span class="line">  <span class="keyword">return</span> sService;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>INotificationManager  是跨进程通信的 Binder 类，sService 是 NMS(NotificationManagerService) 在客户端的代理，发送通知要委托给 sService，由它传递给 NMS。我们发现 sService 是个静态成员变量，而且只会初始化一次。只要把 sService 替换成自定义的不就行了么，确实如此。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">hookNotificationManager</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);</span><br><span class="line">    <span class="comment">// 得到系统的 sService</span></span><br><span class="line">    Method getService = NotificationManager.class.getDeclaredMethod(<span class="string">"getService"</span>);</span><br><span class="line">    getService.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">    <span class="keyword">final</span> Object sService = getService.invoke(notificationManager);</span><br><span class="line"></span><br><span class="line">    Class iNotiMngClz = Class.forName(<span class="string">"android.app.INotificationManager"</span>);</span><br><span class="line">    <span class="comment">// 动态代理 INotificationManager</span></span><br><span class="line">    Object proxyNotiMng = Proxy.newProxyInstance(getClass().getClassLoader(), <span class="keyword">new</span> Class[]&#123;iNotiMngClz&#125;, <span class="keyword">new</span> InvocationHandler() &#123;</span><br><span class="line"></span><br><span class="line">      <span class="meta">@Override</span></span><br><span class="line">      <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span> <span class="keyword">throws</span> Throwable           		  </span>&#123;</span><br><span class="line">        log.debug(<span class="string">"invoke(). method:&#123;&#125;"</span>, method);</span><br><span class="line">        <span class="keyword">if</span> (args != <span class="keyword">null</span> &amp;&amp; args.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">          <span class="keyword">for</span> (Object arg : args) &#123;</span><br><span class="line">            log.debug(<span class="string">"type:&#123;&#125;, arg:&#123;&#125;"</span>, arg != <span class="keyword">null</span> ? arg.getClass() : <span class="keyword">null</span>, arg);</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 操作交由 sService 处理，不拦截通知</span></span><br><span class="line">        <span class="comment">// return method.invoke(sService, args);</span></span><br><span class="line">        <span class="comment">// 拦截通知，什么也不做</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        <span class="comment">// 或者是根据通知的 Tag 和 ID 进行筛选</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="comment">// 替换 sService</span></span><br><span class="line">    Field sServiceField = NotificationManager.class.getDeclaredField(<span class="string">"sService"</span>);</span><br><span class="line">    sServiceField.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">    sServiceField.set(notificationManager, proxyNotiMng);</span><br><span class="line">  &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    log.warn(<span class="string">"Hook NotificationManager failed!"</span>, e);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Hook 的时机还是尽量要早，我们在 attachBaseContext 里面操作。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">attachBaseContext</span><span class="params">(Context newBase)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.attachBaseContext(newBase);</span><br><span class="line">    hookNotificationManager(newBase);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样我们就完成了对通知的拦截，可见 Hook 技术真的是非常强大，好多插件化的原理都是建立在 Hook 之上的。</p>
+<p><strong>总结一下：</strong></p>
+<ol>
+<li>Hook 的选择点：静态变量和单例，因为一旦创建对象，它们不容易变化，非常容易定位。</li>
+<li>Hook 过程：<ul>
+<li>寻找 Hook 点，原则是静态变量或者单例对象，尽量 Hook public 的对象和方法。</li>
+<li>选择合适的代理方式，如果是接口可以用动态代理。</li>
+<li>偷梁换柱——用代理对象替换原始对象。</li>
+</ul>
+</li>
+<li>Android 的 API 版本比较多，方法和类可能不一样，所以要做好 API 的兼容工作。</li>
+</ol>
+<h3 id="Xposed-Hook微信运动"><a href="#Xposed-Hook微信运动" class="headerlink" title="Xposed Hook微信运动"></a>Xposed Hook微信运动</h3><p>首先在AndroidManifest.xml Application下添加xposed模块</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!--xposed描述--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">meta-data</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:name</span>=<span class="string">"xposeddescription"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:value</span>=<span class="string">"这是一个Xposed例程"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--xposed最低版本53--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">meta-data</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:name</span>=<span class="string">"xposedminversion"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:value</span>=<span class="string">"53"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--这是一个xposed模块--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">meta-data</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:name</span>=<span class="string">"xposedmodule"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:value</span>=<span class="string">"true"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+<p>然后再assets目录添加一个<code>xposed_init</code>文件供Xposed框架访问，内容为包名：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">com.softard.xposedemo.HookTest</span><br></pre></td></tr></table></figure>
+<p>然后创建我们的HookTest</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HookTest</span> <span class="keyword">implements</span> <span class="title">IXposedHookLoadPackage</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 实现Hook篡改程序</span></span><br><span class="line">    <span class="meta">@SuppressLint</span>(<span class="string">"PrivateApi"</span>)</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleLoadPackage</span><span class="params">(<span class="keyword">final</span> XC_LoadPackage.LoadPackageParam lpparam)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">			<span class="keyword">if</span> (lpparam.packageName.equals(<span class="string">"com.tencent.mm"</span>)) &#123; <span class="comment">// 搞一搞微信</span></span><br><span class="line">            XposedBridge.log(<span class="string">"hoooook wechat"</span>);</span><br><span class="line">            Class&lt;?&gt; clazz1 = Class.forName(</span><br><span class="line">                    <span class="string">"android.hardware.SystemSensorManager$SensorEventQueue"</span>, <span class="keyword">true</span>, lpparam.classLoader);</span><br><span class="line"></span><br><span class="line">            XposedBridge.hookAllMethods(clazz1, <span class="string">"dispatchSensorEvent"</span>, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                    <span class="keyword">int</span> times = XSharedPreferencesUtil.getPref().getInt(<span class="string">"step"</span>, <span class="number">500</span>);</span><br><span class="line"></span><br><span class="line">                    XposedBridge.log(<span class="string">"~~~~~~~Multi times: "</span> + times);</span><br><span class="line">                    XposedBridge.log(<span class="string">"Wechat2222 Sensor param "</span> + ((<span class="keyword">float</span>[]) param.args[<span class="number">1</span>])[<span class="number">0</span>]);</span><br><span class="line">                    ((<span class="keyword">float</span>[]) param.args[<span class="number">1</span>])[<span class="number">0</span>] = ((<span class="keyword">float</span>[]) param.args[<span class="number">1</span>])[<span class="number">0</span>] * times;</span><br><span class="line">                    XposedBridge.log(<span class="string">"final Sensor param "</span> + ((<span class="keyword">float</span>[]) param.args[<span class="number">1</span>])[<span class="number">0</span>]);</span><br><span class="line">                    <span class="keyword">super</span>.beforeHookedMethod(param);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                    <span class="keyword">super</span>.afterHookedMethod(param);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">        &#125;*/      </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Wossoneri
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://wossoneri.github.io/2019/10/12/[Android]Decompile-xposed/" title="[Android] Android 逆向之 xposed">http://wossoneri.github.io/2019/10/12/[Android]Decompile-xposed/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+          
+            <a href="/tags/逆向/" rel="tag"><i class="fa fa-tag"></i> 逆向</a>
+          
+            <a href="/tags/xposed/" rel="tag"><i class="fa fa-tag"></i> xposed</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/09/12/[Android]Decompile-smali/" rel="next" title="[Android] Android 逆向之 smali">
+                <i class="fa fa-chevron-left"></i> [Android] Android 逆向之 smali
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/11/05/[Android][Framework]HowDoesAndroidManifestWork/" rel="prev" title="[Android][Framework] PackageManagerService之AndroidManifest的解析">
+                [Android][Framework] PackageManagerService之AndroidManifest的解析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460" alt="Wossoneri">
+            
+              <p class="site-author-name" itemprop="name">Wossoneri</p>
+              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">113</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">115</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+            <div class="cc-license motion-element" itemprop="license">
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
+              </a>
+            </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-globe"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Xposed"><span class="nav-number">1.</span> <span class="nav-text">Xposed</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用Java反射实现API-Hook"><span class="nav-number">2.</span> <span class="nav-text">使用Java反射实现API Hook</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Xposed-Hook微信运动"><span class="nav-number">3.</span> <span class="nav-text">Xposed Hook微信运动</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: '1570892400000', 
+            owner: 'wossoneri',
+            repo: 'wossoneri.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
+            
+                client_id: '40b6c719a11e3fca29e8'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

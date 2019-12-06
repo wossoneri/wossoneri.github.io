@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Android,Framework,permission,AppOps,">
+  <meta name="keywords" content="Android,Framework,permission,PackageManagerService,AppOps,">
 
 
 
@@ -82,7 +82,7 @@
 
 
 <meta name="description" content="因为东忙西忙没时间整理这一块的东西，拖了有点久，现在继续更新">
-<meta name="keywords" content="Android,Framework,permission,AppOps">
+<meta name="keywords" content="Android,Framework,permission,PackageManagerService,AppOps">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[Android][Framework] 全方位理解Android权限之Android权限系统1">
 <meta property="og:url" content="http://wossoneri.github.io/2019/11/17/[Android][Framework]Android-permission-2/index.html">
@@ -90,7 +90,7 @@
 <meta property="og:description" content="因为东忙西忙没时间整理这一块的东西，拖了有点久，现在继续更新">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/appops.png?raw=true">
-<meta property="og:updated_time" content="2019-11-18T05:19:16.634Z">
+<meta property="og:updated_time" content="2019-11-18T06:17:48.921Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Android][Framework] 全方位理解Android权限之Android权限系统1">
 <meta name="twitter:description" content="因为东忙西忙没时间整理这一块的东西，拖了有点久，现在继续更新">
@@ -170,7 +170,7 @@
 
   <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
-    <a href="https://github.com/wossoneri"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
+    <a href="https://github.com"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
 
     <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
@@ -580,6 +580,8 @@
           
             <a href="/tags/permission/" rel="tag"><i class="fa fa-tag"></i> permission</a>
           
+            <a href="/tags/PackageManagerService/" rel="tag"><i class="fa fa-tag"></i> PackageManagerService</a>
+          
             <a href="/tags/AppOps/" rel="tag"><i class="fa fa-tag"></i> AppOps</a>
           
         </div>
@@ -602,6 +604,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/11/18/[Android][Framework]Something-about-activity-recycle/" rel="prev" title="">
+                 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -687,7 +693,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">107</span>
+                  <span class="site-state-item-count">113</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -709,7 +715,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">111</span>
+                  <span class="site-state-item-count">115</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android,Framework,PackageManagerService,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="PMS权限管理流程小记">
+<meta name="keywords" content="Android,Framework,PackageManagerService">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Android][Framework]PackageManagerService处理应用权限流程">
+<meta property="og:url" content="http://wossoneri.github.io/2019/04/09/[Android][Framework]PackageManagerService-process-app-permission/index.html">
+<meta property="og:site_name" content="Wossoneri`s Blog">
+<meta property="og:description" content="PMS权限管理流程小记">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-12-02T04:14:30.731Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[Android][Framework]PackageManagerService处理应用权限流程">
+<meta name="twitter:description" content="PMS权限管理流程小记">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '6234852363740382000',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wossoneri.github.io/2019/04/09/[Android][Framework]PackageManagerService-process-app-permission/">
+
+
+
+
+
+  <title>[Android][Framework]PackageManagerService处理应用权限流程 | Wossoneri`s Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-70716047-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wossoneri`s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2019/04/09/[Android][Framework]PackageManagerService-process-app-permission/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wossoneri">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wossoneri`s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[Android][Framework]PackageManagerService处理应用权限流程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-09T19:30:00+08:00">
+                2019-04-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/04/09/[Android][Framework]PackageManagerService-process-app-permission/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2019/04/09/[Android][Framework]PackageManagerService-process-app-permission/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+	
+  		  <span class="post-letters-count">
+            &nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+                 <i class="fa fa-clock-o"></i>
+            </span>
+		        <span class="post-meta-item-text">总记</span>
+            <span class="post-count">2,656 字</span>
+		        <span class="post-meta-item-text">读完需要</span>
+    		    <span class="post-count">15 分</span>
+  		  </span>
+           
+         
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  PMS权限管理流程小记
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="app种类"><a href="#app种类" class="headerlink" title="app种类"></a>app种类</h2><p>1、system app (有ApplicationInfo.FLAG_SYSTEM标记)</p>
+<p>2、privileged app (有ApplicationInfo.FLAG_SYSTEM和ApplicationInfo.PRIVATE_FLAG_PRIVILEGE两个标记)</p>
+<h3 id="system-app"><a href="#system-app" class="headerlink" title="system app"></a>system app</h3><p>system app 定义很明了，就是在PMS初始化安装app的时候赋予了ApplicationInfo.FLAG_SYSTEM这个标记</p>
+<p>1、特定shareUID的app<br>代码在PMS的构造函数中</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">mSettings.addSharedUserLPw(<span class="string">"android.uid.system"</span>, Process.SYSTEM_UID,</span><br><span class="line">        ApplicationInfo.FLAG_SYSTEM, ApplicationInfo.PRIVATE_FLAG_PRIVILEGED);</span><br><span class="line">mSettings.addSharedUserLPw(<span class="string">"android.uid.phone"</span>, RADIO_UID,</span><br><span class="line">        ApplicationInfo.FLAG_SYSTEM, ApplicationInfo.PRIVATE_FLAG_PRIVILEGED);</span><br><span class="line">mSettings.addSharedUserLPw(<span class="string">"android.uid.log"</span>, LOG_UID,</span><br><span class="line">        ApplicationInfo.FLAG_SYSTEM, ApplicationInfo.PRIVATE_FLAG_PRIVILEGED);</span><br><span class="line">mSettings.addSharedUserLPw(<span class="string">"android.uid.nfc"</span>, NFC_UID,</span><br><span class="line">        ApplicationInfo.FLAG_SYSTEM, ApplicationInfo.PRIVATE_FLAG_PRIVILEGED);</span><br><span class="line">mSettings.addSharedUserLPw(<span class="string">"android.uid.bluetooth"</span>, BLUETOOTH_UID,</span><br><span class="line">        ApplicationInfo.FLAG_SYSTEM, ApplicationInfo.PRIVATE_FLAG_PRIVILEGED);</span><br><span class="line">mSettings.addSharedUserLPw(<span class="string">"android.uid.shell"</span>, SHELL_UID,</span><br><span class="line">        ApplicationInfo.FLAG_SYSTEM, ApplicationInfo.PRIVATE_FLAG_PRIVILEGED);</span><br></pre></td></tr></table></figure>
+<p>2、扫描安装特定目录的app<br>代码在PMS的构造函数中，扫描安装时给予PackageParser.PARSE_IS_SYSTEM标记的app，例如/vendor/overlay，/system/framework，/system/priv-app，/system/app，/vendor/app，/oem/app等，给予的PackageParser.PARSE_IS_SYSTEM最终会转换为ApplicationInfo.FLAG_SYSTEM，部分代码如下</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">File vendorOverlayDir = <span class="keyword">new</span> File(VENDOR_OVERLAY_DIR);</span><br><span class="line">    scanDirTracedLI(vendorOverlayDir, mDefParseFlags</span><br><span class="line">            | PackageParser.PARSE_IS_SYSTEM</span><br><span class="line">            | PackageParser.PARSE_IS_SYSTEM_DIR</span><br><span class="line">            | PackageParser.PARSE_TRUSTED_OVERLAY, scanFlags | SCAN_TRUSTED_OVERLAY, <span class="number">0</span>);</span><br><span class="line">File customFrameworkDir = <span class="keyword">new</span> File(<span class="string">"/custom/framework"</span>);</span><br><span class="line">    scanDirLI(customFrameworkDir, PackageParser.PARSE_IS_SYSTEM</span><br><span class="line">            | PackageParser.PARSE_IS_SYSTEM_DIR,</span><br><span class="line">            scanFlags | SCAN_NO_DEX, <span class="number">0</span>);</span><br><span class="line">scanDirTracedLI(frameworkDir, mDefParseFlags</span><br><span class="line">            | PackageParser.PARSE_IS_SYSTEM</span><br><span class="line">            | PackageParser.PARSE_IS_SYSTEM_DIR</span><br><span class="line">            | PackageParser.PARSE_IS_PRIVILEGED,</span><br><span class="line">            scanFlags | SCAN_NO_DEX, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+<p>flag转换的过程大致如下</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">-&gt; scanDirLI(File dir, <span class="keyword">final</span> <span class="keyword">int</span> parseFlags, <span class="keyword">int</span> scanFlags, <span class="keyword">long</span> currentTime)</span><br><span class="line">-&gt;  scanPackageTracedLI(PackageParser.Package pkg, <span class="keyword">final</span> <span class="keyword">int</span> policyFlags, </span><br><span class="line">        <span class="keyword">int</span> scanFlags, <span class="keyword">long</span> currentTime, UserHandle user)</span><br><span class="line">-&gt; scanPackageLI(PackageParser.Package pkg, <span class="keyword">final</span> <span class="keyword">int</span> policyFlags,</span><br><span class="line">            <span class="keyword">int</span> scanFlags, <span class="keyword">long</span> currentTime, UserHandle user) </span><br><span class="line">-&gt; scanPackageDirtyLI(PackageParser.Package pkg,</span><br><span class="line">            <span class="keyword">final</span> <span class="keyword">int</span> policyFlags, <span class="keyword">final</span> <span class="keyword">int</span> scanFlags, <span class="keyword">long</span> currentTime, UserHandle user)</span><br><span class="line"><span class="comment">//在scanPackageDirtyLI方法中将flag转换</span></span><br><span class="line"><span class="comment">// Apply policy</span></span><br><span class="line"><span class="keyword">if</span> ((policyFlags&amp;PackageParser.PARSE_IS_SYSTEM) != <span class="number">0</span>) &#123;</span><br><span class="line">    pkg.applicationInfo.flags |= ApplicationInfo.FLAG_SYSTEM;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="privileged-app"><a href="#privileged-app" class="headerlink" title="privileged app"></a>privileged app</h3><p>privileged app在ApplicationInfo.FLAG_SYSTEM基础上还必须有ApplicationInfo.PRIVATE_FLAG_PRIVILEGED标记</p>
+<p>1、特定shareUID的app<br>特定shareUID的app有ApplicationInfo.FLAG_SYSTEM的同时都有ApplicationInfo.PRIVATE_FLAG_PRIVILEGED</p>
+<p>2、扫描特定目录app时，给予了PackageParser.PARSE_IS_SYSTEM标记和PackageParser.PARSE_IS_PRIVILEGED标记，目录有三个：system/framework,system/priv-app,vendor/priv-app<br>例如：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">//vender/framework目录下有PackageParser.PARSE_IS_SYSTEM没有PackageParser.PARSE_IS_PRIVILEGED标记</span></span><br><span class="line">File vendorFrameworkDir = <span class="keyword">new</span> File(Environment.getVendorDirectory(), <span class="string">"framework"</span>);</span><br><span class="line">scanDirTracedLI(vendorFrameworkDir, PackageParser.PARSE_IS_SYSTEM</span><br><span class="line">    | PackageParser.PARSE_IS_SYSTEM_DIR,</span><br><span class="line">    scanFlags | SCAN_NO_DEX, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//system/framework目录下两个标记都有</span></span><br><span class="line">scanDirTracedLI(frameworkDir, mDefParseFlags</span><br><span class="line">    | PackageParser.PARSE_IS_SYSTEM</span><br><span class="line">    | PackageParser.PARSE_IS_SYSTEM_DIR</span><br><span class="line">    | PackageParser.PARSE_IS_PRIVILEGED,</span><br><span class="line">    scanFlags | SCAN_NO_DEX, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+<p>PackageParser.PARSE_IS_PRIVILEGED也是在scanPackageDirtyLI方法中转换的</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> ((policyFlags&amp;PackageParser.PARSE_IS_PRIVILEGED) != <span class="number">0</span>) &#123;</span><br><span class="line">            pkg.applicationInfo.privateFlags |= ApplicationInfo.PRIVATE_FLAG_PRIVILEGED;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="PMS赋予apk的runtime权限"><a href="#PMS赋予apk的runtime权限" class="headerlink" title="PMS赋予apk的runtime权限"></a>PMS赋予apk的runtime权限</h2><h3 id="入口"><a href="#入口" class="headerlink" title="入口"></a>入口</h3><p>PMS(PackageManagerService)在SystemServer中初始化完成最后调用PMS::systemReady,在systemReady方法中开始授予默认权限</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> DefaultPermissionGrantPolicy mDefaultPermissionPolicy;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> userId : grantPermissionsUserIds) &#123;</span><br><span class="line">            mDefaultPermissionPolicy.grantDefaultPermissions(userId);</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p>DefaultPermissionGrantPolicy这个类就是管理默认权限的，最终的实现都是在PMS代码中</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">grantDefaultPermissions</span><span class="params">(<span class="keyword">int</span> userId)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 系统组件赋予Dangerous权限</span></span><br><span class="line">        grantPermissionsToSysComponentsAndPrivApps(userId);</span><br><span class="line">    <span class="comment">// 指定app的指定权限</span></span><br><span class="line">        grantDefaultSystemHandlerPermissions(userId);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="系统组件赋予Dangerous权限"><a href="#系统组件赋予Dangerous权限" class="headerlink" title="系统组件赋予Dangerous权限"></a>系统组件赋予Dangerous权限</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">grantPermissionsToSysComponentsAndPrivApps</span><span class="params">(<span class="keyword">int</span> userId)</span> </span>&#123;</span><br><span class="line">        Log.i(TAG, <span class="string">"Granting permissions to platform components for user "</span> + userId);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">synchronized</span> (mService.mPackages) &#123;</span><br><span class="line">            <span class="keyword">for</span> (PackageParser.Package pkg : mService.mPackages.values()) &#123;</span><br><span class="line">            <span class="comment">// 过滤掉privileged app , FLAG_PERSISTENT标记app ,系统签名相同的app</span></span><br><span class="line">                <span class="keyword">if</span> (!isSysComponentOrPersistentPlatformSignedPrivAppLPr(pkg)</span><br><span class="line">            <span class="comment">// 判断targetSdkVersion &gt; 22</span></span><br><span class="line">                        || !doesPackageSupportRuntimePermissions(pkg)</span><br><span class="line">            <span class="comment">// 请求权限列表为空</span></span><br><span class="line">                        || pkg.requestedPermissions.isEmpty()) &#123;</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                Set&lt;String&gt; permissions = <span class="keyword">new</span> ArraySet&lt;&gt;();</span><br><span class="line">                <span class="keyword">final</span> <span class="keyword">int</span> permissionCount = pkg.requestedPermissions.size();</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; permissionCount; i++) &#123;</span><br><span class="line">                    String permission = pkg.requestedPermissions.get(i);</span><br><span class="line">                    BasePermission bp = mService.mSettings.mPermissions.get(permission);</span><br><span class="line">            <span class="comment">// 权限为Dangerous权限</span></span><br><span class="line">                    <span class="keyword">if</span> (bp != <span class="keyword">null</span> &amp;&amp; bp.isRuntime()) &#123;</span><br><span class="line">                        permissions.add(permission);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (!permissions.isEmpty()) &#123;</span><br><span class="line">            <span class="comment">// 添加权限</span></span><br><span class="line">                    grantRuntimePermissionsLPw(pkg, permissions, <span class="keyword">true</span>, userId);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>接下来看下isSysComponentOrPersistentPlatformSignedPrivAppLPr和isRuntime的内容</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">isSysComponentOrPersistentPlatformSignedPrivAppLPr</span><span class="params">(PackageParser.Package pkg)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// UserID 小于10000</span></span><br><span class="line">        <span class="keyword">if</span> (UserHandle.getAppId(pkg.applicationInfo.uid) &lt; FIRST_APPLICATION_UID) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="comment">// privileged app过滤</span></span><br><span class="line">        <span class="keyword">if</span> (!pkg.isPrivilegedApp()) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="comment">// 这两个判断过滤掉FLAG_PERSISTENT</span></span><br><span class="line">        PackageSetting sysPkg = mService.mSettings.getDisabledSystemPkgLPr(pkg.packageName);</span><br><span class="line">        <span class="keyword">if</span> (sysPkg != <span class="keyword">null</span> &amp;&amp; sysPkg.pkg != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> ((sysPkg.pkg.applicationInfo.flags &amp; ApplicationInfo.FLAG_PERSISTENT) == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> ((pkg.applicationInfo.flags &amp; ApplicationInfo.FLAG_PERSISTENT) == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    <span class="comment">// 过滤掉系统签名相同的apk</span></span><br><span class="line">        <span class="keyword">return</span> PackageManagerService.compareSignatures(mService.mPlatformPackage.mSignatures,</span><br><span class="line">                pkg.mSignatures) == PackageManager.SIGNATURE_MATCH;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isRuntime</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// protectionLevel &amp; PermissionInfo.PROTECTION_MASK_BASE 表示当前等级</span></span><br><span class="line">        <span class="keyword">return</span> (protectionLevel &amp; PermissionInfo.PROTECTION_MASK_BASE)</span><br><span class="line">                == PermissionInfo.PROTECTION_DANGEROUS;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="指定app的指定权限"><a href="#指定app的指定权限" class="headerlink" title="指定app的指定权限"></a>指定app的指定权限</h3><p>这里是给指定某个app,给予它指定的几个权限，这里的代码十分类似，截取片段如下</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">grantDefaultSystemHandlerPermissions</span><span class="params">(<span class="keyword">int</span> userId)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">// Dialer</span></span><br><span class="line">            <span class="keyword">if</span> (dialerAppPackageNames == <span class="keyword">null</span>) &#123;</span><br><span class="line">                Intent dialerIntent = <span class="keyword">new</span> Intent(Intent.ACTION_DIAL);</span><br><span class="line">                PackageParser.Package dialerPackage = getDefaultSystemHandlerActivityPackageLPr(</span><br><span class="line">                        dialerIntent, userId);</span><br><span class="line">                <span class="keyword">if</span> (dialerPackage != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    grantDefaultPermissionsToDefaultSystemDialerAppLPr(dialerPackage, userId);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">for</span> (String dialerAppPackageName : dialerAppPackageNames) &#123;</span><br><span class="line">                    PackageParser.Package dialerPackage = getSystemPackageLPr(dialerAppPackageName);</span><br><span class="line">                    <span class="keyword">if</span> (dialerPackage != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        grantDefaultPermissionsToDefaultSystemDialerAppLPr(dialerPackage, userId);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// SMS</span></span><br><span class="line">            <span class="keyword">if</span> (smsAppPackageNames == <span class="keyword">null</span>) &#123;</span><br><span class="line">                Intent smsIntent = <span class="keyword">new</span> Intent(Intent.ACTION_MAIN);</span><br><span class="line">                smsIntent.addCategory(Intent.CATEGORY_APP_MESSAGING);</span><br><span class="line">                PackageParser.Package smsPackage = getDefaultSystemHandlerActivityPackageLPr(</span><br><span class="line">                        smsIntent, userId);</span><br><span class="line">                <span class="keyword">if</span> (smsPackage != <span class="keyword">null</span>) &#123;</span><br><span class="line">                   grantDefaultPermissionsToDefaultSystemSmsAppLPr(smsPackage, userId);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">for</span> (String smsPackageName : smsAppPackageNames) &#123;</span><br><span class="line">                    PackageParser.Package smsPackage = getSystemPackageLPr(smsPackageName);</span><br><span class="line">                    <span class="keyword">if</span> (smsPackage != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        grantDefaultPermissionsToDefaultSystemSmsAppLPr(smsPackage, userId);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">grantDefaultPermissionsToDefaultSystemDialerAppLPr</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">            PackageParser.Package dialerPackage, <span class="keyword">int</span> userId)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (doesPackageSupportRuntimePermissions(dialerPackage)) &#123;</span><br><span class="line">            <span class="keyword">boolean</span> isPhonePermFixed =</span><br><span class="line">                    mService.hasSystemFeature(PackageManager.FEATURE_WATCH, <span class="number">0</span>);</span><br><span class="line">            grantRuntimePermissionsLPw(</span><br><span class="line">                    dialerPackage, PHONE_PERMISSIONS, isPhonePermFixed, userId);</span><br><span class="line">            grantRuntimePermissionsLPw(dialerPackage, CONTACTS_PERMISSIONS, userId);</span><br><span class="line">            grantRuntimePermissionsLPw(dialerPackage, SMS_PERMISSIONS, userId);</span><br><span class="line">            grantRuntimePermissionsLPw(dialerPackage, MICROPHONE_PERMISSIONS, userId);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>两种添加最后都走到了grantRuntimePermissionsLPw，我们接着分析grantRuntimePermissionsLPw函数</p>
+<h3 id="添加权限grantRuntimePermissionsLPw"><a href="#添加权限grantRuntimePermissionsLPw" class="headerlink" title="添加权限grantRuntimePermissionsLPw"></a>添加权限grantRuntimePermissionsLPw</h3><p>grantRuntimePermissionsLPw赋予权限的代码,最终是交给PMS来处理，经过一些列判断后调用关键方法mService.grantRuntimePermission和mService.updatePermissionFlags，代码片段如下</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> PackageManagerService mService;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">grantRuntimePermissionsLPw</span><span class="params">(PackageParser.Package pkg, Set&lt;String&gt; permissions,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">boolean</span> systemFixed, <span class="keyword">boolean</span> isDefaultPhoneOrSms, <span class="keyword">int</span> userId)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    mService.grantRuntimePermission(pkg.packageName, permission, userId);</span><br><span class="line">    ...</span><br><span class="line">    mService.updatePermissionFlags(permission, pkg.packageName,</span><br><span class="line">    newFlags, newFlags, userId);</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接着看PMS的grantRuntimePermission如何添加权限</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">grantRuntimePermission</span><span class="params">(String packageName, String name, <span class="keyword">final</span> <span class="keyword">int</span> userId)</span> </span>&#123;</span><br><span class="line">        ...</span><br><span class="line">    <span class="comment">// 要添加权限，也需要“添加”权限</span></span><br><span class="line">        mContext.enforceCallingOrSelfPermission(</span><br><span class="line">                android.Manifest.permission.GRANT_RUNTIME_PERMISSIONS,</span><br><span class="line">                <span class="string">"grantRuntimePermission"</span>);</span><br><span class="line">    enforceCrossUserPermission(Binder.getCallingUid(), userId,</span><br><span class="line">                <span class="keyword">true</span> <span class="comment">/* requireFullPermission */</span>, <span class="keyword">true</span> <span class="comment">/* checkShell */</span>,</span><br><span class="line">                <span class="string">"grantRuntimePermission"</span>);</span><br><span class="line">        ...</span><br><span class="line">    <span class="comment">// 添加权限</span></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> result = permissionsState.grantRuntimePermission(bp, userId);</span><br><span class="line">    <span class="keyword">switch</span> (result) &#123;</span><br><span class="line">    <span class="keyword">case</span> PermissionsState.PERMISSION_OPERATION_FAILURE: &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">case</span> PermissionsState.PERMISSION_OPERATION_SUCCESS_GIDS_CHANGED: &#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> appId = UserHandle.getAppId(pkg.applicationInfo.uid);</span><br><span class="line">        mHandler.post(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            killUid(appId, userId, KILL_APP_REASON_GIDS_CHANGED);</span><br><span class="line">        &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// PermissionsChanged监听</span></span><br><span class="line">    mOnPermissionChangeListeners.onPermissionsChanged(uid);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 把数据更新到runtime-permissions.xml中</span></span><br><span class="line">    mSettings.writeRuntimePermissionsForUserLPr(userId, <span class="keyword">false</span>); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后grantRuntimePermission就是把permission存到mPermissions数据map中，再把数据跟新到/data/system/users/0/runtime-permissions.xml中，片段如下</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">pkg</span> <span class="attr">name</span>=<span class="string">"com.google.android.apps.messaging"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.READ_SMS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"20"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.RECEIVE_WAP_PUSH"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"20"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.RECEIVE_MMS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"20"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.RECEIVE_SMS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"20"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.READ_PHONE_STATE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"20"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.SEND_SMS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"20"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.CALL_PHONE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"20"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.WRITE_CONTACTS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"20"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.READ_CONTACTS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"20"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">pkg</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">pkg</span> <span class="attr">name</span>=<span class="string">"com.google.android.setupwizard"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.ACCESS_COARSE_LOCATION"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"20"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.CALL_PHONE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"20"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.WRITE_CONTACTS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"20"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.CAMERA"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"20"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.PROCESS_OUTGOING_CALLS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"20"</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.READ_CONTACTS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"20"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">pkg</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="PMS赋予apk安装权限"><a href="#PMS赋予apk安装权限" class="headerlink" title="PMS赋予apk安装权限"></a>PMS赋予apk安装权限</h2><p>过程精简如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">-&gt; scanDirLI(File dir, final int parseFlags, int scanFlags, long currentTime)</span><br><span class="line">-&gt;  scanPackageTracedLI(PackageParser.Package pkg, final int policyFlags, </span><br><span class="line">        int scanFlags, long currentTime, UserHandle user)</span><br><span class="line">-&gt; scanPackageLI(PackageParser.Package pkg, final int policyFlags,</span><br><span class="line">            int scanFlags, long currentTime, UserHandle user) </span><br><span class="line">-&gt; scanPackageDirtyLI(PackageParser.Package pkg,</span><br><span class="line">            final int policyFlags, final int scanFlags, long currentTime, UserHandle user)</span><br><span class="line">-&gt; updateSettingsLI(PackageParser.Package newPackage, String installerPackageName,</span><br><span class="line">            int[] allUsers, PackageInstalledInfo res, UserHandle user)</span><br><span class="line">-&gt; updateSettingsInternalLI(PackageParser.Package newPackage,</span><br><span class="line">            String installerPackageName, int[] allUsers, int[] installedForUsers,</span><br><span class="line">            PackageInstalledInfo res, UserHandle user)</span><br><span class="line">-&gt; updatePermissionsLPw(String changingPkg, PackageParser.Package pkgInfo,</span><br><span class="line">            int flags)</span><br><span class="line">-&gt; updatePermissionsLPw(String changingPkg,</span><br><span class="line">            PackageParser.Package pkgInfo, String replaceVolumeUuid, int flags)</span><br><span class="line">-&gt; grantPermissionsLPw(PackageParser.Package pkg, boolean replace,</span><br><span class="line">            String packageOfInterest)</span><br></pre></td></tr></table></figure>
+<p>在grantPermissionsLPw函数中做最后权限赋予操作，代码片段如下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">grantPermissionsLPw</span><span class="params">(PackageParser.Package pkg, <span class="keyword">boolean</span> replace,</span></span></span><br><span class="line"><span class="function"><span class="params">        String packageOfInterest)</span> </span>&#123;</span><br><span class="line"> <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;N; i++) &#123;</span><br><span class="line">        <span class="keyword">final</span> String name = pkg.requestedPermissions.get(i); <span class="comment">// 权限名字</span></span><br><span class="line">        <span class="keyword">final</span> BasePermission bp = mSettings.mPermissions.get(name); <span class="comment">// 权限信息</span></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> level = bp.protectionLevel &amp; PermissionInfo.PROTECTION_MASK_BASE; <span class="comment">// 权限级别ProtectionLevel</span></span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">boolean</span> appSupportsRuntimePermissions = pkg.applicationInfo.targetSdkVersion</span><br><span class="line">                &gt;= Build.VERSION_CODES.M;</span><br><span class="line">    <span class="comment">// 根据权限级别定义grant</span></span><br><span class="line">        <span class="keyword">switch</span> (level) &#123;</span><br><span class="line">            <span class="keyword">case</span> PermissionInfo.PROTECTION_NORMAL: &#123;</span><br><span class="line">                <span class="comment">// For all apps normal permissions are install time ones.</span></span><br><span class="line">                grant = GRANT_INSTALL;</span><br><span class="line">            &#125; <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">case</span> PermissionInfo.PROTECTION_DANGEROUS: &#123;</span><br><span class="line">                <span class="keyword">if</span> (!appSupportsRuntimePermissions &amp;&amp; !Build.isPermissionReviewRequired()) &#123;</span><br><span class="line">                    <span class="comment">// For legacy apps dangerous permissions are install time ones.</span></span><br><span class="line">                    grant = GRANT_INSTALL;</span><br><span class="line">                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (origPermissions.hasInstallPermission(bp.name)) &#123;</span><br><span class="line">                    <span class="comment">// For legacy apps that became modern, install becomes runtime.</span></span><br><span class="line">                    grant = GRANT_UPGRADE;</span><br><span class="line">                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (mPromoteSystemApps</span><br><span class="line">                    &amp;&amp; isSystemApp(ps)</span><br><span class="line">                    &amp;&amp; mExistingSystemPackages.contains(ps.name)) &#123;</span><br><span class="line">                    <span class="comment">// For legacy system apps, install becomes runtime.</span></span><br><span class="line">                    <span class="comment">// We cannot check hasInstallPermission() for system apps since those</span></span><br><span class="line">                    <span class="comment">// permissions were granted implicitly and not persisted pre-M.</span></span><br><span class="line">                    grant = GRANT_UPGRADE;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">// For modern apps keep runtime permissions unchanged.</span></span><br><span class="line">                    grant = GRANT_RUNTIME;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">case</span> PermissionInfo.PROTECTION_SIGNATURE: &#123;</span><br><span class="line">                <span class="comment">// For all apps signature permissions are install time ones.</span></span><br><span class="line">                allowedSig = grantSignaturePermission(perm, pkg, bp, origPermissions);</span><br><span class="line">                <span class="keyword">if</span> (allowedSig) &#123;</span><br><span class="line">                    grant = GRANT_INSTALL;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    ...</span><br><span class="line">        <span class="keyword">if</span> (grant != GRANT_DENIED) &#123;</span><br><span class="line">            <span class="keyword">if</span> (!isSystemApp(ps) &amp;&amp; ps.installPermissionsFixed) &#123;</span><br><span class="line">                <span class="comment">// If this is an existing, non-system package, then</span></span><br><span class="line">                <span class="comment">// we can't add any new permissions to it.</span></span><br><span class="line">                <span class="keyword">if</span> (!allowedSig &amp;&amp; !origPermissions.hasInstallPermission(perm)) &#123;</span><br><span class="line">                    <span class="comment">// Except...  if this is a permission that was added</span></span><br><span class="line">                    <span class="comment">// to the platform (note: need to only do this when</span></span><br><span class="line">                    <span class="comment">// updating the platform).</span></span><br><span class="line">                    <span class="keyword">if</span> (!isNewPlatformPermissionForPackage(perm, pkg)) &#123;</span><br><span class="line">                        grant = GRANT_DENIED;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">    <span class="comment">// 根据grant 选择权限给予方式</span></span><br><span class="line">            <span class="keyword">switch</span> (grant) &#123;</span><br><span class="line">                <span class="keyword">case</span> GRANT_INSTALL: &#123;</span><br><span class="line">                    <span class="keyword">for</span> (<span class="keyword">int</span> userId : UserManagerService.getInstance().getUserIds()) &#123;</span><br><span class="line">                        <span class="keyword">if</span> (origPermissions.getRuntimePermissionState(</span><br><span class="line">                                bp.name, userId) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                            <span class="comment">// Revoke the runtime permission and clear the flags.</span></span><br><span class="line">                            origPermissions.revokeRuntimePermission(bp, userId);</span><br><span class="line">                            origPermissions.updatePermissionFlags(bp, userId,</span><br><span class="line">                                  PackageManager.MASK_PERMISSION_FLAGS, <span class="number">0</span>);</span><br><span class="line">                            <span class="comment">// If we revoked a permission permission, we have to write.</span></span><br><span class="line">                            changedRuntimePermissionUserIds = ArrayUtils.appendInt(</span><br><span class="line">                                    changedRuntimePermissionUserIds, userId);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="comment">// install权限</span></span><br><span class="line">                    <span class="keyword">if</span> (permissionsState.grantInstallPermission(bp) !=</span><br><span class="line">                            PermissionsState.PERMISSION_OPERATION_FAILURE) &#123;</span><br><span class="line">                        changedInstallPermission = <span class="keyword">true</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">case</span> GRANT_RUNTIME: &#123;</span><br><span class="line">                    <span class="comment">// Grant previously granted runtime permissions.</span></span><br><span class="line">                    <span class="keyword">for</span> (<span class="keyword">int</span> userId : UserManagerService.getInstance().getUserIds()) &#123;</span><br><span class="line">                        PermissionState permissionState = origPermissions</span><br><span class="line">                                .getRuntimePermissionState(bp.name, userId);</span><br><span class="line">                        <span class="keyword">int</span> flags = permissionState != <span class="keyword">null</span></span><br><span class="line">                                ? permissionState.getFlags() : <span class="number">0</span>;</span><br><span class="line">                        <span class="keyword">if</span> (origPermissions.hasRuntimePermission(bp.name, userId)) &#123;</span><br><span class="line">                            <span class="keyword">if</span> (permissionsState.grantRuntimePermission(bp, userId) ==</span><br><span class="line">                                    PermissionsState.PERMISSION_OPERATION_FAILURE) &#123;</span><br><span class="line">                                <span class="comment">// If we cannot put the permission as it was, we have to write.</span></span><br><span class="line">                                changedRuntimePermissionUserIds = ArrayUtils.appendInt(</span><br><span class="line">                                        changedRuntimePermissionUserIds, userId);</span><br><span class="line">                            &#125;</span><br><span class="line">                            <span class="comment">// If the app supports runtime permissions no need for a review.</span></span><br><span class="line">                            <span class="comment">/// M: CTA requirement - permission control</span></span><br><span class="line">                            <span class="keyword">if</span> (Build.isPermissionReviewRequired()</span><br><span class="line">                                    &amp;&amp; appSupportsRuntimePermissions</span><br><span class="line">                                    &amp;&amp; (flags &amp; PackageManager</span><br><span class="line">                                            .FLAG_PERMISSION_REVIEW_REQUIRED) != <span class="number">0</span>) &#123;</span><br><span class="line">                                flags &amp;= ~PackageManager.FLAG_PERMISSION_REVIEW_REQUIRED;</span><br><span class="line">                                <span class="comment">// Since we changed the flags, we have to write.</span></span><br><span class="line">                                changedRuntimePermissionUserIds = ArrayUtils.appendInt(</span><br><span class="line">                                        changedRuntimePermissionUserIds, userId);</span><br><span class="line">                            &#125;</span><br><span class="line">                        <span class="comment">/// M: CTA requirement - permission control</span></span><br><span class="line">                        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (Build.isPermissionReviewRequired()</span><br><span class="line">                                &amp;&amp; !appSupportsRuntimePermissions) &#123;</span><br><span class="line">                            <span class="keyword">if</span> (CtaUtils.isPlatformPermission(bp.sourcePackage, bp.name)</span><br><span class="line">                                    &amp;&amp; pkgReviewRequired) &#123;</span><br><span class="line">                                <span class="keyword">if</span> ((flags &amp; FLAG_PERMISSION_REVIEW_REQUIRED) == <span class="number">0</span>) &#123;</span><br><span class="line">                                    <span class="comment">/// M: CTA requirement - review UI for all apps  @&#123;</span></span><br><span class="line">                                    Slog.d(TAG, <span class="string">"add review UI for legacy pkg = "</span> +</span><br><span class="line">                                            pkg.packageName + <span class="string">", permission = "</span> +</span><br><span class="line">                                            bp.name + <span class="string">", userId = "</span> + userId +</span><br><span class="line">                                            <span class="string">", uid = "</span> + pkg.mSharedUserId);</span><br><span class="line">                                    <span class="comment">///@&#125;</span></span><br><span class="line">                                    flags |= FLAG_PERMISSION_REVIEW_REQUIRED;</span><br><span class="line">                                    <span class="comment">// We changed the flags, hence have to write.</span></span><br><span class="line">                                    changedRuntimePermissionUserIds = ArrayUtils.appendInt(</span><br><span class="line">                                            changedRuntimePermissionUserIds, userId);</span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125;</span><br><span class="line">            <span class="comment">// runtime权限</span></span><br><span class="line">                            <span class="keyword">if</span> (permissionsState.grantRuntimePermission(bp, userId)</span><br><span class="line">                                    != PermissionsState.PERMISSION_OPERATION_FAILURE) &#123;</span><br><span class="line">                                <span class="comment">// We changed the permission, hence have to write.</span></span><br><span class="line">                                changedRuntimePermissionUserIds = ArrayUtils.appendInt(</span><br><span class="line">                                        changedRuntimePermissionUserIds, userId);</span><br><span class="line">                            &#125;</span><br><span class="line">                        <span class="comment">/// M: CTA requirement - review UI for all apps  @&#123;</span></span><br><span class="line">                        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (appSupportsRuntimePermissions &amp;&amp;</span><br><span class="line">                                pkgReviewRequired) &#123;</span><br><span class="line">                            <span class="keyword">if</span> (CtaUtils.isPlatformPermission(bp.sourcePackage, bp.name)) &#123;</span><br><span class="line">                                <span class="keyword">if</span> ((flags &amp; FLAG_PERMISSION_REVIEW_REQUIRED) == <span class="number">0</span> &amp;&amp;</span><br><span class="line">                                        (flags &amp; PackageManager.FLAG_PERMISSION_SYSTEM_FIXED)</span><br><span class="line">                                        == <span class="number">0</span>) &#123;</span><br><span class="line">                                    Slog.d(TAG, <span class="string">"add review UI for non-legacy pkg = "</span> +</span><br><span class="line">                                            pkg.packageName + <span class="string">", permission = "</span> +</span><br><span class="line">                                            bp.name + <span class="string">", userId = "</span> + userId +</span><br><span class="line">                                            <span class="string">", uid = "</span> + pkg.mSharedUserId);</span><br><span class="line">                                    flags |= FLAG_PERMISSION_REVIEW_REQUIRED;</span><br><span class="line">                                    <span class="comment">// We changed the flags, hence have to write.</span></span><br><span class="line">                                    changedRuntimePermissionUserIds = ArrayUtils.appendInt(</span><br><span class="line">                                            changedRuntimePermissionUserIds, userId);</span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="comment">///@&#125;</span></span><br><span class="line">                        <span class="comment">// Propagate the permission flags.</span></span><br><span class="line">                        permissionsState.updatePermissionFlags(bp, userId, flags, flags);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">case</span> GRANT_UPGRADE: &#123;</span><br><span class="line">                    <span class="comment">// Grant runtime permissions for a previously held install permission.</span></span><br><span class="line">                    PermissionState permissionState = origPermissions</span><br><span class="line">                            .getInstallPermissionState(bp.name);</span><br><span class="line">                    <span class="keyword">final</span> <span class="keyword">int</span> flags = permissionState != <span class="keyword">null</span> ? permissionState.getFlags() : <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">if</span> (origPermissions.revokeInstallPermission(bp)</span><br><span class="line">                            != PermissionsState.PERMISSION_OPERATION_FAILURE) &#123;</span><br><span class="line">                        <span class="comment">// 跟新应用的权限</span></span><br><span class="line">                        origPermissions.updatePermissionFlags(bp, UserHandle.USER_ALL,</span><br><span class="line">                                PackageManager.MASK_PERMISSION_FLAGS, <span class="number">0</span>);</span><br><span class="line">                        changedInstallPermission = <span class="keyword">true</span>;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// If the permission runtime-permissions.xmlis not to be promoted to runtime we ignore it and</span></span><br><span class="line">                    <span class="comment">// also its other flags as they are not applicable to install permissions.</span></span><br><span class="line">                    <span class="keyword">if</span> ((flags &amp; PackageManager.FLAG_PERMISSION_REVOKE_ON_UPGRADE) == <span class="number">0</span>) &#123;</span><br><span class="line">                        <span class="keyword">for</span> (<span class="keyword">int</span> userId : currentUserIds) &#123;</span><br><span class="line">                            <span class="keyword">if</span> (permissionsState.grantRuntimePermission(bp, userId) !=</span><br><span class="line">                                    PermissionsState.PERMISSION_OPERATION_FAILURE) &#123;</span><br><span class="line">                                <span class="comment">// Transfer the permission flags.</span></span><br><span class="line">                                permissionsState.updatePermissionFlags(bp, userId,</span><br><span class="line">                                        flags, flags);</span><br><span class="line">                                <span class="comment">// If we granted the permission, we have to write.</span></span><br><span class="line">                                changedRuntimePermissionUserIds = ArrayUtils.appendInt(</span><br><span class="line">                                        changedRuntimePermissionUserIds, userId);</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">default</span>: &#123;</span><br><span class="line">                    <span class="keyword">if</span> (packageOfInterest == <span class="keyword">null</span></span><br><span class="line">                            || packageOfInterest.equals(pkg.packageName)) &#123;</span><br><span class="line">                        Slog.w(TAG, <span class="string">"Not granting permission "</span> + perm</span><br><span class="line">                                + <span class="string">" to package "</span> + pkg.packageName</span><br><span class="line">                                + <span class="string">" because it was previously installed without"</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (permissionsState.revokeInstallPermission(bp) !=</span><br><span class="line">                    PermissionsState.PERMISSION_OPERATION_FAILURE) &#123;</span><br><span class="line">                <span class="comment">// Also drop the permission flags.</span></span><br><span class="line">                permissionsState.updatePermissionFlags(bp, UserHandle.USER_ALL,</span><br><span class="line">                        PackageManager.MASK_PERMISSION_FLAGS, <span class="number">0</span>);</span><br><span class="line">                changedInstallPermission = <span class="keyword">true</span>;</span><br><span class="line">                Slog.i(TAG, <span class="string">"Un-granting permission "</span> + perm</span><br><span class="line">                        + <span class="string">" from package "</span> + pkg.packageName</span><br><span class="line">                        + <span class="string">" (protectionLevel="</span> + bp.protectionLevel</span><br><span class="line">                        + <span class="string">" flags=0x"</span> + Integer.toHexString(pkg.applicationInfo.flags)</span><br><span class="line">                        + <span class="string">")"</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> ((bp.protectionLevel&amp;PermissionInfo.PROTECTION_FLAG_APPOP) == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="comment">// Don't print warning for app op permissions, since it is fine for them</span></span><br><span class="line">                <span class="comment">// not to be granted, there is a UI for the user to decide.</span></span><br><span class="line">                <span class="keyword">if</span> (packageOfInterest == <span class="keyword">null</span> || packageOfInterest.equals(pkg.packageName)) &#123;</span><br><span class="line">                    Slog.w(TAG, <span class="string">"Not granting permission "</span> + perm</span><br><span class="line">                            + <span class="string">" to package "</span> + pkg.packageName</span><br><span class="line">                            + <span class="string">" (protectionLevel="</span> + bp.protectionLevel</span><br><span class="line">                            + <span class="string">" flags=0x"</span> + Integer.toHexString(pkg.applicationInfo.flags)</span><br><span class="line">                            + <span class="string">")"</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((changedInstallPermission || replace) &amp;&amp; !ps.installPermissionsFixed &amp;&amp;</span><br><span class="line">            !isSystemApp(ps) || isUpdatedSystemApp(ps))&#123;</span><br><span class="line">        <span class="comment">// This is the first that we have heard about this package, so the</span></span><br><span class="line">        <span class="comment">// permissions we have now selected are fixed until explicitly</span></span><br><span class="line">        <span class="comment">// changed.</span></span><br><span class="line">        ps.installPermissionsFixed = <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 把runtime权限跟新到runtime-permissions.xml中</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> userId : changedRuntimePermissionUserIds) &#123;</span><br><span class="line">        mSettings.writeRuntimePermissionsForUserLPr(userId, runtimePermissionsRevoked);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>grantPermissionsLPw函数根据权限等级，来赋予权限。注意：这里的安装时赋予的runtime权限是之前已经赋予过此apk的权限才会执行到GRANT_RUNTIME<br>回到上面的精简过程：<br>updateSettingsInternalLI方法中调用updatePermissionsLPw后，最后会调用mSettings.writeLPr();<br>这些权限信息就被写到data/system/packages.xml中了，举例片段代码：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="tag">&lt;<span class="name">package</span> <span class="attr">name</span>=<span class="string">"com.android.settings"</span> <span class="attr">codePath</span>=<span class="string">"/system/priv-app/Settings"</span> <span class="attr">nativeLibraryPath</span>=<span class="string">"/system/priv-app/Settings/lib"</span> <span class="attr">primaryCpuAbi</span>=<span class="string">"arm64-v8a"</span> <span class="attr">publicFlags</span>=<span class="string">"944258629"</span> <span class="attr">privateFlags</span>=<span class="string">"8"</span> <span class="attr">ft</span>=<span class="string">"15f7a5ec8a8"</span> <span class="attr">it</span>=<span class="string">"15f7a5ec8a8"</span> <span class="attr">ut</span>=<span class="string">"15f7a5ec8a8"</span> <span class="attr">version</span>=<span class="string">"25"</span> <span class="attr">sharedUserId</span>=<span class="string">"1000"</span> <span class="attr">isOrphaned</span>=<span class="string">"true"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">sigs</span> <span class="attr">count</span>=<span class="string">"1"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">cert</span> <span class="attr">index</span>=<span class="string">"1"</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">sigs</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">perms</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.BIND_INCALL_SERVICE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.WRITE_SETTINGS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"com.google.android.gm.permission.WRITE_GMAIL"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.CONFIGURE_WIFI_DISPLAY"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.CONFIGURE_DISPLAY_COLOR_MODE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.ACCESS_WIMAX_STATE"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"com.qualcomm.permission.READPROC"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.RESTART_PACKAGES"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.USE_CREDENTIALS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.MODIFY_AUDIO_SETTINGS"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.ACCESS_CHECKIN_PROPERTIES"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">item</span> <span class="attr">name</span>=<span class="string">"android.permission.MODIFY_AUDIO_ROUTING"</span> <span class="attr">granted</span>=<span class="string">"true"</span> <span class="attr">flags</span>=<span class="string">"0"</span> /&gt;</span></span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>1、PMS扫描安装时赋予安装权限</p>
+<p>2、PMS在systemReady函数中调用mDefaultPermissionPolicy.grantDefaultPermissions来赋予运行权限即dangerous权限</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Wossoneri
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://wossoneri.github.io/2019/04/09/[Android][Framework]PackageManagerService-process-app-permission/" title="[Android][Framework]PackageManagerService处理应用权限流程">http://wossoneri.github.io/2019/04/09/[Android][Framework]PackageManagerService-process-app-permission/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+          
+            <a href="/tags/Framework/" rel="tag"><i class="fa fa-tag"></i> Framework</a>
+          
+            <a href="/tags/PackageManagerService/" rel="tag"><i class="fa fa-tag"></i> PackageManagerService</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/02/09/[Android]Background-task-Jobscheduler/" rel="next" title="[Android] 后台任务系列之JobScheduler">
+                <i class="fa fa-chevron-left"></i> [Android] 后台任务系列之JobScheduler
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/12/[Android]Decompile-smali/" rel="prev" title="[Android] Android 逆向之 smali">
+                [Android] Android 逆向之 smali <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460" alt="Wossoneri">
+            
+              <p class="site-author-name" itemprop="name">Wossoneri</p>
+              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">113</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">115</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+            <div class="cc-license motion-element" itemprop="license">
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
+              </a>
+            </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-globe"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#app种类"><span class="nav-number">1.</span> <span class="nav-text">app种类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#system-app"><span class="nav-number">1.1.</span> <span class="nav-text">system app</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#privileged-app"><span class="nav-number">1.2.</span> <span class="nav-text">privileged app</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PMS赋予apk的runtime权限"><span class="nav-number">2.</span> <span class="nav-text">PMS赋予apk的runtime权限</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#入口"><span class="nav-number">2.1.</span> <span class="nav-text">入口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#系统组件赋予Dangerous权限"><span class="nav-number">2.2.</span> <span class="nav-text">系统组件赋予Dangerous权限</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#指定app的指定权限"><span class="nav-number">2.3.</span> <span class="nav-text">指定app的指定权限</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#添加权限grantRuntimePermissionsLPw"><span class="nav-number">2.4.</span> <span class="nav-text">添加权限grantRuntimePermissionsLPw</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PMS赋予apk安装权限"><span class="nav-number">3.</span> <span class="nav-text">PMS赋予apk安装权限</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小结"><span class="nav-number">4.</span> <span class="nav-text">小结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: '1554809400000', 
+            owner: 'wossoneri',
+            repo: 'wossoneri.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
+            
+                client_id: '40b6c719a11e3fca29e8'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

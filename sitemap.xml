@@ -2,16 +2,51 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://wossoneri.github.io/2019/10/12/%5BAndroid%5DDecompile-xposed/</loc>
+    
+    <lastmod>2019-12-06T04:00:18.979Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/09/12/%5BAndroid%5DDecompile-smali/</loc>
+    
+    <lastmod>2019-12-06T03:56:04.475Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/07/16/%5BAndroid%5D%5BFramework%5Dembed-apk-with-so/</loc>
+    
+    <lastmod>2019-12-02T08:12:06.366Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/04/09/%5BAndroid%5D%5BFramework%5DPackageManagerService-process-app-permission/</loc>
+    
+    <lastmod>2019-12-02T04:14:30.731Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/11/18/%5BAndroid%5D%5BFramework%5DSomething-about-activity-recycle/</loc>
+    
+    <lastmod>2019-11-21T12:01:09.526Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://wossoneri.github.io/2019/11/17/%5BAndroid%5D%5BFramework%5DAndroid-permission-2/</loc>
     
-    <lastmod>2019-11-18T05:19:16.634Z</lastmod>
+    <lastmod>2019-11-18T06:17:48.921Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://wossoneri.github.io/2019/01/11/%5BAndroid%5D%5BFramework%5DAndroid-permission-1/</loc>
     
-    <lastmod>2019-11-15T04:22:09.745Z</lastmod>
+    <lastmod>2019-11-18T05:27:42.918Z</lastmod>
     
   </url>
   
@@ -173,6 +208,13 @@
     <loc>http://wossoneri.github.io/2018/07/22/%5BProtocolBuffer%5DProtocol-Buffer-basics-java/</loc>
     
     <lastmod>2018-07-22T10:36:38.253Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/07/10/%5BAndroid%5D%5BFramework%5Dbootchart/</loc>
+    
+    <lastmod>2018-07-10T06:21:11.276Z</lastmod>
     
   </url>
   
