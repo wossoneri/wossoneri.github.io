@@ -2,9 +2,9 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://wossoneri.github.io/2019/12/09/%5BJava%5DBit-mask-code/</loc>
+    <loc>http://wossoneri.github.io/2019/12/09/%5BJava%5DUse-Bit-mask-code-By-EnumSet/</loc>
     
-    <lastmod>2019-12-09T04:05:25.527Z</lastmod>
+    <lastmod>2019-12-09T08:55:52.936Z</lastmod>
     
   </url>
   
@@ -236,13 +236,6 @@
     <loc>http://wossoneri.github.io/2018/06/20/%5BAndroid%5DSecretCode/</loc>
     
     <lastmod>2018-06-20T16:04:45.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/06/12/%5BJava%5DMultiThread/</loc>
-    
-    <lastmod>2018-06-12T18:19:59.000Z</lastmod>
     
   </url>
   

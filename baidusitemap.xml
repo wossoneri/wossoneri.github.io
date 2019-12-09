@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>http://wossoneri.github.io/2019/12/09/%5BJava%5DBit-mask-code/</loc>
+    <loc>http://wossoneri.github.io/2019/12/09/%5BJava%5DUse-Bit-mask-code-By-EnumSet/</loc>
     <lastmod>2019-12-09</lastmod>
   </url>  <url>
     <loc>http://wossoneri.github.io/2019/10/12/%5BAndroid%5DDecompile-xposed/</loc>
@@ -102,9 +102,6 @@
   </url>  <url>
     <loc>http://wossoneri.github.io/2018/06/20/%5BAndroid%5DSecretCode/</loc>
     <lastmod>2018-06-20</lastmod>
-  </url>  <url>
-    <loc>http://wossoneri.github.io/2018/06/12/%5BJava%5DMultiThread/</loc>
-    <lastmod>2018-06-12</lastmod>
   </url>  <url>
     <loc>http://wossoneri.github.io/2018/06/05/%5BLinux%5Destablish-rstp-server/</loc>
     <lastmod>2018-06-04</lastmod>
