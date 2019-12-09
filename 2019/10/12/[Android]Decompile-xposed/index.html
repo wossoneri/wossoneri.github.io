@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Android,xposed,逆向,">
+  <meta name="keywords" content="Android,逆向,xposed,">
 
 
 
@@ -82,14 +82,14 @@
 
 
 <meta name="description" content="简单介绍xposed逆向的一些思路">
-<meta name="keywords" content="Android,xposed,逆向">
+<meta name="keywords" content="Android,逆向,xposed">
 <meta property="og:type" content="article">
 <meta property="og:title" content="[Android] Android 逆向之 xposed">
 <meta property="og:url" content="http://wossoneri.github.io/2019/10/12/[Android]Decompile-xposed/index.html">
 <meta property="og:site_name" content="Wossoneri`s Blog">
 <meta property="og:description" content="简单介绍xposed逆向的一些思路">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-12-06T04:00:18.979Z">
+<meta property="og:updated_time" content="2019-12-06T06:27:25.481Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Android] Android 逆向之 xposed">
 <meta name="twitter:description" content="简单介绍xposed逆向的一些思路">
@@ -361,7 +361,7 @@
                  <i class="fa fa-clock-o"></i>
             </span>
 		        <span class="post-meta-item-text">总记</span>
-            <span class="post-count">2,570 字</span>
+            <span class="post-count">2,593 字</span>
 		        <span class="post-meta-item-text">读完需要</span>
     		    <span class="post-count">11 分</span>
   		  </span>
@@ -456,10 +456,13 @@
 </ol>
 <h3 id="Xposed-Hook微信运动"><a href="#Xposed-Hook微信运动" class="headerlink" title="Xposed Hook微信运动"></a>Xposed Hook微信运动</h3><p>首先在AndroidManifest.xml Application下添加xposed模块</p>
 <figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!--xposed描述--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">meta-data</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:name</span>=<span class="string">"xposeddescription"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:value</span>=<span class="string">"这是一个Xposed例程"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--xposed最低版本53--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">meta-data</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:name</span>=<span class="string">"xposedminversion"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:value</span>=<span class="string">"53"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!--这是一个xposed模块--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">meta-data</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:name</span>=<span class="string">"xposedmodule"</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:value</span>=<span class="string">"true"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+<p>Gradle添加依赖</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">compileOnly 'de.robv.android.xposed:api:82'</span><br><span class="line">compileOnly 'de.robv.android.xposed:api:82:sources'</span><br></pre></td></tr></table></figure>
 <p>然后再assets目录添加一个<code>xposed_init</code>文件供Xposed框架访问，内容为包名：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">com.softard.xposedemo.HookTest</span><br></pre></td></tr></table></figure>
 <p>然后创建我们的HookTest</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HookTest</span> <span class="keyword">implements</span> <span class="title">IXposedHookLoadPackage</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 实现Hook篡改程序</span></span><br><span class="line">    <span class="meta">@SuppressLint</span>(<span class="string">"PrivateApi"</span>)</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleLoadPackage</span><span class="params">(<span class="keyword">final</span> XC_LoadPackage.LoadPackageParam lpparam)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">			<span class="keyword">if</span> (lpparam.packageName.equals(<span class="string">"com.tencent.mm"</span>)) &#123; <span class="comment">// 搞一搞微信</span></span><br><span class="line">            XposedBridge.log(<span class="string">"hoooook wechat"</span>);</span><br><span class="line">            Class&lt;?&gt; clazz1 = Class.forName(</span><br><span class="line">                    <span class="string">"android.hardware.SystemSensorManager$SensorEventQueue"</span>, <span class="keyword">true</span>, lpparam.classLoader);</span><br><span class="line"></span><br><span class="line">            XposedBridge.hookAllMethods(clazz1, <span class="string">"dispatchSensorEvent"</span>, <span class="keyword">new</span> XC_MethodHook() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">beforeHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                    <span class="keyword">int</span> times = XSharedPreferencesUtil.getPref().getInt(<span class="string">"step"</span>, <span class="number">500</span>);</span><br><span class="line"></span><br><span class="line">                    XposedBridge.log(<span class="string">"~~~~~~~Multi times: "</span> + times);</span><br><span class="line">                    XposedBridge.log(<span class="string">"Wechat2222 Sensor param "</span> + ((<span class="keyword">float</span>[]) param.args[<span class="number">1</span>])[<span class="number">0</span>]);</span><br><span class="line">                    ((<span class="keyword">float</span>[]) param.args[<span class="number">1</span>])[<span class="number">0</span>] = ((<span class="keyword">float</span>[]) param.args[<span class="number">1</span>])[<span class="number">0</span>] * times;</span><br><span class="line">                    XposedBridge.log(<span class="string">"final Sensor param "</span> + ((<span class="keyword">float</span>[]) param.args[<span class="number">1</span>])[<span class="number">0</span>]);</span><br><span class="line">                    <span class="keyword">super</span>.beforeHookedMethod(param);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">afterHookedMethod</span><span class="params">(MethodHookParam param)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">                    <span class="keyword">super</span>.afterHookedMethod(param);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line"></span><br><span class="line">        &#125;*/      </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>To be continued</p>
 
       
     </div>
@@ -526,9 +529,9 @@
           
             <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
           
-            <a href="/tags/xposed/" rel="tag"><i class="fa fa-tag"></i> xposed</a>
-          
             <a href="/tags/逆向/" rel="tag"><i class="fa fa-tag"></i> 逆向</a>
+          
+            <a href="/tags/xposed/" rel="tag"><i class="fa fa-tag"></i> xposed</a>
           
         </div>
       
@@ -639,7 +642,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">113</span>
+                  <span class="site-state-item-count">114</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -661,7 +664,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">116</span>
+                  <span class="site-state-item-count">117</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
