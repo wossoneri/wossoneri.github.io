@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://wossoneri.github.io/2019/05/10/%5BAndroid%5Dwhy-Looper-loop-will-not-block-main-thread/</loc>
+    <lastmod>2019-12-10</lastmod>
+  </url>  <url>
+    <loc>http://wossoneri.github.io/2018/05/10/%5BAndroid%5Dhandler-message-delivery/</loc>
+    <lastmod>2019-12-10</lastmod>
+  </url>  <url>
+    <loc>http://wossoneri.github.io/2018/06/03/%5BAndroid%5D%5BFramework%5Dhow-does-Activity-start/</loc>
+    <lastmod>2019-12-09</lastmod>
+  </url>  <url>
     <loc>http://wossoneri.github.io/2019/12/09/%5BJava%5DUse-Bit-mask-code-By-EnumSet/</loc>
     <lastmod>2019-12-09</lastmod>
   </url>  <url>
@@ -36,9 +45,6 @@
   </url>  <url>
     <loc>http://wossoneri.github.io/2018/09/15/%5BAndroid%5D%5BFramework%5Dcreate-system-service/</loc>
     <lastmod>2019-10-16</lastmod>
-  </url>  <url>
-    <loc>http://wossoneri.github.io/2018/05/10/%5BAndroid%5Dhandler-message-delivery/</loc>
-    <lastmod>2019-10-13</lastmod>
   </url>  <url>
     <loc>http://wossoneri.github.io/2017/06/19/%5BAndroid%5D%5BFramework%5DPlayAutoInstall/</loc>
     <lastmod>2019-02-14</lastmod>
@@ -105,9 +111,6 @@
   </url>  <url>
     <loc>http://wossoneri.github.io/2018/06/05/%5BLinux%5Destablish-rstp-server/</loc>
     <lastmod>2018-06-04</lastmod>
-  </url>  <url>
-    <loc>http://wossoneri.github.io/2018/06/03/%5BAndroid%5D%5BFramework%5Dhow-does-Activity-start/</loc>
-    <lastmod>2018-06-03</lastmod>
   </url>  <url>
     <loc>http://wossoneri.github.io/2018/05/17/%5BAndroid%5D%5BFramework%5DActivityThread/</loc>
     <lastmod>2018-05-16</lastmod>

@@ -90,7 +90,7 @@
 <meta property="og:description" content="今天看文章的时候看到一个对Android消息传递机制的描述，回想了一下这块的知识点，感觉有必要再细致地整理一番">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/handler.png?raw=true">
-<meta property="og:updated_time" content="2019-10-13T09:20:18.025Z">
+<meta property="og:updated_time" content="2019-12-10T07:55:18.437Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[Android] Handler消息传递机制">
 <meta name="twitter:description" content="今天看文章的时候看到一个对Android消息传递机制的描述，回想了一下这块的知识点，感觉有必要再细致地整理一番">
@@ -363,9 +363,9 @@
                  <i class="fa fa-clock-o"></i>
             </span>
 		        <span class="post-meta-item-text">总记</span>
-            <span class="post-count">6,201 字</span>
+            <span class="post-count">6,122 字</span>
 		        <span class="post-meta-item-text">读完需要</span>
-    		    <span class="post-count">28 分</span>
+    		    <span class="post-count">27 分</span>
   		  </span>
            
          
@@ -544,14 +544,6 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> H mH = <span class="keyword">new</span> H();    </span><br><span class="line"><span class="function"><span class="keyword">final</span> Handler <span class="title">getHandler</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> mH;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>H这个Handler基本处理了所有与应用有关的操作。具体的自己可以看看源码：<a href="http://androidxref.com/8.0.0_r4/xref/frameworks/base/core/java/android/app/ActivityThread.java#1462" target="_blank" rel="noopener">H源码</a> </p>
 <p>至此，Android的Handler消息传递机制大概总结完了。不过又引出一个新的问题，ActivityThread的启动流程以及Application的启动过程和Activity的启动过程。这几天会抽时间整理一下。</p>
-<h2 id="相关阅读"><a href="#相关阅读" class="headerlink" title="相关阅读"></a>相关阅读</h2><p>也是搜了一些资料，但重复的很多。</p>
-<p><a href="http://www.cnblogs.com/codingmyworld/archive/2011/09/14/2174255.html" target="_blank" rel="noopener">http://www.cnblogs.com/codingmyworld/archive/2011/09/14/2174255.html</a></p>
-<p><a href="https://blog.csdn.net/u011240877/article/details/72892321" target="_blank" rel="noopener">https://blog.csdn.net/u011240877/article/details/72892321</a></p>
-<p><a href="https://blog.csdn.net/u011240877/article/details/72905631" target="_blank" rel="noopener">https://blog.csdn.net/u011240877/article/details/72905631</a></p>
-<p><a href="https://juejin.im/post/5a756b27f265da4e7d6018e6" target="_blank" rel="noopener">https://juejin.im/post/5a756b27f265da4e7d6018e6</a></p>
-<p><a href="https://hit-alibaba.github.io/interview/Android/basic/Android-handler-thread-looper.html" target="_blank" rel="noopener">https://hit-alibaba.github.io/interview/Android/basic/Android-handler-thread-looper.html</a></p>
-<p><a href="https://blog.csdn.net/rain_butterfly/article/details/48756797" target="_blank" rel="noopener">https://blog.csdn.net/rain_butterfly/article/details/48756797</a></p>
-<p><a href="https://www.cnblogs.com/angrycode/p/6576905.html" target="_blank" rel="noopener">https://www.cnblogs.com/angrycode/p/6576905.html</a></p>
 
       
     </div>
@@ -735,7 +727,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">113</span>
+                  <span class="site-state-item-count">114</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -757,7 +749,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">117</span>
+                  <span class="site-state-item-count">118</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -837,7 +829,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#经验之谈"><span class="nav-number">1.</span> <span class="nav-text">经验之谈</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#android-os-Message"><span class="nav-number">2.</span> <span class="nav-text">android.os.Message</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#android-os-MessageQueue"><span class="nav-number">3.</span> <span class="nav-text">android.os.MessageQueue</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#android-os-Looper"><span class="nav-number">4.</span> <span class="nav-text">android.os.Looper</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#android-os-Handler"><span class="nav-number">5.</span> <span class="nav-text">android.os.Handler</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#几个问题"><span class="nav-number">6.</span> <span class="nav-text">几个问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#这几个概念间的关系"><span class="nav-number">6.1.</span> <span class="nav-text">这几个概念间的关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#跨线程通信"><span class="nav-number">6.2.</span> <span class="nav-text">跨线程通信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#getMainLooper-amp-prepareMainLooper"><span class="nav-number">6.3.</span> <span class="nav-text">getMainLooper&amp;prepareMainLooper</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相关阅读"><span class="nav-number">7.</span> <span class="nav-text">相关阅读</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#经验之谈"><span class="nav-number">1.</span> <span class="nav-text">经验之谈</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#android-os-Message"><span class="nav-number">2.</span> <span class="nav-text">android.os.Message</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#android-os-MessageQueue"><span class="nav-number">3.</span> <span class="nav-text">android.os.MessageQueue</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#android-os-Looper"><span class="nav-number">4.</span> <span class="nav-text">android.os.Looper</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#android-os-Handler"><span class="nav-number">5.</span> <span class="nav-text">android.os.Handler</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#几个问题"><span class="nav-number">6.</span> <span class="nav-text">几个问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#这几个概念间的关系"><span class="nav-number">6.1.</span> <span class="nav-text">这几个概念间的关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#跨线程通信"><span class="nav-number">6.2.</span> <span class="nav-text">跨线程通信</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#getMainLooper-amp-prepareMainLooper"><span class="nav-number">6.3.</span> <span class="nav-text">getMainLooper&amp;prepareMainLooper</span></a></li></ol></li></ol></div>
             
 
           </div>
