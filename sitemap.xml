@@ -2,6 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://wossoneri.github.io/2019/10/15/%5BAndroid%5D%5BSecurity%5DDefence-policy/</loc>
+    
+    <lastmod>2019-12-18T16:01:51.054Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/10/12/%5BAndroid%5D%5BSecurity%5DDecompile-xposed/</loc>
+    
+    <lastmod>2019-12-18T15:59:11.001Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/09/12/%5BAndroid%5D%5BSecurity%5DDecompile-smali/</loc>
+    
+    <lastmod>2019-12-18T08:46:36.599Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://wossoneri.github.io/2019/05/10/%5BAndroid%5Dwhy-Looper-loop-will-not-block-main-thread/</loc>
     
     <lastmod>2019-12-10T08:40:09.603Z</lastmod>
@@ -30,23 +51,9 @@
   </url>
   
   <url>
-    <loc>http://wossoneri.github.io/2019/10/12/%5BAndroid%5DDecompile-xposed/</loc>
-    
-    <lastmod>2019-12-06T06:27:25.481Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://wossoneri.github.io/2019/11/18/%5BAndroid%5D%5BFramework%5DSomething-about-activity-recycle/</loc>
     
     <lastmod>2019-12-06T04:33:34.915Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2019/09/12/%5BAndroid%5DDecompile-smali/</loc>
-    
-    <lastmod>2019-12-06T03:56:04.475Z</lastmod>
     
   </url>
   

@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Android,逆向,安全,xposed,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="如何防止别人逆向我们的应用">
+<meta name="keywords" content="Android,逆向,安全,xposed">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Android][Security] Android 逆向之安全防护基本策略">
+<meta property="og:url" content="http://wossoneri.github.io/2019/10/15/[Android][Security]Defence-policy/index.html">
+<meta property="og:site_name" content="Wossoneri`s Blog">
+<meta property="og:description" content="如何防止别人逆向我们的应用">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://awps-assets.meituan.net/mit-x/blog-images-bundle-2018a/73b15237.png">
+<meta property="og:image" content="https://awps-assets.meituan.net/mit-x/blog-images-bundle-2018a/aad203b3.png">
+<meta property="og:updated_time" content="2019-12-18T16:01:51.054Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[Android][Security] Android 逆向之安全防护基本策略">
+<meta name="twitter:description" content="如何防止别人逆向我们的应用">
+<meta name="twitter:image" content="https://awps-assets.meituan.net/mit-x/blog-images-bundle-2018a/73b15237.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '6234852363740382000',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wossoneri.github.io/2019/10/15/[Android][Security]Defence-policy/">
+
+
+
+
+
+  <title>[Android][Security] Android 逆向之安全防护基本策略 | Wossoneri`s Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-70716047-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wossoneri`s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2019/10/15/[Android][Security]Defence-policy/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wossoneri">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wossoneri`s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[Android][Security] Android 逆向之安全防护基本策略</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-15T23:00:00+08:00">
+                2019-10-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/10/15/[Android][Security]Defence-policy/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2019/10/15/[Android][Security]Defence-policy/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+	
+  		  <span class="post-letters-count">
+            &nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+                 <i class="fa fa-clock-o"></i>
+            </span>
+		        <span class="post-meta-item-text">总记</span>
+            <span class="post-count">1,966 字</span>
+		        <span class="post-meta-item-text">读完需要</span>
+    		    <span class="post-count">8 分</span>
+  		  </span>
+           
+         
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  如何防止别人逆向我们的应用
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="对抗反编译"><a href="#对抗反编译" class="headerlink" title="对抗反编译"></a>对抗反编译</h2><h3 id="混淆"><a href="#混淆" class="headerlink" title="混淆"></a>混淆</h3><p>使用混淆主要可以减小包的大小。混淆对于安全保护来说，只是增加了阅读难度而已。混淆不会把关键代码混淆掉，比如MainActivity，Application等，可以通过分析smali和阅读jar包定位代码。</p>
+<p>资源混淆也是换汤不换药，针对加载资源代码getString(2131230929)进行进制转换，变成16进制，从public.xml里面查找对应的资源，就能定位到资源内容。</p>
+<h3 id="签名保护"><a href="#签名保护" class="headerlink" title="签名保护"></a>签名保护</h3><p>这个是防止二次打包验证，但是，对于java代码的签名保护，可以很容易地进行修改smali代码绕过验证。</p>
+<h3 id="手动注册native方法"><a href="#手动注册native方法" class="headerlink" title="手动注册native方法"></a>手动注册native方法</h3><p>安全性也不是很高，只是一种会增加破解成本的方式。一般Native方法根据命名规则生成头文件然后写cpp代码，这种方式属于静态注册。手动动态注册是复写JNI_OnLoad方法，在该函数中手动注册方法名和对应的方法签名，方法名可以自定义，这样避免了静态注册的命名规则，让破解者难以根据规律找到要破解的方法。不过破解者可以分析JNI_OnLoad函数的汇编代码找到register函数找到注册的native方法。</p>
+<h3 id="反调试检测"><a href="#反调试检测" class="headerlink" title="反调试检测"></a>反调试检测</h3><p>IDA进行so动态调试是基于进程的注入技术，然后使用linux中ptrace机制，进行调试目标进程的附加操作。</p>
+<p>ptrace机制有一个特点：如果一个进程被调试了，在它进程status文件中有一个字段TracerPid会记录调试者的进程id值</p>
+<p>cat /proc/pidxx/status 可以看到TracerPid字段</p>
+<p>方法是检测该TracerPid值，大于0就退出。但破解者会通过IDA工具给JNI_OnLoad下断点，检测轮询代码，使用nop指令跳过检测指令。</p>
+<h2 id="对抗Xposed"><a href="#对抗Xposed" class="headerlink" title="对抗Xposed"></a>对抗Xposed</h2><h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><h4 id="Zygote"><a href="#Zygote" class="headerlink" title="Zygote"></a>Zygote</h4><p>在Android系统中App进程都是由Zygote进程“孵化”出来的。Zygote进程在启动时会创建一个虚拟机实例，每当它“孵化”一个新的应用程序进程时，都会将这个Dalvik虚拟机实例复制到新的App进程里面去，从而使每个App进程都有一个独立的Dalvik虚拟机实例。</p>
+<p>Zygote进程在启动的过程中，除了会创建一个虚拟机实例之外还会将<code>Java Rumtime</code>加载到进程中并注册一些Android核心类的JNI（Java Native Interface，Java本地接口）方法。一个App进程被Zygote进程孵化出来的时候，不仅会获得Zygote进程中的虚拟机实例拷贝，还会与Zygote进程一起共享<code>Java Rumtime</code>，也就是可以将<code>XposedBridge.jar</code>这个Jar包加载到每一个Android App进程中去。安装<code>Xposed Installer</code>之后，系统<code>app_process</code>将被替换，然后利用Java的<code>Reflection</code>机制覆写内置方法，实现功能劫持。下面我们来看一下细节。</p>
+<h4 id="Hook和Replace"><a href="#Hook和Replace" class="headerlink" title="Hook和Replace"></a>Hook和Replace</h4><p><code>Xposed Installer</code>框架中真正起作用的是对方法的Hook和Replace。在Android系统启动的时候，Zygote进程加载<code>XposedBridge.jar</code>，将所有需要替换的Method通过<code>JNI</code>方法<code>hookMethodNative</code>指向Native方法<code>xposedCallHandler</code>，这个方法再通过调用<code>handleHookedMethod</code>这个Java方法来调用被劫持的方法转入Hook逻辑。</p>
+<p>上面提到的<code>hookMethodNative</code>是<code>XposedBridge.jar</code>中的私有的本地方法，它将一个方法对象作为传入参数并修改Dalvik虚拟机中对于该方法的定义，把该方法的类型改变为Native并将其实现指向另外一个B方法。</p>
+<p>换言之，当调用那个被Hook的A方法时，其实调用的是B方法，调用者是不知道的。在hookMethodNative的实现中，会调用<code>XposedBridge.jar</code>中的<code>handleHookedMethod</code>这个方法来传递参数。<code>handleHookedMethod</code>这个方法类似于一个统一调度的Dispatch例程，其对应的底层的C++函数是<code>xposedCallHandler</code>。而<code>handleHookedMethod</code>实现里面会根据一个全局结构<code>hookedMethodCallbacks</code>来选择相应的Hook函数并调用他们的<code>before</code>和<code>after</code>函数，当多模块同时Hook一个方法的时候<code>Xposed</code>会自动根据<code>Module</code>的优先级来排序。</p>
+<p>调用顺序如下：A.before -&gt; B.before -&gt; original method -&gt; B.after -&gt; A.after。</p>
+<p><img src="https://awps-assets.meituan.net/mit-x/blog-images-bundle-2018a/73b15237.png" alt="img"></p>
+<h3 id="检测"><a href="#检测" class="headerlink" title="检测"></a>检测</h3><p>在做Android App的安全防御中检测点众多，<code>Xposed Installer</code>检测是必不可少的一环。对于Xposed框架的防御总体上分为两层：Java层和Native层。</p>
+<h4 id="Java层检测"><a href="#Java层检测" class="headerlink" title="Java层检测"></a>Java层检测</h4><p>需要说明的是，Java层的检测基本只能检测出基础的<code>Xposed Installer</code>框架，而不能防护其对App内方法的Hook，如果框架中带有反检测则Java层检测大多不起作用。</p>
+<p>下面列出Java层的检测点，仅供参考。</p>
+<p><strong>① 通过PackageManager查看安装列表</strong></p>
+<p>最简单的检测，我们调用Android提供的<code>PackageManager</code>的API来遍历系统中App的安装情况来辨别是否有安装<code>Xposed Installer</code>相关的软件包。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">PackageManager packageManager = context.getPackageManager();</span><br><span class="line">List applicationInfoList = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);</span><br><span class="line">for (ApplicationInfo applicationInfo: applicationInfoList) &#123;</span><br><span class="line">    if (applicationInfo.packageName.equals(&quot;de.robv.android.xposed.installer&quot;)) &#123;</span><br><span class="line">        // is Xposed TODO... &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>通常情况下使用<code>Xposed Installer</code>框架都会屏蔽对其的检测，即Hook掉<code>PackageManager的getInstalledApplications</code>方法的返回值，以便过滤掉<code>de.robv.android.xposed.installer</code>来躲避这种检测。</p>
+<p><strong>② 自造异常读取栈</strong></p>
+<p><code>Xposed Installer</code>框架对每个由Zygote孵化的App进程都会介入，因此在程序方法异常栈中就会出现<code>Xposed</code>相关的“身影”，我们可以通过自造异常<code>Catch</code>来读取异常堆栈的形式，用以检查其中是否存在<code>Xposed</code>的调用方法。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">try &#123;</span><br><span class="line">    throw new Exception(&quot;blah&quot;);</span><br><span class="line">&#125; catch(Exception e) &#123;</span><br><span class="line">    for (StackTraceElement stackTraceElement: e.getStackTrace()) &#123;</span><br><span class="line">        // stackTraceElement.getClassName() stackTraceElement.getMethodName() 是否存 在Xposed</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">E/GEnvironment: no such table: preference (code 1): while compiling: SELECT keyguard_show_livewallpaper FROM preference</span><br><span class="line">...</span><br><span class="line">at com.meituan.test.extpackage.ExtPackageManager.checkUpdate(ExtPackageManager.java:127)</span><br><span class="line">at com.meituan.test.MiFGService$1.run(MiFGService.java:41)</span><br><span class="line">at android.os.Looper.loop(Looper.java:136)</span><br><span class="line">at android.app.ActivityThread.main(ActivityThread.java:5072)</span><br><span class="line">at java.lang.reflect.Method.invokeNative(Native Method)</span><br><span class="line">at java.lang.reflect.Method.invoke(Method.java:515)</span><br><span class="line">...</span><br><span class="line">at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:793)</span><br><span class="line">at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:609)</span><br><span class="line">at de.robv.android.xposed.XposedBridge.main(XposedBridge.java:132) //发现Xposed模块</span><br><span class="line">at dalvik.system.NativeStart.main(Native Method)</span><br></pre></td></tr></table></figure>
+<p><strong>③ 检查关键Java方法被变为Native JNI方法</strong></p>
+<p>当一个Android App中的<code>Java</code>方法被莫名其妙地变成了<code>Native JNI</code>方法，则非常有可能被<code>Xposed Hook</code>了。由此可得，检查关键方法是不是变成<code>Native JNI</code>方法，也可以检测是否被Hook。</p>
+<p>通过反射调用<code>Modifier.isNative(method.getModifiers())</code>方法可以校验方法是不是<code>Native JNI</code>方法，Xposed同样可以篡改<code>isNative</code>这个方法的返回值。</p>
+<p><strong>④ 反射读取XposedHelper类字段</strong></p>
+<p>通过反射遍历<code>XposedHelper</code>类中的<code>fieldCache</code>、<code>methodCache</code>、<code>constructorCache</code>变量，读取HashMap缓存字段，如字段项的key中包含App中唯一或敏感方法等，即可认为有<code>Xposed</code>注入。</p>
+<p><img src="https://awps-assets.meituan.net/mit-x/blog-images-bundle-2018a/aad203b3.png" alt="img"></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">boolean methodCache = CheckHook(clsXposedHelper, &quot;methodCache&quot;, keyWord);</span><br><span class="line"></span><br><span class="line">private static boolean CheckHook(Object cls, String filedName, String str) &#123;</span><br><span class="line">    boolean result = false;</span><br><span class="line">    String interName;</span><br><span class="line">    Set keySet;</span><br><span class="line">    try &#123;</span><br><span class="line">        Field filed = cls.getClass().getDeclaredField(filedName);</span><br><span class="line">        filed.setAccessible(true);</span><br><span class="line">        keySet = filed.get(cls)).keySet();</span><br><span class="line">        if (!keySet.isEmpty()) &#123;</span><br><span class="line">            for (Object aKeySet: keySet) &#123;</span><br><span class="line">                interName = aKeySet.toString().toLowerCase();</span><br><span class="line">                if (interName.contains(&quot;meituan&quot;) || interName.contains(&quot;dianping&quot;) ) &#123;</span><br><span class="line">                    result = true;</span><br><span class="line">                    break;</span><br><span class="line">                	&#125; </span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">		...</span><br><span class="line">    return result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Native层检测"><a href="#Native层检测" class="headerlink" title="Native层检测"></a>Native层检测</h4><p>由上文可知，无论在Java层做何种检测，Xposed都可以通过Hook相关的API并返回指定的结果来绕过检测，只要有方法就可以被Hook。如果仅在Java层检测就显得很徒劳，为了有效提搞检测准确率，就须做到Java和Native层同时检测。每个App在系统中都有对应的加载库列表，这些加载库列表在<code>/proc/</code>下对应的<code>pid/maps</code>文件中描述，在Native层读取<code>/proc/self/maps</code>文件不失为检测Xposed Installer的有效办法之一。由于<code>Xposed Installer</code>通常只能Hook Java层，因此在Native层使用C来解析<code>/proc/self/maps</code>文件，搜检App自身加载的库中是否存在<code>XposedBridge.jar</code>、相关的Dex、Jar和So库等文件。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bool is_xposed()</span><br><span class="line">&#123;</span><br><span class="line">   bool rel = false;</span><br><span class="line">   FILE *fp = NULL;</span><br><span class="line">   char* filepath = &quot;/proc/self/maps&quot;;</span><br><span class="line">   ...</span><br><span class="line">   string xp_name = &quot;XposedBridge.jar&quot;;</span><br><span class="line">   fp = fopen(filepath,&quot;r&quot;)) </span><br><span class="line">   while (!feof(fp))                                 </span><br><span class="line">   &#123;</span><br><span class="line">       fgets(strLine,BUFFER_SIZE,fp);                    </span><br><span class="line">       origin_str = strLine;</span><br><span class="line">       str = trim(origin_str);</span><br><span class="line">       if (contain(str,xp_name))</span><br><span class="line">       &#123;</span><br><span class="line">           rel = true; //检测到Xposed模块</span><br><span class="line">           break;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Wossoneri
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://wossoneri.github.io/2019/10/15/[Android][Security]Defence-policy/" title="[Android][Security] Android 逆向之安全防护基本策略">http://wossoneri.github.io/2019/10/15/[Android][Security]Defence-policy/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+          
+            <a href="/tags/逆向/" rel="tag"><i class="fa fa-tag"></i> 逆向</a>
+          
+            <a href="/tags/安全/" rel="tag"><i class="fa fa-tag"></i> 安全</a>
+          
+            <a href="/tags/xposed/" rel="tag"><i class="fa fa-tag"></i> xposed</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/12/[Android][Security]Decompile-xposed/" rel="next" title="[Android][Security] Android 逆向之 xposed">
+                <i class="fa fa-chevron-left"></i> [Android][Security] Android 逆向之 xposed
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/11/05/[Android][Framework]HowDoesAndroidManifestWork/" rel="prev" title="[Android][Framework] PackageManagerService之AndroidManifest的解析">
+                [Android][Framework] PackageManagerService之AndroidManifest的解析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460" alt="Wossoneri">
+            
+              <p class="site-author-name" itemprop="name">Wossoneri</p>
+              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">115</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">119</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+            <div class="cc-license motion-element" itemprop="license">
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
+              </a>
+            </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-globe"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#对抗反编译"><span class="nav-number">1.</span> <span class="nav-text">对抗反编译</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#混淆"><span class="nav-number">1.1.</span> <span class="nav-text">混淆</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#签名保护"><span class="nav-number">1.2.</span> <span class="nav-text">签名保护</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#手动注册native方法"><span class="nav-number">1.3.</span> <span class="nav-text">手动注册native方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#反调试检测"><span class="nav-number">1.4.</span> <span class="nav-text">反调试检测</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对抗Xposed"><span class="nav-number">2.</span> <span class="nav-text">对抗Xposed</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原理"><span class="nav-number">2.1.</span> <span class="nav-text">原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Zygote"><span class="nav-number">2.1.1.</span> <span class="nav-text">Zygote</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Hook和Replace"><span class="nav-number">2.1.2.</span> <span class="nav-text">Hook和Replace</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#检测"><span class="nav-number">2.2.</span> <span class="nav-text">检测</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Java层检测"><span class="nav-number">2.2.1.</span> <span class="nav-text">Java层检测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Native层检测"><span class="nav-number">2.2.2.</span> <span class="nav-text">Native层检测</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: '1571151600000', 
+            owner: 'wossoneri',
+            repo: 'wossoneri.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
+            
+                client_id: '40b6c719a11e3fca29e8'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

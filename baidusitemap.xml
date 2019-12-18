@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://wossoneri.github.io/2019/10/15/%5BAndroid%5D%5BSecurity%5DDefence-policy/</loc>
+    <lastmod>2019-12-18</lastmod>
+  </url>  <url>
+    <loc>http://wossoneri.github.io/2019/10/12/%5BAndroid%5D%5BSecurity%5DDecompile-xposed/</loc>
+    <lastmod>2019-12-18</lastmod>
+  </url>  <url>
+    <loc>http://wossoneri.github.io/2019/09/12/%5BAndroid%5D%5BSecurity%5DDecompile-smali/</loc>
+    <lastmod>2019-12-18</lastmod>
+  </url>  <url>
     <loc>http://wossoneri.github.io/2019/05/10/%5BAndroid%5Dwhy-Looper-loop-will-not-block-main-thread/</loc>
     <lastmod>2019-12-10</lastmod>
   </url>  <url>
@@ -13,13 +22,7 @@
     <loc>http://wossoneri.github.io/2019/12/09/%5BJava%5DUse-Bit-mask-code-By-EnumSet/</loc>
     <lastmod>2019-12-09</lastmod>
   </url>  <url>
-    <loc>http://wossoneri.github.io/2019/10/12/%5BAndroid%5DDecompile-xposed/</loc>
-    <lastmod>2019-12-06</lastmod>
-  </url>  <url>
     <loc>http://wossoneri.github.io/2019/11/18/%5BAndroid%5D%5BFramework%5DSomething-about-activity-recycle/</loc>
-    <lastmod>2019-12-06</lastmod>
-  </url>  <url>
-    <loc>http://wossoneri.github.io/2019/09/12/%5BAndroid%5DDecompile-smali/</loc>
     <lastmod>2019-12-06</lastmod>
   </url>  <url>
     <loc>http://wossoneri.github.io/2018/07/16/%5BAndroid%5D%5BFramework%5Dembed-apk-with-so/</loc>
