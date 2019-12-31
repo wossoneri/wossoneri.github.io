@@ -1,422 +1,691 @@
-<!DOCTYPE html>
-
-
-
-  
-
-
-<html class="theme-next mist use-motion" lang="zh-Hans">
-<head><meta name="generator" content="Hexo 3.8.0">
-  <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="theme-color" content="#222">
-
-
-
-
-
-
-
-
-
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
-
-
-
-
-
-
-
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
-
-<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
-
-
-  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
-
-
-
-
-
-  <meta name="keywords" content="iOS,Objective-C,KVO,KVC,">
-
-
-
-
-
-  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml">
-
-
-
-
-
-
-<meta name="description" content="开发iOS经常会看见KVO和KVC这两个概念，特地了解了一下。发现很简单。">
-<meta name="keywords" content="iOS,Objective-C,KVO,KVC">
-<meta property="og:type" content="article">
-<meta property="og:title" content="[Objective-C] KVC 和 KVO">
-<meta property="og:url" content="http://wossoneri.github.io/2016/04/29/[Objective-C]KVC-and-KVO/index.html">
-<meta property="og:site_name" content="Wossoneri`s Blog">
-<meta property="og:description" content="开发iOS经常会看见KVO和KVC这两个概念，特地了解了一下。发现很简单。">
-<meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2016-06-13T02:23:29.000Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="[Objective-C] KVC 和 KVO">
-<meta name="twitter:description" content="开发iOS经常会看见KVO和KVC这两个概念，特地了解了一下。发现很简单。">
-
-
-
-<script type="text/javascript" id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Mist',
-    version: '5.1.3',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
-    fancybox: true,
-    tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
-    duoshuo: {
-      userId: '6234852363740382000',
-      author: '博主'
-    },
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
-</script>
-
-
-
-  <link rel="canonical" href="http://wossoneri.github.io/2016/04/29/[Objective-C]KVC-and-KVO/">
-
-
-
-
-
-  <title>[Objective-C] KVC 和 KVO | Wossoneri`s Blog</title>
-  
-
-
-
-
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-  ga('create', 'UA-70716047-2', 'auto');
-  ga('send', 'pageview');
-</script>
-
-
-  <script type="text/javascript">
-    var _hmt = _hmt || [];
-    (function() {
-      var hm = document.createElement("script");
-      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
-      var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
-    })();
-  </script>
-
-
-
-
-</head>
-
-<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
-
-  
-  
+<!DOCTYPE HTML>
+<html lang="zh-Hans">
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta name="keywords" content="[Objective-C] KVC 和 KVO, Wossoneri`s Blog">
+    <meta name="description" content="KVC Key Value CodingKVC是一种用间接方式访问类的属性的机制。比如你要给一个类中的属性赋值或者取值，可以直接通过类和点运算符实现，当然也可以使用KVC。不过对于私有属性，点运算符就不起作用，因为私有属性不暴露给调用者，不">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>[Objective-C] KVC 和 KVO | Wossoneri`s Blog</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
     
-  
-
-  <div class="container sidebar-position-left page-post-detail">
-    <div class="headband"></div>
-    <a href="https://github.com"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
-
-    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta ">
+    <script src="/libs/jquery/jquery.min.js"></script>
     
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 
-    <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Wossoneri`s Blog</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper head-container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">Wossoneri`s Blog</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>Index</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>Tags</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>Categories</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>Archives</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>About</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>Contact</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>Friends</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="Search" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">Wossoneri`s Blog</div>
+        <div class="logo-desc">
+            
+            就怕你一生碌碌无为，还安慰自己平凡可贵
+            
+        </div>
     </div>
-      
-        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
-      
-  </div>
 
-  <div class="site-nav-toggle">
-    <button>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-    </button>
-  </div>
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			Index
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			Tags
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			Categories
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			Archives
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			About
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			Contact
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			Friends
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/wossoneri" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
 </div>
 
-<nav class="site-nav">
-  
+        </div>
 
-  
-    <ul id="menu" class="menu">
-      
         
-        <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
-            
-            首页
-          </a>
-        </li>
-      
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/wossoneri" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
         
-        <li class="menu-item menu-item-categories">
-          <a href="/categories/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
-            
-            分类
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-archives">
-          <a href="/archives/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
-            
-            归档
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-tags">
-          <a href="/tags/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
-            
-            标签
-          </a>
-        </li>
-      
+    </nav>
 
-      
-    </ul>
-  
+</header>
 
-  
-</nav>
-
-
-
- </div>
-    </header>
-
-    <main id="main" class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
     
 
-  
 
-  
-  
-  
 
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2016/04/29/[Objective-C]KVC-and-KVO/">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/15.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">[Objective-C] KVC 和 KVO</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Wossoneri">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
-    </span>
 
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Wossoneri`s Blog">
-    </span>
+
+
+<main class="post-container content">
 
     
-      <header class="post-header">
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
 
-        
-        
-          <h1 class="post-title" itemprop="name headline">[Objective-C] KVC 和 KVO</h1>
-        
+    #articleContent :focus {
+        outline: none;
+    }
 
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-29T22:57:09+08:00">
-                2016-04-29
-              </time>
-            
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
 
-            
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
 
-            
-          </span>
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
 
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/Syntax/" itemprop="url" rel="index">
-                    <span itemprop="name">Syntax</span>
-                  </a>
-                </span>
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        height: calc(100vh - 250px);
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/iOS/">
+                                <span class="chip bg-color">iOS</span>
+                            </a>
+                        
+                            <a href="/tags/Objective-C/">
+                                <span class="chip bg-color">Objective-C</span>
+                            </a>
+                        
+                            <a href="/tags/KVO/">
+                                <span class="chip bg-color">KVO</span>
+                            </a>
+                        
+                            <a href="/tags/KVC/">
+                                <span class="chip bg-color">KVC</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/Syntax/" class="post-category">
+                                Syntax
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>Publish Date:&nbsp;&nbsp;
+                    2016-04-29
+                </div>
+                
 
                 
+
                 
-              
-            </span>
-          
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>Word Count:&nbsp;&nbsp;
+                    1,691
+                </div>
+                
 
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2016/04/29/[Objective-C]KVC-and-KVO/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count gitment-comments-count" data-xid="/2016/04/29/[Objective-C]KVC-and-KVO/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>Read Times:&nbsp;&nbsp;
+                    8 Min
+                </div>
+                
 
-          
-          
-	
-  		  <span class="post-letters-count">
-            &nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-                 <i class="fa fa-clock-o"></i>
-            </span>
-		        <span class="post-meta-item-text">总记</span>
-            <span class="post-count">1,711 字</span>
-		        <span class="post-meta-item-text">读完需要</span>
-    		    <span class="post-count">8 分</span>
-  		  </span>
-           
-         
-
-          
-
-          
-
-          
-              <div class="post-description">
-                  开发iOS经常会看见KVO和KVC这两个概念，特地了解了一下。发现很简单。
-              </div>
-          
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>Read Count:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
 
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        <h3 id="KVC-Key-Value-Coding"><a href="#KVC-Key-Value-Coding" class="headerlink" title="KVC Key Value Coding"></a>KVC Key Value Coding</h3><p><code>KVC</code>是一种用间接方式访问类的属性的机制。比如你要给一个类中的属性赋值或者取值，可以直接通过类和点运算符实现，当然也可以使用<code>KVC</code>。不过对于私有属性，点运算符就不起作用，因为私有属性不暴露给调用者，不过使用<code>KVC</code>却依然可以实现对私有属性的读写。</p>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h3 id="KVC-Key-Value-Coding"><a href="#KVC-Key-Value-Coding" class="headerlink" title="KVC Key Value Coding"></a>KVC Key Value Coding</h3><p><code>KVC</code>是一种用间接方式访问类的属性的机制。比如你要给一个类中的属性赋值或者取值，可以直接通过类和点运算符实现，当然也可以使用<code>KVC</code>。不过对于私有属性，点运算符就不起作用，因为私有属性不暴露给调用者，不过使用<code>KVC</code>却依然可以实现对私有属性的读写。</p>
 <p>先看一下<code>KVC</code>的一部分源码，当然只能看到头文件：</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line"><span class="comment">// NSKeyValueCoding.h</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">NSObject</span>(<span class="title">NSKeyValueCoding</span>)</span></span><br><span class="line"></span><br><span class="line">+ (<span class="built_in">BOOL</span>)accessInstanceVariablesDirectly;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">nullable</span> <span class="keyword">id</span>)valueForKey:(<span class="built_in">NSString</span> *)key;</span><br><span class="line">- (<span class="keyword">void</span>)setValue:(<span class="keyword">nullable</span> <span class="keyword">id</span>)value forKey:(<span class="built_in">NSString</span> *)key;</span><br><span class="line">- (<span class="built_in">BOOL</span>)validateValue:(<span class="keyword">inout</span> <span class="keyword">id</span> __<span class="keyword">nullable</span> * __<span class="keyword">nonnull</span>)ioValue forKey:(<span class="built_in">NSString</span> *)inKey error:(<span class="keyword">out</span> <span class="built_in">NSError</span> **)outError;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSMutableArray</span> *)mutableArrayValueForKey:(<span class="built_in">NSString</span> *)key;</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSMutableOrderedSet</span> *)mutableOrderedSetValueForKey:(<span class="built_in">NSString</span> *)key <span class="built_in">NS_AVAILABLE</span>(<span class="number">10</span>_7, <span class="number">5</span>_0);</span><br><span class="line"></span><br><span class="line">- (<span class="built_in">NSMutableSet</span> *)mutableSetValueForKey:(<span class="built_in">NSString</span> *)key;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">nullable</span> <span class="keyword">id</span>)valueForKeyPath:(<span class="built_in">NSString</span> *)keyPath;</span><br><span class="line">- (<span class="keyword">void</span>)setValue:(<span class="keyword">nullable</span> <span class="keyword">id</span>)value forKeyPath:(<span class="built_in">NSString</span> *)keyPath;</span><br><span class="line">- (<span class="built_in">BOOL</span>)validateValue:(<span class="keyword">inout</span> <span class="keyword">id</span> __<span class="keyword">nullable</span> * __<span class="keyword">nonnull</span>)ioValue forKeyPath:(<span class="built_in">NSString</span> *)inKeyPath error:(<span class="keyword">out</span> <span class="built_in">NSError</span> **)outError;</span><br><span class="line">- (<span class="built_in">NSMutableArray</span> *)mutableArrayValueForKeyPath:(<span class="built_in">NSString</span> *)keyPath;</span><br><span class="line">- (<span class="built_in">NSMutableOrderedSet</span> *)mutableOrderedSetValueForKeyPath:(<span class="built_in">NSString</span> *)keyPath <span class="built_in">NS_AVAILABLE</span>(<span class="number">10</span>_7, <span class="number">5</span>_0);</span><br><span class="line">- (<span class="built_in">NSMutableSet</span> *)mutableSetValueForKeyPath:(<span class="built_in">NSString</span> *)keyPath;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">nullable</span> <span class="keyword">id</span>)valueForUndefinedKey:(<span class="built_in">NSString</span> *)key;</span><br><span class="line">- (<span class="keyword">void</span>)setValue:(<span class="keyword">nullable</span> <span class="keyword">id</span>)value forUndefinedKey:(<span class="built_in">NSString</span> *)key;</span><br><span class="line">- (<span class="keyword">void</span>)setNilValueForKey:(<span class="built_in">NSString</span> *)key;</span><br><span class="line">- (<span class="built_in">NSDictionary</span>&lt;<span class="built_in">NSString</span> *, <span class="keyword">id</span>&gt; *)dictionaryWithValuesForKeys:(<span class="built_in">NSArray</span>&lt;<span class="built_in">NSString</span> *&gt; *)keys;</span><br><span class="line">- (<span class="keyword">void</span>)setValuesForKeysWithDictionary:(<span class="built_in">NSDictionary</span>&lt;<span class="built_in">NSString</span> *, <span class="keyword">id</span>&gt; *)keyedValues;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">NSArray</span>&lt;<span class="title">ObjectType</span>&gt;(<span class="title">NSKeyValueCoding</span>)</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">id</span>)valueForKey:(<span class="built_in">NSString</span> *)key;</span><br><span class="line">- (<span class="keyword">void</span>)setValue:(<span class="keyword">nullable</span> <span class="keyword">id</span>)value forKey:(<span class="built_in">NSString</span> *)key;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">NSDictionary</span>&lt;<span class="title">KeyType</span>, <span class="title">ObjectType</span>&gt;(<span class="title">NSKeyValueCoding</span>)</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">nullable</span> ObjectType)valueForKey:(<span class="built_in">NSString</span> *)key;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">NSMutableDictionary</span>&lt;<span class="title">KeyType</span>, <span class="title">ObjectType</span>&gt;(<span class="title">NSKeyValueCoding</span>)</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)setValue:(<span class="keyword">nullable</span> ObjectType)value forKey:(<span class="built_in">NSString</span> *)key;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">NSOrderedSet</span>&lt;<span class="title">ObjectType</span>&gt;(<span class="title">NSKeyValueCoding</span>)</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">id</span>)valueForKey:(<span class="built_in">NSString</span> *)key <span class="built_in">NS_AVAILABLE</span>(<span class="number">10</span>_7, <span class="number">5</span>_0);</span><br><span class="line">- (<span class="keyword">void</span>)setValue:(<span class="keyword">nullable</span> <span class="keyword">id</span>)value forKey:(<span class="built_in">NSString</span> *)key <span class="built_in">NS_AVAILABLE</span>(<span class="number">10</span>_7, <span class="number">5</span>_0);</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">NSSet</span>&lt;<span class="title">ObjectType</span>&gt;(<span class="title">NSKeyValueCoding</span>)</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">id</span>)valueForKey:(<span class="built_in">NSString</span> *)key;</span><br><span class="line">- (<span class="keyword">void</span>)setValue:(<span class="keyword">nullable</span> <span class="keyword">id</span>)value forKey:(<span class="built_in">NSString</span> *)key;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">// NSKeyValueCoding.h
+
+@interface NSObject(NSKeyValueCoding)
+
++ (BOOL)accessInstanceVariablesDirectly;
+
+- (nullable id)valueForKey:(NSString *)key;
+- (void)setValue:(nullable id)value forKey:(NSString *)key;
+- (BOOL)validateValue:(inout id __nullable * __nonnull)ioValue forKey:(NSString *)inKey error:(out NSError **)outError;
+
+- (NSMutableArray *)mutableArrayValueForKey:(NSString *)key;
+
+- (NSMutableOrderedSet *)mutableOrderedSetValueForKey:(NSString *)key NS_AVAILABLE(10_7, 5_0);
+
+- (NSMutableSet *)mutableSetValueForKey:(NSString *)key;
+
+- (nullable id)valueForKeyPath:(NSString *)keyPath;
+- (void)setValue:(nullable id)value forKeyPath:(NSString *)keyPath;
+- (BOOL)validateValue:(inout id __nullable * __nonnull)ioValue forKeyPath:(NSString *)inKeyPath error:(out NSError **)outError;
+- (NSMutableArray *)mutableArrayValueForKeyPath:(NSString *)keyPath;
+- (NSMutableOrderedSet *)mutableOrderedSetValueForKeyPath:(NSString *)keyPath NS_AVAILABLE(10_7, 5_0);
+- (NSMutableSet *)mutableSetValueForKeyPath:(NSString *)keyPath;
+
+- (nullable id)valueForUndefinedKey:(NSString *)key;
+- (void)setValue:(nullable id)value forUndefinedKey:(NSString *)key;
+- (void)setNilValueForKey:(NSString *)key;
+- (NSDictionary<NSString *, id> *)dictionaryWithValuesForKeys:(NSArray<NSString *> *)keys;
+- (void)setValuesForKeysWithDictionary:(NSDictionary<NSString *, id> *)keyedValues;
+
+@end
+
+
+@interface NSArray<ObjectType>(NSKeyValueCoding)
+
+- (id)valueForKey:(NSString *)key;
+- (void)setValue:(nullable id)value forKey:(NSString *)key;
+
+@end
+
+
+@interface NSDictionary<KeyType, ObjectType>(NSKeyValueCoding)
+
+- (nullable ObjectType)valueForKey:(NSString *)key;
+
+@end
+
+
+@interface NSMutableDictionary<KeyType, ObjectType>(NSKeyValueCoding)
+
+- (void)setValue:(nullable ObjectType)value forKey:(NSString *)key;
+
+@end
+
+
+@interface NSOrderedSet<ObjectType>(NSKeyValueCoding)
+
+- (id)valueForKey:(NSString *)key NS_AVAILABLE(10_7, 5_0);
+- (void)setValue:(nullable id)value forKey:(NSString *)key NS_AVAILABLE(10_7, 5_0);
+
+@end
+
+
+@interface NSSet<ObjectType>(NSKeyValueCoding)
+
+- (id)valueForKey:(NSString *)key;
+- (void)setValue:(nullable id)value forKey:(NSString *)key;
+
+@end
+</code></pre>
 <p>可以看到这个类里面包含了对类<code>NSObject</code>,<code>NSArray</code>,<code>NSDictionary</code>,<code>NSMutableDictionary</code>,<code>NSOrderedSet</code>,<code>NSSet</code>的拓展。拓展的方法基本上为</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">id</span>)valueForKey:(<span class="built_in">NSString</span> *)key;</span><br><span class="line">- (<span class="keyword">void</span>)setValue:(<span class="keyword">nullable</span> <span class="keyword">id</span>)value forKey:(<span class="built_in">NSString</span> *)key;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">- (id)valueForKey:(NSString *)key;
+- (void)setValue:(nullable id)value forKey:(NSString *)key;
+</code></pre>
 <p>也就是说，基本上Objective-C里所有的对象都支持<code>KVC</code>操作，操作包含如上两类方法，动态读取和动态设值。</p>
 <blockquote>
 <p>好多地方说是NSObject实现了NSKeyValueCoding协议。而代码里是类的拓展。这两种说法是相通的嘛？</p>
 </blockquote>
 <p>举个🌰，新建一个Command line程序：</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Account.h</span></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Account</span> : <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) <span class="keyword">float</span> balance;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Account.m</span></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Account</span> </span>&#123;</span><br><span class="line">    <span class="keyword">float</span> salaryPerDay;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@synthesize</span> balance = _balance;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)setBalance:(<span class="keyword">float</span>)balance &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"set balance invoked"</span>);</span><br><span class="line">    _balance = balance;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">float</span>)balance &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"get balance invoked"</span>);</span><br><span class="line">    <span class="keyword">return</span> _balance;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Person.h</span></span><br><span class="line"><span class="class"><span class="keyword">@class</span> <span class="title">Account</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">Person</span> : <span class="title">NSObject</span> </span>&#123;</span><br><span class="line">    <span class="keyword">@private</span></span><br><span class="line">    <span class="keyword">int</span> _age;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">copy</span>) <span class="built_in">NSString</span> *name;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">retain</span>) Account *account;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)showMessage;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Person.m</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">"Person.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">    <span class="built_in">NSString</span> *_sex;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)showMessage &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"name = %@, age = %d, sex = %@"</span>, _name, _age, _sex);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// main</span></span><br><span class="line"><span class="keyword">int</span> main(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span> * argv[]) &#123;</span><br><span class="line">    <span class="keyword">@autoreleasepool</span> &#123;</span><br><span class="line">      </span><br><span class="line">        Person *person1 = [[Person alloc] init];</span><br><span class="line">        [person1 setValue:<span class="string">@"Wossoneri"</span> forKey:<span class="string">@"name"</span>];</span><br><span class="line">        [person1 setValue:@<span class="number">25</span> forKey:<span class="string">@"age"</span>];       <span class="comment">//私有变量也可以访问</span></span><br><span class="line">        [person1 setValue:<span class="string">@"male"</span> forKey:<span class="string">@"sex"</span>];   <span class="comment">//私有变量也可以访问</span></span><br><span class="line">        </span><br><span class="line">        [person1 showMessage];</span><br><span class="line">        </span><br><span class="line">        Account *account1 = [[Account alloc] init];</span><br><span class="line">        person1.account = account1;</span><br><span class="line">        </span><br><span class="line">        [person1 setValue:@<span class="number">1000.0</span> forKeyPath:<span class="string">@"account.balance"</span>];</span><br><span class="line">        [person1 setValue:@<span class="number">300.0</span> forKeyPath:<span class="string">@"account.salaryPerDay"</span>];</span><br><span class="line"></span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"Person1`s balance is : %.2f"</span>, [[person1 valueForKeyPath:<span class="string">@"account.balance"</span>] floatValue]);</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"Person1`s salary is : %.2f"</span>, [[person1 valueForKeyPath:<span class="string">@"account.salaryPerDay"</span>] floatValue]);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 输出</span></span><br><span class="line">name = Wossoneri, age = <span class="number">25</span>, sex = male</span><br><span class="line">set balance invoked</span><br><span class="line">get balance invoked</span><br><span class="line">Person1`s balance is : <span class="number">1000.00</span></span><br><span class="line">Person1`s salary is : <span class="number">300.00</span></span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">// Account.h
+@interface Account : NSObject
+
+@property (nonatomic, assign) float balance;
+
+@end
+
+// Account.m
+@implementation Account {
+    float salaryPerDay;
+}
+
+@synthesize balance = _balance;
+
+- (void)setBalance:(float)balance {
+    NSLog(@"set balance invoked");
+    _balance = balance;
+}
+
+- (float)balance {
+    NSLog(@"get balance invoked");
+    return _balance;
+}
+
+@end
+
+// Person.h
+@class Account;
+
+@interface Person : NSObject {
+    @private
+    int _age;
+}
+
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, retain) Account *account;
+
+- (void)showMessage;
+
+@end
+
+// Person.m
+#import "Person.h"
+
+@implementation Person {
+    NSString *_sex;
+}
+
+- (void)showMessage {
+    NSLog(@"name = %@, age = %d, sex = %@", _name, _age, _sex);
+}
+
+@end
+
+// main
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+
+        Person *person1 = [[Person alloc] init];
+        [person1 setValue:@"Wossoneri" forKey:@"name"];
+        [person1 setValue:@25 forKey:@"age"];       //私有变量也可以访问
+        [person1 setValue:@"male" forKey:@"sex"];   //私有变量也可以访问
+
+        [person1 showMessage];
+
+        Account *account1 = [[Account alloc] init];
+        person1.account = account1;
+
+        [person1 setValue:@1000.0 forKeyPath:@"account.balance"];
+        [person1 setValue:@300.0 forKeyPath:@"account.salaryPerDay"];
+
+        NSLog(@"Person1`s balance is : %.2f", [[person1 valueForKeyPath:@"account.balance"] floatValue]);
+        NSLog(@"Person1`s salary is : %.2f", [[person1 valueForKeyPath:@"account.salaryPerDay"] floatValue]);
+
+    }
+    return 0;
+}
+
+// 输出
+name = Wossoneri, age = 25, sex = male
+set balance invoked
+get balance invoked
+Person1`s balance is : 1000.00
+Person1`s salary is : 300.00
+</code></pre>
 <p>代码说明：</p>
 <ul>
 <li>Person类里用旧方法声明私有变量<code>_age</code>以及直接添加的私有成员变量<code>_sex</code>，同时声明一个开放的属性<code>_name</code>。</li>
-<li><p>对于<code>_name</code>，O-C会直接为其生成对应的<code>setter</code>和<code>getter</code>，所以可以通过点运算符操作属性，比如</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">person1.name = <span class="string">@"Wossoneri"</span>;</span><br></pre></td></tr></table></figure>
+<li>对于<code>_name</code>，O-C会直接为其生成对应的<code>setter</code>和<code>getter</code>，所以可以通过点运算符操作属性，比如<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">person1.name = @"Wossoneri";
+</code></pre>
 </li>
-<li><p>可以看到<code>KVC</code>可以对私有变量进行操作。对于当前类的直接成员变量，把变量名作为key来访问，否则要写成keyPath来访问。</p>
-</li>
+<li>可以看到<code>KVC</code>可以对私有变量进行操作。对于当前类的直接成员变量，把变量名作为key来访问，否则要写成keyPath来访问。</li>
 <li><code>KVC</code>运行时首先会优先调用属性的<code>getter</code>和<code>setter</code>，这一点可以在代码输出的第二行和第三行看到，如果没有，就会优先搜索<code>_property</code>，不存在则搜索<code>property</code>，如果仍然没有，就会调用<code>setValue:forUndefinedKey:</code>和<code>valueForUndefinedKey:</code>方法</li>
 </ul>
 <h3 id="KVO-Key-Value-Observing"><a href="#KVO-Key-Value-Observing" class="headerlink" title="KVO Key Value Observing"></a>KVO Key Value Observing</h3><h4 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h4><p><code>KVO</code>其实是一种观察者模式，利用它可以很容易实现视图组件和数据模型的分离，当数据模型的属性值改变之后作为监听器的视图组件就会被激发，激发时就会回调监听器自身。</p>
 <p>更通俗的话来说就是<strong>任何对象都允许观察其他对象的属性，并且可以接收其他对象状态变化的通知</strong>。</p>
 <p><code>&lt;NSKeyValueObserving&gt;</code> 或者 <code>KVO</code> 是一个非正式的协议，该协议定义了一个观察和通知对象之间状态变化的通用机制。作为一个非正式的协议，你在使用该协议的类中看不到惯用的写法<code>&lt;NSKeyValueObserving&gt;</code>，实际上，这个协议只是隐式地由<code>NSObject</code>实现，继承<code>NSObject</code>的子类默认能够使用这个协议。</p>
 <p>放一部分NSKeyValueObserving.h对于<code>NSObject</code>的拓展代码</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">NSObject</span>(<span class="title">NSKeyValueObserving</span>)</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)observeValueForKeyPath:(<span class="keyword">nullable</span> <span class="built_in">NSString</span> *)keyPath ofObject:(<span class="keyword">nullable</span> <span class="keyword">id</span>)object change:(<span class="keyword">nullable</span> <span class="built_in">NSDictionary</span>&lt;<span class="built_in">NSString</span>*, <span class="keyword">id</span>&gt; *)change context:(<span class="keyword">nullable</span> <span class="keyword">void</span> *)context;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">NSObject</span>(<span class="title">NSKeyValueObserverRegistration</span>)</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)addObserver:(<span class="built_in">NSObject</span> *)observer forKeyPath:(<span class="built_in">NSString</span> *)keyPath options:(<span class="built_in">NSKeyValueObservingOptions</span>)options context:(<span class="keyword">nullable</span> <span class="keyword">void</span> *)context;</span><br><span class="line">- (<span class="keyword">void</span>)removeObserver:(<span class="built_in">NSObject</span> *)observer forKeyPath:(<span class="built_in">NSString</span> *)keyPath context:(<span class="keyword">nullable</span> <span class="keyword">void</span> *)context <span class="built_in">NS_AVAILABLE</span>(<span class="number">10</span>_7, <span class="number">5</span>_0);</span><br><span class="line">- (<span class="keyword">void</span>)removeObserver:(<span class="built_in">NSObject</span> *)observer forKeyPath:(<span class="built_in">NSString</span> *)keyPath;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">@interface NSObject(NSKeyValueObserving)
+
+- (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSString*, id> *)change context:(nullable void *)context;
+
+@end
+
+@interface NSObject(NSKeyValueObserverRegistration)
+
+- (void)addObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath options:(NSKeyValueObservingOptions)options context:(nullable void *)context;
+- (void)removeObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath context:(nullable void *)context NS_AVAILABLE(10_7, 5_0);
+- (void)removeObserver:(NSObject *)observer forKeyPath:(NSString *)keyPath;
+
+@end
+</code></pre>
 <p>从拓展名称就可以看出，使用<code>KVO</code>需要注册监听器，也需要删除监听器。监听过程需要使用<code>observeValueForKeyPath</code>回调方法。<br>所以使用方法就可以推测出个大概来：</p>
 <ol>
 <li>addObserver方法注册一个监听器</li>
@@ -424,558 +693,772 @@
 <li>使用结束removeObserver，这很重要。</li>
 </ol>
 <h4 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h4><p>最后对上面代码做一些改动，我需要对Account对象的balance做监听，当balance内容改变，我要做输出处理。</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line"><span class="meta">#pragma mark - For KVO</span></span><br><span class="line">- (<span class="keyword">void</span>)setAccount:(Account *)account &#123;</span><br><span class="line">    _account = account;</span><br><span class="line">    <span class="comment">//add observer</span></span><br><span class="line">    [_account addObserver:<span class="keyword">self</span></span><br><span class="line">               forKeyPath:<span class="string">@"balance"</span></span><br><span class="line">                  options:<span class="built_in">NSKeyValueObservingOptionNew</span></span><br><span class="line">                  context:<span class="literal">nil</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//override</span></span><br><span class="line">- (<span class="keyword">void</span>)observeValueForKeyPath:(<span class="built_in">NSString</span> *)keyPath</span><br><span class="line">                      ofObject:(<span class="keyword">id</span>)object</span><br><span class="line">                        change:(<span class="built_in">NSDictionary</span>&lt;<span class="built_in">NSString</span> *,<span class="keyword">id</span>&gt; *)change</span><br><span class="line">                       context:(<span class="keyword">void</span> *)context &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> ([keyPath isEqualToString:<span class="string">@"balance"</span>]) &#123;</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"keyPath = %@, object = %@, newValue = %.2f, context = %@"</span>, keyPath, object, [[change objectForKey:<span class="string">@"new"</span>] floatValue], context);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)dealloc &#123;</span><br><span class="line">    [_account removeObserver:<span class="keyword">self</span> forKeyPath:<span class="string">@"balance"</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//main</span></span><br><span class="line"><span class="keyword">int</span> main(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span> * argv[]) &#123;</span><br><span class="line">    <span class="keyword">@autoreleasepool</span> &#123;</span><br><span class="line">        </span><br><span class="line">        Person *person1 = [[Person alloc] init];</span><br><span class="line">        [person1 setValue:<span class="string">@"Wossoneri"</span> forKey:<span class="string">@"name"</span>];</span><br><span class="line">        [person1 setValue:@<span class="number">25</span> forKey:<span class="string">@"age"</span>];       <span class="comment">//私有变量也可以访问</span></span><br><span class="line">        [person1 setValue:<span class="string">@"male"</span> forKey:<span class="string">@"sex"</span>];   <span class="comment">//私有变量也可以访问</span></span><br><span class="line"></span><br><span class="line">        [person1 showMessage];</span><br><span class="line">        </span><br><span class="line">        Account *account1 = [[Account alloc] init];</span><br><span class="line">        person1.account = account1;</span><br><span class="line">        </span><br><span class="line">        [person1 setValue:@<span class="number">1000.0</span> forKeyPath:<span class="string">@"account.balance"</span>];</span><br><span class="line">        [person1 setValue:@<span class="number">300.0</span> forKeyPath:<span class="string">@"account.salaryPerDay"</span>];</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">        <span class="comment">//KVO</span></span><br><span class="line">        account1.balance = <span class="number">4000.0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"Person1`s balance is : %.2f"</span>, [[person1 valueForKeyPath:<span class="string">@"account.balance"</span>] floatValue]);</span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"Person1`s salary is : %.2f"</span>, [[person1 valueForKeyPath:<span class="string">@"account.salaryPerDay"</span>] floatValue]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 输出</span></span><br><span class="line">name = Wossoneri, age = <span class="number">25</span>, sex = male</span><br><span class="line">set balance invoked</span><br><span class="line">get balance invoked</span><br><span class="line">keyPath = balance, object = &lt;Account: <span class="number">0x1003001d0</span>&gt;, newValue = <span class="number">1000.00</span>, context = (null)</span><br><span class="line">set balance invoked</span><br><span class="line">get balance invoked</span><br><span class="line">keyPath = balance, object = &lt;Account: <span class="number">0x1003001d0</span>&gt;, newValue = <span class="number">4000.00</span>, context = (null)</span><br><span class="line">get balance invoked</span><br><span class="line">Person1`s balance is : <span class="number">4000.00</span></span><br><span class="line">Person1`s salary is : <span class="number">300.00</span></span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">#pragma mark - For KVO
+- (void)setAccount:(Account *)account {
+    _account = account;
+    //add observer
+    [_account addObserver:self
+               forKeyPath:@"balance"
+                  options:NSKeyValueObservingOptionNew
+                  context:nil];
+}
+
+//override
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary<NSString *,id> *)change
+                       context:(void *)context {
+
+    if ([keyPath isEqualToString:@"balance"]) {
+        NSLog(@"keyPath = %@, object = %@, newValue = %.2f, context = %@", keyPath, object, [[change objectForKey:@"new"] floatValue], context);
+    }
+}
+
+- (void)dealloc {
+    [_account removeObserver:self forKeyPath:@"balance"];
+}
+
+//main
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+
+        Person *person1 = [[Person alloc] init];
+        [person1 setValue:@"Wossoneri" forKey:@"name"];
+        [person1 setValue:@25 forKey:@"age"];       //私有变量也可以访问
+        [person1 setValue:@"male" forKey:@"sex"];   //私有变量也可以访问
+
+        [person1 showMessage];
+
+        Account *account1 = [[Account alloc] init];
+        person1.account = account1;
+
+        [person1 setValue:@1000.0 forKeyPath:@"account.balance"];
+        [person1 setValue:@300.0 forKeyPath:@"account.salaryPerDay"];
+
+
+        //KVO
+        account1.balance = 4000.0;
+
+        NSLog(@"Person1`s balance is : %.2f", [[person1 valueForKeyPath:@"account.balance"] floatValue]);
+        NSLog(@"Person1`s salary is : %.2f", [[person1 valueForKeyPath:@"account.salaryPerDay"] floatValue]);
+}
+
+// 输出
+name = Wossoneri, age = 25, sex = male
+set balance invoked
+get balance invoked
+keyPath = balance, object = <Account: 0x1003001d0>, newValue = 1000.00, context = (null)
+set balance invoked
+get balance invoked
+keyPath = balance, object = <Account: 0x1003001d0>, newValue = 4000.00, context = (null)
+get balance invoked
+Person1`s balance is : 4000.00
+Person1`s salary is : 300.00
+</code></pre>
 <h4 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h4><p>当有属性改变，<code>KVO</code>会提供自动的消息通知。这样的架构有很多好处。首先，开发人员不需要自己去实现这样的方案：每次属性改变了就发送消息通知。这是<code>KVO</code>机制提供的最大的优点。因为这个方案已经被明确定义，获得框架级支持，可以方便地采用。开发人员不需要添加任何代码，不需要设计自己的观察者模型，直接可以在工程里使用。其次，<code>KVO</code>的架构非常的强大，可以很容易的支持多个观察者观察同一个属性，以及相关的值。</p>
 <h3 id="Swift的KVO与KVC"><a href="#Swift的KVO与KVC" class="headerlink" title="Swift的KVO与KVC"></a>Swift的KVO与KVC</h3><p>Swift版本的的就看这篇文章吧，内容很详细。<br><a href="http://swiftcafe.io/2016/01/03/kvc/" target="_blank" rel="noopener">漫谈 KVC 与 KVO</a></p>
 <blockquote>
 <p>Reference<br><a href="http://www.cnblogs.com/kenshincui/p/3871178.html" target="_blank" rel="noopener">iOS开发系列—Objective-C之KVC、KVO</a></p>
 </blockquote>
 
-      
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        Author:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://wossoneri.github.io" rel="external nofollow noreferrer">Wossoneri</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        Link:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://wossoneri.github.io/2016/04/29/[Objective-C]KVC-and-KVO/">http://wossoneri.github.io/2016/04/29/[Objective-C]KVC-and-KVO/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        Reprint policy:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    All articles in this blog are used except for special statements
+                    <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY-NC 4.0</a>
+                    reprint polocy. If reproduced, please indicate source
+                    <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
+                    !
+                </span>
+            </div>
+        
     </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>Copied successfully, please follow the reprint policy of this article</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">more</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/iOS/">
+                                    <span class="chip bg-color">iOS</span>
+                                </a>
+                            
+                                <a href="/tags/Objective-C/">
+                                    <span class="chip bg-color">Objective-C</span>
+                                </a>
+                            
+                                <a href="/tags/KVO/">
+                                    <span class="chip bg-color">KVO</span>
+                                </a>
+                            
+                                <a href="/tags/KVC/">
+                                    <span class="chip bg-color">KVC</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
     
     
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
     
 
     
 
-    
-      <div>
-        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
-  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
-  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
-    <span>打赏</span>
-  </button>
-  <div id="QR" style="display: none;">
-
-    
-      <div id="wechat" style="display: inline-block">
-        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付">
-        <p>微信支付</p>
-      </div>
-    
-
-    
-      <div id="alipay" style="display: inline-block">
-        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝">
-        <p>支付宝</p>
-      </div>
-    
-
-    
-
-  </div>
 </div>
 
-      </div>
-    
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
 
-    
-      <div>
-        <ul class="post-copyright">
-  <li class="post-copyright-author">
-    <strong>本文作者：</strong>
-    Wossoneri
-  </li>
-  <li class="post-copyright-link">
-    <strong>本文链接：</strong>
-    <a href="http://wossoneri.github.io/2016/04/29/[Objective-C]KVC-and-KVO/" title="[Objective-C] KVC 和 KVO">http://wossoneri.github.io/2016/04/29/[Objective-C]KVC-and-KVO/</a>
-  </li>
-  <li class="post-copyright-license">
-    <strong>版权声明： </strong>
-    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
-  </li>
-</ul>
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
 
-      </div>
-    
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
 
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/iOS/" rel="tag"><i class="fa fa-tag"></i> iOS</a>
-          
-            <a href="/tags/Objective-C/" rel="tag"><i class="fa fa-tag"></i> Objective-C</a>
-          
-            <a href="/tags/KVO/" rel="tag"><i class="fa fa-tag"></i> KVO</a>
-          
-            <a href="/tags/KVC/" rel="tag"><i class="fa fa-tag"></i> KVC</a>
-          
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.png" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
         </div>
-      
+    </div>
+</div>
 
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
             
-              <a href="/2016/04/18/[iOS]Collections-of-issues/" rel="next" title="[iOS] 小问题记录">
-                <i class="fa fa-chevron-left"></i> [iOS] 小问题记录
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/05/04/[闲谈]Does-experienced-programmer-use-google-frequently/" rel="prev" title="[闲谈] 有经验的程序员用Google用得多么？">
-                [闲谈] 有经验的程序员用Google用得多么？ <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
         </div>
-      
-
-      
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-
-    <div class="post-spread">
-      
-    </div>
-  </div>
-
-
-          </div>
-          
-
-
-          
-
-  
-    <div class="comments" id="comments">
-      
-        <div id="gitment-container"></div>
-      
     </div>
 
-  
+    
 
+    
+        <link rel="stylesheet" href="/libs/gitment/gitment-default.css">
+<link rel="stylesheet" href="/css/gitment.css">
 
+<div class="gitment-card card" data-aos="fade-up">
+    <div class="comment_headling" style="font-size: 20px; font-weight: 700; position: relative; left: 20px; top: 15px; padding-bottom: 5px;">
+        <i class="fas fa-comments fa-fw" aria-hidden="true"></i>
+        <span>评论</span>
+    </div>
+    <div id="gitment-content" class="card-content"></div>
+</div>
 
+<script src="/libs/gitment/gitment.js"></script>
+<script>
+var gitment = new Gitment({
+    id: 'Fri Apr 29 2016 22:57:09 GMT+0800',
+    owner: 'wossoneri',
+    repo: 'wossoneri.github.io',
+    oauth: {
+        client_id: '40b6c719a11e3fca29e8',
+        client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77'
+    }
+});
+
+gitment.render('gitment-content');
+</script>
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;Previous</div>
+            <div class="card">
+                <a href="/2016/05/04/[闲谈]Does-experienced-programmer-use-google-frequently/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/3.jpg" class="responsive-img" alt="[闲谈] 有经验的程序员用Google用得多么？">
+                        
+                        <span class="card-title">[闲谈] 有经验的程序员用Google用得多么？</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            关于程序员有没有必要记一些API什么的讨论有很多，我个人觉得能Google到的就没必要刻意去记，可以简单的做个笔记，需要用的时候查一下就好了。真正有必要记的东西，用得多了自然也就能记住了。文章不难，不浪费时间翻译了。原文链接
+Softwar
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2016-05-04
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/闲谈/" class="post-category">
+                                    闲谈
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/闲谈/">
+                        <span class="chip bg-color">闲谈</span>
+                    </a>
+                    
+                    <a href="/tags/Google/">
+                        <span class="chip bg-color">Google</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
         </div>
         
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <section class="site-overview-wrap sidebar-panel">
-        <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-            
-              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460" alt="Wossoneri">
-            
-              <p class="site-author-name" itemprop="name">Wossoneri</p>
-              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
-          </div>
-
-          <nav class="site-state motion-element">
-
-            
-              <div class="site-state-item site-state-posts">
-              
-                <a href="/archives/">
-              
-                  <span class="site-state-item-count">117</span>
-                  <span class="site-state-item-name">日志</span>
-                </a>
-              </div>
-            
-
-            
-              
-              
-              <div class="site-state-item site-state-categories">
-                <a href="/categories/index.html">
-                  <span class="site-state-item-count">17</span>
-                  <span class="site-state-item-name">分类</span>
-                </a>
-              </div>
-            
-
-            
-              
-              
-              <div class="site-state-item site-state-tags">
-                <a href="/tags/index.html">
-                  <span class="site-state-item-count">121</span>
-                  <span class="site-state-item-name">标签</span>
-                </a>
-              </div>
-            
-
-          </nav>
-
-          
-            <div class="feed-link motion-element">
-              <a href="/atom.xml" rel="alternate">
-                <i class="fa fa-rss"></i>
-                RSS
-              </a>
-            </div>
-          
-
-          <div class="links-of-author motion-element">
-            
-              
-                <span class="links-of-author-item">
-                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
-                    
-                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
-                </span>
-              
-                <span class="links-of-author-item">
-                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
-                    
-                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
-                </span>
-              
-            
-          </div>
-
-          
-          
-            <div class="cc-license motion-element" itemprop="license">
-              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
-                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
-              </a>
-            </div>
-          
-
-          
-          
-            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
-              <div class="links-of-blogroll-title">
-                <i class="fa  fa-fw fa-globe"></i>
-                友情链接
-              </div>
-              <ul class="links-of-blogroll-list">
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
-                  </li>
-                
-              </ul>
-            </div>
-          
-
-          
-
-        </div>
-      </section>
-
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#KVC-Key-Value-Coding"><span class="nav-number">1.</span> <span class="nav-text">KVC Key Value Coding</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#KVO-Key-Value-Observing"><span class="nav-number">2.</span> <span class="nav-text">KVO Key Value Observing</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#介绍"><span class="nav-number">2.1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#实现"><span class="nav-number">2.2.</span> <span class="nav-text">实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#优点"><span class="nav-number">2.3.</span> <span class="nav-text">优点</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Swift的KVO与KVC"><span class="nav-number">3.</span> <span class="nav-text">Swift的KVO与KVC</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
-      
-
-      
-
-    </div>
-  </aside>
-
-
         
-      </div>
-    </main>
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                Next&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2016/04/18/[iOS]Collections-of-issues/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/9.jpg" class="responsive-img" alt="[iOS] 小问题记录">
+                        
+                        <span class="card-title">[iOS] 小问题记录</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            iOS systemiOS version检测reference
+#define SYSTEM_VERSION_EQUAL_TO(v)                  ([[[UIDevice currentDevice] systemV
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2016-04-18
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/iOS入门/" class="post-category">
+                                    iOS入门
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/iOS/">
+                        <span class="chip bg-color">iOS</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
 
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
-  <span class="with-love">
-    <i class="fa fa-user"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
-
-  
 </div>
 
 
-  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
 
 
+<!-- 代码块复制 -->
 
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
 
 
+<!-- 代码块收缩 -->
 
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;TOC</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
 
         
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
 
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
 
-
-
-
-
-
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
         
-      </div>
-    </footer>
-
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
-      </div>
-    
+    });
+</script>
 
     
 
-  </div>
+</main>
 
-  
 
+
+    <footer class="page-footer bg-color">
+    <div class="container row center-align" style="margin-bottom: 15px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            <span id="year">2016</span>
+            <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+            
+            <span id="sitetime">载入运行时间...</span>
+            <script>
+                function siteTime() {
+                    var seconds = 1000;
+                    var minutes = seconds * 60;
+                    var hours = minutes * 60;
+                    var days = hours * 24;
+                    var years = days * 365;
+                    var today = new Date();
+                    var startYear = "2016";
+                    var startMonth = "1";
+                    var startDate = "1";
+                    var startHour = "0";
+                    var startMinute = "0";
+                    var startSecond = "0";
+                    var todayYear = today.getFullYear();
+                    var todayMonth = today.getMonth() + 1;
+                    var todayDate = today.getDate();
+                    var todayHour = today.getHours();
+                    var todayMinute = today.getMinutes();
+                    var todaySecond = today.getSeconds();
+                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
+                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
+                    var diff = t2 - t1;
+                    var diffYears = Math.floor(diff / years);
+                    var diffDays = Math.floor((diff / days) - diffYears * 365);
+                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
+                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
+                        minutes);
+                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
+                        diffMinutes * minutes) / seconds);
+                    if (startYear == todayYear) {
+                        document.getElementById("year").innerHTML = todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
+                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    } else {
+                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
+                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    }
+                }
+                setInterval(siteTime, 1000);
+            </script>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/wossoneri" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:wossoneri@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=478251276" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 478251276" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;Search</span>
+            <input type="search" id="searchInput" name="s" placeholder="Please enter a search keyword"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
 <script type="text/javascript">
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
+$(function () {
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+});
+</script>
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-70716047-2"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-70716047-2');
 </script>
 
 
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
-  
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
-
-
-
-  
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-
-<!-- LOCAL: You can save these files to your site and update links -->
-    
-        
-        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
-        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
-    
-<!-- END LOCAL -->
-
-    
-
-    
-      <script type="text/javascript">
-      function renderGitment(){
-        var gitment = new Gitmint({
-            id: '1461941829000', 
-            owner: 'wossoneri',
-            repo: 'wossoneri.github.io',
-            
-            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
-            
-            oauth: {
-            
-            
-                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
-            
-                client_id: '40b6c719a11e3fca29e8'
-            }});
-        gitment.render('gitment-container');
-      }
-
-      
-      renderGitment();
-      
-      </script>
-    
-
-
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-  
-
-  
-
-  
-  
-
-  
-  
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        tex2jax: {
-          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
-          processEscapes: true,
-          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
         }
-      });
-    </script>
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
 
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for (i=0; i < all.length; i += 1) {
-          all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-      });
-    </script>
-    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-  
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
 
+    
 
-  
+    
 
-  
+    
+
+    
+
+    
+    
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
 
 </body>
+
 </html>

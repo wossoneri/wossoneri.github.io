@@ -2,6 +2,62 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://wossoneri.github.io/tags/index.html</loc>
+    
+    <lastmod>2019-12-31T11:10:57.180Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/07/22/%5BProtocolBuffer%5DProtocol-Buffer-basics-java/</loc>
+    
+    <lastmod>2019-12-31T11:08:32.650Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/12/09/%5BJava%5DUse-Bit-mask-code-By-EnumSet/</loc>
+    
+    <lastmod>2019-12-31T11:07:00.207Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2015/12/23/%5BMacOS%5D%20Mac-OS-X-El-Captain-Apache-php-mysql/</loc>
+    
+    <lastmod>2019-12-31T11:05:54.378Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/02/14/%5BDeepLearning%5D%5BCharpter%209%5DCNN/</loc>
+    
+    <lastmod>2019-12-31T11:05:03.801Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/05/04/%5BMachineLearning%5Dtesseract-tutorial/</loc>
+    
+    <lastmod>2019-12-31T11:04:22.642Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/categories/index.html</loc>
+    
+    <lastmod>2019-12-31T11:00:07.564Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2016/05/04/%5B%E9%97%B2%E8%B0%88%5DDoes-experienced-programmer-use-google-frequently/</loc>
+    
+    <lastmod>2019-12-31T10:34:04.142Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://wossoneri.github.io/2019/04/09/%5BJVM%5Ddalvik-and-jvm/</loc>
     
     <lastmod>2019-12-31T07:27:32.075Z</lastmod>
@@ -54,13 +110,6 @@
     <loc>http://wossoneri.github.io/2018/06/03/%5BAndroid%5D%5BFramework%5Dhow-does-Activity-start/</loc>
     
     <lastmod>2019-12-09T10:36:26.234Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2019/12/09/%5BJava%5DUse-Bit-mask-code-By-EnumSet/</loc>
-    
-    <lastmod>2019-12-09T09:08:29.842Z</lastmod>
     
   </url>
   
@@ -247,13 +296,6 @@
   </url>
   
   <url>
-    <loc>http://wossoneri.github.io/2018/07/22/%5BProtocolBuffer%5DProtocol-Buffer-basics-java/</loc>
-    
-    <lastmod>2018-07-22T10:36:38.253Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://wossoneri.github.io/2018/07/10/%5BAndroid%5D%5BFramework%5Dbootchart/</loc>
     
     <lastmod>2018-07-10T06:21:11.276Z</lastmod>
@@ -292,13 +334,6 @@
     <loc>http://wossoneri.github.io/2016/10/15/%5BAndroid%5DMultimedia-database/</loc>
     
     <lastmod>2018-05-15T17:08:10.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/05/04/%5BMachineLearning%5Dtesseract-tutorial/</loc>
-    
-    <lastmod>2018-05-15T17:03:38.000Z</lastmod>
     
   </url>
   
@@ -474,13 +509,6 @@
     <loc>http://wossoneri.github.io/2018/01/24/%5BMachineLearning%5DK-Nearest-Neighbor/</loc>
     
     <lastmod>2018-04-03T03:18:24.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/02/14/%5BDeepLearning%5D%5BCharpter%209%5DCNN/</loc>
-    
-    <lastmod>2018-04-03T03:13:40.000Z</lastmod>
     
   </url>
   
@@ -716,13 +744,6 @@
   </url>
   
   <url>
-    <loc>http://wossoneri.github.io/2016/05/04/%5B%E9%97%B2%E8%B0%88%5DDoes-experienced-programmer-use-google-frequently/</loc>
-    
-    <lastmod>2016-05-04T09:19:45.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://wossoneri.github.io/2016/04/16/%5BSwift%5DNotes-of-Swift/</loc>
     
     <lastmod>2016-04-16T15:38:52.000Z</lastmod>
@@ -831,27 +852,6 @@
     <loc>http://wossoneri.github.io/google9d91c53bd1766bb2.html</loc>
     
     <lastmod>2016-01-02T16:47:37.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2015/12/23/%5BMacOS%5D%20Mac-OS-X-El-Captain-Apache-php-mysql/</loc>
-    
-    <lastmod>2016-01-02T07:47:32.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/categories/index.html</loc>
-    
-    <lastmod>2016-01-02T07:04:01.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/tags/index.html</loc>
-    
-    <lastmod>2016-01-02T07:00:41.000Z</lastmod>
     
   </url>
   

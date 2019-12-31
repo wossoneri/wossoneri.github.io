@@ -1,410 +1,502 @@
-<!DOCTYPE html>
-
-
-
-  
-
-
-<html class="theme-next mist use-motion" lang="zh-Hans">
-<head><meta name="generator" content="Hexo 3.8.0">
-  <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="theme-color" content="#222">
-
-
-
-
-
-
-
-
-
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
-
-
-
-
-
-
-
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
-
-<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
-
-
-  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
-
-
-
-
-
-  <meta name="keywords" content="iOS,Objective-C,GCD,多线程,">
-
-
-
-
-
-  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml">
-
-
-
-
-
-
-<meta name="description" content="看到一篇很好的文章，本来想翻译的，但发现已经有人翻译了，遂简单整理了一下，方便阅读学习">
-<meta name="keywords" content="iOS,Objective-C,GCD,多线程">
-<meta property="og:type" content="article">
-<meta property="og:title" content="[Objective-C]深入理解GCD">
-<meta property="og:url" content="http://wossoneri.github.io/2016/05/30/[Objective-C]GCD-in-depth/index.html">
-<meta property="og:site_name" content="Wossoneri`s Blog">
-<meta property="og:description" content="看到一篇很好的文章，本来想翻译的，但发现已经有人翻译了，遂简单整理了一下，方便阅读学习">
-<meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://cdn3.raywenderlich.com/wp-content/uploads/2014/01/Concurrency_vs_Parallelism.png">
-<meta property="og:image" content="https://cdn2.raywenderlich.com/wp-content/uploads/2014/01/Serial-Queue-480x272.png">
-<meta property="og:image" content="https://cdn1.raywenderlich.com/wp-content/uploads/2014/01/Concurrent-Queue-480x272.png">
-<meta property="og:image" content="https://cdn1.raywenderlich.com/wp-content/uploads/2014/01/Workflow1.png">
-<meta property="og:image" content="http://www.raywenderlich.com/wp-content/uploads/2014/01/NSLog-Race-Condition.png">
-<meta property="og:image" content="https://cdn1.raywenderlich.com/wp-content/uploads/2014/01/Highlander_dispatch_once-480x274.png">
-<meta property="og:image" content="http://www.raywenderlich.com/wp-content/uploads/2014/01/Dispatch-Barrier.png">
-<meta property="og:image" content="http://www.raywenderlich.com/wp-content/uploads/2014/01/dispatch_sync_in_action.gif">
-<meta property="og:image" content="http://www.raywenderlich.com/wp-content/uploads/2014/01/dispatch_async_in_action.gif">
-<meta property="og:image" content="http://www.raywenderlich.com/wp-content/uploads/2014/01/Screen-Shot-2014-01-17-at-5.49.51-PM.png">
-<meta property="og:image" content="https://cdn5.raywenderlich.com/wp-content/uploads/2014/01/Dispatch_Sources_Xcode_Breakpoint_Console-650x500.png">
-<meta property="og:image" content="https://cdn1.raywenderlich.com/wp-content/uploads/2014/01/Dispatch_Sources_Debugger_Updating_UI-308x500.png">
-<meta property="og:updated_time" content="2016-06-08T10:03:04.000Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="[Objective-C]深入理解GCD">
-<meta name="twitter:description" content="看到一篇很好的文章，本来想翻译的，但发现已经有人翻译了，遂简单整理了一下，方便阅读学习">
-<meta name="twitter:image" content="https://cdn3.raywenderlich.com/wp-content/uploads/2014/01/Concurrency_vs_Parallelism.png">
-
-
-
-<script type="text/javascript" id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Mist',
-    version: '5.1.3',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
-    fancybox: true,
-    tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
-    duoshuo: {
-      userId: '6234852363740382000',
-      author: '博主'
-    },
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
-</script>
-
-
-
-  <link rel="canonical" href="http://wossoneri.github.io/2016/05/30/[Objective-C]GCD-in-depth/">
-
-
-
-
-
-  <title>[Objective-C]深入理解GCD | Wossoneri`s Blog</title>
-  
-
-
-
-
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-  ga('create', 'UA-70716047-2', 'auto');
-  ga('send', 'pageview');
-</script>
-
-
-  <script type="text/javascript">
-    var _hmt = _hmt || [];
-    (function() {
-      var hm = document.createElement("script");
-      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
-      var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
-    })();
-  </script>
-
-
-
-
-</head>
-
-<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
-
-  
-  
+<!DOCTYPE HTML>
+<html lang="zh-Hans">
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta name="keywords" content="[Objective-C]深入理解GCD, Wossoneri`s Blog">
+    <meta name="description" content="什么是GCDGCD(Grand Central Dispatch)是libdispatch的市场名称，而libdispatch作为Apple的一个库，为并发代码在多核硬件（跑 iOS 或 OS X ）上执行提供有力支持。它具有以下优点：
+
+">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>[Objective-C]深入理解GCD | Wossoneri`s Blog</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
     
-  
-
-  <div class="container sidebar-position-left page-post-detail">
-    <div class="headband"></div>
-    <a href="https://github.com"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
-
-    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta ">
+    <script src="/libs/jquery/jquery.min.js"></script>
     
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 
-    <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Wossoneri`s Blog</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper head-container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">Wossoneri`s Blog</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>Index</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>Tags</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>Categories</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>Archives</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>About</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>Contact</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>Friends</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="Search" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">Wossoneri`s Blog</div>
+        <div class="logo-desc">
+            
+            就怕你一生碌碌无为，还安慰自己平凡可贵
+            
+        </div>
     </div>
-      
-        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
-      
-  </div>
 
-  <div class="site-nav-toggle">
-    <button>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-    </button>
-  </div>
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			Index
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			Tags
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			Categories
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			Archives
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			About
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			Contact
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			Friends
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/wossoneri" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
 </div>
 
-<nav class="site-nav">
-  
+        </div>
 
-  
-    <ul id="menu" class="menu">
-      
         
-        <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
-            
-            首页
-          </a>
-        </li>
-      
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/wossoneri" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
         
-        <li class="menu-item menu-item-categories">
-          <a href="/categories/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
-            
-            分类
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-archives">
-          <a href="/archives/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
-            
-            归档
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-tags">
-          <a href="/tags/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
-            
-            标签
-          </a>
-        </li>
-      
+    </nav>
 
-      
-    </ul>
-  
+</header>
 
-  
-</nav>
-
-
-
- </div>
-    </header>
-
-    <main id="main" class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
     
 
-  
 
-  
-  
-  
 
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2016/05/30/[Objective-C]GCD-in-depth/">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/22.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">[Objective-C]深入理解GCD</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Wossoneri">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
-    </span>
 
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Wossoneri`s Blog">
-    </span>
+
+
+<main class="post-container content">
 
     
-      <header class="post-header">
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
 
-        
-        
-          <h1 class="post-title" itemprop="name headline">[Objective-C]深入理解GCD</h1>
-        
+    #articleContent :focus {
+        outline: none;
+    }
 
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-30T23:46:42+08:00">
-                2016-05-30
-              </time>
-            
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
 
-            
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
 
-            
-          </span>
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
 
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/Syntax/" itemprop="url" rel="index">
-                    <span itemprop="name">Syntax</span>
-                  </a>
-                </span>
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        height: calc(100vh - 250px);
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/iOS/">
+                                <span class="chip bg-color">iOS</span>
+                            </a>
+                        
+                            <a href="/tags/Objective-C/">
+                                <span class="chip bg-color">Objective-C</span>
+                            </a>
+                        
+                            <a href="/tags/GCD/">
+                                <span class="chip bg-color">GCD</span>
+                            </a>
+                        
+                            <a href="/tags/多线程/">
+                                <span class="chip bg-color">多线程</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/Syntax/" class="post-category">
+                                Syntax
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>Publish Date:&nbsp;&nbsp;
+                    2016-05-30
+                </div>
+                
 
                 
+
                 
-              
-            </span>
-          
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>Word Count:&nbsp;&nbsp;
+                    14,118
+                </div>
+                
 
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2016/05/30/[Objective-C]GCD-in-depth/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count gitment-comments-count" data-xid="/2016/05/30/[Objective-C]GCD-in-depth/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>Read Times:&nbsp;&nbsp;
+                    51 Min
+                </div>
+                
 
-          
-          
-	
-  		  <span class="post-letters-count">
-            &nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-                 <i class="fa fa-clock-o"></i>
-            </span>
-		        <span class="post-meta-item-text">总记</span>
-            <span class="post-count">14,335 字</span>
-		        <span class="post-meta-item-text">读完需要</span>
-    		    <span class="post-count">52 分</span>
-  		  </span>
-           
-         
-
-          
-
-          
-
-          
-              <div class="post-description">
-                  看到一篇很好的文章，本来想翻译的，但发现已经有人翻译了，遂简单整理了一下，方便阅读学习
-              </div>
-          
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>Read Count:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
 
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        <h3 id="什么是GCD"><a href="#什么是GCD" class="headerlink" title="什么是GCD"></a>什么是GCD</h3><p><code>GCD</code>(Grand Central Dispatch)是<code>libdispatch</code>的市场名称，而<code>libdispatch</code>作为Apple的一个库，为并发代码在多核硬件（跑 iOS 或 OS X ）上执行提供有力支持。它具有以下优点：</p>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h3 id="什么是GCD"><a href="#什么是GCD" class="headerlink" title="什么是GCD"></a>什么是GCD</h3><p><code>GCD</code>(Grand Central Dispatch)是<code>libdispatch</code>的市场名称，而<code>libdispatch</code>作为Apple的一个库，为并发代码在多核硬件（跑 iOS 或 OS X ）上执行提供有力支持。它具有以下优点：</p>
 <ol>
 <li>GCD能通过推迟昂贵计算任务并在后台运行它们来改善你的应用的响应性能。</li>
 <li>GCD提供一个易于使用的并发模型而不仅仅只是锁和线程，以帮助我们避开并发陷阱。</li>
@@ -421,17 +513,17 @@
 <h4 id="Thread-Safe-线程安全"><a href="#Thread-Safe-线程安全" class="headerlink" title="Thread Safe 线程安全"></a>Thread Safe 线程安全</h4><p>线程安全的代码能在多线程或并发任务中被安全的调用，而不会导致任何问题（数据损坏，崩溃，等）。线程不安全的代码在某个时刻只能在一个上下文中运行。一个线程安全代码的例子是 <code>NSDictionary</code> 。你可以在同一时间在多个线程中使用它而不会有问题。另一方面，<code>NSMutableDictionary</code> 就不是线程安全的，应该保证一次只能有一个线程访问它。</p>
 <h4 id="Context-Switch-上下文切换"><a href="#Context-Switch-上下文切换" class="headerlink" title="Context Switch 上下文切换"></a>Context Switch 上下文切换</h4><p>一个上下文切换指当你在单个进程里切换执行不同的线程时存储与恢复执行状态的过程。这个过程在编写多任务应用时很普遍，但会带来一些额外的开销。</p>
 <h4 id="Concurrency并发-vs-Parallelism并行"><a href="#Concurrency并发-vs-Parallelism并行" class="headerlink" title="Concurrency并发 vs Parallelism并行"></a>Concurrency并发 vs Parallelism并行</h4><p>并发和并行通常被一起提到，所以值得花些时间解释它们之间的区别。<br>并发代码的不同部分可以“同步”执行。然而，该怎样发生或是否发生都取决于系统。多核设备通过并行来同时执行多个线程；然而，为了使单核设备也能实现这一点，它们必须先运行一个线程，执行一个上下文切换，然后运行另一个线程或进程。这通常发生地足够快以致给我们并发执行地错觉，如下图所示： </p>
-<p><img src="https://cdn3.raywenderlich.com/wp-content/uploads/2014/01/Concurrency_vs_Parallelism.png" alt=""></p>
+<p><img src="https://cdn3.raywenderlich.com/wp-content/uploads/2014/01/Concurrency_vs_Parallelism.png" alt></p>
 <p>虽然你可以编写代码在 GCD 下并发执行，但 GCD 会决定有多少并行的需求。并行要求并发，但并发并不能保证并行。</p>
 <p>更深入的观点是并发实际上是关于构造。当你在脑海中用 <code>GCD</code> 编写代码，你组织你的代码来暴露能同时运行的多个工作片段，以及不能同时运行的那些。如果你想深入此主题，看看 <a href="http://vimeo.com/49718712" target="_blank" rel="noopener">this excellent talk by Rob Pike</a> 。</p>
 <h4 id="Queues-队列"><a href="#Queues-队列" class="headerlink" title="Queues 队列"></a>Queues 队列</h4><p><code>GCD</code> 提供有 dispatch queues 来处理代码块，这些队列管理你提供给 <code>GCD</code> 的任务并用 <code>FIFO</code> 顺序执行这些任务。这就保证了第一个被添加到队列里的任务会是队列中第一个开始的任务，而第二个被添加的任务将第二个开始，如此直到队列的终点。</p>
 <p>所有的调度队列（dispatch queues）自身都是线程安全的，你能从多个线程并行的访问它们。 <code>GCD</code> 的优点是显而易见的，即当你了解了调度队列如何为你自己代码的不同部分提供线程安全。关于这一点的关键是选择正确类型的调度队列和正确的调度函数来提交你的工作。</p>
 <p>在本节你会看到两种调度队列，都是由 <code>GCD</code> 提供的，然后看一些描述如何用调度函数添加工作到队列的列子。</p>
-<h5 id="Serial-Queues-串行队列"><a href="#Serial-Queues-串行队列" class="headerlink" title="Serial Queues 串行队列"></a>Serial Queues 串行队列</h5><p><img src="https://cdn2.raywenderlich.com/wp-content/uploads/2014/01/Serial-Queue-480x272.png" alt=""><br>这些任务的执行时机受到 <code>GCD</code> 的控制；唯一能确保的事情是 <code>GCD</code> 一次只执行一个任务，并且按照我们添加到队列的顺序来执行。</p>
+<h5 id="Serial-Queues-串行队列"><a href="#Serial-Queues-串行队列" class="headerlink" title="Serial Queues 串行队列"></a>Serial Queues 串行队列</h5><p><img src="https://cdn2.raywenderlich.com/wp-content/uploads/2014/01/Serial-Queue-480x272.png" alt><br>这些任务的执行时机受到 <code>GCD</code> 的控制；唯一能确保的事情是 <code>GCD</code> 一次只执行一个任务，并且按照我们添加到队列的顺序来执行。</p>
 <p>由于在串行队列中不会有两个任务并发运行，因此不会出现同时访问临界区的风险；相对于这些任务来说，这就从竞态条件下保护了临界区。所以如果访问临界区的唯一方式是通过提交到调度队列的任务，那么你就不需要担心临界区的安全问题了。</p>
 <h5 id="Concurrent-Queues-并发队列"><a href="#Concurrent-Queues-并发队列" class="headerlink" title="Concurrent Queues 并发队列"></a>Concurrent Queues 并发队列</h5><p>在并发队列中的任务能得到的保证是它们会按照被添加的顺序开始执行，但这就是全部的保证了。任务可能以任意顺序完成，你不会知道何时开始运行下一个任务，或者任意时刻有多少 <code>Block</code> 在运行。再说一遍，这完全取决于 <code>GCD</code> 。</p>
 <p>下图展示了一个示例任务执行计划，<code>GCD</code> 管理着四个并发任务： </p>
-<p><img src="https://cdn1.raywenderlich.com/wp-content/uploads/2014/01/Concurrent-Queue-480x272.png" alt=""></p>
+<p><img src="https://cdn1.raywenderlich.com/wp-content/uploads/2014/01/Concurrent-Queue-480x272.png" alt></p>
 <p>注意 Block 1,2 和 3 都立马开始运行，一个接一个。在 Block 0 开始后，Block 1等待了好一会儿才开始。同样， Block 3 在 Block 2 之后才开始，但它先于 Block 2 完成。</p>
 <p>何时开始一个 <code>Block</code> 完全取决于 <code>GCD</code> 。如果一个 <code>Block</code> 的执行时间与另一个重叠，也是由 <code>GCD</code> 来决定是否将其运行在另一个不同的核心上，如果那个核心可用，否则就用上下文切换的方式来执行不同的 <code>Block</code> 。</p>
 <p>有趣的是， <code>GCD</code> 提供给你至少五个特定的队列，可根据队列类型选择使用。</p>
@@ -441,7 +533,7 @@
 <p>以上是调度队列的大框架！</p>
 <p><code>GCD</code> 的“艺术”归结为选择合适的队列来调度函数以提交你的工作。体验这一点的最好方式是走一遍下边的列子，我们沿途会提供一些一般性的建议。</p>
 <h3 id="开始使用"><a href="#开始使用" class="headerlink" title="开始使用"></a>开始使用</h3><p>既然本教程的目标是优化且安全的使用 GCD 调用来自不同线程的代码，那么你将从一个近乎完成的叫做 GooglyPuff 的项目入手。</p>
-<p>GooglyPuff 是一个没有优化，线程不安全的应用，它使用 Core Image 的人脸检测 API 来覆盖一对曲棍球眼睛到被检测到的人脸上。对于基本的图像，可以从相机胶卷选择，或用预设好的URL从互联网下载。<br><a href="http://cdn4.raywenderlich.com/wp-content/uploads/2014/01/GooglyPuff_Start_1.zip" target="_blank" rel="noopener">项目地址</a><br>完成项目下载之后，将其解压到某个方便的目录，再用 Xcode 打开它并编译运行。这个应用看起来如下图所示：<br><img src="https://cdn1.raywenderlich.com/wp-content/uploads/2014/01/Workflow1.png" alt=""><br>注意当你选择 Le Internet 选项下载图片时，一个 UIAlertView 过早地弹出。你将在本系列教程地第二部分修复这个问题。</p>
+<p>GooglyPuff 是一个没有优化，线程不安全的应用，它使用 Core Image 的人脸检测 API 来覆盖一对曲棍球眼睛到被检测到的人脸上。对于基本的图像，可以从相机胶卷选择，或用预设好的URL从互联网下载。<br><a href="http://cdn4.raywenderlich.com/wp-content/uploads/2014/01/GooglyPuff_Start_1.zip" target="_blank" rel="noopener">项目地址</a><br>完成项目下载之后，将其解压到某个方便的目录，再用 Xcode 打开它并编译运行。这个应用看起来如下图所示：<br><img src="https://cdn1.raywenderlich.com/wp-content/uploads/2014/01/Workflow1.png" alt><br>注意当你选择 Le Internet 选项下载图片时，一个 UIAlertView 过早地弹出。你将在本系列教程地第二部分修复这个问题。</p>
 <p>这个项目中有四个有趣的类：</p>
 <ol>
 <li>PhotoCollectionViewController：它是应用开始的第一个视图控制器。它用缩略图展示所有选定的照片。</li>
@@ -453,7 +545,27 @@
 <p>注意在按下 PhotoCollectionViewController 中的一个 UICollectionViewCell 到生成一个新的 PhotoDetailViewController 之间花了多久时间；你会注意到一个明显的滞后，特别是在比较慢的设备上查看很大的图。</p>
 <p>在重载 UIViewController 的 viewDidLoad 时容易加入太多杂波（too much clutter），这通常会引起视图控制器出现前更长的等待。如果可能，最好是卸下一些工作放到后台，如果它们不是绝对必须要运行在加载时间里。</p>
 <p>这听起来像是 dispatch_async 能做的事情！</p>
-<p>打开 PhotoDetailViewController 并用下面的实现替换 viewDidLoad ：<br><figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)viewDidLoad </span><br><span class="line">&#123;    </span><br><span class="line">    [<span class="keyword">super</span> viewDidLoad]; </span><br><span class="line">    <span class="built_in">NSAssert</span>(_image, <span class="string">@"Image not set; required to use view controller"</span>); </span><br><span class="line">    <span class="keyword">self</span>.photoImageView.image = _image; </span><br><span class="line"> </span><br><span class="line">    <span class="comment">//Resize if neccessary to ensure it's not pixelated </span></span><br><span class="line">    <span class="keyword">if</span> (_image.size.height &lt;= <span class="keyword">self</span>.photoImageView.bounds.size.height &amp;&amp; </span><br><span class="line">        _image.size.width &lt;= <span class="keyword">self</span>.photoImageView.bounds.size.width) &#123; </span><br><span class="line">        [<span class="keyword">self</span>.photoImageView setContentMode:<span class="built_in">UIViewContentModeCenter</span>]; </span><br><span class="line">    &#125; </span><br><span class="line"> </span><br><span class="line">    <span class="built_in">dispatch_async</span>(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, <span class="number">0</span>), ^&#123; <span class="comment">// 1 </span></span><br><span class="line">        <span class="built_in">UIImage</span> *overlayImage = [<span class="keyword">self</span> faceOverlayImageFromImage:_image]; </span><br><span class="line">        <span class="built_in">dispatch_async</span>(dispatch_get_main_queue(), ^&#123; <span class="comment">// 2 </span></span><br><span class="line">            [<span class="keyword">self</span> fadeInNewImage:overlayImage]; <span class="comment">// 3 </span></span><br><span class="line">        &#125;); </span><br><span class="line">    &#125;); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>打开 PhotoDetailViewController 并用下面的实现替换 viewDidLoad ：</p>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">- (void)viewDidLoad 
+{    
+    [super viewDidLoad]; 
+    NSAssert(_image, @"Image not set; required to use view controller"); 
+    self.photoImageView.image = _image; 
+
+    //Resize if neccessary to ensure it's not pixelated 
+    if (_image.size.height <= self.photoImageView.bounds.size.height && 
+        _image.size.width <= self.photoImageView.bounds.size.width) { 
+        [self.photoImageView setContentMode:UIViewContentModeCenter]; 
+    } 
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{ // 1 
+        UIImage *overlayImage = [self faceOverlayImageFromImage:_image]; 
+        dispatch_async(dispatch_get_main_queue(), ^{ // 2 
+            [self fadeInNewImage:overlayImage]; // 3 
+        }); 
+    }); 
+}
+</code></pre>
 <p>下面来说明上面的新代码所做的事：</p>
 <ol>
 <li>你首先将工作从主线程移到全局线程。因为这是一个 dispatch_async() ，Block 会被异步地提交，意味着调用线程地执行将会继续。这就使得 viewDidLoad 更早地在主线程完成，让加载过程感觉起来更加快速。同时，一个人脸检测过程会启动并将在稍后完成。</li>
@@ -471,7 +583,21 @@
 <h3 id="使用-dispatch-after-延后工作"><a href="#使用-dispatch-after-延后工作" class="headerlink" title="使用 dispatch_after 延后工作"></a>使用 dispatch_after 延后工作</h3><p>稍微考虑一下应用的 UX 。是否用户第一次打开应用时会困惑于不知道做什么？你是这样吗？ :]</p>
 <p>如果用户的 PhotoManager 里还没有任何照片，那么显示一个提示会是个好主意！然而，你同样要考虑用户的眼睛会如何在主屏幕上浏览：如果你太快的显示一个提示，他们的眼睛还徘徊在视图的其它部分上，他们很可能会错过它。</p>
 <p>显示提示之前延迟一秒钟就足够捕捉到用户的注意，他们此时已经第一次看过了应用。</p>
-<p>添加如下代码到到 PhotoCollectionViewController.m 中 showOrHideNavPrompt 的废止实现里：<br><figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)showOrHideNavPrompt </span><br><span class="line">&#123; </span><br><span class="line">    <span class="built_in">NSUInteger</span> count = [[PhotoManager sharedManager] photos].count; </span><br><span class="line">    <span class="keyword">double</span> delayInSeconds = <span class="number">1.0</span>; </span><br><span class="line">    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * <span class="built_in">NSEC_PER_SEC</span>)); <span class="comment">// 1  </span></span><br><span class="line">    dispatch_after(popTime, dispatch_get_main_queue(), ^(<span class="keyword">void</span>)&#123; <span class="comment">// 2  </span></span><br><span class="line">        <span class="keyword">if</span> (!count) &#123; </span><br><span class="line">            [<span class="keyword">self</span>.navigationItem setPrompt:<span class="string">@"Add photos with faces to Googlyify them!"</span>]; </span><br><span class="line">        &#125; <span class="keyword">else</span> &#123; </span><br><span class="line">            [<span class="keyword">self</span>.navigationItem setPrompt:<span class="literal">nil</span>]; </span><br><span class="line">        &#125; </span><br><span class="line">    &#125;); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>添加如下代码到到 PhotoCollectionViewController.m 中 showOrHideNavPrompt 的废止实现里：</p>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">- (void)showOrHideNavPrompt 
+{ 
+    NSUInteger count = [[PhotoManager sharedManager] photos].count; 
+    double delayInSeconds = 1.0; 
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC)); // 1  
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){ // 2  
+        if (!count) { 
+            [self.navigationItem setPrompt:@"Add photos with faces to Googlyify them!"]; 
+        } else { 
+            [self.navigationItem setPrompt:nil]; 
+        } 
+    }); 
+}
+</code></pre>
 <p>showOrHideNavPrompt 在 viewDidLoad 中执行，以及 UICollectionView 被重新加载的任何时候。按照注释数字顺序看看：</p>
 <ol>
 <li>你声明了一个变量指定要延迟的时长。</li>
@@ -489,31 +615,101 @@
 <p>一个常见的担忧是它们常常不是线程安全的。这个担忧十分合理，基于它们的用途：单例常常被多个控制器同时访问。</p>
 <p>单例的线程担忧范围从初始化开始，到信息的读和写。PhotoManager 类被实现为单例——它在目前的状态下就会被这些问题所困扰。要看看事情如何很快地失去控制，你将在单例实例上创建一个控制好的竞态条件。</p>
 <p>导航到 PhotoManager.m 并找到 sharedManager ；它看起来如下：</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">+ (<span class="keyword">instancetype</span>)sharedManager     </span><br><span class="line">&#123; </span><br><span class="line">    <span class="keyword">static</span> PhotoManager *sharedPhotoManager = <span class="literal">nil</span>; </span><br><span class="line">    <span class="keyword">if</span> (!sharedPhotoManager) &#123; </span><br><span class="line">        sharedPhotoManager = [[PhotoManager alloc] init]; </span><br><span class="line">        sharedPhotoManager-&gt;_photosArray = [<span class="built_in">NSMutableArray</span> array]; </span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">return</span> sharedPhotoManager; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">+ (instancetype)sharedManager     
+{ 
+    static PhotoManager *sharedPhotoManager = nil; 
+    if (!sharedPhotoManager) { 
+        sharedPhotoManager = [[PhotoManager alloc] init]; 
+        sharedPhotoManager->_photosArray = [NSMutableArray array]; 
+    } 
+    return sharedPhotoManager; 
+}
+</code></pre>
 <p>当前状态下，代码相当简单；你创建了一个单例并初始化一个叫做 photosArray 的 NSMutableArray 属性。</p>
 <p>然而，if 条件分支不是线程安全的；如果你多次调用这个方法，有一个可能性是在某个线程（就叫它线程A）上进入 if 语句块并可能在 sharedPhotoManager 被分配内存前发生一个上下文切换。然后另一个线程（线程B）可能进入 if ，分配单例实例的内存，然后退出。</p>
 <p>当系统上下文切换回线程A，你会分配另外一个单例实例的内存，然后退出。在那个时间点，你有了两个单例的实例——很明显这不是你想要的（译者注：这还能叫单例吗？）！</p>
-<p>要强制这个（竞态）条件发生，替换 PhotoManager.m 中的 sharedManager 为下面的实现：<br><figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">+ (<span class="keyword">instancetype</span>)sharedManager   </span><br><span class="line">&#123; </span><br><span class="line">    <span class="keyword">static</span> PhotoManager *sharedPhotoManager = <span class="literal">nil</span>; </span><br><span class="line">    <span class="keyword">if</span> (!sharedPhotoManager) &#123; </span><br><span class="line">        [<span class="built_in">NSThread</span> sleepForTimeInterval:<span class="number">2</span>]; </span><br><span class="line">        sharedPhotoManager = [[PhotoManager alloc] init]; </span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"Singleton has memory address at: %@"</span>, sharedPhotoManager); </span><br><span class="line">        [<span class="built_in">NSThread</span> sleepForTimeInterval:<span class="number">2</span>]; </span><br><span class="line">        sharedPhotoManager-&gt;_photosArray = [<span class="built_in">NSMutableArray</span> array]; </span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">return</span> sharedPhotoManager; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>要强制这个（竞态）条件发生，替换 PhotoManager.m 中的 sharedManager 为下面的实现：</p>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">+ (instancetype)sharedManager   
+{ 
+    static PhotoManager *sharedPhotoManager = nil; 
+    if (!sharedPhotoManager) { 
+        [NSThread sleepForTimeInterval:2]; 
+        sharedPhotoManager = [[PhotoManager alloc] init]; 
+        NSLog(@"Singleton has memory address at: %@", sharedPhotoManager); 
+        [NSThread sleepForTimeInterval:2]; 
+        sharedPhotoManager->_photosArray = [NSMutableArray array]; 
+    } 
+    return sharedPhotoManager; 
+}
+</code></pre>
 <p>上面的代码中你用 NSThread 的 sleepForTimeInterval: 类方法来强制发生一个上下文切换。</p>
-<p>打开 AppDelegate.m 并添加如下代码到 application:didFinishLaunchingWithOptions: 的最开始处：<br><figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line"><span class="built_in">dispatch_async</span>(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, <span class="number">0</span>), ^&#123; </span><br><span class="line">    [PhotoManager sharedManager]; </span><br><span class="line">&#125;); </span><br><span class="line"> </span><br><span class="line"><span class="built_in">dispatch_async</span>(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, <span class="number">0</span>), ^&#123; </span><br><span class="line">    [PhotoManager sharedManager]; </span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>打开 AppDelegate.m 并添加如下代码到 application:didFinishLaunchingWithOptions: 的最开始处：</p>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{ 
+    [PhotoManager sharedManager]; 
+}); 
+
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{ 
+    [PhotoManager sharedManager]; 
+});
+</code></pre>
 <p>这里创建了多个异步并发调用来实例化单例，然后引发上面描述的竞态条件。</p>
-<p>编译并运行项目；查看控制台输出，你会看到多个单例被实例化，如下所示：<br><img src="http://www.raywenderlich.com/wp-content/uploads/2014/01/NSLog-Race-Condition.png" alt=""><br>注意到这里有好几行显示着不同地址的单例实例。这明显违背了单例的目的，对吧？</p>
+<p>编译并运行项目；查看控制台输出，你会看到多个单例被实例化，如下所示：<br><img src="http://www.raywenderlich.com/wp-content/uploads/2014/01/NSLog-Race-Condition.png" alt><br>注意到这里有好几行显示着不同地址的单例实例。这明显违背了单例的目的，对吧？</p>
 <p>这个输出向你展示了临界区被执行多次，而它只应该执行一次。现在，固然是你自己强制这样的状况发生，但你可以想像一下这个状况会怎样在无意间发生。</p>
 <p>注意：基于其它你无法控制的系统事件，NSLog 的数量有时会显示多个。线程问题极其难以调试，因为它们往往难以重现。<br>要纠正这个状况，实例化代码应该只执行一次，并阻塞其它实例在 if 条件的临界区运行。这刚好就是 dispatch_once 能做的事。</p>
-<p>在单例初始化方法中用 dispatch_once 取代 if 条件判断，如下所示：<br><figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">+ (<span class="keyword">instancetype</span>)sharedManager </span><br><span class="line">&#123; </span><br><span class="line">    <span class="keyword">static</span> PhotoManager *sharedPhotoManager = <span class="literal">nil</span>; </span><br><span class="line">    <span class="keyword">static</span> <span class="built_in">dispatch_once_t</span> onceToken; </span><br><span class="line">    <span class="built_in">dispatch_once</span>(&amp;onceToken, ^&#123; </span><br><span class="line">        [<span class="built_in">NSThread</span> sleepForTimeInterval:<span class="number">2</span>]; </span><br><span class="line">        sharedPhotoManager = [[PhotoManager alloc] init]; </span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@"Singleton has memory address at: %@"</span>, sharedPhotoManager); </span><br><span class="line">        [<span class="built_in">NSThread</span> sleepForTimeInterval:<span class="number">2</span>]; </span><br><span class="line">        sharedPhotoManager-&gt;_photosArray = [<span class="built_in">NSMutableArray</span> array]; </span><br><span class="line">    &#125;); </span><br><span class="line">    <span class="keyword">return</span> sharedPhotoManager; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在单例初始化方法中用 dispatch_once 取代 if 条件判断，如下所示：</p>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">+ (instancetype)sharedManager 
+{ 
+    static PhotoManager *sharedPhotoManager = nil; 
+    static dispatch_once_t onceToken; 
+    dispatch_once(&onceToken, ^{ 
+        [NSThread sleepForTimeInterval:2]; 
+        sharedPhotoManager = [[PhotoManager alloc] init]; 
+        NSLog(@"Singleton has memory address at: %@", sharedPhotoManager); 
+        [NSThread sleepForTimeInterval:2]; 
+        sharedPhotoManager->_photosArray = [NSMutableArray array]; 
+    }); 
+    return sharedPhotoManager; 
+}
+</code></pre>
 <p>编译并运行你的应用；查看控制台输出，你会看到有且仅有一个单例的实例——这就是你对单例的期望！:]</p>
-<p>现在你已经明白了防止竞态条件的重要性，从 AppDelegate.m 中移除 dispatch_async 语句，并用下面的实现替换 PhotoManager 单例的初始化：<br><figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">+ (<span class="keyword">instancetype</span>)sharedManager </span><br><span class="line">&#123; </span><br><span class="line">    <span class="keyword">static</span> PhotoManager *sharedPhotoManager = <span class="literal">nil</span>; </span><br><span class="line">    <span class="keyword">static</span> <span class="built_in">dispatch_once_t</span> onceToken; </span><br><span class="line">    <span class="built_in">dispatch_once</span>(&amp;onceToken, ^&#123; </span><br><span class="line">        sharedPhotoManager = [[PhotoManager alloc] init]; </span><br><span class="line">        sharedPhotoManager-&gt;_photosArray = [<span class="built_in">NSMutableArray</span> array]; </span><br><span class="line">    &#125;); </span><br><span class="line">    <span class="keyword">return</span> sharedPhotoManager; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>dispatch_once() 以线程安全的方式执行且仅执行其代码块一次。试图访问临界区（即传递给 dispatch_once 的代码）的不同的线程会在临界区已有一个线程的情况下被阻塞，直到临界区完成为止。<br><img src="https://cdn1.raywenderlich.com/wp-content/uploads/2014/01/Highlander_dispatch_once-480x274.png" alt=""><br>需要记住的是，这只是让访问共享实例线程安全。它绝对没有让类本身线程安全。类中可能还有其它竞态条件，例如任何操纵内部数据的情况。这些需要用其它方式来保证线程安全，例如同步访问数据，你将在下面几个小节看到。</p>
+<p>现在你已经明白了防止竞态条件的重要性，从 AppDelegate.m 中移除 dispatch_async 语句，并用下面的实现替换 PhotoManager 单例的初始化：</p>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">+ (instancetype)sharedManager 
+{ 
+    static PhotoManager *sharedPhotoManager = nil; 
+    static dispatch_once_t onceToken; 
+    dispatch_once(&onceToken, ^{ 
+        sharedPhotoManager = [[PhotoManager alloc] init]; 
+        sharedPhotoManager->_photosArray = [NSMutableArray array]; 
+    }); 
+    return sharedPhotoManager; 
+}
+</code></pre>
+<p>dispatch_once() 以线程安全的方式执行且仅执行其代码块一次。试图访问临界区（即传递给 dispatch_once 的代码）的不同的线程会在临界区已有一个线程的情况下被阻塞，直到临界区完成为止。<br><img src="https://cdn1.raywenderlich.com/wp-content/uploads/2014/01/Highlander_dispatch_once-480x274.png" alt><br>需要记住的是，这只是让访问共享实例线程安全。它绝对没有让类本身线程安全。类中可能还有其它竞态条件，例如任何操纵内部数据的情况。这些需要用其它方式来保证线程安全，例如同步访问数据，你将在下面几个小节看到。</p>
 <h3 id="处理读者与写者问题"><a href="#处理读者与写者问题" class="headerlink" title="处理读者与写者问题"></a>处理读者与写者问题</h3><p>线程安全实例不是处理单例时的唯一问题。如果单例属性表示一个可变对象，那么你就需要考虑是否那个对象自身线程安全。</p>
 <p>如果问题中的这个对象是一个 Foundation 容器类，那么答案是——“很可能不安全”！Apple 维护一个有用且有些心寒的列表，众多的 Foundation 类都不是线程安全的。 NSMutableArray，已用于你的单例，正在那个列表里休息。</p>
 <p>虽然许多线程可以同时读取 NSMutableArray 的一个实例而不会产生问题，但当一个线程正在读取时让另外一个线程修改数组就是不安全的。你的单例在目前的状况下不能预防这种情况的发生。</p>
-<p>要分析这个问题，看看 PhotoManager.m 中的 addPhoto:，转载如下：<br><figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)addPhoto:(Photo *)photo </span><br><span class="line">&#123; </span><br><span class="line">    <span class="keyword">if</span> (photo) &#123; </span><br><span class="line">        [_photosArray addObject:photo]; </span><br><span class="line">        <span class="built_in">dispatch_async</span>(dispatch_get_main_queue(), ^&#123; </span><br><span class="line">            [<span class="keyword">self</span> postContentAddedNotification]; </span><br><span class="line">        &#125;); </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>这是一个写方法，它修改一个私有可变数组对象。<br>现在看看 photos ，转载如下：<br><figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="built_in">NSArray</span> *)photos </span><br><span class="line">&#123; </span><br><span class="line">  <span class="keyword">return</span> [<span class="built_in">NSArray</span> arrayWithArray:_photosArray]; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>要分析这个问题，看看 PhotoManager.m 中的 addPhoto:，转载如下：</p>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">- (void)addPhoto:(Photo *)photo 
+{ 
+    if (photo) { 
+        [_photosArray addObject:photo]; 
+        dispatch_async(dispatch_get_main_queue(), ^{ 
+            [self postContentAddedNotification]; 
+        }); 
+    } 
+}
+</code></pre>
+<p>这是一个写方法，它修改一个私有可变数组对象。<br>现在看看 photos ，转载如下： </p>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">- (NSArray *)photos 
+{ 
+  return [NSArray arrayWithArray:_photosArray]; 
+}
+</code></pre>
 <p>这是所谓的读方法，它读取可变数组。它为调用者生成一个不可变的拷贝，防止调用者不当地改变数组，但这不能提供任何保护来对抗当一个线程调用读方法 photos 的同时另一个线程调用写方法 addPhoto: 。</p>
 <p>这就是软件开发中经典的读者写者问题。GCD 通过用 dispatch barriers 创建一个读者写者锁 提供了一个优雅的解决方案。</p>
 <p>Dispatch barriers 是一组函数，在并发队列上工作时扮演一个串行式的瓶颈。使用 GCD 的障碍（barrier）API 确保提交的 Block 在那个特定时间上是指定队列上唯一被执行的条目。这就意味着所有的先于调度障碍提交到队列的条目必能在这个 Block 执行前完成。</p>
 <p>当这个 Block 的时机到达，调度障碍执行这个 Block 并确保在那个时间里队列不会执行任何其它 Block 。一旦完成，队列就返回到它默认的实现状态。 GCD 提供了同步和异步两种障碍函数。</p>
-<p>下图显示了障碍函数对多个异步队列的影响：<br><img src="http://www.raywenderlich.com/wp-content/uploads/2014/01/Dispatch-Barrier.png" alt=""><br>注意到正常部分的操作就如同一个正常的并发队列。但当障碍执行时，它本质上就如同一个串行队列。也就是，障碍是唯一在执行的事物。在障碍完成后，队列回到一个正常并发队列的样子。</p>
+<p>下图显示了障碍函数对多个异步队列的影响：<br><img src="http://www.raywenderlich.com/wp-content/uploads/2014/01/Dispatch-Barrier.png" alt><br>注意到正常部分的操作就如同一个正常的并发队列。但当障碍执行时，它本质上就如同一个串行队列。也就是，障碍是唯一在执行的事物。在障碍完成后，队列回到一个正常并发队列的样子。</p>
 <p>下面是你何时会——和不会——使用障碍函数的情况：</p>
 <ol>
 <li>自定义串行队列：一个很坏的选择；障碍不会有任何帮助，因为不管怎样，一个串行队列一次都只执行一个操作。</li>
@@ -521,8 +717,25 @@
 <li>自定义并发队列：这对于原子或临界区代码来说是极佳的选择。任何你在设置或实例化的需要线程安全的事物都是使用障碍的最佳候选。</li>
 </ol>
 <p>由于上面唯一像样的选择是自定义并发队列，你将创建一个你自己的队列去处理你的障碍函数并分开读和写函数。且这个并发队列将允许多个多操作同时进行。</p>
-<p>打开 PhotoManager.m，添加如下私有属性到类扩展中：<br><figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">PhotoManager</span> () </span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>,<span class="keyword">strong</span>,<span class="keyword">readonly</span>) <span class="built_in">NSMutableArray</span> *photosArray; </span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) <span class="built_in">dispatch_queue_t</span> concurrentPhotoQueue; <span class="comment">///&lt; Add this </span></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure></p>
-<p>找到 addPhoto: 并用下面的实现替换它：<br><figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)addPhoto:(Photo *)photo </span><br><span class="line">&#123; </span><br><span class="line">    <span class="keyword">if</span> (photo) &#123; <span class="comment">// 1 </span></span><br><span class="line">        dispatch_barrier_async(<span class="keyword">self</span>.concurrentPhotoQueue, ^&#123; <span class="comment">// 2  </span></span><br><span class="line">            [_photosArray addObject:photo]; <span class="comment">// 3 </span></span><br><span class="line">            <span class="built_in">dispatch_async</span>(dispatch_get_main_queue(), ^&#123; <span class="comment">// 4 </span></span><br><span class="line">                [<span class="keyword">self</span> postContentAddedNotification];  </span><br><span class="line">            &#125;); </span><br><span class="line">        &#125;); </span><br><span class="line">    &#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>打开 PhotoManager.m，添加如下私有属性到类扩展中：</p>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">@interface PhotoManager () 
+@property (nonatomic,strong,readonly) NSMutableArray *photosArray; 
+@property (nonatomic, strong) dispatch_queue_t concurrentPhotoQueue; ///< Add this 
+@end
+</code></pre>
+<p>找到 addPhoto: 并用下面的实现替换它：</p>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">- (void)addPhoto:(Photo *)photo 
+{ 
+    if (photo) { // 1 
+        dispatch_barrier_async(self.concurrentPhotoQueue, ^{ // 2  
+            [_photosArray addObject:photo]; // 3 
+            dispatch_async(dispatch_get_main_queue(), ^{ // 4 
+                [self postContentAddedNotification];  
+            }); 
+        }); 
+    } 
+}
+</code></pre>
 <p>你新写的函数是这样工作的：</p>
 <ol>
 <li>在执行下面所有的工作前检查是否有合法的相片。</li>
@@ -540,20 +753,57 @@
 <li>主队列（串行）：同上面的理由一样，必须非常小心！这个状况同样有潜在的导致死锁的情况。</li>
 <li>并发队列：这才是做同步工作的好选择，不论是通过调度障碍，或者需要等待一个任务完成才能执行进一步处理的情况。</li>
 </ol>
-<p>继续在 PhotoManager.m 上工作，用下面的实现替换 photos ：<br><figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="built_in">NSArray</span> *)photos </span><br><span class="line">&#123; </span><br><span class="line">    __block <span class="built_in">NSArray</span> *array; <span class="comment">// 1 </span></span><br><span class="line">    <span class="built_in">dispatch_sync</span>(<span class="keyword">self</span>.concurrentPhotoQueue, ^&#123; <span class="comment">// 2 </span></span><br><span class="line">        array = [<span class="built_in">NSArray</span> arrayWithArray:_photosArray]; <span class="comment">// 3 </span></span><br><span class="line">    &#125;); </span><br><span class="line">    <span class="keyword">return</span> array; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>继续在 PhotoManager.m 上工作，用下面的实现替换 photos ：</p>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">- (NSArray *)photos 
+{ 
+    __block NSArray *array; // 1 
+    dispatch_sync(self.concurrentPhotoQueue, ^{ // 2 
+        array = [NSArray arrayWithArray:_photosArray]; // 3 
+    }); 
+    return array; 
+}
+</code></pre>
 <p>这就是你的读函数。按顺序看看编过号的注释，有这些：</p>
 <ol>
 <li>__block 关键字允许对象在 Block 内可变。没有它，array 在 Block 内部就只是只读的，你的代码甚至不能通过编译。</li>
 <li>在 concurrentPhotoQueue 上同步调度来执行读操作。</li>
 <li>将相片数组存储在 array 内并返回它。</li>
 </ol>
-<p>最后，你需要实例化你的 concurrentPhotoQueue 属性。修改 sharedManager 以便像下面这样初始化队列：<br><figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">+ (<span class="keyword">instancetype</span>)sharedManager </span><br><span class="line">&#123; </span><br><span class="line">    <span class="keyword">static</span> PhotoManager *sharedPhotoManager = <span class="literal">nil</span>; </span><br><span class="line">    <span class="keyword">static</span> <span class="built_in">dispatch_once_t</span> onceToken; </span><br><span class="line">    <span class="built_in">dispatch_once</span>(&amp;onceToken, ^&#123; </span><br><span class="line">        sharedPhotoManager = [[PhotoManager alloc] init]; </span><br><span class="line">        sharedPhotoManager-&gt;_photosArray = [<span class="built_in">NSMutableArray</span> array]; </span><br><span class="line"> </span><br><span class="line">        <span class="comment">// ADD THIS: </span></span><br><span class="line">        sharedPhotoManager-&gt;_concurrentPhotoQueue = dispatch_queue_create(<span class="string">"com.selander.GooglyPuff.photoQueue"</span>, </span><br><span class="line">                                                    DISPATCH_QUEUE_CONCURRENT);  </span><br><span class="line">    &#125;); </span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> sharedPhotoManager; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>最后，你需要实例化你的 concurrentPhotoQueue 属性。修改 sharedManager 以便像下面这样初始化队列：</p>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">+ (instancetype)sharedManager 
+{ 
+    static PhotoManager *sharedPhotoManager = nil; 
+    static dispatch_once_t onceToken; 
+    dispatch_once(&onceToken, ^{ 
+        sharedPhotoManager = [[PhotoManager alloc] init]; 
+        sharedPhotoManager->_photosArray = [NSMutableArray array]; 
+
+        // ADD THIS: 
+        sharedPhotoManager->_concurrentPhotoQueue = dispatch_queue_create("com.selander.GooglyPuff.photoQueue", 
+                                                    DISPATCH_QUEUE_CONCURRENT);  
+    }); 
+
+    return sharedPhotoManager; 
+}
+</code></pre>
 <p>这里使用 dispatch_queue_create 初始化 concurrentPhotoQueue 为一个并发队列。第一个参数是反向DNS样式命名惯例；确保它是描述性的，将有助于调试。第二个参数指定你的队列是串行还是并发。</p>
 <p>注意：当你在网上搜索例子时，你会经常看人们传递 0 或者 NULL 给 dispatch_queue_create 的第二个参数。这是一个创建串行队列的过时方式；明确你的参数总是更好。<br>恭喜——你的 PhotoManager 单例现在是线程安全的了。不论你在何处或怎样读或写你的照片，你都有这样的自信，即它将以安全的方式完成，不会出现任何惊吓。</p>
 <h3 id="A-Visual-Review-of-Queueing-队列的虚拟回顾"><a href="#A-Visual-Review-of-Queueing-队列的虚拟回顾" class="headerlink" title="A Visual Review of Queueing 队列的虚拟回顾"></a>A Visual Review of Queueing 队列的虚拟回顾</h3><p>依然没有 100% 地掌握 GCD 的要领？确保你可以使用 GCD 函数轻松地创建简单的例子，使用断点和 NSLog 语句保证自己明白当下发生的情况。</p>
 <p>我在下面提供了两个 GIF动画来帮助你巩固对 dispatch_async 和 dispatch_sync 的理解。包含在每个 GIF 中的代码可以提供视觉辅助；仔细注意 GIF 左边显示代码断点的每一步，以及右边相关队列的状态。</p>
-<h4 id="dispatch-sync-回顾"><a href="#dispatch-sync-回顾" class="headerlink" title="dispatch_sync 回顾"></a>dispatch_sync 回顾</h4><figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)viewDidLoad </span><br><span class="line">&#123; </span><br><span class="line">  [<span class="keyword">super</span> viewDidLoad]; </span><br><span class="line"> </span><br><span class="line">  <span class="built_in">dispatch_sync</span>(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, <span class="number">0</span>), ^&#123; </span><br><span class="line"> </span><br><span class="line">      <span class="built_in">NSLog</span>(<span class="string">@"First Log"</span>); </span><br><span class="line"> </span><br><span class="line">  &#125;); </span><br><span class="line"> </span><br><span class="line">  <span class="built_in">NSLog</span>(<span class="string">@"Second Log"</span>); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><img src="http://www.raywenderlich.com/wp-content/uploads/2014/01/dispatch_sync_in_action.gif" alt=""><br>下面是图中几个步骤的说明：</p>
+<h4 id="dispatch-sync-回顾"><a href="#dispatch-sync-回顾" class="headerlink" title="dispatch_sync 回顾"></a>dispatch_sync 回顾</h4><pre class=" language-lang-objectivec"><code class="language-lang-objectivec">- (void)viewDidLoad 
+{ 
+  [super viewDidLoad]; 
+
+  dispatch_sync(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{ 
+
+      NSLog(@"First Log"); 
+
+  }); 
+
+  NSLog(@"Second Log"); 
+}
+</code></pre>
+<p><img src="http://www.raywenderlich.com/wp-content/uploads/2014/01/dispatch_sync_in_action.gif" alt><br>下面是图中几个步骤的说明：</p>
 <ol>
 <li>主队列一路按顺序执行任务——接着是一个实例化 UIViewController 的任务，其中包含了 viewDidLoad 。</li>
 <li>viewDidLoad 在主线程执行。</li>
@@ -565,8 +815,20 @@
 <li>viewDidLoad 方法完成，主队列继续处理其他任务。</li>
 </ol>
 <p>dispatch_sync 添加任务到一个队列并等待直到任务完成。dispatch_async 做类似的事情，但不同之处是它不会等待任务的完成，而是立即继续“调用线程”的其它任务。</p>
-<h4 id="dispatch-async-回顾"><a href="#dispatch-async-回顾" class="headerlink" title="dispatch_async 回顾"></a>dispatch_async 回顾</h4><figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)viewDidLoad </span><br><span class="line">&#123; </span><br><span class="line">  [<span class="keyword">super</span> viewDidLoad]; </span><br><span class="line"> </span><br><span class="line">  <span class="built_in">dispatch_async</span>(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, <span class="number">0</span>), ^&#123; </span><br><span class="line"> </span><br><span class="line">      <span class="built_in">NSLog</span>(<span class="string">@"First Log"</span>); </span><br><span class="line"> </span><br><span class="line">  &#125;); </span><br><span class="line"> </span><br><span class="line">  <span class="built_in">NSLog</span>(<span class="string">@"Second Log"</span>); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><img src="http://www.raywenderlich.com/wp-content/uploads/2014/01/dispatch_async_in_action.gif" alt=""></p>
+<h4 id="dispatch-async-回顾"><a href="#dispatch-async-回顾" class="headerlink" title="dispatch_async 回顾"></a>dispatch_async 回顾</h4><pre class=" language-lang-objectivec"><code class="language-lang-objectivec">- (void)viewDidLoad 
+{ 
+  [super viewDidLoad]; 
+
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{ 
+
+      NSLog(@"First Log"); 
+
+  }); 
+
+  NSLog(@"Second Log"); 
+}
+</code></pre>
+<p><img src="http://www.raywenderlich.com/wp-content/uploads/2014/01/dispatch_async_in_action.gif" alt></p>
 <ol>
 <li>主队列一路按顺序执行任务——接着是一个实例化 UIViewController 的任务，其中包含了 viewDidLoad 。</li>
 <li>viewDidLoad 在主线程执行。</li>
@@ -586,9 +848,43 @@
 <p>如果你一直跟着第一部分的教程在写代码，那你可以继续你的工程。但如果你没有完成第一部分的工作，或者不想重用你的工程，你可以下载<a href="http://www.raywenderlich.com/wp-content/uploads/2014/01/GooglyPuff_End_1.zip" target="_blank" rel="noopener">第一部分最终的代码</a>。</p>
 <p>那就让我们来更深入地探索 GCD 吧！</p>
 <h3 id="纠正过早弹出的提示"><a href="#纠正过早弹出的提示" class="headerlink" title="纠正过早弹出的提示"></a>纠正过早弹出的提示</h3><p>你可能已经注意到当你尝试用 Le Internet 选项来添加图片时，一个 UIAlertView 会在图片下载完成之前就弹出，如下如所示： </p>
-<p><img src="http://www.raywenderlich.com/wp-content/uploads/2014/01/Screen-Shot-2014-01-17-at-5.49.51-PM.png" alt=""></p>
+<p><img src="http://www.raywenderlich.com/wp-content/uploads/2014/01/Screen-Shot-2014-01-17-at-5.49.51-PM.png" alt></p>
 <p>问题的症结在 PhotoManagers 的 downloadPhotoWithCompletionBlock: 里，它目前的实现如下：</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)downloadPhotosWithCompletionBlock:(BatchPhotoDownloadingCompletionBlock)completionBlock</span><br><span class="line">&#123;</span><br><span class="line">    __block <span class="built_in">NSError</span> *error;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">for</span> (<span class="built_in">NSInteger</span> i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) &#123;</span><br><span class="line">        <span class="built_in">NSURL</span> *url;</span><br><span class="line">        <span class="keyword">switch</span> (i) &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">                url = [<span class="built_in">NSURL</span> URLWithString:kOverlyAttachedGirlfriendURLString];</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">                url = [<span class="built_in">NSURL</span> URLWithString:kSuccessKidURLString];</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">                url = [<span class="built_in">NSURL</span> URLWithString:kLotsOfFacesURLString];</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">default</span>:</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        Photo *photo = [[Photo alloc] initwithURL:url</span><br><span class="line">                              withCompletionBlock:^(<span class="built_in">UIImage</span> *image, <span class="built_in">NSError</span> *_error) &#123;</span><br><span class="line">                                  <span class="keyword">if</span> (_error) &#123;</span><br><span class="line">                                      error = _error;</span><br><span class="line">                                  &#125;</span><br><span class="line">                              &#125;];</span><br><span class="line"> </span><br><span class="line">        [[PhotoManager sharedManager] addPhoto:photo];</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (completionBlock) &#123;</span><br><span class="line">        completionBlock(error);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">- (void)downloadPhotosWithCompletionBlock:(BatchPhotoDownloadingCompletionBlock)completionBlock
+{
+    __block NSError *error;
+
+    for (NSInteger i = 0; i < 3; i++) {
+        NSURL *url;
+        switch (i) {
+            case 0:
+                url = [NSURL URLWithString:kOverlyAttachedGirlfriendURLString];
+                break;
+            case 1:
+                url = [NSURL URLWithString:kSuccessKidURLString];
+                break;
+            case 2:
+                url = [NSURL URLWithString:kLotsOfFacesURLString];
+                break;
+            default:
+                break;
+        }
+
+        Photo *photo = [[Photo alloc] initwithURL:url
+                              withCompletionBlock:^(UIImage *image, NSError *_error) {
+                                  if (_error) {
+                                      error = _error;
+                                  }
+                              }];
+
+        [[PhotoManager sharedManager] addPhoto:photo];
+    }
+
+    if (completionBlock) {
+        completionBlock(error);
+    }
+}
+</code></pre>
 <p>在方法的最后你调用了 completionBlock ——因为此时你假设所有的照片都已下载完成。但很不幸，此时并不能保证所有的下载都已完成。</p>
 <p>Photo 类的实例方法用某个 URL 开始下载某个文件并立即返回，但此时下载并未完成。换句话说，当 downloadPhotoWithCompletionBlock: 在其末尾调用 completionBlock 时，它就假设了它自己所使用的方法全都是同步的，而且每个方法都完成了它们的工作。</p>
 <p>然而，-[Photo initWithURL:withCompletionBlock:] 是异步执行的，会立即返回——所以这种方式行不通。</p>
@@ -599,7 +895,49 @@
 <p>当组中所有的事件都完成时，GCD 的 API 提供了两种通知方式。</p>
 <p>第一种是 dispatch_group_wait ，它会阻塞当前线程，直到组里面所有的任务都完成或者等到某个超时发生。这恰好是你目前所需要的。</p>
 <p>打开 PhotoManager.m，用下列实现替换 downloadPhotosWithCompletionBlock:</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)downloadPhotosWithCompletionBlock:(BatchPhotoDownloadingCompletionBlock)completionBlock</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">dispatch_async</span>(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, <span class="number">0</span>), ^&#123; <span class="comment">// 1</span></span><br><span class="line"> </span><br><span class="line">        __block <span class="built_in">NSError</span> *error;</span><br><span class="line">        dispatch_group_t downloadGroup = dispatch_group_create(); <span class="comment">// 2</span></span><br><span class="line"> </span><br><span class="line">        <span class="keyword">for</span> (<span class="built_in">NSInteger</span> i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) &#123;</span><br><span class="line">            <span class="built_in">NSURL</span> *url;</span><br><span class="line">            <span class="keyword">switch</span> (i) &#123;</span><br><span class="line">                <span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">                    url = [<span class="built_in">NSURL</span> URLWithString:kOverlyAttachedGirlfriendURLString];</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">                    url = [<span class="built_in">NSURL</span> URLWithString:kSuccessKidURLString];</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">                    url = [<span class="built_in">NSURL</span> URLWithString:kLotsOfFacesURLString];</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">default</span>:</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line"> </span><br><span class="line">            dispatch_group_enter(downloadGroup); <span class="comment">// 3</span></span><br><span class="line">            Photo *photo = [[Photo alloc] initwithURL:url</span><br><span class="line">                                  withCompletionBlock:^(<span class="built_in">UIImage</span> *image, <span class="built_in">NSError</span> *_error) &#123;</span><br><span class="line">                                      <span class="keyword">if</span> (_error) &#123;</span><br><span class="line">                                          error = _error;</span><br><span class="line">                                      &#125;</span><br><span class="line">                                      dispatch_group_leave(downloadGroup); <span class="comment">// 4</span></span><br><span class="line">                                  &#125;];</span><br><span class="line"> </span><br><span class="line">            [[PhotoManager sharedManager] addPhoto:photo];</span><br><span class="line">        &#125;</span><br><span class="line">        dispatch_group_wait(downloadGroup, DISPATCH_TIME_FOREVER); <span class="comment">// 5</span></span><br><span class="line">        <span class="built_in">dispatch_async</span>(dispatch_get_main_queue(), ^&#123; <span class="comment">// 6</span></span><br><span class="line">            <span class="keyword">if</span> (completionBlock) &#123; <span class="comment">// 7</span></span><br><span class="line">                completionBlock(error);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">- (void)downloadPhotosWithCompletionBlock:(BatchPhotoDownloadingCompletionBlock)completionBlock
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{ // 1
+
+        __block NSError *error;
+        dispatch_group_t downloadGroup = dispatch_group_create(); // 2
+
+        for (NSInteger i = 0; i < 3; i++) {
+            NSURL *url;
+            switch (i) {
+                case 0:
+                    url = [NSURL URLWithString:kOverlyAttachedGirlfriendURLString];
+                    break;
+                case 1:
+                    url = [NSURL URLWithString:kSuccessKidURLString];
+                    break;
+                case 2:
+                    url = [NSURL URLWithString:kLotsOfFacesURLString];
+                    break;
+                default:
+                    break;
+            }
+
+            dispatch_group_enter(downloadGroup); // 3
+            Photo *photo = [[Photo alloc] initwithURL:url
+                                  withCompletionBlock:^(UIImage *image, NSError *_error) {
+                                      if (_error) {
+                                          error = _error;
+                                      }
+                                      dispatch_group_leave(downloadGroup); // 4
+                                  }];
+
+            [[PhotoManager sharedManager] addPhoto:photo];
+        }
+        dispatch_group_wait(downloadGroup, DISPATCH_TIME_FOREVER); // 5
+        dispatch_async(dispatch_get_main_queue(), ^{ // 6
+            if (completionBlock) { // 7
+                completionBlock(error);
+            }
+        });
+    });
+}
+</code></pre>
 <p>按照注释的顺序，你会看到：</p>
 <ol>
 <li><p>因为你在使用的是同步的 dispatch_group_wait ，它会阻塞当前线程，所以你要用 dispatch_async 将整个方法放入后台队列以避免阻塞主线程。</p>
@@ -632,7 +970,48 @@
 </li>
 </ol>
 <h3 id="Dispatch-Group，第二种方式"><a href="#Dispatch-Group，第二种方式" class="headerlink" title="Dispatch Group，第二种方式"></a>Dispatch Group，第二种方式</h3><p>上面的一切都很好，但在另一个队列上异步调度然后使用 dispatch_group_wait 来阻塞实在显得有些笨拙。是的，还有另一种方式……</p>
-<p>在 PhotoManager.m 中找到 downloadPhotosWithCompletionBlock: 方法，用下面的实现替换它：<br><figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)downloadPhotosWithCompletionBlock:(BatchPhotoDownloadingCompletionBlock)completionBlock</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 1</span></span><br><span class="line">    __block <span class="built_in">NSError</span> *error;</span><br><span class="line">    dispatch_group_t downloadGroup = dispatch_group_create(); </span><br><span class="line"> </span><br><span class="line">    <span class="keyword">for</span> (<span class="built_in">NSInteger</span> i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) &#123;</span><br><span class="line">        <span class="built_in">NSURL</span> *url;</span><br><span class="line">        <span class="keyword">switch</span> (i) &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">                url = [<span class="built_in">NSURL</span> URLWithString:kOverlyAttachedGirlfriendURLString];</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">                url = [<span class="built_in">NSURL</span> URLWithString:kSuccessKidURLString];</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">                url = [<span class="built_in">NSURL</span> URLWithString:kLotsOfFacesURLString];</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">default</span>:</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        dispatch_group_enter(downloadGroup); <span class="comment">// 2</span></span><br><span class="line">        Photo *photo = [[Photo alloc] initwithURL:url</span><br><span class="line">                              withCompletionBlock:^(<span class="built_in">UIImage</span> *image, <span class="built_in">NSError</span> *_error) &#123;</span><br><span class="line">                                  <span class="keyword">if</span> (_error) &#123;</span><br><span class="line">                                      error = _error;</span><br><span class="line">                                  &#125;</span><br><span class="line">                                  dispatch_group_leave(downloadGroup); <span class="comment">// 3</span></span><br><span class="line">                              &#125;];</span><br><span class="line"> </span><br><span class="line">        [[PhotoManager sharedManager] addPhoto:photo];</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    dispatch_group_notify(downloadGroup, dispatch_get_main_queue(), ^&#123; <span class="comment">// 4</span></span><br><span class="line">        <span class="keyword">if</span> (completionBlock) &#123;</span><br><span class="line">            completionBlock(error);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在 PhotoManager.m 中找到 downloadPhotosWithCompletionBlock: 方法，用下面的实现替换它：</p>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">- (void)downloadPhotosWithCompletionBlock:(BatchPhotoDownloadingCompletionBlock)completionBlock
+{
+    // 1
+    __block NSError *error;
+    dispatch_group_t downloadGroup = dispatch_group_create(); 
+
+    for (NSInteger i = 0; i < 3; i++) {
+        NSURL *url;
+        switch (i) {
+            case 0:
+                url = [NSURL URLWithString:kOverlyAttachedGirlfriendURLString];
+                break;
+            case 1:
+                url = [NSURL URLWithString:kSuccessKidURLString];
+                break;
+            case 2:
+                url = [NSURL URLWithString:kLotsOfFacesURLString];
+                break;
+            default:
+                break;
+        }
+
+        dispatch_group_enter(downloadGroup); // 2
+        Photo *photo = [[Photo alloc] initwithURL:url
+                              withCompletionBlock:^(UIImage *image, NSError *_error) {
+                                  if (_error) {
+                                      error = _error;
+                                  }
+                                  dispatch_group_leave(downloadGroup); // 3
+                              }];
+
+        [[PhotoManager sharedManager] addPhoto:photo];
+    }
+
+    dispatch_group_notify(downloadGroup, dispatch_get_main_queue(), ^{ // 4
+        if (completionBlock) {
+            completionBlock(error);
+        }
+    });
+}
+</code></pre>
 <p>下面解释新的异步方法如何工作：</p>
 <ol>
 <li><p>在新的实现里，因为你没有阻塞主线程，所以你并不需要将方法包裹在 async 调用中。</p>
@@ -660,7 +1039,47 @@
 </li>
 </ol>
 <p>回到 downloadPhotosWithCompletionBlock: 并用下列实现替换它：</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)downloadPhotosWithCompletionBlock:(BatchPhotoDownloadingCompletionBlock)completionBlock </span><br><span class="line">&#123; </span><br><span class="line">    __block <span class="built_in">NSError</span> *error; </span><br><span class="line">    dispatch_group_t downloadGroup = dispatch_group_create(); </span><br><span class="line"> </span><br><span class="line">    dispatch_apply(<span class="number">3</span>, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, <span class="number">0</span>), ^(size_t i) &#123; </span><br><span class="line"> </span><br><span class="line">        <span class="built_in">NSURL</span> *url; </span><br><span class="line">        <span class="keyword">switch</span> (i) &#123; </span><br><span class="line">            <span class="keyword">case</span> <span class="number">0</span>: </span><br><span class="line">                url = [<span class="built_in">NSURL</span> URLWithString:kOverlyAttachedGirlfriendURLString]; </span><br><span class="line">                <span class="keyword">break</span>; </span><br><span class="line">            <span class="keyword">case</span> <span class="number">1</span>: </span><br><span class="line">                url = [<span class="built_in">NSURL</span> URLWithString:kSuccessKidURLString]; </span><br><span class="line">                <span class="keyword">break</span>; </span><br><span class="line">            <span class="keyword">case</span> <span class="number">2</span>: </span><br><span class="line">                url = [<span class="built_in">NSURL</span> URLWithString:kLotsOfFacesURLString]; </span><br><span class="line">                <span class="keyword">break</span>; </span><br><span class="line">            <span class="keyword">default</span>: </span><br><span class="line">                <span class="keyword">break</span>; </span><br><span class="line">        &#125; </span><br><span class="line"> </span><br><span class="line">        dispatch_group_enter(downloadGroup); </span><br><span class="line">        Photo *photo = [[Photo alloc] initwithURL:url </span><br><span class="line">                              withCompletionBlock:^(<span class="built_in">UIImage</span> *image, <span class="built_in">NSError</span> *_error) &#123; </span><br><span class="line">                                  <span class="keyword">if</span> (_error) &#123; </span><br><span class="line">                                      error = _error; </span><br><span class="line">                                  &#125; </span><br><span class="line">                                  dispatch_group_leave(downloadGroup); </span><br><span class="line">                              &#125;]; </span><br><span class="line"> </span><br><span class="line">        [[PhotoManager sharedManager] addPhoto:photo]; </span><br><span class="line">    &#125;); </span><br><span class="line"> </span><br><span class="line">    dispatch_group_notify(downloadGroup, dispatch_get_main_queue(), ^&#123; </span><br><span class="line">        <span class="keyword">if</span> (completionBlock) &#123; </span><br><span class="line">            completionBlock(error); </span><br><span class="line">        &#125; </span><br><span class="line">    &#125;); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">- (void)downloadPhotosWithCompletionBlock:(BatchPhotoDownloadingCompletionBlock)completionBlock 
+{ 
+    __block NSError *error; 
+    dispatch_group_t downloadGroup = dispatch_group_create(); 
+
+    dispatch_apply(3, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(size_t i) { 
+
+        NSURL *url; 
+        switch (i) { 
+            case 0: 
+                url = [NSURL URLWithString:kOverlyAttachedGirlfriendURLString]; 
+                break; 
+            case 1: 
+                url = [NSURL URLWithString:kSuccessKidURLString]; 
+                break; 
+            case 2: 
+                url = [NSURL URLWithString:kLotsOfFacesURLString]; 
+                break; 
+            default: 
+                break; 
+        } 
+
+        dispatch_group_enter(downloadGroup); 
+        Photo *photo = [[Photo alloc] initwithURL:url 
+                              withCompletionBlock:^(UIImage *image, NSError *_error) { 
+                                  if (_error) { 
+                                      error = _error; 
+                                  } 
+                                  dispatch_group_leave(downloadGroup); 
+                              }]; 
+
+        [[PhotoManager sharedManager] addPhoto:photo]; 
+    }); 
+
+    dispatch_group_notify(downloadGroup, dispatch_get_main_queue(), ^{ 
+        if (completionBlock) { 
+            completionBlock(error); 
+        } 
+    }); 
+}
+</code></pre>
 <p>你的循环现在是并行运行的了；在上面的代码中，在调用 dispatch_apply 时，你用第一次参数指明了迭代的次数，用第二个参数指定了任务运行的队列，而第三个参数是一个 Block。</p>
 <p>要知道虽然你有代码保证添加相片时线程安全，但图片的顺序却可能不同，这取决于线程完成的顺序。</p>
 <p>编译并运行，然后从 “Le Internet” 添加一些照片。注意到区别了吗？</p>
@@ -684,7 +1103,22 @@
 <p>注意：有一些人会说，这种类型的测试不属于集成测试的首选集（Preferred Set）。一些人会赞同，一些人不会。但如果你想做，那就去做。</p>
 </blockquote>
 <p>导航到 GooglyPuffTests.m 并查看 downloadImageURLWithString:，如下：</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)downloadImageURLWithString:(<span class="built_in">NSString</span> *)URLString </span><br><span class="line">&#123; </span><br><span class="line">    <span class="built_in">NSURL</span> *url = [<span class="built_in">NSURL</span> URLWithString:URLString]; </span><br><span class="line">    __block <span class="built_in">BOOL</span> isFinishedDownloading = <span class="literal">NO</span>; </span><br><span class="line">    __unused Photo *photo = [[Photo alloc] </span><br><span class="line">                             initwithURL:url </span><br><span class="line">                             withCompletionBlock:^(<span class="built_in">UIImage</span> *image, <span class="built_in">NSError</span> *error) &#123; </span><br><span class="line">                                 <span class="keyword">if</span> (error) &#123; </span><br><span class="line">                                     <span class="built_in">XCTFail</span>(<span class="string">@"%@ failed. %@"</span>, URLString, error); </span><br><span class="line">                                 &#125; </span><br><span class="line">                                 isFinishedDownloading = <span class="literal">YES</span>; </span><br><span class="line">                             &#125;]; </span><br><span class="line"> </span><br><span class="line">    <span class="keyword">while</span> (!isFinishedDownloading) &#123;&#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">- (void)downloadImageURLWithString:(NSString *)URLString 
+{ 
+    NSURL *url = [NSURL URLWithString:URLString]; 
+    __block BOOL isFinishedDownloading = NO; 
+    __unused Photo *photo = [[Photo alloc] 
+                             initwithURL:url 
+                             withCompletionBlock:^(UIImage *image, NSError *error) { 
+                                 if (error) { 
+                                     XCTFail(@"%@ failed. %@", URLString, error); 
+                                 } 
+                                 isFinishedDownloading = YES; 
+                             }]; 
+
+    while (!isFinishedDownloading) {} 
+}
+</code></pre>
 <p>这是一种测试异步网络代码的幼稚方式。 While 循环在函数的最后一直等待，直到 isFinishedDownloading 布尔值变成 True，它只会在 Completion Block 里发生。让我们看看这样做有什么影响。</p>
 <p>通过在 Xcode 中点击 Product / Test 运行你的测试，如果你使用默认的键绑定，也可以使用快捷键 ?+U 来运行你的测试。</p>
 <p>在测试运行时，注意 Xcode debug 导航栏里的 CPU 使用率。这个设计不当的实现就是一个基本的 自旋锁 。它很不实用，因为你在 While 循环里浪费了珍贵的 CPU 周期；而且它也几乎没有扩展性。</p>
@@ -698,7 +1132,30 @@
 <p>信号量让你控制多个消费者对有限数量资源的访问。举例来说，如果你创建了一个有着两个资源的信号量，那同时最多只能有两个线程可以访问临界区。其他想使用资源的线程必须在一个…你猜到了吗？…FIFO队列里等待。</p>
 <p>让我们来使用信号量吧！</p>
 <p>打开 GooglyPuffTests.m 并用下列实现替换 downloadImageURLWithString:</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)downloadImageURLWithString:(<span class="built_in">NSString</span> *)URLString</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 1</span></span><br><span class="line">    dispatch_semaphore_t semaphore = dispatch_semaphore_create(<span class="number">0</span>);</span><br><span class="line"> </span><br><span class="line">    <span class="built_in">NSURL</span> *url = [<span class="built_in">NSURL</span> URLWithString:URLString];</span><br><span class="line">    __unused Photo *photo = [[Photo alloc]</span><br><span class="line">                             initwithURL:url</span><br><span class="line">                             withCompletionBlock:^(<span class="built_in">UIImage</span> *image, <span class="built_in">NSError</span> *error) &#123;</span><br><span class="line">                                 <span class="keyword">if</span> (error) &#123;</span><br><span class="line">                                     <span class="built_in">XCTFail</span>(<span class="string">@"%@ failed. %@"</span>, URLString, error);</span><br><span class="line">                                 &#125;</span><br><span class="line"> </span><br><span class="line">                                 <span class="comment">// 2</span></span><br><span class="line">                                 dispatch_semaphore_signal(semaphore);</span><br><span class="line">                             &#125;];</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// 3</span></span><br><span class="line">    dispatch_time_t timeoutTime = dispatch_time(DISPATCH_TIME_NOW, kDefaultTimeoutLengthInNanoSeconds);</span><br><span class="line">    <span class="keyword">if</span> (dispatch_semaphore_wait(semaphore, timeoutTime)) &#123;</span><br><span class="line">        <span class="built_in">XCTFail</span>(<span class="string">@"%@ timed out"</span>, URLString);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">- (void)downloadImageURLWithString:(NSString *)URLString
+{
+    // 1
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+
+    NSURL *url = [NSURL URLWithString:URLString];
+    __unused Photo *photo = [[Photo alloc]
+                             initwithURL:url
+                             withCompletionBlock:^(UIImage *image, NSError *error) {
+                                 if (error) {
+                                     XCTFail(@"%@ failed. %@", URLString, error);
+                                 }
+
+                                 // 2
+                                 dispatch_semaphore_signal(semaphore);
+                             }];
+
+    // 3
+    dispatch_time_t timeoutTime = dispatch_time(DISPATCH_TIME_NOW, kDefaultTimeoutLengthInNanoSeconds);
+    if (dispatch_semaphore_wait(semaphore, timeoutTime)) {
+        XCTFail(@"%@ timed out", URLString);
+    }
+}
+</code></pre>
 <p>下面来说明你代码中的信号量是如何工作的：</p>
 <ol>
 <li><p>创建一个信号量。参数指定信号量的起始值。这个数字是你可以访问的信号量，不需要有人先去增加它的数量。（注意到增加信号量也被叫做发射信号量）。译者注：这里初始化为0，也就是说，有人想使用信号量必然会被阻塞，直到有人增加信号量。</p>
@@ -713,13 +1170,53 @@
 <p>还有一些琐碎的测试，但如果你与一个服务器组协同工作，那么这些基本的测试能够防止其他人就最新的网络问题对你说三道四。</p>
 <h4 id="使用-Dispatch-Source"><a href="#使用-Dispatch-Source" class="headerlink" title="使用 Dispatch Source"></a>使用 Dispatch Source</h4><p>GCD 的一个特别有趣的特性是 Dispatch Source，它基本上就是一个低级函数的 grab-bag ，能帮助你去响应或监测 Unix 信号、文件描述符、Mach 端口、VFS 节点，以及其它晦涩的东西。所有这些都超出了本教程讨论的范围，但你可以通过实现一个 Dispatch Source 对象并以一个相当奇特的方式来使用它来品尝那些晦涩的东西。</p>
 <p>第一次使用 Dispatch Source 可能会迷失在如何使用一个源，所以你需要知晓的第一件事是 dispatch_source_create 如何工作。下面是创建一个源的函数原型：</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">dispatch_source_t dispatch_source_create(</span><br><span class="line">   dispatch_source_type_t type,</span><br><span class="line">   uintptr_t handle,</span><br><span class="line">   <span class="keyword">unsigned</span> <span class="keyword">long</span> mask,</span><br><span class="line">   <span class="built_in">dispatch_queue_t</span> queue);</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">dispatch_source_t dispatch_source_create(
+   dispatch_source_type_t type,
+   uintptr_t handle,
+   unsigned long mask,
+   dispatch_queue_t queue);
+</code></pre>
 <p>第一个参数是 dispatch_source_type_t 。这是最重要的参数，因为它决定了 handle 和 mask 参数将会是什么。你可以查看 <a href="https://developer.apple.com/library/mac/documentation/Performance/Reference/GCD_libdispatch_Ref/Reference/reference.html#//apple_ref/doc/constant_group/Dispatch_Source_Type_Constants" target="_blank" rel="noopener">Xcode 文档</a> 得到哪些选项可用于每个 dispatch_source_type_t 参数。</p>
 <p>下面你将监控 DISPATCH_SOURCE_TYPE_SIGNAL 。如<a href="https://developer.apple.com/library/mac/documentation/Performance/Reference/GCD_libdispatch_Ref/Reference/reference.html#//apple_ref/c/macro/DISPATCH_SOURCE_TYPE_SIGNAL%22" target="_blank" rel="noopener">文档所显示的</a>：</p>
 <p>一个监控当前进程信号的 Dispatch Source。 handle 是信号编号，mask 未使用（传 0 即可）。</p>
 <p>这些 Unix 信号组成的列表可在头文件 <a href="http://www.opensource.apple.com/source/xnu/xnu-1456.1.26/bsd/sys/signal.h" target="_blank" rel="noopener">signal.h</a> 中找到。在其顶部有一堆 #define 语句。你将监控此信号列表中的 SIGSTOP 信号。这个信号将会在进程接收到一个无法回避的暂停指令时被发出。在你用 LLDB 调试器调试应用时你使用的也是这个信号。</p>
 <p>去往 PhotoCollectionViewController.m 并添加如下代码到 viewDidLoad 的顶部，就在 [super viewDidLoad] 下面：</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)viewDidLoad</span><br><span class="line">&#123;</span><br><span class="line">  [<span class="keyword">super</span> viewDidLoad];</span><br><span class="line"> </span><br><span class="line">  <span class="comment">// 1</span></span><br><span class="line">  <span class="meta">#if DEBUG</span></span><br><span class="line">      <span class="comment">// 2</span></span><br><span class="line">      <span class="built_in">dispatch_queue_t</span> queue = dispatch_get_main_queue();</span><br><span class="line"> </span><br><span class="line">      <span class="comment">// 3</span></span><br><span class="line">      <span class="keyword">static</span> dispatch_source_t source = <span class="literal">nil</span>;</span><br><span class="line"> </span><br><span class="line">      <span class="comment">// 4</span></span><br><span class="line">      __<span class="keyword">typeof</span>(<span class="keyword">self</span>) __<span class="keyword">weak</span> weakSelf = <span class="keyword">self</span>;</span><br><span class="line"> </span><br><span class="line">      <span class="comment">// 5</span></span><br><span class="line">      <span class="keyword">static</span> <span class="built_in">dispatch_once_t</span> onceToken;</span><br><span class="line">      <span class="built_in">dispatch_once</span>(&amp;onceToken, ^&#123;</span><br><span class="line">          <span class="comment">// 6</span></span><br><span class="line">          source = dispatch_source_create(DISPATCH_SOURCE_TYPE_SIGNAL, SIGSTOP, <span class="number">0</span>, queue);</span><br><span class="line"> </span><br><span class="line">          <span class="comment">// 7</span></span><br><span class="line">          <span class="keyword">if</span> (source)</span><br><span class="line">          &#123;</span><br><span class="line">              <span class="comment">// 8</span></span><br><span class="line">              dispatch_source_set_event_handler(source, ^&#123;</span><br><span class="line">                  <span class="comment">// 9</span></span><br><span class="line">                  <span class="built_in">NSLog</span>(<span class="string">@"Hi, I am: %@"</span>, weakSelf);</span><br><span class="line">              &#125;);</span><br><span class="line">              dispatch_resume(source); <span class="comment">// 10</span></span><br><span class="line">          &#125;</span><br><span class="line">      &#125;);</span><br><span class="line">  <span class="meta">#endif</span></span><br><span class="line"> </span><br><span class="line">  <span class="comment">// The other stuff</span></span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">- (void)viewDidLoad
+{
+  [super viewDidLoad];
+
+  // 1
+  #if DEBUG
+      // 2
+      dispatch_queue_t queue = dispatch_get_main_queue();
+
+      // 3
+      static dispatch_source_t source = nil;
+
+      // 4
+      __typeof(self) __weak weakSelf = self;
+
+      // 5
+      static dispatch_once_t onceToken;
+      dispatch_once(&onceToken, ^{
+          // 6
+          source = dispatch_source_create(DISPATCH_SOURCE_TYPE_SIGNAL, SIGSTOP, 0, queue);
+
+          // 7
+          if (source)
+          {
+              // 8
+              dispatch_source_set_event_handler(source, ^{
+                  // 9
+                  NSLog(@"Hi, I am: %@", weakSelf);
+              });
+              dispatch_resume(source); // 10
+          }
+      });
+  #endif
+
+  // The other stuff
+</code></pre>
 <p>这些代码有点儿复杂，所以跟着注释一步步走，看看到底发生了什么：</p>
 <ol>
 <li><p>最好是在 DEBUG 模式下编译这些代码，因为这会给“有关方面（Interested Parties）”很多关于你应用的洞察。</p>
@@ -744,7 +1241,8 @@
 </li>
 </ol>
 <p>编译并运行应用；在调试器里暂停并立即恢复应用，查看控制台，你会看到这个来自黑暗艺术的函数确实可以工作。你看到的大概如下：</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line"><span class="number">2014</span><span class="number">-03</span><span class="number">-29</span> <span class="number">17</span>:<span class="number">41</span>:<span class="number">30.610</span> GooglyPuff[<span class="number">8181</span>:<span class="number">60</span>b] Hi, I am:</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">2014-03-29 17:41:30.610 GooglyPuff[8181:60b] Hi, I am:
+</code></pre>
 <p>你的应用现在具有调试感知了！这真是超级棒，但在真实世界里该如何使用它呢？</p>
 <p>你可以用它去调试一个对象并在任何你想恢复应用的时候显示数据；你同样能给你的应用加上自定义的安全逻辑以便在恶意攻击者将一个调试器连接到你的应用上时保护它自己（或用户的数据）。</p>
 <p>一个有趣的主意是，使用此方式的作为一个堆栈追踪工具去找到你想在调试器里操纵的对象。 </p>
@@ -754,10 +1252,11 @@
 <p>注意：如果你还没有注意到在调试器里的是哪个线程，那现在就看看它们。主线程总是第一个被 libdispatch 跟随，它是 GCD 的坐标，作为第二个线程。之后，线程计数和剩余线程取决于硬件在应用到达断点时正在做的事情。</p>
 </blockquote>
 <p>在调试器里，键入命令：</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">po [[weakSelf navigationItem] setPrompt:<span class="string">@"WOOT!"</span>]</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">po [[weakSelf navigationItem] setPrompt:@"WOOT!"]
+</code></pre>
 <p>然后恢复应用的执行。你会看到如下内容：</p>
-<p><img src="https://cdn5.raywenderlich.com/wp-content/uploads/2014/01/Dispatch_Sources_Xcode_Breakpoint_Console-650x500.png" alt=""></p>
-<p><img src="https://cdn1.raywenderlich.com/wp-content/uploads/2014/01/Dispatch_Sources_Debugger_Updating_UI-308x500.png" alt=""></p>
+<p><img src="https://cdn5.raywenderlich.com/wp-content/uploads/2014/01/Dispatch_Sources_Xcode_Breakpoint_Console-650x500.png" alt></p>
+<p><img src="https://cdn1.raywenderlich.com/wp-content/uploads/2014/01/Dispatch_Sources_Debugger_Updating_UI-308x500.png" alt></p>
 <p>使用这个方法，你可以更新 UI、查询类的属性，甚至是执行方法——所有这一切都不需要重启应用并到达某个特定的工作状态。相当优美吧！</p>
 <h3 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h3><p>你可以在此<a href="http://www.raywenderlich.com/wp-content/uploads/2014/01/GooglyPuff-Final.zip" target="_blank" rel="noopener">下载最终的项目</a>。</p>
 <p>我讨厌再次提及此主题，但你真的要看看 <a href="https://www.raywenderlich.com/?p=23037" target="_blank" rel="noopener">如何使用 Instruments</a> 教程。如果你计划优化你的应用，那你一定要学会使用它。请注意 Instruments 擅长于分析相对执行：比较哪些区域的代码相对于其它区域的代码花费了更长的时间。如果你尝试计算出某个方法实际的执行时间，那你可能需要拿出更多的自酿的解决方案（Home-brewed Solution）。</p>
@@ -767,551 +1266,721 @@
 <p>Reference<br><a href="https://www.raywenderlich.com/60749/grand-central-dispatch-in-depth-part-1" target="_blank" rel="noopener">Grand Central Dispatch In-Depth: Part 1/2</a> <a href="http://www.cocoachina.com/industry/20140428/8248.html" target="_blank" rel="noopener">中文</a><br><a href="https://www.raywenderlich.com/63338/grand-central-dispatch-in-depth-part-2" target="_blank" rel="noopener">Grand Central Dispatch In-Depth: Part 2/2</a> <a href="http://www.cocoachina.com/ios/20140515/8433.html" target="_blank" rel="noopener">中文</a></p>
 </blockquote>
 
-      
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        Author:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://wossoneri.github.io" rel="external nofollow noreferrer">Wossoneri</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        Link:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://wossoneri.github.io/2016/05/30/[Objective-C]GCD-in-depth/">http://wossoneri.github.io/2016/05/30/[Objective-C]GCD-in-depth/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        Reprint policy:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    All articles in this blog are used except for special statements
+                    <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY-NC 4.0</a>
+                    reprint polocy. If reproduced, please indicate source
+                    <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
+                    !
+                </span>
+            </div>
+        
     </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>Copied successfully, please follow the reprint policy of this article</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">more</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/iOS/">
+                                    <span class="chip bg-color">iOS</span>
+                                </a>
+                            
+                                <a href="/tags/Objective-C/">
+                                    <span class="chip bg-color">Objective-C</span>
+                                </a>
+                            
+                                <a href="/tags/GCD/">
+                                    <span class="chip bg-color">GCD</span>
+                                </a>
+                            
+                                <a href="/tags/多线程/">
+                                    <span class="chip bg-color">多线程</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
     
     
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
     
 
     
 
-    
-      <div>
-        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
-  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
-  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
-    <span>打赏</span>
-  </button>
-  <div id="QR" style="display: none;">
-
-    
-      <div id="wechat" style="display: inline-block">
-        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付">
-        <p>微信支付</p>
-      </div>
-    
-
-    
-      <div id="alipay" style="display: inline-block">
-        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝">
-        <p>支付宝</p>
-      </div>
-    
-
-    
-
-  </div>
 </div>
 
-      </div>
-    
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
 
-    
-      <div>
-        <ul class="post-copyright">
-  <li class="post-copyright-author">
-    <strong>本文作者：</strong>
-    Wossoneri
-  </li>
-  <li class="post-copyright-link">
-    <strong>本文链接：</strong>
-    <a href="http://wossoneri.github.io/2016/05/30/[Objective-C]GCD-in-depth/" title="[Objective-C]深入理解GCD">http://wossoneri.github.io/2016/05/30/[Objective-C]GCD-in-depth/</a>
-  </li>
-  <li class="post-copyright-license">
-    <strong>版权声明： </strong>
-    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
-  </li>
-</ul>
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
 
-      </div>
-    
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
 
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/iOS/" rel="tag"><i class="fa fa-tag"></i> iOS</a>
-          
-            <a href="/tags/Objective-C/" rel="tag"><i class="fa fa-tag"></i> Objective-C</a>
-          
-            <a href="/tags/GCD/" rel="tag"><i class="fa fa-tag"></i> GCD</a>
-          
-            <a href="/tags/多线程/" rel="tag"><i class="fa fa-tag"></i> 多线程</a>
-          
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.png" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
         </div>
-      
+    </div>
+</div>
 
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
             
-              <a href="/2016/05/30/[Objective-C]Multithreading-and-GCD/" rel="next" title="[Objective-C]多线程和GCD">
-                <i class="fa fa-chevron-left"></i> [Objective-C]多线程和GCD
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/06/04/[Objective-C]Copy-and-MutableCopy/" rel="prev" title="[Objective-C] Copy 和 MutableCopy">
-                [Objective-C] Copy 和 MutableCopy <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
         </div>
-      
-
-      
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-
-    <div class="post-spread">
-      
-    </div>
-  </div>
-
-
-          </div>
-          
-
-
-          
-
-  
-    <div class="comments" id="comments">
-      
-        <div id="gitment-container"></div>
-      
     </div>
 
-  
+    
 
+    
+        <link rel="stylesheet" href="/libs/gitment/gitment-default.css">
+<link rel="stylesheet" href="/css/gitment.css">
 
+<div class="gitment-card card" data-aos="fade-up">
+    <div class="comment_headling" style="font-size: 20px; font-weight: 700; position: relative; left: 20px; top: 15px; padding-bottom: 5px;">
+        <i class="fas fa-comments fa-fw" aria-hidden="true"></i>
+        <span>评论</span>
+    </div>
+    <div id="gitment-content" class="card-content"></div>
+</div>
 
+<script src="/libs/gitment/gitment.js"></script>
+<script>
+var gitment = new Gitment({
+    id: 'Mon May 30 2016 23:46:42 GMT+0800',
+    owner: 'wossoneri',
+    repo: 'wossoneri.github.io',
+    oauth: {
+        client_id: '40b6c719a11e3fca29e8',
+        client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77'
+    }
+});
+
+gitment.render('gitment-content');
+</script>
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;Previous</div>
+            <div class="card">
+                <a href="/2016/06/04/[Objective-C]Copy-and-MutableCopy/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/13.jpg" class="responsive-img" alt="[Objective-C] Copy 和 MutableCopy">
+                        
+                        <span class="card-title">[Objective-C] Copy 和 MutableCopy</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            看了几篇文章，因为文章很新手向，所以内容很繁琐。故整理一下重点，写了测试程序去了解几个知识点，不讨论基本概念。
+非集合类对象的copy与mutableCopy      //NSString & NSMutableString
+      
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2016-06-04
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Syntax/" class="post-category">
+                                    Syntax
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/iOS/">
+                        <span class="chip bg-color">iOS</span>
+                    </a>
+                    
+                    <a href="/tags/Objective-C/">
+                        <span class="chip bg-color">Objective-C</span>
+                    </a>
+                    
+                    <a href="/tags/copy/">
+                        <span class="chip bg-color">copy</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
         </div>
         
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <section class="site-overview-wrap sidebar-panel">
-        <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-            
-              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460" alt="Wossoneri">
-            
-              <p class="site-author-name" itemprop="name">Wossoneri</p>
-              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
-          </div>
-
-          <nav class="site-state motion-element">
-
-            
-              <div class="site-state-item site-state-posts">
-              
-                <a href="/archives/">
-              
-                  <span class="site-state-item-count">117</span>
-                  <span class="site-state-item-name">日志</span>
-                </a>
-              </div>
-            
-
-            
-              
-              
-              <div class="site-state-item site-state-categories">
-                <a href="/categories/index.html">
-                  <span class="site-state-item-count">17</span>
-                  <span class="site-state-item-name">分类</span>
-                </a>
-              </div>
-            
-
-            
-              
-              
-              <div class="site-state-item site-state-tags">
-                <a href="/tags/index.html">
-                  <span class="site-state-item-count">121</span>
-                  <span class="site-state-item-name">标签</span>
-                </a>
-              </div>
-            
-
-          </nav>
-
-          
-            <div class="feed-link motion-element">
-              <a href="/atom.xml" rel="alternate">
-                <i class="fa fa-rss"></i>
-                RSS
-              </a>
-            </div>
-          
-
-          <div class="links-of-author motion-element">
-            
-              
-                <span class="links-of-author-item">
-                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
-                    
-                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
-                </span>
-              
-                <span class="links-of-author-item">
-                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
-                    
-                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
-                </span>
-              
-            
-          </div>
-
-          
-          
-            <div class="cc-license motion-element" itemprop="license">
-              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
-                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
-              </a>
-            </div>
-          
-
-          
-          
-            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
-              <div class="links-of-blogroll-title">
-                <i class="fa  fa-fw fa-globe"></i>
-                友情链接
-              </div>
-              <ul class="links-of-blogroll-list">
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
-                  </li>
-                
-              </ul>
-            </div>
-          
-
-          
-
-        </div>
-      </section>
-
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#什么是GCD"><span class="nav-number">1.</span> <span class="nav-text">什么是GCD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GCD术语"><span class="nav-number">2.</span> <span class="nav-text">GCD术语</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Serial串行-vs-Concurrent并发"><span class="nav-number">2.1.</span> <span class="nav-text">Serial串行 vs. Concurrent并发</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Synchronous同步-vs-Asynchronous异步"><span class="nav-number">2.2.</span> <span class="nav-text">Synchronous同步 vs. Asynchronous异步</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Critical-Section-临界区"><span class="nav-number">2.3.</span> <span class="nav-text">Critical Section 临界区</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Race-Condition-竞态条件"><span class="nav-number">2.4.</span> <span class="nav-text">Race Condition 竞态条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Deadlock-死锁"><span class="nav-number">2.5.</span> <span class="nav-text">Deadlock 死锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Thread-Safe-线程安全"><span class="nav-number">2.6.</span> <span class="nav-text">Thread Safe 线程安全</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Context-Switch-上下文切换"><span class="nav-number">2.7.</span> <span class="nav-text">Context Switch 上下文切换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Concurrency并发-vs-Parallelism并行"><span class="nav-number">2.8.</span> <span class="nav-text">Concurrency并发 vs Parallelism并行</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Queues-队列"><span class="nav-number">2.9.</span> <span class="nav-text">Queues 队列</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Serial-Queues-串行队列"><span class="nav-number">2.9.1.</span> <span class="nav-text">Serial Queues 串行队列</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Concurrent-Queues-并发队列"><span class="nav-number">2.9.2.</span> <span class="nav-text">Concurrent Queues 并发队列</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Queue-Types-队列类型"><span class="nav-number">2.10.</span> <span class="nav-text">Queue Types 队列类型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开始使用"><span class="nav-number">3.</span> <span class="nav-text">开始使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用-dispatch-async-处理后台任务"><span class="nav-number">4.</span> <span class="nav-text">用 dispatch_async 处理后台任务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-dispatch-after-延后工作"><span class="nav-number">5.</span> <span class="nav-text">使用 dispatch_after 延后工作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#让你的单例线程安全"><span class="nav-number">6.</span> <span class="nav-text">让你的单例线程安全</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#处理读者与写者问题"><span class="nav-number">7.</span> <span class="nav-text">处理读者与写者问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#A-Visual-Review-of-Queueing-队列的虚拟回顾"><span class="nav-number">8.</span> <span class="nav-text">A Visual Review of Queueing 队列的虚拟回顾</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#dispatch-sync-回顾"><span class="nav-number">8.1.</span> <span class="nav-text">dispatch_sync 回顾</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#dispatch-async-回顾"><span class="nav-number">8.2.</span> <span class="nav-text">dispatch_async 回顾</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#准备下一步"><span class="nav-number">9.</span> <span class="nav-text">准备下一步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#纠正过早弹出的提示"><span class="nav-number">10.</span> <span class="nav-text">纠正过早弹出的提示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dispatch-Groups（调度组）"><span class="nav-number">11.</span> <span class="nav-text">Dispatch Groups（调度组）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dispatch-Group，第二种方式"><span class="nav-number">12.</span> <span class="nav-text">Dispatch Group，第二种方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#太多并发带来的风险"><span class="nav-number">13.</span> <span class="nav-text">太多并发带来的风险</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GCD-的其他趣味"><span class="nav-number">14.</span> <span class="nav-text">GCD 的其他趣味</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#阻塞——正确的方式"><span class="nav-number">14.1.</span> <span class="nav-text">阻塞——正确的方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#信号量"><span class="nav-number">14.2.</span> <span class="nav-text">信号量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用-Dispatch-Source"><span class="nav-number">14.3.</span> <span class="nav-text">使用 Dispatch Source</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最后"><span class="nav-number">15.</span> <span class="nav-text">最后</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
-      
-
-      
-
-    </div>
-  </aside>
-
-
         
-      </div>
-    </main>
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                Next&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2016/05/30/[Objective-C]Multithreading-and-GCD/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/23.jpg" class="responsive-img" alt="[Objective-C]多线程和GCD">
+                        
+                        <span class="card-title">[Objective-C]多线程和GCD</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            进程和线程进程是指在系统中正在运行的一个应用程序。每个进程之间是独立的，每个进程均运行在其专用且受保护的内存空间内。比如同时打开QQ、Xcode，系统就会分别启动两个进程。
+线程一个进程要想执行任务，必须得有线程（每一个进程至少要有一条线程
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2016-05-30
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Syntax/" class="post-category">
+                                    Syntax
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/iOS/">
+                        <span class="chip bg-color">iOS</span>
+                    </a>
+                    
+                    <a href="/tags/Objective-C/">
+                        <span class="chip bg-color">Objective-C</span>
+                    </a>
+                    
+                    <a href="/tags/Multithreading/">
+                        <span class="chip bg-color">Multithreading</span>
+                    </a>
+                    
+                    <a href="/tags/GCD/">
+                        <span class="chip bg-color">GCD</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
 
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
-  <span class="with-love">
-    <i class="fa fa-user"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
-
-  
 </div>
 
 
-  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
 
 
+<!-- 代码块复制 -->
 
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
 
 
+<!-- 代码块收缩 -->
 
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;TOC</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
 
         
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
 
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
 
-
-
-
-
-
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
         
-      </div>
-    </footer>
-
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
-      </div>
-    
+    });
+</script>
 
     
 
-  </div>
+</main>
 
-  
 
+
+    <footer class="page-footer bg-color">
+    <div class="container row center-align" style="margin-bottom: 15px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            <span id="year">2016</span>
+            <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+            
+            <span id="sitetime">载入运行时间...</span>
+            <script>
+                function siteTime() {
+                    var seconds = 1000;
+                    var minutes = seconds * 60;
+                    var hours = minutes * 60;
+                    var days = hours * 24;
+                    var years = days * 365;
+                    var today = new Date();
+                    var startYear = "2016";
+                    var startMonth = "1";
+                    var startDate = "1";
+                    var startHour = "0";
+                    var startMinute = "0";
+                    var startSecond = "0";
+                    var todayYear = today.getFullYear();
+                    var todayMonth = today.getMonth() + 1;
+                    var todayDate = today.getDate();
+                    var todayHour = today.getHours();
+                    var todayMinute = today.getMinutes();
+                    var todaySecond = today.getSeconds();
+                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
+                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
+                    var diff = t2 - t1;
+                    var diffYears = Math.floor(diff / years);
+                    var diffDays = Math.floor((diff / days) - diffYears * 365);
+                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
+                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
+                        minutes);
+                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
+                        diffMinutes * minutes) / seconds);
+                    if (startYear == todayYear) {
+                        document.getElementById("year").innerHTML = todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
+                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    } else {
+                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
+                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    }
+                }
+                setInterval(siteTime, 1000);
+            </script>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/wossoneri" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:wossoneri@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=478251276" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 478251276" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;Search</span>
+            <input type="search" id="searchInput" name="s" placeholder="Please enter a search keyword"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
 <script type="text/javascript">
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
+$(function () {
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+});
+</script>
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-70716047-2"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-70716047-2');
 </script>
 
 
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
-  
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
-
-
-
-  
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-
-<!-- LOCAL: You can save these files to your site and update links -->
-    
-        
-        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
-        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
-    
-<!-- END LOCAL -->
-
-    
-
-    
-      <script type="text/javascript">
-      function renderGitment(){
-        var gitment = new Gitmint({
-            id: '1464623202000', 
-            owner: 'wossoneri',
-            repo: 'wossoneri.github.io',
-            
-            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
-            
-            oauth: {
-            
-            
-                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
-            
-                client_id: '40b6c719a11e3fca29e8'
-            }});
-        gitment.render('gitment-container');
-      }
-
-      
-      renderGitment();
-      
-      </script>
-    
-
-
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-  
-
-  
-
-  
-  
-
-  
-  
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        tex2jax: {
-          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
-          processEscapes: true,
-          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
         }
-      });
-    </script>
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
 
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for (i=0; i < all.length; i += 1) {
-          all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-      });
-    </script>
-    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-  
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
 
+    
 
-  
+    
 
-  
+    
+
+    
+
+    
+    
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
 
 </body>
+
 </html>

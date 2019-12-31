@@ -1,415 +1,507 @@
-<!DOCTYPE html>
-
-
-
-  
-
-
-<html class="theme-next mist use-motion" lang="zh-Hans">
-<head><meta name="generator" content="Hexo 3.8.0">
-  <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="theme-color" content="#222">
-
-
-
-
-
-
-
-
-
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
-
-
-
-
-
-
-
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
-
-<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
-
-
-  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
-
-
-
-
-
-  <meta name="keywords" content="Android,Framework,">
-
-
-
-
-
-  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml">
-
-
-
-
-
-
-<meta name="description" content="因为流程上的种种不方便，当时折腾这个PAI花了好多时间，趁着调好了，总结一下">
-<meta name="keywords" content="Android,Framework">
-<meta property="og:type" content="article">
-<meta property="og:title" content="[Android][Framework] PlayAutoInstall配置流程总结">
-<meta property="og:url" content="http://wossoneri.github.io/2017/06/19/[Android][Framework]PlayAutoInstall/index.html">
-<meta property="og:site_name" content="Wossoneri`s Blog">
-<meta property="og:description" content="因为流程上的种种不方便，当时折腾这个PAI花了好多时间，趁着调好了，总结一下">
-<meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI01.png?raw=true">
-<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI02.png?raw=true">
-<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI03.png?raw=true">
-<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI04.png?raw=true">
-<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI05.png?raw=true">
-<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI06.png?raw=true">
-<meta property="og:updated_time" content="2019-02-14T07:38:59.504Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="[Android][Framework] PlayAutoInstall配置流程总结">
-<meta name="twitter:description" content="因为流程上的种种不方便，当时折腾这个PAI花了好多时间，趁着调好了，总结一下">
-<meta name="twitter:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI01.png?raw=true">
-
-
-
-<script type="text/javascript" id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Mist',
-    version: '5.1.3',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
-    fancybox: true,
-    tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
-    duoshuo: {
-      userId: '6234852363740382000',
-      author: '博主'
-    },
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
-</script>
-
-
-
-  <link rel="canonical" href="http://wossoneri.github.io/2017/06/19/[Android][Framework]PlayAutoInstall/">
-
-
-
-
-
-  <title>[Android][Framework] PlayAutoInstall配置流程总结 | Wossoneri`s Blog</title>
-  
-
-
-
-
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-  ga('create', 'UA-70716047-2', 'auto');
-  ga('send', 'pageview');
-</script>
-
-
-  <script type="text/javascript">
-    var _hmt = _hmt || [];
-    (function() {
-      var hm = document.createElement("script");
-      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
-      var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
-    })();
-  </script>
-
-
-
-
-</head>
-
-<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
-
-  
-  
+<!DOCTYPE HTML>
+<html lang="zh-Hans">
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta name="keywords" content="[Android][Framework] PlayAutoInstall配置流程总结, Wossoneri`s Blog">
+    <meta name="description" content="
+我这里有谷歌给OEM提供的官方文档，需要的可以联系
+
+什么是PAIPAI （PlayAutoInstall） 是一个自动下载安装APK到手机，并且摆放在Launcher对应位置的一个机制。
+因为国内没有GMS，所以很多人没接触过这个机制。">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>[Android][Framework] PlayAutoInstall配置流程总结 | Wossoneri`s Blog</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
     
-  
-
-  <div class="container sidebar-position-left page-post-detail">
-    <div class="headband"></div>
-    <a href="https://github.com"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
-
-    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta ">
+    <script src="/libs/jquery/jquery.min.js"></script>
     
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 
-    <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Wossoneri`s Blog</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper head-container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">Wossoneri`s Blog</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>Index</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>Tags</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>Categories</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>Archives</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>About</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>Contact</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>Friends</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="Search" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">Wossoneri`s Blog</div>
+        <div class="logo-desc">
+            
+            就怕你一生碌碌无为，还安慰自己平凡可贵
+            
+        </div>
     </div>
-      
-        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
-      
-  </div>
 
-  <div class="site-nav-toggle">
-    <button>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-    </button>
-  </div>
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			Index
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			Tags
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			Categories
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			Archives
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			About
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			Contact
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			Friends
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/wossoneri" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
 </div>
 
-<nav class="site-nav">
-  
+        </div>
 
-  
-    <ul id="menu" class="menu">
-      
         
-        <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
-            
-            首页
-          </a>
-        </li>
-      
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/wossoneri" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
         
-        <li class="menu-item menu-item-categories">
-          <a href="/categories/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
-            
-            分类
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-archives">
-          <a href="/archives/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
-            
-            归档
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-tags">
-          <a href="/tags/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
-            
-            标签
-          </a>
-        </li>
-      
+    </nav>
 
-      
-    </ul>
-  
+</header>
 
-  
-</nav>
-
-
-
- </div>
-    </header>
-
-    <main id="main" class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
     
 
-  
 
-  
-  
-  
 
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2017/06/19/[Android][Framework]PlayAutoInstall/">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/12.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">[Android][Framework] PlayAutoInstall配置流程总结</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Wossoneri">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
-    </span>
 
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Wossoneri`s Blog">
-    </span>
+
+
+<main class="post-container content">
 
     
-      <header class="post-header">
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
 
-        
-        
-          <h1 class="post-title" itemprop="name headline">[Android][Framework] PlayAutoInstall配置流程总结</h1>
-        
+    #articleContent :focus {
+        outline: none;
+    }
 
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-06-19T17:55:00+08:00">
-                2017-06-19
-              </time>
-            
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
 
-            
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
 
-            
-          </span>
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
 
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android/" itemprop="url" rel="index">
-                    <span itemprop="name">Android</span>
-                  </a>
-                </span>
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        height: calc(100vh - 250px);
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/Android/">
+                                <span class="chip bg-color">Android</span>
+                            </a>
+                        
+                            <a href="/tags/Framework/">
+                                <span class="chip bg-color">Framework</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/Android/" class="post-category">
+                                Android
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>Publish Date:&nbsp;&nbsp;
+                    2017-06-19
+                </div>
+                
 
                 
+
                 
-              
-            </span>
-          
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>Word Count:&nbsp;&nbsp;
+                    1,588
+                </div>
+                
 
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2017/06/19/[Android][Framework]PlayAutoInstall/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count gitment-comments-count" data-xid="/2017/06/19/[Android][Framework]PlayAutoInstall/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>Read Times:&nbsp;&nbsp;
+                    6 Min
+                </div>
+                
 
-          
-          
-	
-  		  <span class="post-letters-count">
-            &nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-                 <i class="fa fa-clock-o"></i>
-            </span>
-		        <span class="post-meta-item-text">总记</span>
-            <span class="post-count">1,807 字</span>
-		        <span class="post-meta-item-text">读完需要</span>
-    		    <span class="post-count">7 分</span>
-  		  </span>
-           
-         
-
-          
-
-          
-
-          
-              <div class="post-description">
-                  因为流程上的种种不方便，当时折腾这个PAI花了好多时间，趁着调好了，总结一下
-              </div>
-          
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>Read Count:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
 
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        <blockquote>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <blockquote>
 <p>我这里有谷歌给OEM提供的官方文档，需要的可以联系</p>
 </blockquote>
 <h2 id="什么是PAI"><a href="#什么是PAI" class="headerlink" title="什么是PAI"></a>什么是PAI</h2><p>PAI （PlayAutoInstall） 是一个自动下载安装APK到手机，并且摆放在Launcher对应位置的一个机制。</p>
 <p>因为国内没有GMS，所以很多人没接触过这个机制。这个机制其实对于运营商定制来说非常重要，比如美国的运营商，一个运营商有很多地区很多种类的SIM卡，当插上不同地区的SIM卡，运营商定制的手机就会下载不同的APP摆放在界面不同的位置。</p>
 <p>这么说有些抽象，看下面示例图：</p>
 <p>首先是出厂刚开机Launcher的界面：</p>
-<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI01.png?raw=true" alt=""></p>
+<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI01.png?raw=true" alt></p>
 <p>当手机插上SIM卡联网，PlayStore会通过PAI机制下载安装摆放不同的APP：</p>
-<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI02.png?raw=true" alt=""></p>
+<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI02.png?raw=true" alt></p>
 <p>界面一下子就变丰富了。</p>
-<h2 id="PAI-流程"><a href="#PAI-流程" class="headerlink" title="PAI 流程"></a>PAI 流程</h2><p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI03.png?raw=true" alt=""></p>
+<h2 id="PAI-流程"><a href="#PAI-流程" class="headerlink" title="PAI 流程"></a>PAI 流程</h2><p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI03.png?raw=true" alt></p>
 <p>本地编译一个PlayAutoInstallConfig.apk，签名上传到APFE服务器，APFE会验证配置信息，并提供给PlayStore。当目标设备第一次开机启动并且联网（现在不必要登录谷歌帐号），这些应用就会加入下载队列，自动下载到手机。 </p>
 <h2 id="配置菜单"><a href="#配置菜单" class="headerlink" title="配置菜单"></a>配置菜单</h2><p>先聊一下APFE会验证的配置信息。</p>
 <p>需要的配置信息包括：</p>
@@ -422,10 +514,10 @@
 </ul>
 <p>后两项是编译在PlayAutoInstallConfig.apk中的，前三项是把apk上传到服务器时需要填写的。</p>
 <p>上传服务器配置页面如下：</p>
-<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI04.png?raw=true" alt=""></p>
+<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI04.png?raw=true" alt></p>
 <p>配置信息的前三项匹配项如果填写，就必须要完全匹配才能应用到手机。我遇到一个问题是配置上传后PlayAutoInstallConfig.apk会在SetupWizard过程中下载到手机，但需要PlayStore下载的应用怎么都不下载。后来发现是在上传apk到服务器时运营商填的不对，导致无法下载。因为尝试填写几种运营商Name都不能正常工作，最后解决方案是只匹配指纹，不匹配城市和运营商（减少过滤项），这样手机就可以和PlayStore信息匹配，然后就可以自动下载了。</p>
 <p>关于其余配置，参考下面表格：</p>
-<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI05.png?raw=true" alt=""></p>
+<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI05.png?raw=true" alt></p>
 <h2 id="Config-APK"><a href="#Config-APK" class="headerlink" title="Config APK"></a>Config APK</h2><p>对上表中出现一个Config APK 做一些解释。</p>
 <p>手机内必须要先预置一个符合下列条件的stub APK：</p>
 <ul>
@@ -438,9 +530,31 @@
 <li>不能定义permissions/activities/其他receivers/content provider/services</li>
 </ul>
 <p>这个APK其实就一个Manifest，没有特别的内容。</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span><br><span class="line"><span class="tag">&lt;<span class="name">manifest</span> <span class="attr">xmls:android</span>=<span class="string">"http://schemas.android.com/apk/res/android"</span></span></span><br><span class="line"><span class="tag">          <span class="attr">package</span>=<span class="string">"android.autoinstalls.config.OEM-Name.deviceName"</span> &gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="tag">&lt;<span class="name">application</span></span></span><br><span class="line"><span class="tag">		<span class="attr">android:allowBackup</span>=<span class="string">"false"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:icon</span>=<span class="string">"@drawable/ic_launcher"</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:label</span>=<span class="string">"@string/app_name"</span> &gt;</span></span><br><span class="line">    	</span><br><span class="line">        <span class="tag">&lt;<span class="name">receiver</span></span></span><br><span class="line"><span class="tag">        	<span class="attr">android:name</span>=<span class="string">"DummyReceiver"</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:exported</span>=<span class="string">"false"</span> &gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">            	<span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">"android.autoinstalls.config.action.PLAY_AUTO_INSTALL"</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">receiver</span>&gt;</span>      </span><br><span class="line">    <span class="tag">&lt;/<span class="name">application</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">manifest</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-xml"><code class="language-lang-xml"><?xml version="1.0" encoding="utf-8"?>
+<manifest xmls:android="http://schemas.android.com/apk/res/android"
+          package="android.autoinstalls.config.OEM-Name.deviceName" >
+
+    <application
+        android:allowBackup="false"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name" >
+
+        <receiver
+            android:name="DummyReceiver"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.autoinstalls.config.action.PLAY_AUTO_INSTALL" />
+            </intent-filter>
+        </receiver>      
+    </application>
+</manifest>
+</code></pre>
 <p>相关的MakeFile如下</p>
-<figure class="highlight mk"><table><tr><td class="code"><pre><span class="line"><span class="keyword">include</span> <span class="variable">$(CLEAR_VARS)</span></span><br><span class="line">apk_variant := stub</span><br><span class="line">APK_VERSION := 1</span><br><span class="line"><span class="keyword">include</span> <span class="variable">$(BUILD_APK)</span></span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-mk"><code class="language-lang-mk">include $(CLEAR_VARS)
+apk_variant := stub
+APK_VERSION := 1
+include $(BUILD_APK)
+</code></pre>
 <h2 id="PlayAutoInstallConfig-apk"><a href="#PlayAutoInstallConfig-apk" class="headerlink" title="PlayAutoInstallConfig.apk"></a>PlayAutoInstallConfig.apk</h2><p>这个APK是我们真正配置的APK。</p>
 <p>它和前面的APK的关系是：包名一致。因为PAI机制需要本地存在一个这个包名的APK，在开机的SetupWizard阶段，（如果联网）它会从服务器下载这个写有对应配置的APK到手机上，替换掉那个Stub APK。</p>
 <p>关于PAIconfig APK的配置：</p>
@@ -455,556 +569,781 @@
 <li>不能定义permissions/activities/其他receivers/content provider/services</li>
 </ul>
 <p>在这个APK里就要写需要下载的APK信息了，基本格式如下：</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line">参数screen是第几屏，x,y是在屏幕的位置，从0开始。</span><br><span class="line"><span class="tag">&lt;<span class="name">workspace</span>&gt;</span></span><br><span class="line">    autoinstall开头是需要PlayStore下载的，</span><br><span class="line">    <span class="tag">&lt;<span class="name">autoinstall</span> <span class="attr">className</span>=<span class="string">"com.watchdox.android.activity.LaunchActivity"</span> <span class="attr">packageName</span>=<span class="string">"com.watchdox.android"</span> <span class="attr">screen</span>=<span class="string">"1"</span> <span class="attr">x</span>=<span class="string">"1"</span> <span class="attr">y</span>=<span class="string">"2"</span> <span class="attr">requiredPreload</span>=<span class="string">"true"</span> <span class="attr">installByDefault</span>=<span class="string">"true"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    appwidget开头是桌面控件。span属性设定控件的宽高</span><br><span class="line">    <span class="tag">&lt;<span class="name">appwidget</span> <span class="attr">screen</span>=<span class="string">"0"</span> <span class="attr">x</span>=<span class="string">"0"</span> <span class="attr">y</span>=<span class="string">"0"</span> <span class="attr">spanX</span>=<span class="string">"5"</span> <span class="attr">spanY</span>=<span class="string">"1"</span> <span class="attr">packageName</span>=<span class="string">"com.google.android.googlequicksearchbox"</span> <span class="attr">className</span>=<span class="string">"com.google.android.googlequicksearchbox.SearchWidgetProvider"</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">    appicon就是纯粹摆放APP的位置</span><br><span class="line">    <span class="tag">&lt;<span class="name">appicon</span> <span class="attr">screen</span>=<span class="string">"0"</span> <span class="attr">x</span>=<span class="string">"3"</span> <span class="attr">y</span>=<span class="string">"3"</span> <span class="attr">packageName</span>=<span class="string">"com.google.android.apps.photos"</span> <span class="attr">className</span>=<span class="string">"com.google.android.apps.photos.home.HomeActivity"</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    folder是文件夹，里面可以放多个app</span><br><span class="line">    <span class="tag">&lt;<span class="name">folder</span> <span class="attr">screen</span>=<span class="string">"0"</span> <span class="attr">x</span>=<span class="string">"1"</span> <span class="attr">y</span>=<span class="string">"4"</span> <span class="attr">title</span>=<span class="string">"@string/google_collection_folder"</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">appicon</span> <span class="attr">packageName</span>=<span class="string">"com.google.android.googlequicksearchbox"</span> <span class="attr">className</span>=<span class="string">"com.google.android.googlequicksearchbox.SearchActivity"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">folder</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">    action是shortcut快捷键，key是LAUNCHER里面定义的</span><br><span class="line">    <span class="tag">&lt;<span class="name">action</span> <span class="attr">screen</span>=<span class="string">"2"</span> <span class="attr">x</span>=<span class="string">"0"</span> <span class="attr">y</span>=<span class="string">"3"</span> <span class="attr">key</span>=<span class="string">"CREATE_NOTE"</span> /&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!-- Dock icons --&gt;</span></span><br><span class="line">    （按顺序？或者按照rank属性决定）最后四个是DOCKER的app icon</span><br><span class="line">    <span class="tag">&lt;<span class="name">appicon</span> <span class="attr">rank</span>=<span class="string">"0"</span> <span class="attr">container</span>=<span class="string">"hotseat"</span> <span class="attr">packageName</span>=<span class="string">"com.android.dialer"</span> <span class="attr">className</span>=<span class="string">"com.android.dialer.DialtactsActivity"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">appicon</span> <span class="attr">rank</span>=<span class="string">"1"</span> <span class="attr">container</span>=<span class="string">"hotseat"</span> <span class="attr">packageName</span>=<span class="string">"com.blackberry.hub"</span> <span class="attr">className</span>=<span class="string">"com.xyz.hub.ui.IntroActivity"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">appicon</span> <span class="attr">rank</span>=<span class="string">"3"</span> <span class="attr">container</span>=<span class="string">"hotseat"</span> <span class="attr">packageName</span>=<span class="string">"com.android.chrome"</span> <span class="attr">className</span>=<span class="string">"com.google.android.apps.chrome.Main"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">appicon</span> <span class="attr">rank</span>=<span class="string">"4"</span> <span class="attr">container</span>=<span class="string">"hotseat"</span> <span class="attr">packageName</span>=<span class="string">"com.blackberry.camera"</span> <span class="attr">className</span>=<span class="string">"com.xyz.camera.ui.coordination.MainActivity"</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">workspace</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-xml"><code class="language-lang-xml">参数screen是第几屏，x,y是在屏幕的位置，从0开始。
+<workspace>
+    autoinstall开头是需要PlayStore下载的，
+    <autoinstall className="com.watchdox.android.activity.LaunchActivity" packageName="com.watchdox.android" screen="1" x="1" y="2" requiredPreload="true" installByDefault="true" />
+
+    appwidget开头是桌面控件。span属性设定控件的宽高
+    <appwidget screen="0" x="0" y="0" spanX="5" spanY="1" packageName="com.google.android.googlequicksearchbox" className="com.google.android.googlequicksearchbox.SearchWidgetProvider"/>
+
+    appicon就是纯粹摆放APP的位置
+    <appicon screen="0" x="3" y="3" packageName="com.google.android.apps.photos" className="com.google.android.apps.photos.home.HomeActivity" />
+
+    folder是文件夹，里面可以放多个app
+    <folder screen="0" x="1" y="4" title="@string/google_collection_folder">
+        <appicon packageName="com.google.android.googlequicksearchbox" className="com.google.android.googlequicksearchbox.SearchActivity"/>
+    </folder>
+
+    action是shortcut快捷键，key是LAUNCHER里面定义的
+    <action screen="2" x="0" y="3" key="CREATE_NOTE" />
+
+    <!-- Dock icons -->
+    （按顺序？或者按照rank属性决定）最后四个是DOCKER的app icon
+    <appicon rank="0" container="hotseat" packageName="com.android.dialer" className="com.android.dialer.DialtactsActivity" />
+    <appicon rank="1" container="hotseat" packageName="com.blackberry.hub" className="com.xyz.hub.ui.IntroActivity" />
+    <appicon rank="3" container="hotseat" packageName="com.android.chrome" className="com.google.android.apps.chrome.Main" />
+    <appicon rank="4" container="hotseat" packageName="com.blackberry.camera" className="com.xyz.camera.ui.coordination.MainActivity"/>
+</workspace>
+</code></pre>
 <p>代码结构</p>
-<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI06.png?raw=true" alt=""></p>
+<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/PAI06.png?raw=true" alt></p>
 <p>在res-PAI目录中，xml有两个，default_layout中要填写<autoinstall>的应用（需要从PlayStore自动下载的应用），然后再oem_layout填写该应用的位置。如果其他途径也会下载应用，只需要把应用信息写在oem_layout即可。</autoinstall></p>
 <h2 id="验证流程"><a href="#验证流程" class="headerlink" title="验证流程"></a>验证流程</h2><p>烧一个新手机，启动进SetupWizard，在过程中联网，登录谷歌帐号（现在这一步不必要了）。在设置好谷歌帐号之后，就会自动下载PAI apk到手机，替换默认的stub生效。等到进入Launcher界面，Launcher就会加载这个apk，把icon配置到对应位置上。与此同时，PlayStore会下载配置的App。</p>
 <p> 从工作流程看，如果想调试界面，就可以不reset手机，直接把编译好的APK替换默认的stub。这时候因为launcher已经启动过，所以不会主动加载配置的apk，需要从settings清空launcher数据，强制加载，就可以看到修改的界面了。</p>
 <h2 id="更多"><a href="#更多" class="headerlink" title="更多"></a>更多</h2><p>Launcher里面有AutoInstallsLayout.java ，可以阅读了解。</p>
 <p>从上面配置可以看出，写配置需要了解应用的包名，主Activity的类名，所以需要用到am和pm命令去查找，所以写了一个脚本方便获取APK的信息。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="function"><span class="title">help_info</span></span>()&#123;</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"-a get current activity"</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"-p list packages in device, can add a package name"</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"-m dump apk's AndroidManifest, need add a APK"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ <span class="variable">$#</span> -eq 0 ]</span><br><span class="line"><span class="keyword">then</span></span><br><span class="line">    help_info</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"arg count is <span class="variable">$#</span>"</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">case</span> <span class="string">"<span class="variable">$1</span>"</span> <span class="keyword">in</span></span><br><span class="line">    -a)</span><br><span class="line">	adb shell dumpsys activity activities</span><br><span class="line">	;;</span><br><span class="line">    -p)</span><br><span class="line">	<span class="keyword">if</span> [ <span class="variable">$#</span> -eq 2 ]</span><br><span class="line">	<span class="keyword">then</span></span><br><span class="line">	    adb shell pm list packages -f <span class="string">"<span class="variable">$2</span>"</span></span><br><span class="line">	<span class="keyword">elif</span> [ <span class="variable">$#</span> -eq 1 ]</span><br><span class="line">	<span class="keyword">then</span></span><br><span class="line">	    adb shell pm list packages</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"check the arguement"</span></span><br><span class="line">	<span class="keyword">fi</span></span><br><span class="line">	;;</span><br><span class="line">    -m)</span><br><span class="line">	<span class="keyword">if</span> [ <span class="variable">$#</span> -eq 2 ]</span><br><span class="line">	<span class="keyword">then</span></span><br><span class="line">	aapt dump xmltree <span class="string">"<span class="variable">$2</span>"</span> AndroidManifest.xml</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"need file path"</span></span><br><span class="line">	<span class="keyword">fi</span></span><br><span class="line"><span class="keyword">esac</span></span><br></pre></td></tr></table></figure>
-      
+<pre class=" language-lang-bash"><code class="language-lang-bash">#!/bin/bash
+help_info(){
+    echo "-a get current activity"
+    echo "-p list packages in device, can add a package name"
+    echo "-m dump apk's AndroidManifest, need add a APK"
+}
+
+if [ $# -eq 0 ]
+then
+    help_info
+else
+    echo "arg count is $#"
+fi
+
+case "$1" in
+    -a)
+    adb shell dumpsys activity activities
+    ;;
+    -p)
+    if [ $# -eq 2 ]
+    then
+        adb shell pm list packages -f "$2"
+    elif [ $# -eq 1 ]
+    then
+        adb shell pm list packages
+    else
+    echo "check the arguement"
+    fi
+    ;;
+    -m)
+    if [ $# -eq 2 ]
+    then
+    aapt dump xmltree "$2" AndroidManifest.xml
+    else
+    echo "need file path"
+    fi
+esac
+</code></pre>
+
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        Author:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://wossoneri.github.io" rel="external nofollow noreferrer">Wossoneri</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        Link:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://wossoneri.github.io/2017/06/19/[Android][Framework]PlayAutoInstall/">http://wossoneri.github.io/2017/06/19/[Android][Framework]PlayAutoInstall/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        Reprint policy:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    All articles in this blog are used except for special statements
+                    <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY-NC 4.0</a>
+                    reprint polocy. If reproduced, please indicate source
+                    <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
+                    !
+                </span>
+            </div>
+        
     </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>Copied successfully, please follow the reprint policy of this article</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">more</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/Android/">
+                                    <span class="chip bg-color">Android</span>
+                                </a>
+                            
+                                <a href="/tags/Framework/">
+                                    <span class="chip bg-color">Framework</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
     
     
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
     
 
     
 
-    
-      <div>
-        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
-  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
-  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
-    <span>打赏</span>
-  </button>
-  <div id="QR" style="display: none;">
-
-    
-      <div id="wechat" style="display: inline-block">
-        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付">
-        <p>微信支付</p>
-      </div>
-    
-
-    
-      <div id="alipay" style="display: inline-block">
-        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝">
-        <p>支付宝</p>
-      </div>
-    
-
-    
-
-  </div>
 </div>
 
-      </div>
-    
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
 
-    
-      <div>
-        <ul class="post-copyright">
-  <li class="post-copyright-author">
-    <strong>本文作者：</strong>
-    Wossoneri
-  </li>
-  <li class="post-copyright-link">
-    <strong>本文链接：</strong>
-    <a href="http://wossoneri.github.io/2017/06/19/[Android][Framework]PlayAutoInstall/" title="[Android][Framework] PlayAutoInstall配置流程总结">http://wossoneri.github.io/2017/06/19/[Android][Framework]PlayAutoInstall/</a>
-  </li>
-  <li class="post-copyright-license">
-    <strong>版权声明： </strong>
-    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
-  </li>
-</ul>
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
 
-      </div>
-    
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
 
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
-          
-            <a href="/tags/Framework/" rel="tag"><i class="fa fa-tag"></i> Framework</a>
-          
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.png" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
         </div>
-      
+    </div>
+</div>
 
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
             
-              <a href="/2017/04/11/[Design-Pattern]Factory/" rel="next" title="[设计模式]之二十二:工厂方法模式">
-                <i class="fa fa-chevron-left"></i> [设计模式]之二十二:工厂方法模式
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/07/27/[LeetCode]001_TwoSum/" rel="prev" title="[LeetCode] Two Sum">
-                [LeetCode] Two Sum <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
         </div>
-      
-
-      
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-
-    <div class="post-spread">
-      
-    </div>
-  </div>
-
-
-          </div>
-          
-
-
-          
-
-  
-    <div class="comments" id="comments">
-      
-        <div id="gitment-container"></div>
-      
     </div>
 
-  
+    
 
+    
+        <link rel="stylesheet" href="/libs/gitment/gitment-default.css">
+<link rel="stylesheet" href="/css/gitment.css">
 
+<div class="gitment-card card" data-aos="fade-up">
+    <div class="comment_headling" style="font-size: 20px; font-weight: 700; position: relative; left: 20px; top: 15px; padding-bottom: 5px;">
+        <i class="fas fa-comments fa-fw" aria-hidden="true"></i>
+        <span>评论</span>
+    </div>
+    <div id="gitment-content" class="card-content"></div>
+</div>
 
+<script src="/libs/gitment/gitment.js"></script>
+<script>
+var gitment = new Gitment({
+    id: 'Mon Jun 19 2017 17:55:00 GMT+0800',
+    owner: 'wossoneri',
+    repo: 'wossoneri.github.io',
+    oauth: {
+        client_id: '40b6c719a11e3fca29e8',
+        client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77'
+    }
+});
+
+gitment.render('gitment-content');
+</script>
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;Previous</div>
+            <div class="card">
+                <a href="/2017/07/27/[LeetCode]001_TwoSum/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/4.jpg" class="responsive-img" alt="[LeetCode] Two Sum">
+                        
+                        <span class="card-title">[LeetCode] Two Sum</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            leetcode本系列前面的话这段时间经历了一些事情，思考了很多，还有发现博客很久没写了，域名也因为没有续费被回收，想想博客还是要继续下去的，索性域名先不要了，等以后再换个好记的。以前很少刷算法题，因为感觉工作中不会用到太多。其实到后来想想
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2017-07-27
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Algorithm/" class="post-category">
+                                    Algorithm
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Java/">
+                        <span class="chip bg-color">Java</span>
+                    </a>
+                    
+                    <a href="/tags/LeetCode/">
+                        <span class="chip bg-color">LeetCode</span>
+                    </a>
+                    
+                    <a href="/tags/Python/">
+                        <span class="chip bg-color">Python</span>
+                    </a>
+                    
+                    <a href="/tags/Algorithm/">
+                        <span class="chip bg-color">Algorithm</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
         </div>
         
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <section class="site-overview-wrap sidebar-panel">
-        <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-            
-              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460" alt="Wossoneri">
-            
-              <p class="site-author-name" itemprop="name">Wossoneri</p>
-              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
-          </div>
-
-          <nav class="site-state motion-element">
-
-            
-              <div class="site-state-item site-state-posts">
-              
-                <a href="/archives/">
-              
-                  <span class="site-state-item-count">117</span>
-                  <span class="site-state-item-name">日志</span>
-                </a>
-              </div>
-            
-
-            
-              
-              
-              <div class="site-state-item site-state-categories">
-                <a href="/categories/index.html">
-                  <span class="site-state-item-count">17</span>
-                  <span class="site-state-item-name">分类</span>
-                </a>
-              </div>
-            
-
-            
-              
-              
-              <div class="site-state-item site-state-tags">
-                <a href="/tags/index.html">
-                  <span class="site-state-item-count">121</span>
-                  <span class="site-state-item-name">标签</span>
-                </a>
-              </div>
-            
-
-          </nav>
-
-          
-            <div class="feed-link motion-element">
-              <a href="/atom.xml" rel="alternate">
-                <i class="fa fa-rss"></i>
-                RSS
-              </a>
-            </div>
-          
-
-          <div class="links-of-author motion-element">
-            
-              
-                <span class="links-of-author-item">
-                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
-                    
-                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
-                </span>
-              
-                <span class="links-of-author-item">
-                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
-                    
-                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
-                </span>
-              
-            
-          </div>
-
-          
-          
-            <div class="cc-license motion-element" itemprop="license">
-              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
-                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
-              </a>
-            </div>
-          
-
-          
-          
-            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
-              <div class="links-of-blogroll-title">
-                <i class="fa  fa-fw fa-globe"></i>
-                友情链接
-              </div>
-              <ul class="links-of-blogroll-list">
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
-                  </li>
-                
-              </ul>
-            </div>
-          
-
-          
-
-        </div>
-      </section>
-
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是PAI"><span class="nav-number">1.</span> <span class="nav-text">什么是PAI</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PAI-流程"><span class="nav-number">2.</span> <span class="nav-text">PAI 流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置菜单"><span class="nav-number">3.</span> <span class="nav-text">配置菜单</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Config-APK"><span class="nav-number">4.</span> <span class="nav-text">Config APK</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PlayAutoInstallConfig-apk"><span class="nav-number">5.</span> <span class="nav-text">PlayAutoInstallConfig.apk</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#验证流程"><span class="nav-number">6.</span> <span class="nav-text">验证流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更多"><span class="nav-number">7.</span> <span class="nav-text">更多</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
-      
-
-      
-
-    </div>
-  </aside>
-
-
         
-      </div>
-    </main>
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                Next&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2017/04/11/[Design-Pattern]Factory/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="[设计模式]之二十二:工厂方法模式">
+                        
+                        <span class="card-title">[设计模式]之二十二:工厂方法模式</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            定义定义一个用于创建对象的接口，让子类决定实例化哪一个类。工厂方法使一个类的实例化延迟到其子类。
+工厂方法和简单工厂的区别就在于：
+简单工厂里的工厂类是全能类，也就是说生产新的产品，都在工厂代码（switch语句）里添加对应的处理。这样违反
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2017-04-11
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Design-pattern/" class="post-category">
+                                    Design pattern
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Java/">
+                        <span class="chip bg-color">Java</span>
+                    </a>
+                    
+                    <a href="/tags/Design-pattern/">
+                        <span class="chip bg-color">Design pattern</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
 
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
-  <span class="with-love">
-    <i class="fa fa-user"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
-
-  
 </div>
 
 
-  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
 
 
+<!-- 代码块复制 -->
 
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
 
 
+<!-- 代码块收缩 -->
 
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;TOC</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
 
         
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
 
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
 
-
-
-
-
-
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
         
-      </div>
-    </footer>
-
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
-      </div>
-    
+    });
+</script>
 
     
 
-  </div>
+</main>
 
-  
 
+
+    <footer class="page-footer bg-color">
+    <div class="container row center-align" style="margin-bottom: 15px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            <span id="year">2016</span>
+            <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+            
+            <span id="sitetime">载入运行时间...</span>
+            <script>
+                function siteTime() {
+                    var seconds = 1000;
+                    var minutes = seconds * 60;
+                    var hours = minutes * 60;
+                    var days = hours * 24;
+                    var years = days * 365;
+                    var today = new Date();
+                    var startYear = "2016";
+                    var startMonth = "1";
+                    var startDate = "1";
+                    var startHour = "0";
+                    var startMinute = "0";
+                    var startSecond = "0";
+                    var todayYear = today.getFullYear();
+                    var todayMonth = today.getMonth() + 1;
+                    var todayDate = today.getDate();
+                    var todayHour = today.getHours();
+                    var todayMinute = today.getMinutes();
+                    var todaySecond = today.getSeconds();
+                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
+                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
+                    var diff = t2 - t1;
+                    var diffYears = Math.floor(diff / years);
+                    var diffDays = Math.floor((diff / days) - diffYears * 365);
+                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
+                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
+                        minutes);
+                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
+                        diffMinutes * minutes) / seconds);
+                    if (startYear == todayYear) {
+                        document.getElementById("year").innerHTML = todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
+                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    } else {
+                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
+                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    }
+                }
+                setInterval(siteTime, 1000);
+            </script>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/wossoneri" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:wossoneri@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=478251276" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 478251276" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;Search</span>
+            <input type="search" id="searchInput" name="s" placeholder="Please enter a search keyword"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
 <script type="text/javascript">
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
+$(function () {
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+});
+</script>
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-70716047-2"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-70716047-2');
 </script>
 
 
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
-  
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
-
-
-
-  
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-
-<!-- LOCAL: You can save these files to your site and update links -->
-    
-        
-        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
-        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
-    
-<!-- END LOCAL -->
-
-    
-
-    
-      <script type="text/javascript">
-      function renderGitment(){
-        var gitment = new Gitmint({
-            id: '1497866100000', 
-            owner: 'wossoneri',
-            repo: 'wossoneri.github.io',
-            
-            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
-            
-            oauth: {
-            
-            
-                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
-            
-                client_id: '40b6c719a11e3fca29e8'
-            }});
-        gitment.render('gitment-container');
-      }
-
-      
-      renderGitment();
-      
-      </script>
-    
-
-
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-  
-
-  
-
-  
-  
-
-  
-  
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        tex2jax: {
-          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
-          processEscapes: true,
-          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
         }
-      });
-    </script>
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
 
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for (i=0; i < all.length; i += 1) {
-          all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-      });
-    </script>
-    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-  
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
 
+    
 
-  
+    
 
-  
+    
+
+    
+
+    
+    
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
 
 </body>
+
 </html>

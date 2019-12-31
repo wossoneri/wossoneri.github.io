@@ -1,401 +1,512 @@
-<!DOCTYPE html>
-
-
-
-  
-
-
-<html class="theme-next mist use-motion" lang="zh-Hans">
-<head><meta name="generator" content="Hexo 3.8.0">
-  <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="theme-color" content="#222">
-
-
-
-
-
-
-
-
-
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
-
-
-
-
-
-
-
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
-
-<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
-
-
-  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
-
-
-
-
-
-  <meta name="keywords" content="Machine Learning,Tensorflow,python,">
-
-
-
-
-
-  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml">
-
-
-
-
-
-
-<meta name="description" content="尝试使用Faster R-CNN进行数据训练">
-<meta name="keywords" content="Machine Learning,Tensorflow,python">
-<meta property="og:type" content="article">
-<meta property="og:title" content="[Tensorflow] Faster R-CNN 和自定义 VOC 数据集">
-<meta property="og:url" content="http://wossoneri.github.io/2017/12/16/[Tensorflow]FasterRCNN_and_VOC_dataset/index.html">
-<meta property="og:site_name" content="Wossoneri`s Blog">
-<meta property="og:description" content="尝试使用Faster R-CNN进行数据训练">
-<meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2017-12-26T16:22:13.000Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="[Tensorflow] Faster R-CNN 和自定义 VOC 数据集">
-<meta name="twitter:description" content="尝试使用Faster R-CNN进行数据训练">
-
-
-
-<script type="text/javascript" id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Mist',
-    version: '5.1.3',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
-    fancybox: true,
-    tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
-    duoshuo: {
-      userId: '6234852363740382000',
-      author: '博主'
-    },
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
-</script>
-
-
-
-  <link rel="canonical" href="http://wossoneri.github.io/2017/12/16/[Tensorflow]FasterRCNN_and_VOC_dataset/">
-
-
-
-
-
-  <title>[Tensorflow] Faster R-CNN 和自定义 VOC 数据集 | Wossoneri`s Blog</title>
-  
-
-
-
-
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-  ga('create', 'UA-70716047-2', 'auto');
-  ga('send', 'pageview');
-</script>
-
-
-  <script type="text/javascript">
-    var _hmt = _hmt || [];
-    (function() {
-      var hm = document.createElement("script");
-      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
-      var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
-    })();
-  </script>
-
-
-
-
-</head>
-
-<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
-
-  
-  
+<!DOCTYPE HTML>
+<html lang="zh-Hans">
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta name="keywords" content="[Tensorflow] Faster R-CNN 和自定义 VOC 数据集, Wossoneri`s Blog">
+    <meta name="description" content="Faster R-CNN 和自定义 VOC 数据集制作VOC数据修改文件名因为VOC文件名都是使用6位数字,为了适应代码,所以需要格式化文件名
+文件改名脚本:
+#!/bin/bash
+index=1000000;
+for f in *.pn">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>[Tensorflow] Faster R-CNN 和自定义 VOC 数据集 | Wossoneri`s Blog</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
     
-  
-
-  <div class="container sidebar-position-left page-post-detail">
-    <div class="headband"></div>
-    <a href="https://github.com"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
-
-    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta ">
+    <script src="/libs/jquery/jquery.min.js"></script>
     
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 
-    <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Wossoneri`s Blog</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper head-container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">Wossoneri`s Blog</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>Index</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>Tags</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>Categories</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>Archives</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>About</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>Contact</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>Friends</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="Search" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">Wossoneri`s Blog</div>
+        <div class="logo-desc">
+            
+            就怕你一生碌碌无为，还安慰自己平凡可贵
+            
+        </div>
     </div>
-      
-        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
-      
-  </div>
 
-  <div class="site-nav-toggle">
-    <button>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-    </button>
-  </div>
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			Index
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			Tags
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			Categories
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			Archives
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			About
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			Contact
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			Friends
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/wossoneri" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
 </div>
 
-<nav class="site-nav">
-  
+        </div>
 
-  
-    <ul id="menu" class="menu">
-      
         
-        <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
-            
-            首页
-          </a>
-        </li>
-      
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/wossoneri" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
         
-        <li class="menu-item menu-item-categories">
-          <a href="/categories/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
-            
-            分类
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-archives">
-          <a href="/archives/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
-            
-            归档
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-tags">
-          <a href="/tags/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
-            
-            标签
-          </a>
-        </li>
-      
+    </nav>
 
-      
-    </ul>
-  
+</header>
 
-  
-</nav>
-
-
-
- </div>
-    </header>
-
-    <main id="main" class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
     
 
-  
 
-  
-  
-  
 
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2017/12/16/[Tensorflow]FasterRCNN_and_VOC_dataset/">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/15.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">[Tensorflow] Faster R-CNN 和自定义 VOC 数据集</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Wossoneri">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
-    </span>
 
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Wossoneri`s Blog">
-    </span>
+
+
+<main class="post-container content">
 
     
-      <header class="post-header">
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
 
-        
-        
-          <h1 class="post-title" itemprop="name headline">[Tensorflow] Faster R-CNN 和自定义 VOC 数据集</h1>
-        
+    #articleContent :focus {
+        outline: none;
+    }
 
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-16T23:26:20+08:00">
-                2017-12-16
-              </time>
-            
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
 
-            
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
 
-            
-          </span>
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
 
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/Machine-Learning/" itemprop="url" rel="index">
-                    <span itemprop="name">Machine Learning</span>
-                  </a>
-                </span>
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        height: calc(100vh - 250px);
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/Tensorflow/">
+                                <span class="chip bg-color">Tensorflow</span>
+                            </a>
+                        
+                            <a href="/tags/Machine-Learning/">
+                                <span class="chip bg-color">Machine Learning</span>
+                            </a>
+                        
+                            <a href="/tags/python/">
+                                <span class="chip bg-color">python</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/Machine-Learning/" class="post-category">
+                                Machine Learning
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>Publish Date:&nbsp;&nbsp;
+                    2017-12-16
+                </div>
+                
 
                 
+
                 
-              
-            </span>
-          
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>Word Count:&nbsp;&nbsp;
+                    2,033
+                </div>
+                
 
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2017/12/16/[Tensorflow]FasterRCNN_and_VOC_dataset/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count gitment-comments-count" data-xid="/2017/12/16/[Tensorflow]FasterRCNN_and_VOC_dataset/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>Read Times:&nbsp;&nbsp;
+                    11 Min
+                </div>
+                
 
-          
-          
-	
-  		  <span class="post-letters-count">
-            &nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-                 <i class="fa fa-clock-o"></i>
-            </span>
-		        <span class="post-meta-item-text">总记</span>
-            <span class="post-count">2,036 字</span>
-		        <span class="post-meta-item-text">读完需要</span>
-    		    <span class="post-count">11 分</span>
-  		  </span>
-           
-         
-
-          
-
-          
-
-          
-              <div class="post-description">
-                  尝试使用Faster R-CNN进行数据训练
-              </div>
-          
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>Read Count:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
 
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        <h3 id="Faster-R-CNN-和自定义-VOC-数据集"><a href="#Faster-R-CNN-和自定义-VOC-数据集" class="headerlink" title="Faster R-CNN 和自定义 VOC 数据集"></a>Faster R-CNN 和自定义 VOC 数据集</h3><h4 id="制作VOC数据"><a href="#制作VOC数据" class="headerlink" title="制作VOC数据"></a>制作VOC数据</h4><h5 id="修改文件名"><a href="#修改文件名" class="headerlink" title="修改文件名"></a>修改文件名</h5><p>因为VOC文件名都是使用6位数字,为了适应代码,所以需要格式化文件名</p>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h3 id="Faster-R-CNN-和自定义-VOC-数据集"><a href="#Faster-R-CNN-和自定义-VOC-数据集" class="headerlink" title="Faster R-CNN 和自定义 VOC 数据集"></a>Faster R-CNN 和自定义 VOC 数据集</h3><h4 id="制作VOC数据"><a href="#制作VOC数据" class="headerlink" title="制作VOC数据"></a>制作VOC数据</h4><h5 id="修改文件名"><a href="#修改文件名" class="headerlink" title="修改文件名"></a>修改文件名</h5><p>因为VOC文件名都是使用6位数字,为了适应代码,所以需要格式化文件名</p>
 <p>文件改名脚本:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">index=1000000;</span><br><span class="line"><span class="keyword">for</span> f <span class="keyword">in</span> *.png;</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">    mv <span class="string">"<span class="variable">$f</span>"</span> <span class="variable">$&#123;index#1&#125;</span>.png</span><br><span class="line">    ((index++))</span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-bash"><code class="language-lang-bash">#!/bin/bash
+index=1000000;
+for f in *.png;
+do
+    mv "$f" ${index#1}.png
+    ((index++))
+done
+</code></pre>
 <p>VOC代码处理的是<code>jpg</code>格式的文件,所以还需要把<code>png</code>转换成<code>jpg</code>:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bash -c <span class="string">'for image in *.png; do convert "$image" "$&#123;image%.png&#125;.jpg"; echo “image $image converted to $&#123;image%.png&#125;.jpg ”; done'</span></span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-bash"><code class="language-lang-bash">bash -c 'for image in *.png; do convert "$image" "${image%.png}.jpg"; echo “image $image converted to ${image%.png}.jpg ”; done'
+</code></pre>
 <p>看了pascal_voc.py代码,可以把代码的<code>jpg</code>拼接改成<code>png</code>,这样可以不做上一步.</p>
 <h5 id="标记图片"><a href="#标记图片" class="headerlink" title="标记图片:"></a>标记图片:</h5><p>依然使用<code>labelImg</code>工具,生成对应的<code>xml</code>文件.</p>
 <p>然后把</p>
@@ -412,590 +523,927 @@
 </ol>
 <p>最后修改<strong>tf-faster-rcnn/lib/datasets/pascal_voc.py</strong>,把<code>self._classes</code>定义的类别填入我们自己要识别的类别.</p>
 <p>到此,自己的VOC数据集就可以使用了.</p>
-<h4 id="Faster-RCNN使用"><a href="#Faster-RCNN使用" class="headerlink" title="Faster RCNN使用"></a>Faster RCNN使用</h4><h5 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/endernewton/tf-faster-rcnn.git</span><br></pre></td></tr></table></figure>
+<h4 id="Faster-RCNN使用"><a href="#Faster-RCNN使用" class="headerlink" title="Faster RCNN使用"></a>Faster RCNN使用</h4><h5 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h5><pre class=" language-lang-bash"><code class="language-lang-bash">git clone https://github.com/endernewton/tf-faster-rcnn.git
+</code></pre>
 <h5 id="修改配置-使支持CPU选项"><a href="#修改配置-使支持CPU选项" class="headerlink" title="修改配置,使支持CPU选项"></a>修改配置,使支持CPU选项</h5><ul>
 <li><p>tf-faster-rcnn/lib/model/nms_wrapper.py 修改/注释以下行:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#from nms.gpu_nms import gpu_nms</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">nms</span><span class="params">(dets, thresh, force_cpu=False)</span>:</span></span><br><span class="line">   <span class="comment">#Dispatch to either CPU or GPU NMS implementations.</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> dets.shape[<span class="number">0</span>] == <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">return</span> []</span><br><span class="line">    <span class="keyword">if</span> cfg.USE_GPU_NMS <span class="keyword">and</span> <span class="keyword">not</span> force_cpu:</span><br><span class="line">        <span class="comment">#return gpu_nms(dets, thresh, device_id=cfg.GPU_ID)</span></span><br><span class="line">        <span class="keyword">return</span> cpu_nms(dets, thresh)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> cpu_nms(dets, thresh)</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-python"><code class="language-lang-python">#from nms.gpu_nms import gpu_nms
+def nms(dets, thresh, force_cpu=False):
+   #Dispatch to either CPU or GPU NMS implementations.
+
+    if dets.shape[0] == 0:
+        return []
+    if cfg.USE_GPU_NMS and not force_cpu:
+        #return gpu_nms(dets, thresh, device_id=cfg.GPU_ID)
+        return cpu_nms(dets, thresh)
+    else:
+        return cpu_nms(dets, thresh)
+</code></pre>
 </li>
 <li><p>tf-faster-rcnn/lib/model/config.py 修改代码为:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">__C.USE_GPU_NMS = <span class="keyword">False</span></span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-python"><code class="language-lang-python">__C.USE_GPU_NMS = False
+</code></pre>
 </li>
 <li><p>tf-faster-rcnn/lib/setup.py 注释下面代码:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">CUDA = locate_cuda()</span><br><span class="line">self.src_extensions.append(<span class="string">'.cu'</span>)</span><br><span class="line">Extension(<span class="string">'nms.gpu_nms'</span>,</span><br><span class="line">        [<span class="string">'nms/nms_kernel.cu'</span>, <span class="string">'nms/gpu_nms.pyx'</span>],</span><br><span class="line">        library_dirs=[CUDA[<span class="string">'lib64'</span>]],</span><br><span class="line">        libraries=[<span class="string">'cudart'</span>],</span><br><span class="line">        language=<span class="string">'c++'</span>,</span><br><span class="line">        runtime_library_dirs=[CUDA[<span class="string">'lib64'</span>]],</span><br><span class="line">        <span class="comment"># this syntax is specific to this build system</span></span><br><span class="line">        <span class="comment"># we're only going to use certain compiler args with nvcc and not with gcc</span></span><br><span class="line">        <span class="comment"># the implementation of this trick is in customize_compiler() below</span></span><br><span class="line">        extra_compile_args=&#123;<span class="string">'gcc'</span>: [<span class="string">"-Wno-unused-function"</span>],</span><br><span class="line">                            <span class="string">'nvcc'</span>: [<span class="string">'-arch=sm_52'</span>,</span><br><span class="line">                                     <span class="string">'--ptxas-options=-v'</span>,</span><br><span class="line">                                     <span class="string">'-c'</span>,</span><br><span class="line">                                     <span class="string">'--compiler-options'</span>,</span><br><span class="line">                                     <span class="string">"'-fPIC'"</span>]&#125;,</span><br><span class="line">        include_dirs = [numpy_include, CUDA[<span class="string">'include'</span>]]</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-python"><code class="language-lang-python">CUDA = locate_cuda()
+self.src_extensions.append('.cu')
+Extension('nms.gpu_nms',
+        ['nms/nms_kernel.cu', 'nms/gpu_nms.pyx'],
+        library_dirs=[CUDA['lib64']],
+        libraries=['cudart'],
+        language='c++',
+        runtime_library_dirs=[CUDA['lib64']],
+        # this syntax is specific to this build system
+        # we're only going to use certain compiler args with nvcc and not with gcc
+        # the implementation of this trick is in customize_compiler() below
+        extra_compile_args={'gcc': ["-Wno-unused-function"],
+                            'nvcc': ['-arch=sm_52',
+                                     '--ptxas-options=-v',
+                                     '-c',
+                                     '--compiler-options',
+                                     "'-fPIC'"]},
+        include_dirs = [numpy_include, CUDA['include']]
+</code></pre>
 </li>
 </ul>
-<h5 id="编译Cython"><a href="#编译Cython" class="headerlink" title="编译Cython"></a>编译Cython</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> lib</span><br><span class="line">make clean</span><br><span class="line">make</span><br><span class="line"><span class="built_in">cd</span> ..</span><br></pre></td></tr></table></figure>
-<h5 id="安装python-coco-API"><a href="#安装python-coco-API" class="headerlink" title="安装python coco API"></a>安装python coco API</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> data</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/pdollar/coco.git</span><br><span class="line"><span class="built_in">cd</span> coco/PythonAPI</span><br><span class="line">make</span><br><span class="line"><span class="built_in">cd</span> ../../..</span><br></pre></td></tr></table></figure>
-<h5 id="下载预训练模型"><a href="#下载预训练模型" class="headerlink" title="下载预训练模型"></a>下载预训练模型</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./data/scripts/fetch_faster_rcnn_models.sh</span><br></pre></td></tr></table></figure>
-<h5 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h5><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./tools/demo.py</span><br></pre></td></tr></table></figure>
+<h5 id="编译Cython"><a href="#编译Cython" class="headerlink" title="编译Cython"></a>编译Cython</h5><pre class=" language-lang-bash"><code class="language-lang-bash">cd lib
+make clean
+make
+cd ..
+</code></pre>
+<h5 id="安装python-coco-API"><a href="#安装python-coco-API" class="headerlink" title="安装python coco API"></a>安装python coco API</h5><pre class=" language-lang-bash"><code class="language-lang-bash">cd data
+git clone https://github.com/pdollar/coco.git
+cd coco/PythonAPI
+make
+cd ../../..
+</code></pre>
+<h5 id="下载预训练模型"><a href="#下载预训练模型" class="headerlink" title="下载预训练模型"></a>下载预训练模型</h5><pre class=" language-lang-bash"><code class="language-lang-bash">./data/scripts/fetch_faster_rcnn_models.sh
+</code></pre>
+<h5 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h5><pre class=" language-lang-bash"><code class="language-lang-bash">./tools/demo.py
+</code></pre>
 <p>会对<strong>/data/demo/</strong>目录下的图片进行识别.如果需要识别其他图片,修改demo.py里的im_names列表.</p>
 <h5 id="训练自己的数据"><a href="#训练自己的数据" class="headerlink" title="训练自己的数据"></a>训练自己的数据</h5><p>下载预训练的模型,目前支持<code>VGG16</code>和<code>Resnet V1</code></p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mkdir -p data/imagenet_weights</span><br><span class="line"><span class="built_in">cd</span> data/imagenet_weights</span><br><span class="line">wget -v http://download.tensorflow.org/models/vgg_16_2016_08_28.tar.gz</span><br><span class="line">tar -xzvf vgg_16_2016_08_28.tar.gz</span><br><span class="line">mv vgg_16.ckpt vgg16.ckpt</span><br><span class="line"><span class="built_in">cd</span> ../..</span><br><span class="line"></span><br><span class="line">mkdir -p data/imagenet_weights</span><br><span class="line"><span class="built_in">cd</span> data/imagenet_weights</span><br><span class="line">wget -v http://download.tensorflow.org/models/resnet_v1_101_2016_08_28.tar.gz</span><br><span class="line">tar -xzvf resnet_v1_101_2016_08_28.tar.gz</span><br><span class="line">mv resnet_v1_101.ckpt res101.ckpt</span><br><span class="line"><span class="built_in">cd</span> ../..</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-bash"><code class="language-lang-bash">mkdir -p data/imagenet_weights
+cd data/imagenet_weights
+wget -v http://download.tensorflow.org/models/vgg_16_2016_08_28.tar.gz
+tar -xzvf vgg_16_2016_08_28.tar.gz
+mv vgg_16.ckpt vgg16.ckpt
+cd ../..
+
+mkdir -p data/imagenet_weights
+cd data/imagenet_weights
+wget -v http://download.tensorflow.org/models/resnet_v1_101_2016_08_28.tar.gz
+tar -xzvf resnet_v1_101_2016_08_28.tar.gz
+mv resnet_v1_101.ckpt res101.ckpt
+cd ../..
+</code></pre>
 <p>训练/验证</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./experiments/scripts/train_faster_rcnn.sh [GPU_ID] [DATASET] [NET]</span><br><span class="line"><span class="comment"># GPU_ID is the GPU you want to test on</span></span><br><span class="line"><span class="comment"># NET in &#123;vgg16, res50, res101, res152&#125; is the network arch to use</span></span><br><span class="line"><span class="comment"># DATASET &#123;pascal_voc, pascal_voc_0712, coco&#125; is defined in train_faster_rcnn.sh</span></span><br><span class="line"><span class="comment"># Examples:</span></span><br><span class="line">./experiments/scripts/train_faster_rcnn.sh 0 pascal_voc vgg16</span><br><span class="line">./experiments/scripts/train_faster_rcnn.sh 1 coco res101</span><br><span class="line"></span><br><span class="line">./experiments/scripts/test_faster_rcnn.sh [GPU_ID] [DATASET] [NET]</span><br><span class="line"><span class="comment"># GPU_ID is the GPU you want to test on</span></span><br><span class="line"><span class="comment"># NET in &#123;vgg16, res50, res101, res152&#125; is the network arch to use</span></span><br><span class="line"><span class="comment"># DATASET &#123;pascal_voc, pascal_voc_0712, coco&#125; is defined in test_faster_rcnn.sh</span></span><br><span class="line"><span class="comment"># Examples:</span></span><br><span class="line">./experiments/scripts/test_faster_rcnn.sh 0 pascal_voc vgg16</span><br><span class="line">./experiments/scripts/test_faster_rcnn.sh 1 coco res101</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-bash"><code class="language-lang-bash">./experiments/scripts/train_faster_rcnn.sh [GPU_ID] [DATASET] [NET]
+# GPU_ID is the GPU you want to test on
+# NET in {vgg16, res50, res101, res152} is the network arch to use
+# DATASET {pascal_voc, pascal_voc_0712, coco} is defined in train_faster_rcnn.sh
+# Examples:
+./experiments/scripts/train_faster_rcnn.sh 0 pascal_voc vgg16
+./experiments/scripts/train_faster_rcnn.sh 1 coco res101
+
+./experiments/scripts/test_faster_rcnn.sh [GPU_ID] [DATASET] [NET]
+# GPU_ID is the GPU you want to test on
+# NET in {vgg16, res50, res101, res152} is the network arch to use
+# DATASET {pascal_voc, pascal_voc_0712, coco} is defined in test_faster_rcnn.sh
+# Examples:
+./experiments/scripts/test_faster_rcnn.sh 0 pascal_voc vgg16
+./experiments/scripts/test_faster_rcnn.sh 1 coco res101
+</code></pre>
 <p>每次训练前需要把</p>
 <p>output和data/cache目录删掉</p>
 <p>训练次数需要在训练脚本中修改.它的训练不像SSD可以随时中断,然后接着之前的训练.需要一次训练好才会生成文件.后续需要添加</p>
 <p>训练次数在</p>
 <p>train_faster_rcnn.sh 和test_faster_rcnn.sh 里修改</p>
 <h5 id="错误解决"><a href="#错误解决" class="headerlink" title="错误解决:"></a>错误解决:</h5><p>运行test的时候:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Loading model check point from output/vgg16/voc_2007_trainval/default/vgg16_faster_rcnn_iter_300.ckpt</span><br><span class="line">Loaded.</span><br><span class="line">im_detect: 1/35 3.285s 0.001s</span><br><span class="line">im_detect: 2/35 3.619s 0.001s</span><br><span class="line">im_detect: 3/35 4.309s 0.001s</span><br><span class="line">im_detect: 4/35 4.635s 0.001s</span><br><span class="line">im_detect: 5/35 4.665s 0.001s</span><br><span class="line">im_detect: 6/35 4.506s 0.001s</span><br><span class="line">im_detect: 7/35 4.561s 0.001s</span><br><span class="line">im_detect: 8/35 4.713s 0.001s</span><br><span class="line">im_detect: 9/35 4.776s 0.001s</span><br><span class="line">im_detect: 10/35 4.750s 0.001s</span><br><span class="line">im_detect: 11/35 4.787s 0.001s</span><br><span class="line">im_detect: 12/35 4.761s 0.001s</span><br><span class="line">im_detect: 13/35 4.721s 0.001s</span><br><span class="line">im_detect: 14/35 4.788s 0.001s</span><br><span class="line">im_detect: 15/35 4.861s 0.001s</span><br><span class="line">im_detect: 16/35 4.831s 0.001s</span><br><span class="line">im_detect: 17/35 4.848s 0.001s</span><br><span class="line">im_detect: 18/35 4.793s 0.001s</span><br><span class="line">im_detect: 19/35 4.791s 0.001s</span><br><span class="line">im_detect: 20/35 4.755s 0.001s</span><br><span class="line">im_detect: 21/35 4.795s 0.001s</span><br><span class="line">im_detect: 22/35 4.829s 0.001s</span><br><span class="line">im_detect: 23/35 4.873s 0.001s</span><br><span class="line">im_detect: 24/35 4.822s 0.001s</span><br><span class="line">im_detect: 25/35 4.801s 0.001s</span><br><span class="line">im_detect: 26/35 4.787s 0.001s</span><br><span class="line">im_detect: 27/35 4.758s 0.001s</span><br><span class="line">im_detect: 28/35 4.747s 0.001s</span><br><span class="line">im_detect: 29/35 4.717s 0.001s</span><br><span class="line">im_detect: 30/35 4.725s 0.001s</span><br><span class="line">im_detect: 31/35 4.754s 0.001s</span><br><span class="line">im_detect: 32/35 4.759s 0.001s</span><br><span class="line">im_detect: 33/35 4.775s 0.001s</span><br><span class="line">im_detect: 34/35 4.786s 0.001s</span><br><span class="line">im_detect: 35/35 4.796s 0.001s</span><br><span class="line">Evaluating detections</span><br><span class="line">Writing knife VOC results file</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">"./tools/test_net.py"</span>, line 120, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">    test_net(sess, net, imdb, filename, max_per_image=args.max_per_image)</span><br><span class="line">  File <span class="string">"/home/wow/Github/tf-faster-rcnn/tools/../lib/model/test.py"</span>, line 192, <span class="keyword">in</span> test_net</span><br><span class="line">    imdb.evaluate_detections(all_boxes, output_dir)</span><br><span class="line">  File <span class="string">"/home/wow/Github/tf-faster-rcnn/tools/../lib/datasets/pascal_voc.py"</span>, line 278, <span class="keyword">in</span> evaluate_detections</span><br><span class="line">    self._write_voc_results_file(all_boxes)</span><br><span class="line">  File <span class="string">"/home/wow/Github/tf-faster-rcnn/tools/../lib/datasets/pascal_voc.py"</span>, line 205, <span class="keyword">in</span> _write_voc_results_file</span><br><span class="line">    with open(filename, <span class="string">'wt'</span>) as f:</span><br><span class="line">IOError: [Errno 2] No such file or directory: <span class="string">'/home/wow/Github/tf-faster-rcnn/data/VOCdevkit2007/results/VOC2007/Main/comp4_c412401c-8e25-43ab-ba7f-e65b9089897c_det_test_knife.txt'</span></span><br><span class="line">Command exited with non-zero status 1</span><br><span class="line">590.78user 10.24system 2:51.10elapsed 351%CPU (0avgtext+0avgdata 2778584maxresident)k</span><br></pre></td></tr></table></figure>
-<p>查看pascal_voc.py代码,发现这里<figure class="highlight plain"><figcaption><span>open(filename, 'wt') as f```代码应该会创建文件,只是因为没有results目录,所以手动创建tf-faster-rcnn/data/VOCdevkit2007/results/VOC2007/Main/目录即可.</span></figcaption><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">测试通过后进行对图片的识别,识别依然使用`./tools/demo.py`:</span><br><span class="line"></span><br><span class="line">```bash</span><br><span class="line">./tools/demo.py --net=vgg16 --dataset=pascal_voc</span><br></pre></td></tr></table></figure></p>
+<pre class=" language-lang-bash"><code class="language-lang-bash">Loading model check point from output/vgg16/voc_2007_trainval/default/vgg16_faster_rcnn_iter_300.ckpt
+Loaded.
+im_detect: 1/35 3.285s 0.001s
+im_detect: 2/35 3.619s 0.001s
+im_detect: 3/35 4.309s 0.001s
+im_detect: 4/35 4.635s 0.001s
+im_detect: 5/35 4.665s 0.001s
+im_detect: 6/35 4.506s 0.001s
+im_detect: 7/35 4.561s 0.001s
+im_detect: 8/35 4.713s 0.001s
+im_detect: 9/35 4.776s 0.001s
+im_detect: 10/35 4.750s 0.001s
+im_detect: 11/35 4.787s 0.001s
+im_detect: 12/35 4.761s 0.001s
+im_detect: 13/35 4.721s 0.001s
+im_detect: 14/35 4.788s 0.001s
+im_detect: 15/35 4.861s 0.001s
+im_detect: 16/35 4.831s 0.001s
+im_detect: 17/35 4.848s 0.001s
+im_detect: 18/35 4.793s 0.001s
+im_detect: 19/35 4.791s 0.001s
+im_detect: 20/35 4.755s 0.001s
+im_detect: 21/35 4.795s 0.001s
+im_detect: 22/35 4.829s 0.001s
+im_detect: 23/35 4.873s 0.001s
+im_detect: 24/35 4.822s 0.001s
+im_detect: 25/35 4.801s 0.001s
+im_detect: 26/35 4.787s 0.001s
+im_detect: 27/35 4.758s 0.001s
+im_detect: 28/35 4.747s 0.001s
+im_detect: 29/35 4.717s 0.001s
+im_detect: 30/35 4.725s 0.001s
+im_detect: 31/35 4.754s 0.001s
+im_detect: 32/35 4.759s 0.001s
+im_detect: 33/35 4.775s 0.001s
+im_detect: 34/35 4.786s 0.001s
+im_detect: 35/35 4.796s 0.001s
+Evaluating detections
+Writing knife VOC results file
+Traceback (most recent call last):
+  File "./tools/test_net.py", line 120, in <module>
+    test_net(sess, net, imdb, filename, max_per_image=args.max_per_image)
+  File "/home/wow/Github/tf-faster-rcnn/tools/../lib/model/test.py", line 192, in test_net
+    imdb.evaluate_detections(all_boxes, output_dir)
+  File "/home/wow/Github/tf-faster-rcnn/tools/../lib/datasets/pascal_voc.py", line 278, in evaluate_detections
+    self._write_voc_results_file(all_boxes)
+  File "/home/wow/Github/tf-faster-rcnn/tools/../lib/datasets/pascal_voc.py", line 205, in _write_voc_results_file
+    with open(filename, 'wt') as f:
+IOError: [Errno 2] No such file or directory: '/home/wow/Github/tf-faster-rcnn/data/VOCdevkit2007/results/VOC2007/Main/comp4_c412401c-8e25-43ab-ba7f-e65b9089897c_det_test_knife.txt'
+Command exited with non-zero status 1
+590.78user 10.24system 2:51.10elapsed 351%CPU (0avgtext+0avgdata 2778584maxresident)k
+</code></pre>
+<p>查看pascal_voc.py代码,发现这里<code>with open(filename, &#39;wt&#39;) as f</code>代码应该会创建文件,只是因为没有results目录,所以手动创建tf-faster-rcnn/data/VOCdevkit2007/results/VOC2007/Main/目录即可.</p>
+<p>测试通过后进行对图片的识别,识别依然使用<code>./tools/demo.py</code>:</p>
+<pre class=" language-lang-bash"><code class="language-lang-bash">./tools/demo.py --net=vgg16 --dataset=pascal_voc
+</code></pre>
 <p>得到如下错误:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">2017-12-26 17:04:58.521558: I tensorflow/core/platform/cpu_feature_guard.cc:137] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX</span><br><span class="line">begin to restore</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">"./tools/demo.py"</span>, line 141, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">    saver.restore(sess, tfmodel)</span><br><span class="line">  File <span class="string">"/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/training/saver.py"</span>, line 1666, <span class="keyword">in</span> restore</span><br><span class="line">    &#123;self.saver_def.filename_tensor_name: save_path&#125;)</span><br><span class="line">  File <span class="string">"/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/client/session.py"</span>, line 889, <span class="keyword">in</span> run</span><br><span class="line">    run_metadata_ptr)</span><br><span class="line">  File <span class="string">"/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/client/session.py"</span>, line 1120, <span class="keyword">in</span> _run</span><br><span class="line">    feed_dict_tensor, options, run_metadata)</span><br><span class="line">  File <span class="string">"/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/client/session.py"</span>, line 1317, <span class="keyword">in</span> _do_run</span><br><span class="line">    options, run_metadata)</span><br><span class="line">  File <span class="string">"/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/client/session.py"</span>, line 1336, <span class="keyword">in</span> _do_call</span><br><span class="line">    raise <span class="built_in">type</span>(e)(node_def, op, message)</span><br><span class="line">tensorflow.python.framework.errors_impl.InvalidArgumentError: Assign requires shapes of both tensors to match. lhs shape= [84] rhs shape= [16]</span><br><span class="line">	 [[Node: save/Assign = Assign[T=DT_FLOAT, _class=[<span class="string">"loc:@vgg_16/bbox_pred/biases"</span>], use_locking=<span class="literal">true</span>, validate_shape=<span class="literal">true</span>, _device=<span class="string">"/job:localhost/replica:0/task:0/device:CPU:0"</span>](vgg_16/bbox_pred/biases, save/RestoreV2)]]</span><br><span class="line"></span><br><span class="line">Caused by op u<span class="string">'save/Assign'</span>, defined at:</span><br><span class="line">  File <span class="string">"./tools/demo.py"</span>, line 139, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">    saver = tf.train.Saver()</span><br><span class="line">  File <span class="string">"/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/training/saver.py"</span>, line 1218, <span class="keyword">in</span> __init__</span><br><span class="line">    self.build()</span><br><span class="line">  File <span class="string">"/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/training/saver.py"</span>, line 1227, <span class="keyword">in</span> build</span><br><span class="line">    self._build(self._filename, build_save=True, build_restore=True)</span><br><span class="line">  File <span class="string">"/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/training/saver.py"</span>, line 1263, <span class="keyword">in</span> _build</span><br><span class="line">    build_save=build_save, build_restore=build_restore)</span><br><span class="line">  File <span class="string">"/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/training/saver.py"</span>, line 751, <span class="keyword">in</span> _build_internal</span><br><span class="line">    restore_sequentially, reshape)</span><br><span class="line">  File <span class="string">"/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/training/saver.py"</span>, line 439, <span class="keyword">in</span> _AddRestoreOps</span><br><span class="line">    assign_ops.append(saveable.restore(tensors, shapes))</span><br><span class="line">  File <span class="string">"/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/training/saver.py"</span>, line 160, <span class="keyword">in</span> restore</span><br><span class="line">    self.op.get_shape().is_fully_defined())</span><br><span class="line">  File <span class="string">"/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/ops/state_ops.py"</span>, line 276, <span class="keyword">in</span> assign</span><br><span class="line">    validate_shape=validate_shape)</span><br><span class="line">  File <span class="string">"/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/ops/gen_state_ops.py"</span>, line 57, <span class="keyword">in</span> assign</span><br><span class="line">    use_locking=use_locking, name=name)</span><br><span class="line">  File <span class="string">"/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/framework/op_def_library.py"</span>, line 787, <span class="keyword">in</span> _apply_op_helper</span><br><span class="line">    op_def=op_def)</span><br><span class="line">  File <span class="string">"/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/framework/ops.py"</span>, line 2956, <span class="keyword">in</span> create_op</span><br><span class="line">    op_def=op_def)</span><br><span class="line">  File <span class="string">"/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/framework/ops.py"</span>, line 1470, <span class="keyword">in</span> __init__</span><br><span class="line">    self._traceback = self._graph._extract_stack()  <span class="comment"># pylint: disable=protected-access</span></span><br><span class="line"></span><br><span class="line">InvalidArgumentError (see above <span class="keyword">for</span> traceback): Assign requires shapes of both tensors to match. lhs shape= [84] rhs shape= [16]</span><br><span class="line">	 [[Node: save/Assign = Assign[T=DT_FLOAT, _class=[<span class="string">"loc:@vgg_16/bbox_pred/biases"</span>], use_locking=<span class="literal">true</span>, validate_shape=<span class="literal">true</span>, _device=<span class="string">"/job:localhost/replica:0/task:0/device:CPU:0"</span>](vgg_16/bbox_pred/biases, save/RestoreV2)]]</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-bash"><code class="language-lang-bash">2017-12-26 17:04:58.521558: I tensorflow/core/platform/cpu_feature_guard.cc:137] Your CPU supports instructions that this TensorFlow binary was not compiled to use: SSE4.1 SSE4.2 AVX
+begin to restore
+Traceback (most recent call last):
+  File "./tools/demo.py", line 141, in <module>
+    saver.restore(sess, tfmodel)
+  File "/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/training/saver.py", line 1666, in restore
+    {self.saver_def.filename_tensor_name: save_path})
+  File "/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/client/session.py", line 889, in run
+    run_metadata_ptr)
+  File "/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/client/session.py", line 1120, in _run
+    feed_dict_tensor, options, run_metadata)
+  File "/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/client/session.py", line 1317, in _do_run
+    options, run_metadata)
+  File "/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/client/session.py", line 1336, in _do_call
+    raise type(e)(node_def, op, message)
+tensorflow.python.framework.errors_impl.InvalidArgumentError: Assign requires shapes of both tensors to match. lhs shape= [84] rhs shape= [16]
+     [[Node: save/Assign = Assign[T=DT_FLOAT, _class=["loc:@vgg_16/bbox_pred/biases"], use_locking=true, validate_shape=true, _device="/job:localhost/replica:0/task:0/device:CPU:0"](vgg_16/bbox_pred/biases, save/RestoreV2)]]
+
+Caused by op u'save/Assign', defined at:
+  File "./tools/demo.py", line 139, in <module>
+    saver = tf.train.Saver()
+  File "/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/training/saver.py", line 1218, in __init__
+    self.build()
+  File "/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/training/saver.py", line 1227, in build
+    self._build(self._filename, build_save=True, build_restore=True)
+  File "/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/training/saver.py", line 1263, in _build
+    build_save=build_save, build_restore=build_restore)
+  File "/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/training/saver.py", line 751, in _build_internal
+    restore_sequentially, reshape)
+  File "/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/training/saver.py", line 439, in _AddRestoreOps
+    assign_ops.append(saveable.restore(tensors, shapes))
+  File "/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/training/saver.py", line 160, in restore
+    self.op.get_shape().is_fully_defined())
+  File "/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/ops/state_ops.py", line 276, in assign
+    validate_shape=validate_shape)
+  File "/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/ops/gen_state_ops.py", line 57, in assign
+    use_locking=use_locking, name=name)
+  File "/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/framework/op_def_library.py", line 787, in _apply_op_helper
+    op_def=op_def)
+  File "/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/framework/ops.py", line 2956, in create_op
+    op_def=op_def)
+  File "/home/wow/ML/tensorflow/local/lib/python2.7/site-packages/tensorflow/python/framework/ops.py", line 1470, in __init__
+    self._traceback = self._graph._extract_stack()  # pylint: disable=protected-access
+
+InvalidArgumentError (see above for traceback): Assign requires shapes of both tensors to match. lhs shape= [84] rhs shape= [16]
+     [[Node: save/Assign = Assign[T=DT_FLOAT, _class=["loc:@vgg_16/bbox_pred/biases"], use_locking=true, validate_shape=true, _device="/job:localhost/replica:0/task:0/device:CPU:0"](vgg_16/bbox_pred/biases, save/RestoreV2)]]
+</code></pre>
 <p>这个错误推测是之前训练的cache没有清空导致模型数据不匹配.删除/data/cache和/output,重新训练.</p>
 <p>又遇到类似的错误:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">tensorflow.python.framework.errors_impl.InvalidArgumentError: Assign requires shapes of both tensors to match. lhs shape= [4096,21] rhs shape= [4096,4]</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-bash"><code class="language-lang-bash">tensorflow.python.framework.errors_impl.InvalidArgumentError: Assign requires shapes of both tensors to match. lhs shape= [4096,21] rhs shape= [4096,4]
+</code></pre>
 <p>这次的shape和上一次的不一样.通过阅读demo.py代码,发现这一行定义了21:</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">net.create_architecture(<span class="string">"TEST"</span>, <span class="number">21</span>,</span><br><span class="line">                      tag=<span class="string">'default'</span>, anchor_scales=[<span class="number">8</span>, <span class="number">16</span>, <span class="number">32</span>])</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-python"><code class="language-lang-python">    net.create_architecture("TEST", 21,
+                          tag='default', anchor_scales=[8, 16, 32])
+</code></pre>
 <p>把21改成4,成功运行.</p>
 <p>Reference:</p>
 <p><a href="https://github.com/smallcorgi/Faster-RCNN_TF" target="_blank" rel="noopener">https://github.com/smallcorgi/Faster-RCNN_TF</a></p>
 <p><a href="https://github.com/endernewton/tf-faster-rcnn" target="_blank" rel="noopener">https://github.com/endernewton/tf-faster-rcnn</a></p>
 
-      
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        Author:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://wossoneri.github.io" rel="external nofollow noreferrer">Wossoneri</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        Link:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://wossoneri.github.io/2017/12/16/[Tensorflow]FasterRCNN_and_VOC_dataset/">http://wossoneri.github.io/2017/12/16/[Tensorflow]FasterRCNN_and_VOC_dataset/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        Reprint policy:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    All articles in this blog are used except for special statements
+                    <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY-NC 4.0</a>
+                    reprint polocy. If reproduced, please indicate source
+                    <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
+                    !
+                </span>
+            </div>
+        
     </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>Copied successfully, please follow the reprint policy of this article</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">more</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/Tensorflow/">
+                                    <span class="chip bg-color">Tensorflow</span>
+                                </a>
+                            
+                                <a href="/tags/Machine-Learning/">
+                                    <span class="chip bg-color">Machine Learning</span>
+                                </a>
+                            
+                                <a href="/tags/python/">
+                                    <span class="chip bg-color">python</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
     
     
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
     
 
     
 
-    
-      <div>
-        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
-  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
-  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
-    <span>打赏</span>
-  </button>
-  <div id="QR" style="display: none;">
-
-    
-      <div id="wechat" style="display: inline-block">
-        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付">
-        <p>微信支付</p>
-      </div>
-    
-
-    
-      <div id="alipay" style="display: inline-block">
-        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝">
-        <p>支付宝</p>
-      </div>
-    
-
-    
-
-  </div>
 </div>
 
-      </div>
-    
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
 
-    
-      <div>
-        <ul class="post-copyright">
-  <li class="post-copyright-author">
-    <strong>本文作者：</strong>
-    Wossoneri
-  </li>
-  <li class="post-copyright-link">
-    <strong>本文链接：</strong>
-    <a href="http://wossoneri.github.io/2017/12/16/[Tensorflow]FasterRCNN_and_VOC_dataset/" title="[Tensorflow] Faster R-CNN 和自定义 VOC 数据集">http://wossoneri.github.io/2017/12/16/[Tensorflow]FasterRCNN_and_VOC_dataset/</a>
-  </li>
-  <li class="post-copyright-license">
-    <strong>版权声明： </strong>
-    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
-  </li>
-</ul>
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
 
-      </div>
-    
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
 
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/Machine-Learning/" rel="tag"><i class="fa fa-tag"></i> Machine Learning</a>
-          
-            <a href="/tags/Tensorflow/" rel="tag"><i class="fa fa-tag"></i> Tensorflow</a>
-          
-            <a href="/tags/python/" rel="tag"><i class="fa fa-tag"></i> python</a>
-          
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.png" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
         </div>
-      
+    </div>
+</div>
 
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
             
-              <a href="/2017/12/16/[Tensorflow]conv-in-tf/" rel="next" title="[Tensorflow] Tensorflow卷积理解">
-                <i class="fa fa-chevron-left"></i> [Tensorflow] Tensorflow卷积理解
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/01/12/[JVM]Note-of-JVM-Charpter2/" rel="prev" title="[JVM] Java内存区域与内存溢出异常">
-                [JVM] Java内存区域与内存溢出异常 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
         </div>
-      
-
-      
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-
-    <div class="post-spread">
-      
-    </div>
-  </div>
-
-
-          </div>
-          
-
-
-          
-
-  
-    <div class="comments" id="comments">
-      
-        <div id="gitment-container"></div>
-      
     </div>
 
-  
+    
 
+    
+        <link rel="stylesheet" href="/libs/gitment/gitment-default.css">
+<link rel="stylesheet" href="/css/gitment.css">
 
+<div class="gitment-card card" data-aos="fade-up">
+    <div class="comment_headling" style="font-size: 20px; font-weight: 700; position: relative; left: 20px; top: 15px; padding-bottom: 5px;">
+        <i class="fas fa-comments fa-fw" aria-hidden="true"></i>
+        <span>评论</span>
+    </div>
+    <div id="gitment-content" class="card-content"></div>
+</div>
 
+<script src="/libs/gitment/gitment.js"></script>
+<script>
+var gitment = new Gitment({
+    id: 'Sat Dec 16 2017 23:26:20 GMT+0800',
+    owner: 'wossoneri',
+    repo: 'wossoneri.github.io',
+    oauth: {
+        client_id: '40b6c719a11e3fca29e8',
+        client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77'
+    }
+});
+
+gitment.render('gitment-content');
+</script>
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;Previous</div>
+            <div class="card">
+                <a href="/2018/01/12/[JVM]Note-of-JVM-Charpter2/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="[JVM] Java内存区域与内存溢出异常">
+                        
+                        <span class="card-title">[JVM] Java内存区域与内存溢出异常</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            Java内存区域与内存溢出异常运行时数据区域运行时数据区有:
+
+方法区 Method Area
+堆 Heap
+虚拟机栈 VM Stack
+本地方法栈 Native Method Stack
+程序计数器 Program Counter Reg
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2018-01-12
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/JVM/" class="post-category">
+                                    JVM
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Java/">
+                        <span class="chip bg-color">Java</span>
+                    </a>
+                    
+                    <a href="/tags/JVM/">
+                        <span class="chip bg-color">JVM</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
         </div>
         
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <section class="site-overview-wrap sidebar-panel">
-        <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-            
-              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460" alt="Wossoneri">
-            
-              <p class="site-author-name" itemprop="name">Wossoneri</p>
-              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
-          </div>
-
-          <nav class="site-state motion-element">
-
-            
-              <div class="site-state-item site-state-posts">
-              
-                <a href="/archives/">
-              
-                  <span class="site-state-item-count">117</span>
-                  <span class="site-state-item-name">日志</span>
-                </a>
-              </div>
-            
-
-            
-              
-              
-              <div class="site-state-item site-state-categories">
-                <a href="/categories/index.html">
-                  <span class="site-state-item-count">17</span>
-                  <span class="site-state-item-name">分类</span>
-                </a>
-              </div>
-            
-
-            
-              
-              
-              <div class="site-state-item site-state-tags">
-                <a href="/tags/index.html">
-                  <span class="site-state-item-count">121</span>
-                  <span class="site-state-item-name">标签</span>
-                </a>
-              </div>
-            
-
-          </nav>
-
-          
-            <div class="feed-link motion-element">
-              <a href="/atom.xml" rel="alternate">
-                <i class="fa fa-rss"></i>
-                RSS
-              </a>
-            </div>
-          
-
-          <div class="links-of-author motion-element">
-            
-              
-                <span class="links-of-author-item">
-                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
-                    
-                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
-                </span>
-              
-                <span class="links-of-author-item">
-                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
-                    
-                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
-                </span>
-              
-            
-          </div>
-
-          
-          
-            <div class="cc-license motion-element" itemprop="license">
-              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
-                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
-              </a>
-            </div>
-          
-
-          
-          
-            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
-              <div class="links-of-blogroll-title">
-                <i class="fa  fa-fw fa-globe"></i>
-                友情链接
-              </div>
-              <ul class="links-of-blogroll-list">
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
-                  </li>
-                
-              </ul>
-            </div>
-          
-
-          
-
-        </div>
-      </section>
-
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Faster-R-CNN-和自定义-VOC-数据集"><span class="nav-number">1.</span> <span class="nav-text">Faster R-CNN 和自定义 VOC 数据集</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#制作VOC数据"><span class="nav-number">1.1.</span> <span class="nav-text">制作VOC数据</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#修改文件名"><span class="nav-number">1.1.1.</span> <span class="nav-text">修改文件名</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#标记图片"><span class="nav-number">1.1.2.</span> <span class="nav-text">标记图片:</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Faster-RCNN使用"><span class="nav-number">1.2.</span> <span class="nav-text">Faster RCNN使用</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#安装"><span class="nav-number">1.2.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#修改配置-使支持CPU选项"><span class="nav-number">1.2.2.</span> <span class="nav-text">修改配置,使支持CPU选项</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#编译Cython"><span class="nav-number">1.2.3.</span> <span class="nav-text">编译Cython</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#安装python-coco-API"><span class="nav-number">1.2.4.</span> <span class="nav-text">安装python coco API</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#下载预训练模型"><span class="nav-number">1.2.5.</span> <span class="nav-text">下载预训练模型</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#测试"><span class="nav-number">1.2.6.</span> <span class="nav-text">测试</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#训练自己的数据"><span class="nav-number">1.2.7.</span> <span class="nav-text">训练自己的数据</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#错误解决"><span class="nav-number">1.2.8.</span> <span class="nav-text">错误解决:</span></a></li></ol></li></ol></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
-      
-
-      
-
-    </div>
-  </aside>
-
-
         
-      </div>
-    </main>
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                Next&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2017/12/16/[Tensorflow]conv-in-tf/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/23.jpg" class="responsive-img" alt="[Tensorflow] Tensorflow卷积理解">
+                        
+                        <span class="card-title">[Tensorflow] Tensorflow卷积理解</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            Tensorflow convolutionCNNCNN对于学习深度学习的人来说应该是比较耳熟的名词了.但很多人只是听过,但不知道是什么.
+CNN全称是convolutional neural network,可以这么说,只要神经网络里有一
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2017-12-16
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Machine-Learning/" class="post-category">
+                                    Machine Learning
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Tensorflow/">
+                        <span class="chip bg-color">Tensorflow</span>
+                    </a>
+                    
+                    <a href="/tags/Machine-Learning/">
+                        <span class="chip bg-color">Machine Learning</span>
+                    </a>
+                    
+                    <a href="/tags/python/">
+                        <span class="chip bg-color">python</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
 
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
-  <span class="with-love">
-    <i class="fa fa-user"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
-
-  
 </div>
 
 
-  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
 
 
+<!-- 代码块复制 -->
 
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
 
 
+<!-- 代码块收缩 -->
 
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;TOC</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
 
         
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
 
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
 
-
-
-
-
-
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
         
-      </div>
-    </footer>
-
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
-      </div>
-    
+    });
+</script>
 
     
 
-  </div>
+</main>
 
-  
 
+
+    <footer class="page-footer bg-color">
+    <div class="container row center-align" style="margin-bottom: 15px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            <span id="year">2016</span>
+            <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+            
+            <span id="sitetime">载入运行时间...</span>
+            <script>
+                function siteTime() {
+                    var seconds = 1000;
+                    var minutes = seconds * 60;
+                    var hours = minutes * 60;
+                    var days = hours * 24;
+                    var years = days * 365;
+                    var today = new Date();
+                    var startYear = "2016";
+                    var startMonth = "1";
+                    var startDate = "1";
+                    var startHour = "0";
+                    var startMinute = "0";
+                    var startSecond = "0";
+                    var todayYear = today.getFullYear();
+                    var todayMonth = today.getMonth() + 1;
+                    var todayDate = today.getDate();
+                    var todayHour = today.getHours();
+                    var todayMinute = today.getMinutes();
+                    var todaySecond = today.getSeconds();
+                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
+                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
+                    var diff = t2 - t1;
+                    var diffYears = Math.floor(diff / years);
+                    var diffDays = Math.floor((diff / days) - diffYears * 365);
+                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
+                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
+                        minutes);
+                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
+                        diffMinutes * minutes) / seconds);
+                    if (startYear == todayYear) {
+                        document.getElementById("year").innerHTML = todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
+                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    } else {
+                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
+                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    }
+                }
+                setInterval(siteTime, 1000);
+            </script>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/wossoneri" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:wossoneri@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=478251276" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 478251276" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;Search</span>
+            <input type="search" id="searchInput" name="s" placeholder="Please enter a search keyword"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
 <script type="text/javascript">
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
+$(function () {
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+});
+</script>
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-70716047-2"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-70716047-2');
 </script>
 
 
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
-  
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
-
-
-
-  
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-
-<!-- LOCAL: You can save these files to your site and update links -->
-    
-        
-        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
-        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
-    
-<!-- END LOCAL -->
-
-    
-
-    
-      <script type="text/javascript">
-      function renderGitment(){
-        var gitment = new Gitmint({
-            id: '1513437980000', 
-            owner: 'wossoneri',
-            repo: 'wossoneri.github.io',
-            
-            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
-            
-            oauth: {
-            
-            
-                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
-            
-                client_id: '40b6c719a11e3fca29e8'
-            }});
-        gitment.render('gitment-container');
-      }
-
-      
-      renderGitment();
-      
-      </script>
-    
-
-
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-  
-
-  
-
-  
-  
-
-  
-  
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        tex2jax: {
-          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
-          processEscapes: true,
-          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
         }
-      });
-    </script>
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
 
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for (i=0; i < all.length; i += 1) {
-          all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-      });
-    </script>
-    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-  
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
 
+    
 
-  
+    
 
-  
+    
+
+    
+
+    
+    
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
 
 </body>
+
 </html>

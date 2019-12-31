@@ -1,399 +1,501 @@
-<!DOCTYPE html>
-
-
-
-  
-
-
-<html class="theme-next mist use-motion" lang="zh-Hans">
-<head><meta name="generator" content="Hexo 3.8.0">
-  <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="theme-color" content="#222">
-
-
-
-
-
-
-
-
-
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
-
-
-
-
-
-
-
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
-
-<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
-
-
-  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
-
-
-
-
-
-  <meta name="keywords" content="iOS,Objective-C,Multithreading,GCD,">
-
-
-
-
-
-  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml">
-
-
-
-
-
-
-<meta name="description" content="整理了一些GCD相关知识点">
-<meta name="keywords" content="iOS,Objective-C,Multithreading,GCD">
-<meta property="og:type" content="article">
-<meta property="og:title" content="[Objective-C]多线程和GCD">
-<meta property="og:url" content="http://wossoneri.github.io/2016/05/30/[Objective-C]Multithreading-and-GCD/index.html">
-<meta property="og:site_name" content="Wossoneri`s Blog">
-<meta property="og:description" content="整理了一些GCD相关知识点">
-<meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://images.cnitblog.com/i/450136/201406/242038164084931.png">
-<meta property="og:updated_time" content="2016-06-08T10:03:08.000Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="[Objective-C]多线程和GCD">
-<meta name="twitter:description" content="整理了一些GCD相关知识点">
-<meta name="twitter:image" content="http://images.cnitblog.com/i/450136/201406/242038164084931.png">
-
-
-
-<script type="text/javascript" id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Mist',
-    version: '5.1.3',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
-    fancybox: true,
-    tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
-    duoshuo: {
-      userId: '6234852363740382000',
-      author: '博主'
-    },
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
-</script>
-
-
-
-  <link rel="canonical" href="http://wossoneri.github.io/2016/05/30/[Objective-C]Multithreading-and-GCD/">
-
-
-
-
-
-  <title>[Objective-C]多线程和GCD | Wossoneri`s Blog</title>
-  
-
-
-
-
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-  ga('create', 'UA-70716047-2', 'auto');
-  ga('send', 'pageview');
-</script>
-
-
-  <script type="text/javascript">
-    var _hmt = _hmt || [];
-    (function() {
-      var hm = document.createElement("script");
-      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
-      var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
-    })();
-  </script>
-
-
-
-
-</head>
-
-<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
-
-  
-  
+<!DOCTYPE HTML>
+<html lang="zh-Hans">
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta name="keywords" content="[Objective-C]多线程和GCD, Wossoneri`s Blog">
+    <meta name="description" content="进程和线程进程是指在系统中正在运行的一个应用程序。每个进程之间是独立的，每个进程均运行在其专用且受保护的内存空间内。比如同时打开QQ、Xcode，系统就会分别启动两个进程。
+线程一个进程要想执行任务，必须得有线程（每一个进程至少要有一条线程">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>[Objective-C]多线程和GCD | Wossoneri`s Blog</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
     
-  
-
-  <div class="container sidebar-position-left page-post-detail">
-    <div class="headband"></div>
-    <a href="https://github.com"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
-
-    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta ">
+    <script src="/libs/jquery/jquery.min.js"></script>
     
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 
-    <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Wossoneri`s Blog</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper head-container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">Wossoneri`s Blog</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>Index</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>Tags</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>Categories</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>Archives</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>About</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>Contact</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>Friends</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="Search" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">Wossoneri`s Blog</div>
+        <div class="logo-desc">
+            
+            就怕你一生碌碌无为，还安慰自己平凡可贵
+            
+        </div>
     </div>
-      
-        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
-      
-  </div>
 
-  <div class="site-nav-toggle">
-    <button>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-    </button>
-  </div>
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			Index
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			Tags
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			Categories
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			Archives
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			About
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			Contact
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			Friends
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/wossoneri" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
 </div>
 
-<nav class="site-nav">
-  
+        </div>
 
-  
-    <ul id="menu" class="menu">
-      
         
-        <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
-            
-            首页
-          </a>
-        </li>
-      
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/wossoneri" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
         
-        <li class="menu-item menu-item-categories">
-          <a href="/categories/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
-            
-            分类
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-archives">
-          <a href="/archives/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
-            
-            归档
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-tags">
-          <a href="/tags/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
-            
-            标签
-          </a>
-        </li>
-      
+    </nav>
 
-      
-    </ul>
-  
+</header>
 
-  
-</nav>
-
-
-
- </div>
-    </header>
-
-    <main id="main" class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
     
 
-  
 
-  
-  
-  
 
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2016/05/30/[Objective-C]Multithreading-and-GCD/">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/23.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">[Objective-C]多线程和GCD</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Wossoneri">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
-    </span>
 
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Wossoneri`s Blog">
-    </span>
+
+
+<main class="post-container content">
 
     
-      <header class="post-header">
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
 
-        
-        
-          <h1 class="post-title" itemprop="name headline">[Objective-C]多线程和GCD</h1>
-        
+    #articleContent :focus {
+        outline: none;
+    }
 
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-05-30T23:04:27+08:00">
-                2016-05-30
-              </time>
-            
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
 
-            
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
 
-            
-          </span>
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
 
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/Syntax/" itemprop="url" rel="index">
-                    <span itemprop="name">Syntax</span>
-                  </a>
-                </span>
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        height: calc(100vh - 250px);
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/iOS/">
+                                <span class="chip bg-color">iOS</span>
+                            </a>
+                        
+                            <a href="/tags/Objective-C/">
+                                <span class="chip bg-color">Objective-C</span>
+                            </a>
+                        
+                            <a href="/tags/Multithreading/">
+                                <span class="chip bg-color">Multithreading</span>
+                            </a>
+                        
+                            <a href="/tags/GCD/">
+                                <span class="chip bg-color">GCD</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/Syntax/" class="post-category">
+                                Syntax
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>Publish Date:&nbsp;&nbsp;
+                    2016-05-30
+                </div>
+                
 
                 
+
                 
-              
-            </span>
-          
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>Word Count:&nbsp;&nbsp;
+                    3,456
+                </div>
+                
 
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2016/05/30/[Objective-C]Multithreading-and-GCD/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count gitment-comments-count" data-xid="/2016/05/30/[Objective-C]Multithreading-and-GCD/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>Read Times:&nbsp;&nbsp;
+                    13 Min
+                </div>
+                
 
-          
-          
-	
-  		  <span class="post-letters-count">
-            &nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-                 <i class="fa fa-clock-o"></i>
-            </span>
-		        <span class="post-meta-item-text">总记</span>
-            <span class="post-count">3,512 字</span>
-		        <span class="post-meta-item-text">读完需要</span>
-    		    <span class="post-count">14 分</span>
-  		  </span>
-           
-         
-
-          
-
-          
-
-          
-              <div class="post-description">
-                  整理了一些GCD相关知识点
-              </div>
-          
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>Read Count:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
 
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        <h3 id="进程和线程"><a href="#进程和线程" class="headerlink" title="进程和线程"></a>进程和线程</h3><h4 id="进程"><a href="#进程" class="headerlink" title="进程"></a>进程</h4><p>是指在系统中正在运行的一个应用程序。<br>每个进程之间是独立的，每个进程均运行在其专用且受保护的内存空间内。<br>比如同时打开QQ、Xcode，系统就会分别启动两个进程。</p>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h3 id="进程和线程"><a href="#进程和线程" class="headerlink" title="进程和线程"></a>进程和线程</h3><h4 id="进程"><a href="#进程" class="headerlink" title="进程"></a>进程</h4><p>是指在系统中正在运行的一个应用程序。<br>每个进程之间是独立的，每个进程均运行在其专用且受保护的内存空间内。<br>比如同时打开QQ、Xcode，系统就会分别启动两个进程。</p>
 <h4 id="线程"><a href="#线程" class="headerlink" title="线程"></a>线程</h4><p>一个进程要想执行任务，必须得有线程（每一个进程至少要有一条线程）<br>线程是进程的基本执行单元，一个进程（程序）的所有任务都在线程中执行<br>比如使用酷狗播放音乐、使用迅雷下载电影，都需要在线程中执行</p>
 <h4 id="线程的串行"><a href="#线程的串行" class="headerlink" title="线程的串行"></a>线程的串行</h4><p>一个线程中任务的执行是串行的<br>如果要在一个线程中执行多个任务，那么只能一个一个地按顺序执行这些任务<br>也就是说，在同一时间内，一个线程只能执行一个任务<br>比如在一个线程中下载三个文件（分别是文件A、文件B、文件C），下载顺序就是ABC</p>
 <h3 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h3><p>一个进程中可以开启多条线程，每条线程可以并行（同时）执行不同的任务<br>如果把进程比作车间，那么线程就相当于车间工人<br>多线程技术可以提高程序的执行效率，比如同时开启3条线程分别下载3个文件（分别是文件A、文件B、文件C）</p>
@@ -458,20 +560,115 @@
 <p>  第一个参数是优先级，第二个暂用0即可</p>
 </li>
 </ul>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line"><span class="meta">#define DISPATCH_QUEUE_PRIORITY_HIGH 2</span></span><br><span class="line"><span class="meta">#define DISPATCH_QUEUE_PRIORITY_DEFAULT 0</span></span><br><span class="line"><span class="meta">#define DISPATCH_QUEUE_PRIORITY_LOW (-2)</span></span><br><span class="line"><span class="meta">#define DISPATCH_QUEUE_PRIORITY_BACKGROUND INT16_MIN</span></span><br></pre></td></tr></table></figure>
-<p>关于不同队列的执行任务的效果：<br><img src="http://images.cnitblog.com/i/450136/201406/242038164084931.png" alt=""></p>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">#define DISPATCH_QUEUE_PRIORITY_HIGH 2
+#define DISPATCH_QUEUE_PRIORITY_DEFAULT 0
+#define DISPATCH_QUEUE_PRIORITY_LOW (-2)
+#define DISPATCH_QUEUE_PRIORITY_BACKGROUND INT16_MIN
+</code></pre>
+<p>关于不同队列的执行任务的效果：<br><img src="http://images.cnitblog.com/i/450136/201406/242038164084931.png" alt></p>
 <p><strong>示例代码</strong></p>
 <p>一. 异步函数往并发队列添加任务</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">  <span class="comment">//获得全局并发队列  执行顺序每次都不一样</span></span><br><span class="line">  <span class="built_in">dispatch_queue_t</span> queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, <span class="number">0</span>);</span><br><span class="line">  <span class="comment">//添加任务到队列执行任务</span></span><br><span class="line">  <span class="comment">//异步函数 具备开启新线程能力</span></span><br><span class="line">  <span class="built_in">dispatch_async</span>(queue, ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"下载图片1---%@"</span>, [<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">  &#125;);</span><br><span class="line">  </span><br><span class="line">  <span class="built_in">dispatch_async</span>(queue, ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"下载图片2---%@"</span>, [<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">  &#125;);</span><br><span class="line">  </span><br><span class="line">  <span class="built_in">dispatch_async</span>(queue, ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"下载图片3---%@"</span>, [<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">  &#125;);</span><br><span class="line">  </span><br><span class="line">  <span class="built_in">NSLog</span>(<span class="string">@"Main Thread: %@"</span>, [<span class="built_in">NSThread</span> mainThread]);</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出</span></span><br><span class="line">Main Thread: &lt;<span class="built_in">NSThread</span>: <span class="number">0x12de0c090</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line">下载图片<span class="number">1</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x12ddc1140</span>&gt;&#123;number = <span class="number">6</span>, name = (null)&#125;</span><br><span class="line">下载图片<span class="number">2</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x12dd80ea0</span>&gt;&#123;number = <span class="number">7</span>, name = (null)&#125;</span><br><span class="line">下载图片<span class="number">3</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x12dee45f0</span>&gt;&#123;number = <span class="number">8</span>, name = (null)&#125;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">  //获得全局并发队列  执行顺序每次都不一样
+  dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+  //添加任务到队列执行任务
+  //异步函数 具备开启新线程能力
+  dispatch_async(queue, ^{
+    NSLog(@"下载图片1---%@", [NSThread currentThread]);
+  });
+
+  dispatch_async(queue, ^{
+    NSLog(@"下载图片2---%@", [NSThread currentThread]);
+  });
+
+  dispatch_async(queue, ^{
+    NSLog(@"下载图片3---%@", [NSThread currentThread]);
+  });
+
+  NSLog(@"Main Thread: %@", [NSThread mainThread]);
+
+//输出
+Main Thread: <NSThread: 0x12de0c090>{number = 1, name = main}
+下载图片1---<NSThread: 0x12ddc1140>{number = 6, name = (null)}
+下载图片2---<NSThread: 0x12dd80ea0>{number = 7, name = (null)}
+下载图片3---<NSThread: 0x12dee45f0>{number = 8, name = (null)}
+</code></pre>
 <p>看到开启了三个子线程执行任务</p>
 <p>二. 异步函数往串行队列中添加任务</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">  <span class="comment">//创建串行队列  按顺序执行  而且只开启一个线程</span></span><br><span class="line">  <span class="built_in">dispatch_queue_t</span> queue = dispatch_queue_create(<span class="string">"wossoneri"</span>, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">  <span class="comment">//添加任务到队列执行任务</span></span><br><span class="line">  <span class="comment">//异步函数 具备开启新线程能力</span></span><br><span class="line">  <span class="built_in">dispatch_async</span>(queue, ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"下载图片1---%@"</span>, [<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">  &#125;);</span><br><span class="line">  </span><br><span class="line">  <span class="built_in">dispatch_async</span>(queue, ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"下载图片2---%@"</span>, [<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">  &#125;);</span><br><span class="line">  </span><br><span class="line">  <span class="built_in">dispatch_async</span>(queue, ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"下载图片3---%@"</span>, [<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">  &#125;);</span><br><span class="line">  </span><br><span class="line">  <span class="built_in">NSLog</span>(<span class="string">@"Main Thread: %@"</span>, [<span class="built_in">NSThread</span> mainThread]);</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出</span></span><br><span class="line">Main Thread: &lt;<span class="built_in">NSThread</span>: <span class="number">0x12c60c0d0</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line">下载图片<span class="number">1</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x12c6574f0</span>&gt;&#123;number = <span class="number">6</span>, name = (null)&#125;</span><br><span class="line">下载图片<span class="number">2</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x12c6574f0</span>&gt;&#123;number = <span class="number">6</span>, name = (null)&#125;</span><br><span class="line">下载图片<span class="number">3</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x12c6574f0</span>&gt;&#123;number = <span class="number">6</span>, name = (null)&#125;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">  //创建串行队列  按顺序执行  而且只开启一个线程
+  dispatch_queue_t queue = dispatch_queue_create("wossoneri", NULL);
+
+  //添加任务到队列执行任务
+  //异步函数 具备开启新线程能力
+  dispatch_async(queue, ^{
+    NSLog(@"下载图片1---%@", [NSThread currentThread]);
+  });
+
+  dispatch_async(queue, ^{
+    NSLog(@"下载图片2---%@", [NSThread currentThread]);
+  });
+
+  dispatch_async(queue, ^{
+    NSLog(@"下载图片3---%@", [NSThread currentThread]);
+  });
+
+  NSLog(@"Main Thread: %@", [NSThread mainThread]);
+
+//输出
+Main Thread: <NSThread: 0x12c60c0d0>{number = 1, name = main}
+下载图片1---<NSThread: 0x12c6574f0>{number = 6, name = (null)}
+下载图片2---<NSThread: 0x12c6574f0>{number = 6, name = (null)}
+下载图片3---<NSThread: 0x12c6574f0>{number = 6, name = (null)}
+</code></pre>
 <p>看到只开启了一条线程，串行执行任务</p>
 <p>三. 用同步函数往并发队列中添加任务</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">  <span class="comment">//获得全局并发队列  执行顺序每次都不一样</span></span><br><span class="line">  <span class="built_in">dispatch_queue_t</span> queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, <span class="number">0</span>);</span><br><span class="line">  <span class="built_in">NSLog</span>(<span class="string">@"Main Thread: %@"</span>, [<span class="built_in">NSThread</span> mainThread]);</span><br><span class="line">  </span><br><span class="line">  <span class="comment">//同步</span></span><br><span class="line">  <span class="built_in">dispatch_sync</span>(queue, ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"下载图片1---%@"</span>, [<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">  &#125;);</span><br><span class="line">  </span><br><span class="line">  <span class="built_in">dispatch_sync</span>(queue, ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"下载图片2---%@"</span>, [<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">  &#125;);</span><br><span class="line">  </span><br><span class="line">  <span class="built_in">dispatch_sync</span>(queue, ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"下载图片3---%@"</span>, [<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出</span></span><br><span class="line">Main Thread: &lt;<span class="built_in">NSThread</span>: <span class="number">0x136d04ae0</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line">下载图片<span class="number">1</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x136d04ae0</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line">下载图片<span class="number">2</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x136d04ae0</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line">下载图片<span class="number">3</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x136d04ae0</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">  //获得全局并发队列  执行顺序每次都不一样
+  dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+  NSLog(@"Main Thread: %@", [NSThread mainThread]);
+
+  //同步
+  dispatch_sync(queue, ^{
+    NSLog(@"下载图片1---%@", [NSThread currentThread]);
+  });
+
+  dispatch_sync(queue, ^{
+    NSLog(@"下载图片2---%@", [NSThread currentThread]);
+  });
+
+  dispatch_sync(queue, ^{
+    NSLog(@"下载图片3---%@", [NSThread currentThread]);
+  });
+
+//输出
+Main Thread: <NSThread: 0x136d04ae0>{number = 1, name = main}
+下载图片1---<NSThread: 0x136d04ae0>{number = 1, name = main}
+下载图片2---<NSThread: 0x136d04ae0>{number = 1, name = main}
+下载图片3---<NSThread: 0x136d04ae0>{number = 1, name = main}
+</code></pre>
 <p>发现根本没有开启新线程，直接在主线程顺序执行，并发队列失去了并发功能。</p>
 <p>四. 用同步函数往串行队列中添加任务</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">  <span class="comment">//创建串行队列  按顺序执行  而且只开启一个线程</span></span><br><span class="line">  <span class="built_in">dispatch_queue_t</span> queue = dispatch_queue_create(<span class="string">"wossoneri"</span>, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"Main Thread: %@"</span>, [<span class="built_in">NSThread</span> mainThread]);</span><br><span class="line">  </span><br><span class="line">  <span class="comment">//同步</span></span><br><span class="line">  <span class="built_in">dispatch_sync</span>(queue, ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"下载图片1---%@"</span>, [<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">  &#125;);</span><br><span class="line">  </span><br><span class="line">  <span class="built_in">dispatch_sync</span>(queue, ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"下载图片2---%@"</span>, [<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">  &#125;);</span><br><span class="line">  </span><br><span class="line">  <span class="built_in">dispatch_sync</span>(queue, ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"下载图片3---%@"</span>, [<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出</span></span><br><span class="line">Main Thread: &lt;<span class="built_in">NSThread</span>: <span class="number">0x135e0c0b0</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line">下载图片<span class="number">1</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x135e0c0b0</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line">下载图片<span class="number">2</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x135e0c0b0</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line">下载图片<span class="number">3</span>---&lt;<span class="built_in">NSThread</span>: <span class="number">0x135e0c0b0</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">  //创建串行队列  按顺序执行  而且只开启一个线程
+  dispatch_queue_t queue = dispatch_queue_create("wossoneri", NULL);
+    NSLog(@"Main Thread: %@", [NSThread mainThread]);
+
+  //同步
+  dispatch_sync(queue, ^{
+    NSLog(@"下载图片1---%@", [NSThread currentThread]);
+  });
+
+  dispatch_sync(queue, ^{
+    NSLog(@"下载图片2---%@", [NSThread currentThread]);
+  });
+
+  dispatch_sync(queue, ^{
+    NSLog(@"下载图片3---%@", [NSThread currentThread]);
+  });
+
+//输出
+Main Thread: <NSThread: 0x135e0c0b0>{number = 1, name = main}
+下载图片1---<NSThread: 0x135e0c0b0>{number = 1, name = main}
+下载图片2---<NSThread: 0x135e0c0b0>{number = 1, name = main}
+下载图片3---<NSThread: 0x135e0c0b0>{number = 1, name = main}
+</code></pre>
 <p>没有开启新线程，依旧在主线程顺序执行任务。</p>
 <p>小结：</p>
 <ul>
@@ -483,17 +680,47 @@
 </li>
 </ul>
 <h4 id="主队列"><a href="#主队列" class="headerlink" title="主队列"></a>主队列</h4><p>主队列是和主线程相关联的队列，主队列是<code>GCD</code>自带的一种特殊的<strong>串行</strong>队列，放在主队列中的任务，都会放到主线程中执行。</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line"><span class="built_in">dispatch_queue_t</span> queue = dispatch_get_main_queue();</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">dispatch_queue_t queue = dispatch_get_main_queue();
+</code></pre>
 <p><strong>使用异步函数执行主队列任务：</strong></p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">  <span class="comment">//获取主队列</span></span><br><span class="line">  <span class="built_in">dispatch_queue_t</span> queue = dispatch_get_main_queue();</span><br><span class="line">  </span><br><span class="line">  <span class="comment">//把任务添加到主队列中执行</span></span><br><span class="line">  <span class="built_in">dispatch_async</span>(queue, ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"使用异步函数执行主队列中的任务1--%@"</span>,[<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">  &#125;);</span><br><span class="line">  <span class="built_in">dispatch_async</span>(queue, ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"使用异步函数执行主队列中的任务2--%@"</span>,[<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">  &#125;);</span><br><span class="line">  <span class="built_in">dispatch_async</span>(queue, ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"使用异步函数执行主队列中的任务3--%@"</span>,[<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出</span></span><br><span class="line">Main Thread: &lt;<span class="built_in">NSThread</span>: <span class="number">0x13de0c030</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line">使用异步函数执行主队列中的任务<span class="number">1</span>--&lt;<span class="built_in">NSThread</span>: <span class="number">0x13de0c030</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line">使用异步函数执行主队列中的任务<span class="number">2</span>--&lt;<span class="built_in">NSThread</span>: <span class="number">0x13de0c030</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line">使用异步函数执行主队列中的任务<span class="number">3</span>--&lt;<span class="built_in">NSThread</span>: <span class="number">0x13de0c030</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">  //获取主队列
+  dispatch_queue_t queue = dispatch_get_main_queue();
+
+  //把任务添加到主队列中执行
+  dispatch_async(queue, ^{
+    NSLog(@"使用异步函数执行主队列中的任务1--%@",[NSThread currentThread]);
+  });
+  dispatch_async(queue, ^{
+    NSLog(@"使用异步函数执行主队列中的任务2--%@",[NSThread currentThread]);
+  });
+  dispatch_async(queue, ^{
+    NSLog(@"使用异步函数执行主队列中的任务3--%@",[NSThread currentThread]);
+  });
+
+//输出
+Main Thread: <NSThread: 0x13de0c030>{number = 1, name = main}
+使用异步函数执行主队列中的任务1--<NSThread: 0x13de0c030>{number = 1, name = main}
+使用异步函数执行主队列中的任务2--<NSThread: 0x13de0c030>{number = 1, name = main}
+使用异步函数执行主队列中的任务3--<NSThread: 0x13de0c030>{number = 1, name = main}
+</code></pre>
 <p>看到任务都在主线程中执行。</p>
 <p><strong>使用同步函数执行主队列任务：</strong></p>
 <p>此时会发生死锁。<br>死锁的原因是：主线程本身是串行队列，串行队列的任务是顺序执行的。<br>比如下面代码段</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"1"</span>);</span><br><span class="line"><span class="built_in">dispatch_sync</span>(dispatch_get_main_queue(), ^&#123;</span><br><span class="line">  <span class="built_in">NSLog</span>(<span class="string">@"2"</span>);</span><br><span class="line">&#125;);</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"3"</span>);</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">NSLog(@"1");
+dispatch_sync(dispatch_get_main_queue(), ^{
+  NSLog(@"2");
+});
+NSLog(@"3");
+</code></pre>
 <p>在主线程中，任务执行的顺序是：</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"1"</span>);</span><br><span class="line"><span class="built_in">dispatch_sync</span>()</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"3"</span>);</span><br><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"2"</span>);</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">NSLog(@"1");
+dispatch_sync()
+NSLog(@"3");
+NSLog(@"2");
+</code></pre>
 <p>其中</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line"><span class="built_in">NSLog</span>(<span class="string">@"2"</span>);</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">NSLog(@"2");
+</code></pre>
 <p>是作为<code>Block</code>的内容放在队列最后执行。</p>
 <p>但<code>dispatch_sync()</code>方法必须返回才能往下执行，其返回的条件是<code>Block</code>的内容执行完毕才行。</p>
 <p>也就是说死锁的条件是因为<code>dispatch_sync()</code>方法在等待<code>Block</code>执行完毕，而<code>Block</code>在等待<code>dispatch_sync()</code>方法往下执行才能轮到它。</p>
@@ -501,23 +728,97 @@
 <p>所以，如果把任务放到主队列中进行处理，那么不论处理函数是异步的还是同步的都不会开启新的线程。</p>
 </blockquote>
 <h4 id="延时执行"><a href="#延时执行" class="headerlink" title="延时执行"></a>延时执行</h4><p>可以使用<code>NSObject</code>方法，该方法通常在哪个线程调用，就在哪个线程执行，一般是主线程</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">[<span class="keyword">self</span> performSelector:<span class="keyword">@selector</span>(run) withObject:<span class="literal">nil</span> afterDelay:<span class="number">2.0</span>];</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">[self performSelector:@selector(run) withObject:nil afterDelay:2.0];
+</code></pre>
 <p>示例</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)viewDidLoad &#123;</span><br><span class="line">  <span class="built_in">NSLog</span>(<span class="string">@"打印线程----%@"</span>,[<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">  <span class="comment">//延迟执行</span></span><br><span class="line">  [<span class="keyword">self</span> performSelector:<span class="keyword">@selector</span>(runA) withObject:<span class="literal">nil</span> afterDelay:<span class="number">2.0</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)onBtnClicked &#123;</span><br><span class="line">  <span class="comment">//在异步函数中执行</span></span><br><span class="line">  <span class="built_in">dispatch_queue_t</span> queue = dispatch_queue_create(<span class="string">"wOw"</span>, <span class="number">0</span>);</span><br><span class="line">  </span><br><span class="line">  <span class="built_in">dispatch_async</span>(queue, ^&#123;</span><br><span class="line">    [<span class="keyword">self</span> performSelector:<span class="keyword">@selector</span>(runB) withObject:<span class="literal">nil</span> afterDelay:<span class="number">1.0</span>];</span><br><span class="line">  &#125;);</span><br><span class="line">  <span class="built_in">NSLog</span>(<span class="string">@"异步函数"</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)runA &#123;</span><br><span class="line">  <span class="built_in">NSLog</span>(<span class="string">@"延迟执行----%@"</span>, [<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)runB &#123;</span><br><span class="line">  <span class="built_in">NSLog</span>(<span class="string">@"异步函数中延迟执行----%@"</span>, [<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//输出</span></span><br><span class="line"><span class="number">2016</span><span class="number">-05</span><span class="number">-29</span> <span class="number">23</span>:<span class="number">31</span>:<span class="number">49.194</span> FunctionTest[<span class="number">4199</span>:<span class="number">1337673</span>] 打印线程----&lt;<span class="built_in">NSThread</span>: <span class="number">0x154e04b60</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-05</span><span class="number">-29</span> <span class="number">23</span>:<span class="number">31</span>:<span class="number">51.197</span> FunctionTest[<span class="number">4199</span>:<span class="number">1337673</span>] 延迟执行----&lt;<span class="built_in">NSThread</span>: <span class="number">0x154e04b60</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-05</span><span class="number">-29</span> <span class="number">23</span>:<span class="number">31</span>:<span class="number">58.198</span> FunctionTest[<span class="number">4199</span>:<span class="number">1337673</span>] 异步函数</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">- (void)viewDidLoad {
+  NSLog(@"打印线程----%@",[NSThread currentThread]);
+  //延迟执行
+  [self performSelector:@selector(runA) withObject:nil afterDelay:2.0];
+}
+
+- (void)onBtnClicked {
+  //在异步函数中执行
+  dispatch_queue_t queue = dispatch_queue_create("wOw", 0);
+
+  dispatch_async(queue, ^{
+    [self performSelector:@selector(runB) withObject:nil afterDelay:1.0];
+  });
+  NSLog(@"异步函数");
+}
+
+- (void)runA {
+  NSLog(@"延迟执行----%@", [NSThread currentThread]);
+}
+
+- (void)runB {
+  NSLog(@"异步函数中延迟执行----%@", [NSThread currentThread]);
+}
+//输出
+2016-05-29 23:31:49.194 FunctionTest[4199:1337673] 打印线程----<NSThread: 0x154e04b60>{number = 1, name = main}
+2016-05-29 23:31:51.197 FunctionTest[4199:1337673] 延迟执行----<NSThread: 0x154e04b60>{number = 1, name = main}
+2016-05-29 23:31:58.198 FunctionTest[4199:1337673] 异步函数
+</code></pre>
 <p>这里发现，异步下的runB方法似乎并没有执行。换成同步则会执行。<br>出现这个问题的原因是async开的新线程中的<code>runLoop</code>没有启动，在后面加上</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">[[<span class="built_in">NSRunLoop</span> currentRunLoop] run];</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">[[NSRunLoop currentRunLoop] run];
+</code></pre>
 <p>即可。好吧..后面再研究一下<code>RunLoop</code>原理…</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">  <span class="built_in">dispatch_async</span>(queue, ^&#123;    </span><br><span class="line">    [<span class="keyword">self</span> performSelector:<span class="keyword">@selector</span>(runB) withObject:<span class="literal">nil</span> afterDelay:<span class="number">1.0</span>];</span><br><span class="line">    [[<span class="built_in">NSRunLoop</span> currentRunLoop] run];</span><br><span class="line">  &#125;);</span><br><span class="line">  </span><br><span class="line">  <span class="comment">//再看输出</span></span><br><span class="line"><span class="number">2016</span><span class="number">-05</span><span class="number">-29</span> <span class="number">23</span>:<span class="number">37</span>:<span class="number">10.877</span> FunctionTest[<span class="number">4214</span>:<span class="number">1339152</span>] 打印线程----&lt;<span class="built_in">NSThread</span>: <span class="number">0x12660a2a0</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-05</span><span class="number">-29</span> <span class="number">23</span>:<span class="number">37</span>:<span class="number">12.879</span> FunctionTest[<span class="number">4214</span>:<span class="number">1339152</span>] 延迟执行----&lt;<span class="built_in">NSThread</span>: <span class="number">0x12660a2a0</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-05</span><span class="number">-29</span> <span class="number">23</span>:<span class="number">37</span>:<span class="number">15.150</span> FunctionTest[<span class="number">4214</span>:<span class="number">1339152</span>] 异步函数</span><br><span class="line"><span class="number">2016</span><span class="number">-05</span><span class="number">-29</span> <span class="number">23</span>:<span class="number">37</span>:<span class="number">16.157</span> FunctionTest[<span class="number">4214</span>:<span class="number">1339199</span>] 异步函数中延迟执行----&lt;<span class="built_in">NSThread</span>: <span class="number">0x1266b3f40</span>&gt;&#123;number = <span class="number">6</span>, name = (null)&#125;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">  dispatch_async(queue, ^{    
+    [self performSelector:@selector(runB) withObject:nil afterDelay:1.0];
+    [[NSRunLoop currentRunLoop] run];
+  });
+
+  //再看输出
+2016-05-29 23:37:10.877 FunctionTest[4214:1339152] 打印线程----<NSThread: 0x12660a2a0>{number = 1, name = main}
+2016-05-29 23:37:12.879 FunctionTest[4214:1339152] 延迟执行----<NSThread: 0x12660a2a0>{number = 1, name = main}
+2016-05-29 23:37:15.150 FunctionTest[4214:1339152] 异步函数
+2016-05-29 23:37:16.157 FunctionTest[4214:1339199] 异步函数中延迟执行----<NSThread: 0x1266b3f40>{number = 6, name = (null)}
+</code></pre>
 <p>延时都是正确的。使用异步函数后执行的线程也变为的新线程。</p>
 <p>使用<code>GCD</code>方法</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(<span class="number">2.0</span> * <span class="built_in">NSEC_PER_SEC</span>)), dispatch_get_main_queue(), ^&#123;</span><br><span class="line"></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+
+});
+</code></pre>
 <p>示例：</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line">  <span class="built_in">NSLog</span>(<span class="string">@"打印线程----%@"</span>,[<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">  <span class="comment">//GCD delay</span></span><br><span class="line">  <span class="comment">//1 主队列</span></span><br><span class="line">  <span class="built_in">dispatch_queue_t</span> queue = dispatch_get_main_queue();</span><br><span class="line">  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(<span class="number">5.0</span> * <span class="built_in">NSEC_PER_SEC</span>)), queue, ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"主队列--延迟执行------%@"</span>,[<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">  &#125;);</span><br><span class="line">  </span><br><span class="line">  <span class="comment">//2 并发队列</span></span><br><span class="line">  <span class="built_in">dispatch_queue_t</span> queue1 = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, <span class="number">0</span>);</span><br><span class="line">  dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(<span class="number">5.0</span> * <span class="built_in">NSEC_PER_SEC</span>));</span><br><span class="line">  dispatch_after(when, queue1, ^&#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@"并发队列-延迟执行------%@"</span>,[<span class="built_in">NSThread</span> currentThread]);</span><br><span class="line">  &#125;);</span><br><span class="line">  </span><br><span class="line">  <span class="comment">//输出</span></span><br><span class="line">  <span class="number">2016</span><span class="number">-05</span><span class="number">-30</span> <span class="number">22</span>:<span class="number">14</span>:<span class="number">43.734</span> FunctionTest[<span class="number">4507</span>:<span class="number">1470176</span>] 打印线程----&lt;<span class="built_in">NSThread</span>: <span class="number">0x15ee0bd40</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-05</span><span class="number">-30</span> <span class="number">22</span>:<span class="number">14</span>:<span class="number">49.234</span> FunctionTest[<span class="number">4507</span>:<span class="number">1470176</span>] 主队列--延迟执行------&lt;<span class="built_in">NSThread</span>: <span class="number">0x15ee0bd40</span>&gt;&#123;number = <span class="number">1</span>, name = main&#125;</span><br><span class="line"><span class="number">2016</span><span class="number">-05</span><span class="number">-30</span> <span class="number">22</span>:<span class="number">14</span>:<span class="number">49.235</span> FunctionTest[<span class="number">4507</span>:<span class="number">1470304</span>] 并发队列-延迟执行------&lt;<span class="built_in">NSThread</span>: <span class="number">0x15ed90390</span>&gt;&#123;number = <span class="number">6</span>, name = (null)&#125;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">  NSLog(@"打印线程----%@",[NSThread currentThread]);
+  //GCD delay
+  //1 主队列
+  dispatch_queue_t queue = dispatch_get_main_queue();
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), queue, ^{
+    NSLog(@"主队列--延迟执行------%@",[NSThread currentThread]);
+  });
+
+  //2 并发队列
+  dispatch_queue_t queue1 = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+  dispatch_time_t when = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC));
+  dispatch_after(when, queue1, ^{
+    NSLog(@"并发队列-延迟执行------%@",[NSThread currentThread]);
+  });
+
+  //输出
+  2016-05-30 22:14:43.734 FunctionTest[4507:1470176] 打印线程----<NSThread: 0x15ee0bd40>{number = 1, name = main}
+2016-05-30 22:14:49.234 FunctionTest[4507:1470176] 主队列--延迟执行------<NSThread: 0x15ee0bd40>{number = 1, name = main}
+2016-05-30 22:14:49.235 FunctionTest[4507:1470304] 并发队列-延迟执行------<NSThread: 0x15ed90390>{number = 6, name = (null)}
+</code></pre>
 <p>看到并发队列开启一个新线程，在新线程执行。主队列直接在主线程执行。</p>
 <h4 id="线程切换"><a href="#线程切换" class="headerlink" title="线程切换"></a>线程切换</h4><p>之前说过，程序中遇到耗时操作就要把操作放在另外一个线程中执行。当执行过之后，就需要把耗时操作得到的数据带回到主线程对UI进行刷新操作，这时就可以用如下代码。</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line"><span class="built_in">dispatch_async</span>( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, <span class="number">0</span>), ^&#123;</span><br><span class="line">  <span class="comment">// 执⾏耗时的异步操作</span></span><br><span class="line">  </span><br><span class="line">  <span class="built_in">dispatch_async</span>(dispatch_get_main_queue(), ^&#123;      </span><br><span class="line">    <span class="comment">// 回到主线程,执⾏UI刷新操作</span></span><br><span class="line">  &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">  dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    // 执⾏耗时的异步操作
+
+    dispatch_async(dispatch_get_main_queue(), ^{      
+      // 回到主线程,执⾏UI刷新操作
+    });
+  });
+</code></pre>
 <h4 id="一次性代码"><a href="#一次性代码" class="headerlink" title="一次性代码"></a>一次性代码</h4><p>这个概念在之前的<a href="http://www.wossoneri.com/2016/05/23/[Design-Pattern]Singleton/" target="_blank" rel="noopener">单例模式</a>中提到过，就是保证一段代码段在程序执行过程中只执行一次。使用的方法就是<code>dispatch_once</code>。</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="built_in">dispatch_once_t</span> onceToken;</span><br><span class="line"><span class="built_in">dispatch_once</span>(&amp;onceToken, ^&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 只执行1次的代码(这里面默认是线程安全的)</span></span><br><span class="line"></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">static dispatch_once_t onceToken;
+dispatch_once(&onceToken, ^{
+
+    // 只执行1次的代码(这里面默认是线程安全的)
+
+});
+</code></pre>
 <p><code>Block</code>中的代码在整个程序运行期间只执行一次！</p>
 <h4 id="队列组"><a href="#队列组" class="headerlink" title="队列组"></a>队列组</h4><p>队列组的使用情形是这样：</p>
 <p>现在有多个耗时的操作要做，我当然要考虑开启异步的线程去，把任务放到并发队列去做。但此时我需要这几个操作都完成的时候回到主线程来。</p>
@@ -525,557 +826,740 @@
 <p>如果让这些操作并行执行，那效率就更高了，但我该怎么知道全部操作都执行完的时间呢？</p>
 <p>这时就用上队列组了。</p>
 <p>创建一个队列组，把所有异步操作都放在队列组中，这样队列组执行完会发出一个通知回来。</p>
-<figure class="highlight objectivec"><table><tr><td class="code"><pre><span class="line"><span class="comment">//创建队列组</span></span><br><span class="line">dispatch_group_t group =  dispatch_group_create();</span><br><span class="line"><span class="comment">//异步方法</span></span><br><span class="line">dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, <span class="number">0</span>), ^&#123;</span><br><span class="line">    <span class="comment">// 执行一个耗时的异步操作</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, <span class="number">0</span>), ^&#123;</span><br><span class="line">    <span class="comment">// 执行另一个耗时的异步操作</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">dispatch_group_notify(group, dispatch_get_main_queue(), ^&#123;</span><br><span class="line">    <span class="comment">// 等前面的异步操作都执行完毕后，回到主线程</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">//创建队列组
+dispatch_group_t group =  dispatch_group_create();
+//异步方法
+dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    // 执行一个耗时的异步操作
+});
+
+dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    // 执行另一个耗时的异步操作
+});
+
+dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+    // 等前面的异步操作都执行完毕后，回到主线程
+});
+</code></pre>
 <p>暂时整理这么多，掌握这些可以应对大多数使用到<code>GCD</code>的相关问题了。</p>
 <blockquote>
 <p>Reference<br><a href="http://www.cnblogs.com/wendingding/tag/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%AF%87/" target="_blank" rel="noopener">整理多线程篇</a><br><a href="http://www.cocoachina.com/bbs/read.php?tid=1482884" target="_blank" rel="noopener">GCD中在主线程中用同步函数分派任务到串行队列中会产生死锁是什么原因？</a></p>
 </blockquote>
 
-      
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        Author:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://wossoneri.github.io" rel="external nofollow noreferrer">Wossoneri</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        Link:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://wossoneri.github.io/2016/05/30/[Objective-C]Multithreading-and-GCD/">http://wossoneri.github.io/2016/05/30/[Objective-C]Multithreading-and-GCD/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        Reprint policy:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    All articles in this blog are used except for special statements
+                    <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY-NC 4.0</a>
+                    reprint polocy. If reproduced, please indicate source
+                    <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
+                    !
+                </span>
+            </div>
+        
     </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>Copied successfully, please follow the reprint policy of this article</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">more</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/iOS/">
+                                    <span class="chip bg-color">iOS</span>
+                                </a>
+                            
+                                <a href="/tags/Objective-C/">
+                                    <span class="chip bg-color">Objective-C</span>
+                                </a>
+                            
+                                <a href="/tags/Multithreading/">
+                                    <span class="chip bg-color">Multithreading</span>
+                                </a>
+                            
+                                <a href="/tags/GCD/">
+                                    <span class="chip bg-color">GCD</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
     
     
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
     
 
     
 
-    
-      <div>
-        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
-  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
-  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
-    <span>打赏</span>
-  </button>
-  <div id="QR" style="display: none;">
-
-    
-      <div id="wechat" style="display: inline-block">
-        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付">
-        <p>微信支付</p>
-      </div>
-    
-
-    
-      <div id="alipay" style="display: inline-block">
-        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝">
-        <p>支付宝</p>
-      </div>
-    
-
-    
-
-  </div>
 </div>
 
-      </div>
-    
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
 
-    
-      <div>
-        <ul class="post-copyright">
-  <li class="post-copyright-author">
-    <strong>本文作者：</strong>
-    Wossoneri
-  </li>
-  <li class="post-copyright-link">
-    <strong>本文链接：</strong>
-    <a href="http://wossoneri.github.io/2016/05/30/[Objective-C]Multithreading-and-GCD/" title="[Objective-C]多线程和GCD">http://wossoneri.github.io/2016/05/30/[Objective-C]Multithreading-and-GCD/</a>
-  </li>
-  <li class="post-copyright-license">
-    <strong>版权声明： </strong>
-    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
-  </li>
-</ul>
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
 
-      </div>
-    
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
 
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/iOS/" rel="tag"><i class="fa fa-tag"></i> iOS</a>
-          
-            <a href="/tags/Objective-C/" rel="tag"><i class="fa fa-tag"></i> Objective-C</a>
-          
-            <a href="/tags/Multithreading/" rel="tag"><i class="fa fa-tag"></i> Multithreading</a>
-          
-            <a href="/tags/GCD/" rel="tag"><i class="fa fa-tag"></i> GCD</a>
-          
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.png" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
         </div>
-      
+    </div>
+</div>
 
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
             
-              <a href="/2016/05/23/[Design-Pattern]Singleton/" rel="next" title="[设计模式]之三:单例模式">
-                <i class="fa fa-chevron-left"></i> [设计模式]之三:单例模式
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/05/30/[Objective-C]GCD-in-depth/" rel="prev" title="[Objective-C]深入理解GCD">
-                [Objective-C]深入理解GCD <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
         </div>
-      
-
-      
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-
-    <div class="post-spread">
-      
-    </div>
-  </div>
-
-
-          </div>
-          
-
-
-          
-
-  
-    <div class="comments" id="comments">
-      
-        <div id="gitment-container"></div>
-      
     </div>
 
-  
+    
+
+    
+        <link rel="stylesheet" href="/libs/gitment/gitment-default.css">
+<link rel="stylesheet" href="/css/gitment.css">
+
+<div class="gitment-card card" data-aos="fade-up">
+    <div class="comment_headling" style="font-size: 20px; font-weight: 700; position: relative; left: 20px; top: 15px; padding-bottom: 5px;">
+        <i class="fas fa-comments fa-fw" aria-hidden="true"></i>
+        <span>评论</span>
+    </div>
+    <div id="gitment-content" class="card-content"></div>
+</div>
+
+<script src="/libs/gitment/gitment.js"></script>
+<script>
+var gitment = new Gitment({
+    id: 'Mon May 30 2016 23:04:27 GMT+0800',
+    owner: 'wossoneri',
+    repo: 'wossoneri.github.io',
+    oauth: {
+        client_id: '40b6c719a11e3fca29e8',
+        client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77'
+    }
+});
+
+gitment.render('gitment-content');
+</script>
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;Previous</div>
+            <div class="card">
+                <a href="/2016/05/30/[Objective-C]GCD-in-depth/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/22.jpg" class="responsive-img" alt="[Objective-C]深入理解GCD">
+                        
+                        <span class="card-title">[Objective-C]深入理解GCD</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            什么是GCDGCD(Grand Central Dispatch)是libdispatch的市场名称，而libdispatch作为Apple的一个库，为并发代码在多核硬件（跑 iOS 或 OS X ）上执行提供有力支持。它具有以下优点：
 
 
-
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2016-05-30
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Syntax/" class="post-category">
+                                    Syntax
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/iOS/">
+                        <span class="chip bg-color">iOS</span>
+                    </a>
+                    
+                    <a href="/tags/Objective-C/">
+                        <span class="chip bg-color">Objective-C</span>
+                    </a>
+                    
+                    <a href="/tags/GCD/">
+                        <span class="chip bg-color">GCD</span>
+                    </a>
+                    
+                    <a href="/tags/多线程/">
+                        <span class="chip bg-color">多线程</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
         </div>
         
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <section class="site-overview-wrap sidebar-panel">
-        <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-            
-              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460" alt="Wossoneri">
-            
-              <p class="site-author-name" itemprop="name">Wossoneri</p>
-              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
-          </div>
-
-          <nav class="site-state motion-element">
-
-            
-              <div class="site-state-item site-state-posts">
-              
-                <a href="/archives/">
-              
-                  <span class="site-state-item-count">117</span>
-                  <span class="site-state-item-name">日志</span>
-                </a>
-              </div>
-            
-
-            
-              
-              
-              <div class="site-state-item site-state-categories">
-                <a href="/categories/index.html">
-                  <span class="site-state-item-count">17</span>
-                  <span class="site-state-item-name">分类</span>
-                </a>
-              </div>
-            
-
-            
-              
-              
-              <div class="site-state-item site-state-tags">
-                <a href="/tags/index.html">
-                  <span class="site-state-item-count">121</span>
-                  <span class="site-state-item-name">标签</span>
-                </a>
-              </div>
-            
-
-          </nav>
-
-          
-            <div class="feed-link motion-element">
-              <a href="/atom.xml" rel="alternate">
-                <i class="fa fa-rss"></i>
-                RSS
-              </a>
-            </div>
-          
-
-          <div class="links-of-author motion-element">
-            
-              
-                <span class="links-of-author-item">
-                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
-                    
-                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
-                </span>
-              
-                <span class="links-of-author-item">
-                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
-                    
-                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
-                </span>
-              
-            
-          </div>
-
-          
-          
-            <div class="cc-license motion-element" itemprop="license">
-              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
-                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
-              </a>
-            </div>
-          
-
-          
-          
-            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
-              <div class="links-of-blogroll-title">
-                <i class="fa  fa-fw fa-globe"></i>
-                友情链接
-              </div>
-              <ul class="links-of-blogroll-list">
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
-                  </li>
-                
-              </ul>
-            </div>
-          
-
-          
-
-        </div>
-      </section>
-
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#进程和线程"><span class="nav-number">1.</span> <span class="nav-text">进程和线程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#进程"><span class="nav-number">1.1.</span> <span class="nav-text">进程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#线程"><span class="nav-number">1.2.</span> <span class="nav-text">线程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#线程的串行"><span class="nav-number">1.3.</span> <span class="nav-text">线程的串行</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多线程"><span class="nav-number">2.</span> <span class="nav-text">多线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GCD"><span class="nav-number">3.</span> <span class="nav-text">GCD</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GCD常用方法"><span class="nav-number">4.</span> <span class="nav-text">GCD常用方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#执行任务"><span class="nav-number">4.1.</span> <span class="nav-text">执行任务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#队列"><span class="nav-number">4.2.</span> <span class="nav-text">队列</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#主队列"><span class="nav-number">4.3.</span> <span class="nav-text">主队列</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#延时执行"><span class="nav-number">4.4.</span> <span class="nav-text">延时执行</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#线程切换"><span class="nav-number">4.5.</span> <span class="nav-text">线程切换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#一次性代码"><span class="nav-number">4.6.</span> <span class="nav-text">一次性代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#队列组"><span class="nav-number">4.7.</span> <span class="nav-text">队列组</span></a></li></ol></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
-      
-
-      
-
-    </div>
-  </aside>
-
-
         
-      </div>
-    </main>
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                Next&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2016/05/23/[Design-Pattern]Singleton/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/7.jpg" class="responsive-img" alt="[设计模式]之三:单例模式">
+                        
+                        <span class="card-title">[设计模式]之三:单例模式</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            设计模式系列目录
+单例进阶：[设计模式]之四:再谈单例模式
+吐槽一下，这两天练车又热又累…
+需求情景还是试想一个情景：现在有一个自定义对话框。当主界面上的按钮被点击后，弹出对话框。一般的设计思路是这样的：
+- (void)onBtnClic
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2016-05-23
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Design-pattern/" class="post-category">
+                                    Design pattern
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Design-pattern/">
+                        <span class="chip bg-color">Design pattern</span>
+                    </a>
+                    
+                    <a href="/tags/iOS/">
+                        <span class="chip bg-color">iOS</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
 
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
-  <span class="with-love">
-    <i class="fa fa-user"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
-
-  
 </div>
 
 
-  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
 
 
+<!-- 代码块复制 -->
 
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
 
 
+<!-- 代码块收缩 -->
 
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;TOC</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
 
         
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
 
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
 
-
-
-
-
-
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
         
-      </div>
-    </footer>
-
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
-      </div>
-    
+    });
+</script>
 
     
 
-  </div>
+</main>
 
-  
 
+
+    <footer class="page-footer bg-color">
+    <div class="container row center-align" style="margin-bottom: 15px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            <span id="year">2016</span>
+            <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+            
+            <span id="sitetime">载入运行时间...</span>
+            <script>
+                function siteTime() {
+                    var seconds = 1000;
+                    var minutes = seconds * 60;
+                    var hours = minutes * 60;
+                    var days = hours * 24;
+                    var years = days * 365;
+                    var today = new Date();
+                    var startYear = "2016";
+                    var startMonth = "1";
+                    var startDate = "1";
+                    var startHour = "0";
+                    var startMinute = "0";
+                    var startSecond = "0";
+                    var todayYear = today.getFullYear();
+                    var todayMonth = today.getMonth() + 1;
+                    var todayDate = today.getDate();
+                    var todayHour = today.getHours();
+                    var todayMinute = today.getMinutes();
+                    var todaySecond = today.getSeconds();
+                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
+                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
+                    var diff = t2 - t1;
+                    var diffYears = Math.floor(diff / years);
+                    var diffDays = Math.floor((diff / days) - diffYears * 365);
+                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
+                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
+                        minutes);
+                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
+                        diffMinutes * minutes) / seconds);
+                    if (startYear == todayYear) {
+                        document.getElementById("year").innerHTML = todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
+                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    } else {
+                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
+                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    }
+                }
+                setInterval(siteTime, 1000);
+            </script>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/wossoneri" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:wossoneri@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=478251276" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 478251276" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;Search</span>
+            <input type="search" id="searchInput" name="s" placeholder="Please enter a search keyword"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
 <script type="text/javascript">
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
+$(function () {
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+});
+</script>
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-70716047-2"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-70716047-2');
 </script>
 
 
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
-  
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
-
-
-
-  
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-
-<!-- LOCAL: You can save these files to your site and update links -->
-    
-        
-        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
-        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
-    
-<!-- END LOCAL -->
-
-    
-
-    
-      <script type="text/javascript">
-      function renderGitment(){
-        var gitment = new Gitmint({
-            id: '1464620667000', 
-            owner: 'wossoneri',
-            repo: 'wossoneri.github.io',
-            
-            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
-            
-            oauth: {
-            
-            
-                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
-            
-                client_id: '40b6c719a11e3fca29e8'
-            }});
-        gitment.render('gitment-container');
-      }
-
-      
-      renderGitment();
-      
-      </script>
-    
-
-
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-  
-
-  
-
-  
-  
-
-  
-  
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        tex2jax: {
-          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
-          processEscapes: true,
-          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
         }
-      });
-    </script>
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
 
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for (i=0; i < all.length; i += 1) {
-          all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-      });
-    </script>
-    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-  
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
 
+    
 
-  
+    
 
-  
+    
+
+    
+
+    
+    
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
 
 </body>
+
 </html>

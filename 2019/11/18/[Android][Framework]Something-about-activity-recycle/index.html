@@ -1,449 +1,909 @@
-<!DOCTYPE html>
-
-
-
-  
-
-
-<html class="theme-next mist use-motion" lang="zh-Hans">
-<head><meta name="generator" content="Hexo 3.8.0">
-  <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="theme-color" content="#222">
-
-
-
-
-
-
-
-
-
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
-
-
-
-
-
-
-
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
-
-<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
-
-
-  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
-
-
-
-
-
-  <meta name="keywords" content="Android,Framework,Activity,">
-
-
-
-
-
-  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml">
-
-
-
-
-
-
-<meta name="description" content="你知道Activity是怎么被回收的吗">
-<meta name="keywords" content="Android,Framework,Activity">
-<meta property="og:type" content="article">
-<meta property="og:title" content="[Android][Framework]关于Activity回收你要知道的事情">
-<meta property="og:url" content="http://wossoneri.github.io/2019/11/18/[Android][Framework]Something-about-activity-recycle/index.html">
-<meta property="og:site_name" content="Wossoneri`s Blog">
-<meta property="og:description" content="你知道Activity是怎么被回收的吗">
-<meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-12-06T04:33:34.915Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="[Android][Framework]关于Activity回收你要知道的事情">
-<meta name="twitter:description" content="你知道Activity是怎么被回收的吗">
-
-
-
-<script type="text/javascript" id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Mist',
-    version: '5.1.3',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
-    fancybox: true,
-    tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
-    duoshuo: {
-      userId: '6234852363740382000',
-      author: '博主'
-    },
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
-</script>
-
-
-
-  <link rel="canonical" href="http://wossoneri.github.io/2019/11/18/[Android][Framework]Something-about-activity-recycle/">
-
-
-
-
-
-  <title>[Android][Framework]关于Activity回收你要知道的事情 | Wossoneri`s Blog</title>
-  
-
-
-
-
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-  ga('create', 'UA-70716047-2', 'auto');
-  ga('send', 'pageview');
-</script>
-
-
-  <script type="text/javascript">
-    var _hmt = _hmt || [];
-    (function() {
-      var hm = document.createElement("script");
-      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
-      var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
-    })();
-  </script>
-
-
-
-
-</head>
-
-<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
-
-  
-  
+<!DOCTYPE HTML>
+<html lang="zh-Hans">
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta name="keywords" content="[Android][Framework]关于Activity回收你要知道的事情, Wossoneri`s Blog">
+    <meta name="description" content="之前分析过一篇:ActivityThread流程wossoneri.github.io，简单了解了从ActivityThread创建到Application的启动流程。
+但毕竟Android源码是个大工程，分析流程的时候很多地方不会特别去关">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>[Android][Framework]关于Activity回收你要知道的事情 | Wossoneri`s Blog</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
     
-  
-
-  <div class="container sidebar-position-left page-post-detail">
-    <div class="headband"></div>
-    <a href="https://github.com"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
-
-    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta ">
+    <script src="/libs/jquery/jquery.min.js"></script>
     
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 
-    <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Wossoneri`s Blog</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper head-container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">Wossoneri`s Blog</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>Index</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>Tags</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>Categories</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>Archives</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>About</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>Contact</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>Friends</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="Search" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">Wossoneri`s Blog</div>
+        <div class="logo-desc">
+            
+            就怕你一生碌碌无为，还安慰自己平凡可贵
+            
+        </div>
     </div>
-      
-        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
-      
-  </div>
 
-  <div class="site-nav-toggle">
-    <button>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-    </button>
-  </div>
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			Index
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			Tags
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			Categories
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			Archives
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			About
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			Contact
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			Friends
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/wossoneri" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
 </div>
 
-<nav class="site-nav">
-  
+        </div>
 
-  
-    <ul id="menu" class="menu">
-      
         
-        <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
-            
-            首页
-          </a>
-        </li>
-      
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/wossoneri" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
         
-        <li class="menu-item menu-item-categories">
-          <a href="/categories/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
-            
-            分类
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-archives">
-          <a href="/archives/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
-            
-            归档
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-tags">
-          <a href="/tags/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
-            
-            标签
-          </a>
-        </li>
-      
+    </nav>
 
-      
-    </ul>
-  
+</header>
 
-  
-</nav>
-
-
-
- </div>
-    </header>
-
-    <main id="main" class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
     
 
-  
 
-  
-  
-  
 
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2019/11/18/[Android][Framework]Something-about-activity-recycle/">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/20.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">[Android][Framework]关于Activity回收你要知道的事情</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Wossoneri">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
-    </span>
 
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Wossoneri`s Blog">
-    </span>
+
+
+<main class="post-container content">
 
     
-      <header class="post-header">
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
 
-        
-        
-          <h1 class="post-title" itemprop="name headline">[Android][Framework]关于Activity回收你要知道的事情</h1>
-        
+    #articleContent :focus {
+        outline: none;
+    }
 
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-18T18:31:00+08:00">
-                2019-11-18
-              </time>
-            
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
 
-            
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
 
-            
-          </span>
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
 
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android/" itemprop="url" rel="index">
-                    <span itemprop="name">Android</span>
-                  </a>
-                </span>
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        height: calc(100vh - 250px);
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/Android/">
+                                <span class="chip bg-color">Android</span>
+                            </a>
+                        
+                            <a href="/tags/Framework/">
+                                <span class="chip bg-color">Framework</span>
+                            </a>
+                        
+                            <a href="/tags/Activity/">
+                                <span class="chip bg-color">Activity</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/Android/" class="post-category">
+                                Android
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>Publish Date:&nbsp;&nbsp;
+                    2019-11-18
+                </div>
+                
 
                 
+
                 
-              
-            </span>
-          
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>Word Count:&nbsp;&nbsp;
+                    2,166
+                </div>
+                
 
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/11/18/[Android][Framework]Something-about-activity-recycle/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count gitment-comments-count" data-xid="/2019/11/18/[Android][Framework]Something-about-activity-recycle/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>Read Times:&nbsp;&nbsp;
+                    10 Min
+                </div>
+                
 
-          
-          
-	
-  		  <span class="post-letters-count">
-            &nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-                 <i class="fa fa-clock-o"></i>
-            </span>
-		        <span class="post-meta-item-text">总记</span>
-            <span class="post-count">2,648 字</span>
-		        <span class="post-meta-item-text">读完需要</span>
-    		    <span class="post-count">13 分</span>
-  		  </span>
-           
-         
-
-          
-
-          
-
-          
-              <div class="post-description">
-                  你知道Activity是怎么被回收的吗
-              </div>
-          
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>Read Count:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
 
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        <p>之前分析过一篇:<a href="http://wossoneri.github.io/2018/05/17/[Android][Framework]ActivityThread/">ActivityThread流程wossoneri.github.io</a>，简单了解了从ActivityThread创建到Application的启动流程。</p>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <p>之前分析过一篇:<a href="http://wossoneri.github.io/2018/05/17/[Android][Framework]ActivityThread/">ActivityThread流程wossoneri.github.io</a>，简单了解了从ActivityThread创建到Application的启动流程。</p>
 <p>但毕竟Android源码是个大工程，分析流程的时候很多地方不会特别去关注，后来在解决问题的时候又发现一些很有意思的东西，所以拎出来整理一下。</p>
 <p>ActivityThread创建之后首先创建Handler和获取Looper，之后就调用了非常重要的attach方法。</p>
-<h3 id="ActivityThread-attach"><a href="#ActivityThread-attach" class="headerlink" title="ActivityThread.attach()"></a>ActivityThread.attach()</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">attach</span><span class="params">(<span class="keyword">boolean</span> system)</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="keyword">final</span> IActivityManager mgr = ActivityManagerNative.getDefault();</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    mgr.attachApplication(mAppThread);</span><br><span class="line">  &#125; <span class="keyword">catch</span> (RemoteException ex) &#123;</span><br><span class="line">    <span class="keyword">throw</span> ex.rethrowFromSystemServer();</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// Watch for getting close to heap limit.</span></span><br><span class="line">  <span class="comment">// 这里有一个watcher，上次分析被我忽略了...</span></span><br><span class="line">  BinderInternal.addGcWatcher(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      <span class="keyword">if</span> (!mSomeActivitiesChanged) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      Runtime runtime = Runtime.getRuntime();</span><br><span class="line">      <span class="keyword">long</span> dalvikMax = runtime.maxMemory();</span><br><span class="line">      <span class="keyword">long</span> dalvikUsed = runtime.totalMemory() - runtime.freeMemory();</span><br><span class="line">      <span class="keyword">if</span> (dalvikUsed &gt; ((<span class="number">3</span>*dalvikMax)/<span class="number">4</span>)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (DEBUG_MEMORY_TRIM) Slog.d(TAG, <span class="string">"Dalvik max="</span> + (dalvikMax/<span class="number">1024</span>)</span><br><span class="line">                                      + <span class="string">" total="</span> + (runtime.totalMemory()/<span class="number">1024</span>)</span><br><span class="line">                                      + <span class="string">" used="</span> + (dalvikUsed/<span class="number">1024</span>));</span><br><span class="line">        mSomeActivitiesChanged = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">          mgr.releaseSomeActivities(mAppThread);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (RemoteException e) &#123;</span><br><span class="line">          <span class="keyword">throw</span> e.rethrowFromSystemServer();</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="ActivityThread-attach"><a href="#ActivityThread-attach" class="headerlink" title="ActivityThread.attach()"></a>ActivityThread.attach()</h3><pre class=" language-lang-java"><code class="language-lang-java">private void attach(boolean system) {
+  ...
+  final IActivityManager mgr = ActivityManagerNative.getDefault();
+  try {
+    mgr.attachApplication(mAppThread);
+  } catch (RemoteException ex) {
+    throw ex.rethrowFromSystemServer();
+  }
+  // Watch for getting close to heap limit.
+  // 这里有一个watcher，上次分析被我忽略了...
+  BinderInternal.addGcWatcher(new Runnable() {
+    @Override public void run() {
+      if (!mSomeActivitiesChanged) {
+        return;
+      }
+      Runtime runtime = Runtime.getRuntime();
+      long dalvikMax = runtime.maxMemory();
+      long dalvikUsed = runtime.totalMemory() - runtime.freeMemory();
+      if (dalvikUsed > ((3*dalvikMax)/4)) {
+        if (DEBUG_MEMORY_TRIM) Slog.d(TAG, "Dalvik max=" + (dalvikMax/1024)
+                                      + " total=" + (runtime.totalMemory()/1024)
+                                      + " used=" + (dalvikUsed/1024));
+        mSomeActivitiesChanged = false;
+        try {
+          mgr.releaseSomeActivities(mAppThread);
+        } catch (RemoteException e) {
+          throw e.rethrowFromSystemServer();
+        }
+      }
+    }
+  });
+}
+</code></pre>
 <p>方法里有一段曾经被我忽略的代码，从字面知道，这里添加了一个GC的watcher，里面的线程运行条件是当虚拟机内存占用超过虚拟机分配的最大内存的3/4时，对一些Activity进行释放。</p>
-<h3 id="BinderInternal-addGcWatcher"><a href="#BinderInternal-addGcWatcher" class="headerlink" title="BinderInternal.addGcWatcher()"></a>BinderInternal.addGcWatcher()</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">static</span> ArrayList&lt;Runnable&gt; sGcWatchers = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">addGcWatcher</span><span class="params">(Runnable watcher)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">synchronized</span> (sGcWatchers) &#123;</span><br><span class="line">    sGcWatchers.add(watcher);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="BinderInternal-addGcWatcher"><a href="#BinderInternal-addGcWatcher" class="headerlink" title="BinderInternal.addGcWatcher()"></a>BinderInternal.addGcWatcher()</h3><pre class=" language-lang-java"><code class="language-lang-java">static ArrayList<Runnable> sGcWatchers = new ArrayList<>();
+
+public static void addGcWatcher(Runnable watcher) {
+  synchronized (sGcWatchers) {
+    sGcWatchers.add(watcher);
+  }
+}
+</code></pre>
 <p>BinderInternel维护了一个Runnable列表。</p>
-<h3 id="BinderInternal-GcWatcher"><a href="#BinderInternal-GcWatcher" class="headerlink" title="BinderInternal.GcWatcher"></a>BinderInternal.GcWatcher</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">static</span> WeakReference&lt;GcWatcher&gt; sGcWatcher</span><br><span class="line">            = <span class="keyword">new</span> WeakReference&lt;GcWatcher&gt;(<span class="keyword">new</span> GcWatcher());</span><br><span class="line"><span class="keyword">static</span> Runnable[] sTmpWatchers = <span class="keyword">new</span> Runnable[<span class="number">1</span>];</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">long</span> sLastGcTime;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">GcWatcher</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">finalize</span><span class="params">()</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">    handleGc();</span><br><span class="line">    sLastGcTime = SystemClock.uptimeMillis();</span><br><span class="line">    <span class="keyword">synchronized</span> (sGcWatchers) &#123;</span><br><span class="line">      sTmpWatchers = sGcWatchers.toArray(sTmpWatchers);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;sTmpWatchers.length; i++) &#123;</span><br><span class="line">      <span class="keyword">if</span> (sTmpWatchers[i] != <span class="keyword">null</span>) &#123;</span><br><span class="line">        sTmpWatchers[i].run();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    sGcWatcher = <span class="keyword">new</span> WeakReference&lt;GcWatcher&gt;(<span class="keyword">new</span> GcWatcher());</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="BinderInternal-GcWatcher"><a href="#BinderInternal-GcWatcher" class="headerlink" title="BinderInternal.GcWatcher"></a>BinderInternal.GcWatcher</h3><pre class=" language-lang-java"><code class="language-lang-java">static WeakReference<GcWatcher> sGcWatcher
+            = new WeakReference<GcWatcher>(new GcWatcher());
+static Runnable[] sTmpWatchers = new Runnable[1];
+static long sLastGcTime;
+
+static final class GcWatcher {
+  @Override
+  protected void finalize() throws Throwable {
+    handleGc();
+    sLastGcTime = SystemClock.uptimeMillis();
+    synchronized (sGcWatchers) {
+      sTmpWatchers = sGcWatchers.toArray(sTmpWatchers);
+    }
+    for (int i=0; i<sTmpWatchers.length; i++) {
+      if (sTmpWatchers[i] != null) {
+        sTmpWatchers[i].run();
+      }
+    }
+    sGcWatcher = new WeakReference<GcWatcher>(new GcWatcher());
+  }
+}
+</code></pre>
 <p>这里重写了finalize()方法，根据JVM的原理，JVM垃圾回收器准备释放内存前，会先调用该对象finalize</p>
 <p>重写的内容是拿到Runnable列表，依次执行每个Runnable。也就是说当执行到GC的时候，会调用到这里，然后执行Runnable的时候调用到虚拟机3/4内存的计算。</p>
 <p>finallize方法最后重新创建了一个GcWatcher的弱引用。sGcWatcher是一个静态对象，如果它是一个强引用，那么他就会存在静态引用方法区，就会导致这个强引用的GC线程无法回收。所以作为弱引用，引用对象在被回收时就会触发sGcWatcher的finalize方法，执行结束时仔new一个弱引用出来，以保证下次的调用。</p>
 <p>那么这里如何保证GC回收呢？</p>
-<h3 id="BinderInternal-forceGc"><a href="#BinderInternal-forceGc" class="headerlink" title="BinderInternal.forceGc()"></a>BinderInternal.forceGc()</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">forceGc</span><span class="params">(String reason)</span> </span>&#123;</span><br><span class="line">  EventLog.writeEvent(<span class="number">2741</span>, reason);</span><br><span class="line">  VMRuntime.getRuntime().requestConcurrentGC();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="BinderInternal-forceGc"><a href="#BinderInternal-forceGc" class="headerlink" title="BinderInternal.forceGc()"></a>BinderInternal.forceGc()</h3><pre class=" language-lang-java"><code class="language-lang-java">public static void forceGc(String reason) {
+  EventLog.writeEvent(2741, reason);
+  VMRuntime.getRuntime().requestConcurrentGC();
+}
+</code></pre>
 <p>通过查询代码，发现一共有两处调用这个方法。我们分两条调用线去看</p>
-<h3 id="第一种GC条件"><a href="#第一种GC条件" class="headerlink" title="第一种GC条件"></a>第一种GC条件</h3><h4 id="ActivityThread-doGcIfNeeded"><a href="#ActivityThread-doGcIfNeeded" class="headerlink" title="ActivityThread.doGcIfNeeded()"></a>ActivityThread.doGcIfNeeded()</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> MIN_TIME_BETWEEN_GCS = <span class="number">5</span>*<span class="number">1000</span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">doGcIfNeeded</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  mGcIdlerScheduled = <span class="keyword">false</span>;</span><br><span class="line">  <span class="keyword">final</span> <span class="keyword">long</span> now = SystemClock.uptimeMillis();</span><br><span class="line">  <span class="comment">//Slog.i(TAG, "**** WE MIGHT WANT TO GC: then=" + Binder.getLastGcTime()</span></span><br><span class="line">  <span class="comment">//        + "m now=" + now);</span></span><br><span class="line">  <span class="keyword">if</span> ((BinderInternal.getLastGcTime()+MIN_TIME_BETWEEN_GCS) &lt; now) &#123;</span><br><span class="line">    <span class="comment">//Slog.i(TAG, "**** WE DO, WE DO WANT TO GC!");</span></span><br><span class="line">    BinderInternal.forceGc(<span class="string">"bg"</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="第一种GC条件"><a href="#第一种GC条件" class="headerlink" title="第一种GC条件"></a>第一种GC条件</h3><h4 id="ActivityThread-doGcIfNeeded"><a href="#ActivityThread-doGcIfNeeded" class="headerlink" title="ActivityThread.doGcIfNeeded()"></a>ActivityThread.doGcIfNeeded()</h4><pre class=" language-lang-java"><code class="language-lang-java">private static final long MIN_TIME_BETWEEN_GCS = 5*1000;
+void doGcIfNeeded() {
+  mGcIdlerScheduled = false;
+  final long now = SystemClock.uptimeMillis();
+  //Slog.i(TAG, "**** WE MIGHT WANT TO GC: then=" + Binder.getLastGcTime()
+  //        + "m now=" + now);
+  if ((BinderInternal.getLastGcTime()+MIN_TIME_BETWEEN_GCS) < now) {
+    //Slog.i(TAG, "**** WE DO, WE DO WANT TO GC!");
+    BinderInternal.forceGc("bg");
+  }
+}
+</code></pre>
 <p>这段代码就是根据上次GC的时间加上两次GC间隔的最小时间5s，判断当前是否要GC。再查找其调用。</p>
-<h4 id="ActivityThread-GcIdler"><a href="#ActivityThread-GcIdler" class="headerlink" title="ActivityThread.GcIdler"></a>ActivityThread.GcIdler</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">GcIdler</span> <span class="keyword">implements</span> <span class="title">MessageQueue</span>.<span class="title">IdleHandler</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">queueIdle</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    doGcIfNeeded();</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="ActivityThread-GcIdler"><a href="#ActivityThread-GcIdler" class="headerlink" title="ActivityThread.GcIdler"></a>ActivityThread.GcIdler</h4><pre class=" language-lang-java"><code class="language-lang-java">final class GcIdler implements MessageQueue.IdleHandler {
+  @Override
+  public final boolean queueIdle() {
+    doGcIfNeeded();
+    return false;
+  }
+}
+</code></pre>
 <p>是GcIdler类，在实现MessageQueue.IdleHandler的queueIdle方法时做的处理。</p>
-<h4 id="MessageQueue-IdleHandler"><a href="#MessageQueue-IdleHandler" class="headerlink" title="MessageQueue.IdleHandler"></a>MessageQueue.IdleHandler</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 检测当一个线程将要阻塞以等待更多的message时的状态的接口</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">interface</span> <span class="title">IdleHandler</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 当消息队列处理完消息后，等待新消息时调用。</span></span><br><span class="line">  <span class="comment">// 如果返回true  则保持idle handler活跃</span></span><br><span class="line">  <span class="comment">// 如果返回false 则代表handler被移除</span></span><br><span class="line">  <span class="comment">// 如果队列里仍然有消息等待，但是这些消息不会立即发送，而是计划在之后一段时间发送，也会触发该回调。</span></span><br><span class="line">  <span class="function"><span class="keyword">boolean</span> <span class="title">queueIdle</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="MessageQueue-next"><a href="#MessageQueue-next" class="headerlink" title="MessageQueue.next()"></a>MessageQueue.next()</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function">Message <span class="title">next</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	...</span><br><span class="line">    <span class="comment">// Run the idle handlers.</span></span><br><span class="line">    <span class="comment">// We only ever reach this code block during the first iteration.</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; pendingIdleHandlerCount; i++) &#123;</span><br><span class="line">      <span class="keyword">final</span> IdleHandler idler = mPendingIdleHandlers[i];</span><br><span class="line">      mPendingIdleHandlers[i] = <span class="keyword">null</span>; <span class="comment">// release the reference to the handler</span></span><br><span class="line"></span><br><span class="line">      <span class="keyword">boolean</span> keep = <span class="keyword">false</span>;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        keep = idler.queueIdle();</span><br><span class="line">      &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">        Log.wtf(TAG, <span class="string">"IdleHandler threw exception"</span>, t);</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (!keep) &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">          mIdleHandlers.remove(idler);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="MessageQueue-IdleHandler"><a href="#MessageQueue-IdleHandler" class="headerlink" title="MessageQueue.IdleHandler"></a>MessageQueue.IdleHandler</h4><pre class=" language-lang-java"><code class="language-lang-java">// 检测当一个线程将要阻塞以等待更多的message时的状态的接口
+public static interface IdleHandler {
+  // 当消息队列处理完消息后，等待新消息时调用。
+  // 如果返回true  则保持idle handler活跃
+  // 如果返回false 则代表handler被移除
+  // 如果队列里仍然有消息等待，但是这些消息不会立即发送，而是计划在之后一段时间发送，也会触发该回调。
+  boolean queueIdle();
+}
+</code></pre>
+<h4 id="MessageQueue-next"><a href="#MessageQueue-next" class="headerlink" title="MessageQueue.next()"></a>MessageQueue.next()</h4><pre class=" language-lang-java"><code class="language-lang-java">Message next() {
+    ...
+    // Run the idle handlers.
+    // We only ever reach this code block during the first iteration.
+    for (int i = 0; i < pendingIdleHandlerCount; i++) {
+      final IdleHandler idler = mPendingIdleHandlers[i];
+      mPendingIdleHandlers[i] = null; // release the reference to the handler
+
+      boolean keep = false;
+      try {
+        keep = idler.queueIdle();
+      } catch (Throwable t) {
+        Log.wtf(TAG, "IdleHandler threw exception", t);
+      }
+
+      if (!keep) {
+        synchronized (this) {
+          mIdleHandlers.remove(idler);
+        }
+      }
+    }
+  ...
+}
+</code></pre>
 <p>回调在这里触发的。知道回调后再回去看回调的实现是怎么调用的。</p>
-<h4 id="ActivityThread"><a href="#ActivityThread" class="headerlink" title="ActivityThread"></a>ActivityThread</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> GcIdler mGcIdler = <span class="keyword">new</span> GcIdler();</span><br><span class="line"><span class="keyword">boolean</span> mGcIdlerScheduled = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message msg)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">case</span> GC_WHEN_IDLE:</span><br><span class="line">    scheduleGcIdler();</span><br><span class="line">    <span class="keyword">break</span>; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="ActivityThread-unscheduleGcIdler"><a href="#ActivityThread-unscheduleGcIdler" class="headerlink" title="ActivityThread.unscheduleGcIdler()"></a>ActivityThread.unscheduleGcIdler()</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">unscheduleGcIdler</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (mGcIdlerScheduled) &#123;</span><br><span class="line">    mGcIdlerScheduled = <span class="keyword">false</span>;</span><br><span class="line">    Looper.myQueue().removeIdleHandler(mGcIdler);</span><br><span class="line">  &#125;</span><br><span class="line">  mH.removeMessages(H.GC_WHEN_IDLE);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="ActivityThread"><a href="#ActivityThread" class="headerlink" title="ActivityThread"></a>ActivityThread</h4><pre class=" language-lang-java"><code class="language-lang-java">final GcIdler mGcIdler = new GcIdler();
+boolean mGcIdlerScheduled = false;
+
+public void handleMessage(Message msg) {
+  case GC_WHEN_IDLE:
+    scheduleGcIdler();
+    break; 
+}
+</code></pre>
+<h4 id="ActivityThread-unscheduleGcIdler"><a href="#ActivityThread-unscheduleGcIdler" class="headerlink" title="ActivityThread.unscheduleGcIdler()"></a>ActivityThread.unscheduleGcIdler()</h4><pre class=" language-lang-java"><code class="language-lang-java">void unscheduleGcIdler() {
+  if (mGcIdlerScheduled) {
+    mGcIdlerScheduled = false;
+    Looper.myQueue().removeIdleHandler(mGcIdler);
+  }
+  mH.removeMessages(H.GC_WHEN_IDLE);
+}
+</code></pre>
 <p>这里主要是提一下：在所有的unscheduleGcIdler调用前都有一段注释：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">handleLaunchActivity</span><span class="params">(ActivityClientRecord r, </span></span></span><br><span class="line"><span class="function"><span class="params">                                  Intent customIntent, String  reason)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// If we are getting ready to gc after going to the background, well</span></span><br><span class="line">  <span class="comment">// we are back active so skip it.</span></span><br><span class="line">  unscheduleGcIdler();</span><br><span class="line">  ...</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-java"><code class="language-lang-java">private void handleLaunchActivity(ActivityClientRecord r, 
+                                  Intent customIntent, String  reason) {
+  // If we are getting ready to gc after going to the background, well
+  // we are back active so skip it.
+  unscheduleGcIdler();
+  ...
+</code></pre>
 <p>调用unscheduleGcIdler的方法如下：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">handleLaunchActivity</span><span class="params">(ActivityClientRecord r, </span></span></span><br><span class="line"><span class="function"><span class="params">                                  Intent customIntent, String reason)</span></span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">handleReceiver</span><span class="params">(ReceiverData data)</span></span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">handleCreateBackupAgent</span><span class="params">(CreateBackupAgentData data)</span></span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">handleCreateService</span><span class="params">(CreateServiceData data)</span></span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">handleResumeActivity</span><span class="params">(IBinder token, <span class="keyword">boolean</span> clearHide, </span></span></span><br><span class="line"><span class="function"><span class="params">             <span class="keyword">boolean</span> isForward, <span class="keyword">boolean</span> reallyResume, <span class="keyword">int</span> seq, String reason)</span></span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">handleWindowVisibility</span><span class="params">(IBinder token, <span class="keyword">boolean</span> show)</span></span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">handleRelaunchActivity</span><span class="params">(ActivityClientRecord tmp)</span></span></span><br></pre></td></tr></table></figure>
-<h4 id="ActivityThread-scheduleGcIdler"><a href="#ActivityThread-scheduleGcIdler" class="headerlink" title="ActivityThread.scheduleGcIdler()"></a>ActivityThread.scheduleGcIdler()</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">scheduleGcIdler</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (!mGcIdlerScheduled) &#123;</span><br><span class="line">    mGcIdlerScheduled = <span class="keyword">true</span>;</span><br><span class="line">    Looper.myQueue().addIdleHandler(mGcIdler);</span><br><span class="line">  &#125;</span><br><span class="line">  mH.removeMessages(H.GC_WHEN_IDLE);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-java"><code class="language-lang-java">private void handleLaunchActivity(ActivityClientRecord r, 
+                                  Intent customIntent, String reason)
+private void handleReceiver(ReceiverData data)
+private void handleCreateBackupAgent(CreateBackupAgentData data)
+private void handleCreateService(CreateServiceData data)
+final void handleResumeActivity(IBinder token, boolean clearHide, 
+             boolean isForward, boolean reallyResume, int seq, String reason)
+private void handleWindowVisibility(IBinder token, boolean show)
+private void handleRelaunchActivity(ActivityClientRecord tmp)
+</code></pre>
+<h4 id="ActivityThread-scheduleGcIdler"><a href="#ActivityThread-scheduleGcIdler" class="headerlink" title="ActivityThread.scheduleGcIdler()"></a>ActivityThread.scheduleGcIdler()</h4><pre class=" language-lang-java"><code class="language-lang-java">void scheduleGcIdler() {
+  if (!mGcIdlerScheduled) {
+    mGcIdlerScheduled = true;
+    Looper.myQueue().addIdleHandler(mGcIdler);
+  }
+  mH.removeMessages(H.GC_WHEN_IDLE);
+}
+</code></pre>
 <p>Looper.myQueue() ，也就是主线程里的handler线程队列内容全部处理 结束，这个GcIdler 的 queueIdle() 就会被触发，那么GC就会被触发。已经到这，大概我们就明白GC<strong>调用的时机</strong></p>
 <p>scheduleGcIdler是Handler收到<strong>GC_WHEN_IDLE</strong>消息后触发，查询这个消息的来源：</p>
-<h4 id="ActivityThread-processInBackground"><a href="#ActivityThread-processInBackground" class="headerlink" title="ActivityThread.processInBackground()"></a>ActivityThread.processInBackground()</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">processInBackground</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  mH.removeMessages(H.GC_WHEN_IDLE);</span><br><span class="line">  mH.sendMessage(mH.obtainMessage(H.GC_WHEN_IDLE));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="ActivityThread-processInBackground"><a href="#ActivityThread-processInBackground" class="headerlink" title="ActivityThread.processInBackground()"></a>ActivityThread.processInBackground()</h4><pre class=" language-lang-java"><code class="language-lang-java">public void processInBackground() {
+  mH.removeMessages(H.GC_WHEN_IDLE);
+  mH.sendMessage(mH.obtainMessage(H.GC_WHEN_IDLE));
+}
+</code></pre>
 <p>代码上溯到AMS</p>
-<h4 id="ActivityManagerService-performAppGcLocked"><a href="#ActivityManagerService-performAppGcLocked" class="headerlink" title="ActivityManagerService.performAppGcLocked()"></a>ActivityManagerService.performAppGcLocked()</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Ask a given process to GC right now.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">performAppGcLocked</span><span class="params">(ProcessRecord app)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    app.lastRequestedGc = SystemClock.uptimeMillis();</span><br><span class="line">    <span class="keyword">if</span> (app.thread != <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="keyword">if</span> (app.reportLowMemory) &#123;</span><br><span class="line">        app.reportLowMemory = <span class="keyword">false</span>;</span><br><span class="line">        app.thread.scheduleLowMemory();</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        app.thread.processInBackground();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    <span class="comment">// whatever.</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="ActivityManagerService-performAppGcsLocked"><a href="#ActivityManagerService-performAppGcsLocked" class="headerlink" title="ActivityManagerService.performAppGcsLocked()"></a>ActivityManagerService.performAppGcsLocked()</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Perform GCs on all processes that are waiting for it, but only</span></span><br><span class="line"><span class="comment"> * if things are idle.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">performAppGcsLocked</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">final</span> <span class="keyword">int</span> N = mProcessesToGc.size();</span><br><span class="line">  <span class="keyword">if</span> (N &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (canGcNowLocked()) &#123;</span><br><span class="line">    <span class="keyword">while</span> (mProcessesToGc.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      ProcessRecord proc = mProcessesToGc.remove(<span class="number">0</span>);</span><br><span class="line">      <span class="keyword">if</span> (proc.curRawAdj &gt; ProcessList.PERCEPTIBLE_APP_ADJ || proc.reportLowMemory) &#123;</span><br><span class="line">        <span class="keyword">if</span> ((proc.lastRequestedGc+GC_MIN_INTERVAL)</span><br><span class="line">            &lt;= SystemClock.uptimeMillis()) &#123;</span><br><span class="line">          <span class="comment">// To avoid spamming the system, we will GC processes one</span></span><br><span class="line">          <span class="comment">// at a time, waiting a few seconds between each.</span></span><br><span class="line">          performAppGcLocked(proc);</span><br><span class="line">          scheduleAppGcsLocked();</span><br><span class="line">          <span class="keyword">return</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          <span class="comment">// It hasn't been long enough since we last GCed this</span></span><br><span class="line">          <span class="comment">// process...  put it in the list to wait for its time.</span></span><br><span class="line">          addProcessToGcListLocked(proc);</span><br><span class="line">          <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    scheduleAppGcsLocked();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="ActivityManagerService-performAppGcLocked"><a href="#ActivityManagerService-performAppGcLocked" class="headerlink" title="ActivityManagerService.performAppGcLocked()"></a>ActivityManagerService.performAppGcLocked()</h4><pre class=" language-lang-java"><code class="language-lang-java">/**
+ * Ask a given process to GC right now.
+ */
+final void performAppGcLocked(ProcessRecord app) {
+  try {
+    app.lastRequestedGc = SystemClock.uptimeMillis();
+    if (app.thread != null) {
+      if (app.reportLowMemory) {
+        app.reportLowMemory = false;
+        app.thread.scheduleLowMemory();
+      } else {
+        app.thread.processInBackground();
+      }
+    }
+  } catch (Exception e) {
+    // whatever.
+  }
+}
+</code></pre>
+<h4 id="ActivityManagerService-performAppGcsLocked"><a href="#ActivityManagerService-performAppGcsLocked" class="headerlink" title="ActivityManagerService.performAppGcsLocked()"></a>ActivityManagerService.performAppGcsLocked()</h4><pre class=" language-lang-java"><code class="language-lang-java">/**
+ * Perform GCs on all processes that are waiting for it, but only
+ * if things are idle.
+ */
+final void performAppGcsLocked() {
+  final int N = mProcessesToGc.size();
+  if (N <= 0) {
+    return;
+  }
+  if (canGcNowLocked()) {
+    while (mProcessesToGc.size() > 0) {
+      ProcessRecord proc = mProcessesToGc.remove(0);
+      if (proc.curRawAdj > ProcessList.PERCEPTIBLE_APP_ADJ || proc.reportLowMemory) {
+        if ((proc.lastRequestedGc+GC_MIN_INTERVAL)
+            <= SystemClock.uptimeMillis()) {
+          // To avoid spamming the system, we will GC processes one
+          // at a time, waiting a few seconds between each.
+          performAppGcLocked(proc);
+          scheduleAppGcsLocked();
+          return;
+        } else {
+          // It hasn't been long enough since we last GCed this
+          // process...  put it in the list to wait for its time.
+          addProcessToGcListLocked(proc);
+          break;
+        }
+      }
+    }
+
+    scheduleAppGcsLocked();
+  }
+}
+</code></pre>
 <p>scheduleAppGcsLocked() 这个方法是用来通知Activity, Service, Application onLowMemory() 回调的</p>
 <p> if (proc.curRawAdj &gt; ProcessList.PERCEPTIBLE_APP_ADJ || proc.reportLowMemory),这个从字面理解就是，如果目前的oom_adj 比 ProcessList.PERCEPTIBLE_APP_ADJ 级别要高，或者进程在低内存环境下运行，就会触发这个方法，关于oom_adj，在后面内存优化会介绍。</p>
 <p>以上可以得出结论，就是如果此时App正在前台显示运行，并且不是低内存状态，那么进程全局的GC就不会被触发。</p>
-<h3 id="第二种GC条件"><a href="#第二种GC条件" class="headerlink" title="第二种GC条件"></a>第二种GC条件</h3><h4 id="ActivityThread-handleLowMemory"><a href="#ActivityThread-handleLowMemory" class="headerlink" title="ActivityThread.handleLowMemory()"></a>ActivityThread.handleLowMemory()</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">handleLowMemory</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  ArrayList&lt;ComponentCallbacks2&gt; callbacks = collectComponentCallbacks(<span class="keyword">true</span>, <span class="keyword">null</span>);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">final</span> <span class="keyword">int</span> N = callbacks.size();</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;N; i++) &#123;</span><br><span class="line">    callbacks.get(i).onLowMemory();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Ask SQLite to free up as much memory as it can, mostly from its page caches.</span></span><br><span class="line">  <span class="keyword">if</span> (Process.myUid() != Process.SYSTEM_UID) &#123;</span><br><span class="line">    <span class="keyword">int</span> sqliteReleased = SQLiteDatabase.releaseMemory();</span><br><span class="line">    EventLog.writeEvent(SQLITE_MEM_RELEASED_EVENT_LOG_TAG, sqliteReleased);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Ask graphics to free up as much as possible (font/image caches)</span></span><br><span class="line">  Canvas.freeCaches();</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Ask text layout engine to free also as much as possible</span></span><br><span class="line">  Canvas.freeTextLayoutCaches();</span><br><span class="line"></span><br><span class="line">  BinderInternal.forceGc(<span class="string">"mem"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="第二种GC条件"><a href="#第二种GC条件" class="headerlink" title="第二种GC条件"></a>第二种GC条件</h3><h4 id="ActivityThread-handleLowMemory"><a href="#ActivityThread-handleLowMemory" class="headerlink" title="ActivityThread.handleLowMemory()"></a>ActivityThread.handleLowMemory()</h4><pre class=" language-lang-java"><code class="language-lang-java">final void handleLowMemory() {
+  ArrayList<ComponentCallbacks2> callbacks = collectComponentCallbacks(true, null);
+
+  final int N = callbacks.size();
+  for (int i=0; i<N; i++) {
+    callbacks.get(i).onLowMemory();
+  }
+
+  // Ask SQLite to free up as much memory as it can, mostly from its page caches.
+  if (Process.myUid() != Process.SYSTEM_UID) {
+    int sqliteReleased = SQLiteDatabase.releaseMemory();
+    EventLog.writeEvent(SQLITE_MEM_RELEASED_EVENT_LOG_TAG, sqliteReleased);
+  }
+
+  // Ask graphics to free up as much as possible (font/image caches)
+  Canvas.freeCaches();
+
+  // Ask text layout engine to free also as much as possible
+  Canvas.freeTextLayoutCaches();
+
+  BinderInternal.forceGc("mem");
+}
+</code></pre>
 <p>方法的触发是收到<strong>LOW_MEMORY</strong>消息后开始。</p>
 <p>消息的来源为：</p>
 <p>ActivityThread.scheduleLowMemory</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">scheduleLowMemory</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  sendMessage(H.LOW_MEMORY, <span class="keyword">null</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-java"><code class="language-lang-java">@Override
+public void scheduleLowMemory() {
+  sendMessage(H.LOW_MEMORY, null);
+}
+</code></pre>
 <p>然后发现代码又回到了AMS</p>
-<h4 id="ActivityManagerService-performAppGcLocked-1"><a href="#ActivityManagerService-performAppGcLocked-1" class="headerlink" title="ActivityManagerService.performAppGcLocked()"></a>ActivityManagerService.performAppGcLocked()</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Ask a given process to GC right now.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">performAppGcLocked</span><span class="params">(ProcessRecord app)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    app.lastRequestedGc = SystemClock.uptimeMillis();</span><br><span class="line">    <span class="keyword">if</span> (app.thread != <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="keyword">if</span> (app.reportLowMemory) &#123;</span><br><span class="line">        app.reportLowMemory = <span class="keyword">false</span>;</span><br><span class="line">        app.thread.scheduleLowMemory();</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        app.thread.processInBackground();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    <span class="comment">// whatever.</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="ActivityManagerService-performAppGcLocked-1"><a href="#ActivityManagerService-performAppGcLocked-1" class="headerlink" title="ActivityManagerService.performAppGcLocked()"></a>ActivityManagerService.performAppGcLocked()</h4><pre class=" language-lang-java"><code class="language-lang-java">/**
+ * Ask a given process to GC right now.
+ */
+final void performAppGcLocked(ProcessRecord app) {
+  try {
+    app.lastRequestedGc = SystemClock.uptimeMillis();
+    if (app.thread != null) {
+      if (app.reportLowMemory) {
+        app.reportLowMemory = false;
+        app.thread.scheduleLowMemory();
+      } else {
+        app.thread.processInBackground();
+      }
+    }
+  } catch (Exception e) {
+    // whatever.
+  }
+}
+</code></pre>
 <p>从这个方法看出，如果是LowMemeory的情况会调用scheduleLowMemory方法，否则调用processInBackground。</p>
 <p>我们就整明白了App回收是何时触发的，那么接下来我们来看看，Activity会被释放部分Activity这种情况。</p>
 <p>回到addGcWatcher，里面的线程运行条件是当虚拟机内存占用超过虚拟机分配的最大内存的3/4时，就会触发GC，对一些Activity进行释放。释放Activity代码是：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> IActivityManager mgr = ActivityManagerNative.getDefault();</span><br><span class="line">mgr.releaseSomeActivities(mAppThread);</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-java"><code class="language-lang-java">final IActivityManager mgr = ActivityManagerNative.getDefault();
+mgr.releaseSomeActivities(mAppThread);
+</code></pre>
 <p>所以代码又回到了ActivityManagerService中：</p>
-<h3 id="ActivityManagerService-releaseSomeActivities"><a href="#ActivityManagerService-releaseSomeActivities" class="headerlink" title="ActivityManagerService.releaseSomeActivities()"></a>ActivityManagerService.releaseSomeActivities()</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">releaseSomeActivities</span><span class="params">(IApplicationThread appInt)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">synchronized</span>(<span class="keyword">this</span>) &#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">long</span> origId = Binder.clearCallingIdentity();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      ProcessRecord app = getRecordForAppLocked(appInt);</span><br><span class="line">      mStackSupervisor.releaseSomeActivitiesLocked(app, <span class="string">"low-mem"</span>);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      Binder.restoreCallingIdentity(origId);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="ActivityStackSupervisor-releaseSomeActivitiesLocked"><a href="#ActivityStackSupervisor-releaseSomeActivitiesLocked" class="headerlink" title="ActivityStackSupervisor.releaseSomeActivitiesLocked()"></a>ActivityStackSupervisor.releaseSomeActivitiesLocked()</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">releaseSomeActivitiesLocked</span><span class="params">(ProcessRecord app, String reason)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 检查当前在进程中正在运行的所有activity</span></span><br><span class="line">  TaskRecord firstTask = <span class="keyword">null</span>;</span><br><span class="line">  <span class="comment">// 只有在2个或多个task任务栈时，tasks才不为空。也就是单栈app不会销毁。</span></span><br><span class="line">  ArraySet&lt;TaskRecord&gt; tasks = <span class="keyword">null</span>;</span><br><span class="line">  <span class="keyword">if</span> (DEBUG_RELEASE) Slog.d(TAG_RELEASE, <span class="string">"Trying to release some activities in "</span> + app);</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; app.activities.size(); i++) &#123;</span><br><span class="line">    ActivityRecord r = app.activities.get(i);</span><br><span class="line">    <span class="comment">// 如果发现进程中的一个activity正在被destory，那么我们这次就不做任何处理。直接return掉</span></span><br><span class="line">    <span class="comment">// 因为在执行清理activity的操作之前最好保持一个稳定的状态。</span></span><br><span class="line">    <span class="keyword">if</span> (r.finishing || r.state == DESTROYING || r.state == DESTROYED) &#123;</span><br><span class="line">      <span class="keyword">if</span> (DEBUG_RELEASE) Slog.d(TAG_RELEASE, <span class="string">"Abort release; already destroying: "</span> + r);</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果一个activity处于不可销毁的状态就不处理这个activity</span></span><br><span class="line">    <span class="keyword">if</span> (r.visible || !r.stopped || !r.haveState || r.state == RESUMED || r.state == PAUSING</span><br><span class="line">        || r.state == PAUSED || r.state == STOPPING) &#123;</span><br><span class="line">      <span class="keyword">if</span> (DEBUG_RELEASE) Slog.d(TAG_RELEASE, <span class="string">"Not releasing in-use activity: "</span> + r);</span><br><span class="line">      <span class="keyword">continue</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (r.task != <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="keyword">if</span> (DEBUG_RELEASE) Slog.d(TAG_RELEASE, <span class="string">"Collecting release task "</span> + r.task</span><br><span class="line">                                + <span class="string">" from "</span> + r);</span><br><span class="line">      <span class="keyword">if</span> (firstTask == <span class="keyword">null</span>) &#123;</span><br><span class="line">        firstTask = r.task;</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (firstTask != r.task) &#123; <span class="comment">// 需要多一个TaskRecord</span></span><br><span class="line">        <span class="keyword">if</span> (tasks == <span class="keyword">null</span>) &#123;</span><br><span class="line">          tasks = <span class="keyword">new</span> ArraySet&lt;&gt;();</span><br><span class="line">          tasks.add(firstTask);</span><br><span class="line">        &#125;</span><br><span class="line">        tasks.add(r.task);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (tasks == <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="comment">// APP当前进程中，至少两个TaskRecord才有必要走Activity的销毁逻辑</span></span><br><span class="line">    <span class="keyword">if</span> (DEBUG_RELEASE) Slog.d(TAG_RELEASE, <span class="string">"Didn't find two or more tasks to release"</span>);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// If we have activities in multiple tasks that are in a position to be destroyed,</span></span><br><span class="line">  <span class="comment">// let's iterate through the tasks and release the oldest one.</span></span><br><span class="line">  <span class="keyword">final</span> <span class="keyword">int</span> numDisplays = mActivityDisplays.size();</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> displayNdx = <span class="number">0</span>; displayNdx &lt; numDisplays; ++displayNdx) &#123;</span><br><span class="line">    <span class="keyword">final</span> ArrayList&lt;ActivityStack&gt; stacks = mActivityDisplays.valueAt(displayNdx).mStacks;</span><br><span class="line">    <span class="comment">// Step through all stacks starting from behind, to hit the oldest things first.</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> stackNdx = <span class="number">0</span>; stackNdx &lt; stacks.size(); stackNdx++) &#123;</span><br><span class="line">      <span class="keyword">final</span> ActivityStack stack = stacks.get(stackNdx);</span><br><span class="line">      <span class="comment">// Try to release activities in this stack; if we manage to, we are done.</span></span><br><span class="line">      <span class="keyword">if</span> (stack.releaseSomeActivitiesLocked(app, tasks, reason) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="ActivityManagerService-releaseSomeActivities"><a href="#ActivityManagerService-releaseSomeActivities" class="headerlink" title="ActivityManagerService.releaseSomeActivities()"></a>ActivityManagerService.releaseSomeActivities()</h3><pre class=" language-lang-java"><code class="language-lang-java">@Override
+public void releaseSomeActivities(IApplicationThread appInt) {
+  synchronized(this) {
+    final long origId = Binder.clearCallingIdentity();
+    try {
+      ProcessRecord app = getRecordForAppLocked(appInt);
+      mStackSupervisor.releaseSomeActivitiesLocked(app, "low-mem");
+    } finally {
+      Binder.restoreCallingIdentity(origId);
+    }
+  }
+}
+</code></pre>
+<h3 id="ActivityStackSupervisor-releaseSomeActivitiesLocked"><a href="#ActivityStackSupervisor-releaseSomeActivitiesLocked" class="headerlink" title="ActivityStackSupervisor.releaseSomeActivitiesLocked()"></a>ActivityStackSupervisor.releaseSomeActivitiesLocked()</h3><pre class=" language-lang-java"><code class="language-lang-java">void releaseSomeActivitiesLocked(ProcessRecord app, String reason) {
+  // 检查当前在进程中正在运行的所有activity
+  TaskRecord firstTask = null;
+  // 只有在2个或多个task任务栈时，tasks才不为空。也就是单栈app不会销毁。
+  ArraySet<TaskRecord> tasks = null;
+  if (DEBUG_RELEASE) Slog.d(TAG_RELEASE, "Trying to release some activities in " + app);
+  for (int i = 0; i < app.activities.size(); i++) {
+    ActivityRecord r = app.activities.get(i);
+    // 如果发现进程中的一个activity正在被destory，那么我们这次就不做任何处理。直接return掉
+    // 因为在执行清理activity的操作之前最好保持一个稳定的状态。
+    if (r.finishing || r.state == DESTROYING || r.state == DESTROYED) {
+      if (DEBUG_RELEASE) Slog.d(TAG_RELEASE, "Abort release; already destroying: " + r);
+      return;
+    }
+    // 如果一个activity处于不可销毁的状态就不处理这个activity
+    if (r.visible || !r.stopped || !r.haveState || r.state == RESUMED || r.state == PAUSING
+        || r.state == PAUSED || r.state == STOPPING) {
+      if (DEBUG_RELEASE) Slog.d(TAG_RELEASE, "Not releasing in-use activity: " + r);
+      continue;
+    }
+    if (r.task != null) {
+      if (DEBUG_RELEASE) Slog.d(TAG_RELEASE, "Collecting release task " + r.task
+                                + " from " + r);
+      if (firstTask == null) {
+        firstTask = r.task;
+      } else if (firstTask != r.task) { // 需要多一个TaskRecord
+        if (tasks == null) {
+          tasks = new ArraySet<>();
+          tasks.add(firstTask);
+        }
+        tasks.add(r.task);
+      }
+    }
+  }
+  if (tasks == null) {
+    // APP当前进程中，至少两个TaskRecord才有必要走Activity的销毁逻辑
+    if (DEBUG_RELEASE) Slog.d(TAG_RELEASE, "Didn't find two or more tasks to release");
+    return;
+  }
+  // If we have activities in multiple tasks that are in a position to be destroyed,
+  // let's iterate through the tasks and release the oldest one.
+  final int numDisplays = mActivityDisplays.size();
+  for (int displayNdx = 0; displayNdx < numDisplays; ++displayNdx) {
+    final ArrayList<ActivityStack> stacks = mActivityDisplays.valueAt(displayNdx).mStacks;
+    // Step through all stacks starting from behind, to hit the oldest things first.
+    for (int stackNdx = 0; stackNdx < stacks.size(); stackNdx++) {
+      final ActivityStack stack = stacks.get(stackNdx);
+      // Try to release activities in this stack; if we manage to, we are done.
+      if (stack.releaseSomeActivitiesLocked(app, tasks, reason) > 0) {
+        return;
+      }
+    }
+  }
+}
+</code></pre>
 <p>StackSupervisor 是什么？可以理解为activity任务栈的管理中心，系统所有应用的activity任务都在此管理.</p>
-<h3 id="ActivityStack-releaseSomeActivitiesLocked"><a href="#ActivityStack-releaseSomeActivitiesLocked" class="headerlink" title="ActivityStack.releaseSomeActivitiesLocked"></a>ActivityStack.releaseSomeActivitiesLocked</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">int</span> <span class="title">releaseSomeActivitiesLocked</span><span class="params">(ProcessRecord app, ArraySet&lt;TaskRecord&gt; tasks,</span></span></span><br><span class="line"><span class="function"><span class="params">                                      String reason)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// Iterate over tasks starting at the back (oldest) first.</span></span><br><span class="line">  <span class="keyword">if</span> (DEBUG_RELEASE) Slog.d(TAG_RELEASE, <span class="string">"Trying to release some activities in "</span> + app);</span><br><span class="line">  <span class="keyword">int</span> maxTasks = tasks.size() / <span class="number">4</span>;</span><br><span class="line">  <span class="keyword">if</span> (maxTasks &lt; <span class="number">1</span>) &#123;</span><br><span class="line">    maxTasks = <span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">int</span> numReleased = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> taskNdx = <span class="number">0</span>; taskNdx &lt; mTaskHistory.size() &amp;&amp; maxTasks &gt; <span class="number">0</span>; taskNdx++) &#123;</span><br><span class="line">    <span class="keyword">final</span> TaskRecord task = mTaskHistory.get(taskNdx);</span><br><span class="line">    <span class="keyword">if</span> (!tasks.contains(task)) &#123;</span><br><span class="line">      <span class="keyword">continue</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (DEBUG_RELEASE) Slog.d(TAG_RELEASE, <span class="string">"Looking for activities to release in "</span> + task);</span><br><span class="line">    <span class="keyword">int</span> curNum = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">final</span> ArrayList&lt;ActivityRecord&gt; activities = task.mActivities;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> actNdx = <span class="number">0</span>; actNdx &lt; activities.size(); actNdx++) &#123;</span><br><span class="line">      <span class="keyword">final</span> ActivityRecord activity = activities.get(actNdx);</span><br><span class="line">      <span class="keyword">if</span> (activity.app == app &amp;&amp; activity.isDestroyable()) &#123;</span><br><span class="line">        <span class="keyword">if</span> (DEBUG_RELEASE) Slog.v(TAG_RELEASE, <span class="string">"Destroying "</span> + activity</span><br><span class="line">             + <span class="string">" in state "</span> + activity.state + <span class="string">" resumed="</span> + mResumedActivity</span><br><span class="line">             + <span class="string">" pausing="</span> + mPausingActivity + <span class="string">" for reason "</span> + reason);</span><br><span class="line">        destroyActivityLocked(activity, <span class="keyword">true</span>, reason);</span><br><span class="line">        <span class="keyword">if</span> (activities.get(actNdx) != activity) &#123;</span><br><span class="line">          <span class="comment">// Was removed from list, back up so we don't miss the next one.</span></span><br><span class="line">          actNdx--;</span><br><span class="line">        &#125;</span><br><span class="line">        curNum++;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (curNum &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      numReleased += curNum;</span><br><span class="line">      maxTasks--;</span><br><span class="line">      <span class="keyword">if</span> (mTaskHistory.get(taskNdx) != task) &#123;</span><br><span class="line">        <span class="comment">// The entire task got removed, back up so we don't miss the next one.</span></span><br><span class="line">        taskNdx--;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (DEBUG_RELEASE) Slog.d(TAG_RELEASE,</span><br><span class="line">            <span class="string">"Done releasing: did "</span> + numReleased + <span class="string">" activities"</span>);</span><br><span class="line">  <span class="keyword">return</span> numReleased;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="ActivityStack-releaseSomeActivitiesLocked"><a href="#ActivityStack-releaseSomeActivitiesLocked" class="headerlink" title="ActivityStack.releaseSomeActivitiesLocked"></a>ActivityStack.releaseSomeActivitiesLocked</h3><pre class=" language-lang-java"><code class="language-lang-java">final int releaseSomeActivitiesLocked(ProcessRecord app, ArraySet<TaskRecord> tasks,
+                                      String reason) {
+  // Iterate over tasks starting at the back (oldest) first.
+  if (DEBUG_RELEASE) Slog.d(TAG_RELEASE, "Trying to release some activities in " + app);
+  int maxTasks = tasks.size() / 4;
+  if (maxTasks < 1) {
+    maxTasks = 1;
+  }
+  int numReleased = 0;
+  for (int taskNdx = 0; taskNdx < mTaskHistory.size() && maxTasks > 0; taskNdx++) {
+    final TaskRecord task = mTaskHistory.get(taskNdx);
+    if (!tasks.contains(task)) {
+      continue;
+    }
+    if (DEBUG_RELEASE) Slog.d(TAG_RELEASE, "Looking for activities to release in " + task);
+    int curNum = 0;
+    final ArrayList<ActivityRecord> activities = task.mActivities;
+    for (int actNdx = 0; actNdx < activities.size(); actNdx++) {
+      final ActivityRecord activity = activities.get(actNdx);
+      if (activity.app == app && activity.isDestroyable()) {
+        if (DEBUG_RELEASE) Slog.v(TAG_RELEASE, "Destroying " + activity
+             + " in state " + activity.state + " resumed=" + mResumedActivity
+             + " pausing=" + mPausingActivity + " for reason " + reason);
+        destroyActivityLocked(activity, true, reason);
+        if (activities.get(actNdx) != activity) {
+          // Was removed from list, back up so we don't miss the next one.
+          actNdx--;
+        }
+        curNum++;
+      }
+    }
+    if (curNum > 0) {
+      numReleased += curNum;
+      maxTasks--;
+      if (mTaskHistory.get(taskNdx) != task) {
+        // The entire task got removed, back up so we don't miss the next one.
+        taskNdx--;
+      }
+    }
+  }
+  if (DEBUG_RELEASE) Slog.d(TAG_RELEASE,
+            "Done releasing: did " + numReleased + " activities");
+  return numReleased;
+}
+</code></pre>
 <p>至此之后就会执行到Activity 的 performDestroy方法进行ondestroy，然后就等待GC回收的处理了。</p>
 <p>总结</p>
 <ol>
@@ -452,549 +912,723 @@
 <li>该回收机制利用了Java虚拟机的gc机finalize</li>
 </ol>
 
-      
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        Author:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://wossoneri.github.io" rel="external nofollow noreferrer">Wossoneri</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        Link:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://wossoneri.github.io/2019/11/18/[Android][Framework]Something-about-activity-recycle/">http://wossoneri.github.io/2019/11/18/[Android][Framework]Something-about-activity-recycle/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        Reprint policy:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    All articles in this blog are used except for special statements
+                    <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY-NC 4.0</a>
+                    reprint polocy. If reproduced, please indicate source
+                    <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
+                    !
+                </span>
+            </div>
+        
     </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>Copied successfully, please follow the reprint policy of this article</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">more</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/Android/">
+                                    <span class="chip bg-color">Android</span>
+                                </a>
+                            
+                                <a href="/tags/Framework/">
+                                    <span class="chip bg-color">Framework</span>
+                                </a>
+                            
+                                <a href="/tags/Activity/">
+                                    <span class="chip bg-color">Activity</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
     
     
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
     
 
     
 
-    
-      <div>
-        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
-  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
-  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
-    <span>打赏</span>
-  </button>
-  <div id="QR" style="display: none;">
-
-    
-      <div id="wechat" style="display: inline-block">
-        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付">
-        <p>微信支付</p>
-      </div>
-    
-
-    
-      <div id="alipay" style="display: inline-block">
-        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝">
-        <p>支付宝</p>
-      </div>
-    
-
-    
-
-  </div>
 </div>
 
-      </div>
-    
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
 
-    
-      <div>
-        <ul class="post-copyright">
-  <li class="post-copyright-author">
-    <strong>本文作者：</strong>
-    Wossoneri
-  </li>
-  <li class="post-copyright-link">
-    <strong>本文链接：</strong>
-    <a href="http://wossoneri.github.io/2019/11/18/[Android][Framework]Something-about-activity-recycle/" title="[Android][Framework]关于Activity回收你要知道的事情">http://wossoneri.github.io/2019/11/18/[Android][Framework]Something-about-activity-recycle/</a>
-  </li>
-  <li class="post-copyright-license">
-    <strong>版权声明： </strong>
-    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
-  </li>
-</ul>
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
 
-      </div>
-    
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
 
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
-          
-            <a href="/tags/Framework/" rel="tag"><i class="fa fa-tag"></i> Framework</a>
-          
-            <a href="/tags/Activity/" rel="tag"><i class="fa fa-tag"></i> Activity</a>
-          
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.png" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
         </div>
-      
+    </div>
+</div>
 
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
             
-              <a href="/2019/11/17/[Android][Framework]Android-permission-2/" rel="next" title="[Android][Framework] 全方位理解Android权限之Android权限系统1">
-                <i class="fa fa-chevron-left"></i> [Android][Framework] 全方位理解Android权限之Android权限系统1
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/12/09/[Java]Use-Bit-mask-code-By-EnumSet/" rel="prev" title="[Java] 使用EnumSet代替位运算简化代码逻辑">
-                [Java] 使用EnumSet代替位运算简化代码逻辑 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
         </div>
-      
-
-      
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-
-    <div class="post-spread">
-      
-    </div>
-  </div>
-
-
-          </div>
-          
-
-
-          
-
-  
-    <div class="comments" id="comments">
-      
-        <div id="gitment-container"></div>
-      
     </div>
 
-  
+    
 
+    
+        <link rel="stylesheet" href="/libs/gitment/gitment-default.css">
+<link rel="stylesheet" href="/css/gitment.css">
 
+<div class="gitment-card card" data-aos="fade-up">
+    <div class="comment_headling" style="font-size: 20px; font-weight: 700; position: relative; left: 20px; top: 15px; padding-bottom: 5px;">
+        <i class="fas fa-comments fa-fw" aria-hidden="true"></i>
+        <span>评论</span>
+    </div>
+    <div id="gitment-content" class="card-content"></div>
+</div>
 
+<script src="/libs/gitment/gitment.js"></script>
+<script>
+var gitment = new Gitment({
+    id: 'Mon Nov 18 2019 18:31:00 GMT+0800',
+    owner: 'wossoneri',
+    repo: 'wossoneri.github.io',
+    oauth: {
+        client_id: '40b6c719a11e3fca29e8',
+        client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77'
+    }
+});
+
+gitment.render('gitment-content');
+</script>
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;Previous</div>
+            <div class="card">
+                <a href="/2019/12/09/[Java]Use-Bit-mask-code-By-EnumSet/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/6.jpg" class="responsive-img" alt="[Java] 使用EnumSet代替位运算简化代码逻辑">
+                        
+                        <span class="card-title">[Java] 使用EnumSet代替位运算简化代码逻辑</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            位运算在Review代码时候，看到一段涉及到USB的逻辑代码，他是这样写的
+private boolean isUsbConnected;
+private boolean isUsbModeNCM;
+private boolean isUs
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2019-12-09
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Syntax/" class="post-category">
+                                    Syntax
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Java/">
+                        <span class="chip bg-color">Java</span>
+                    </a>
+                    
+                    <a href="/tags/EnumSet/">
+                        <span class="chip bg-color">EnumSet</span>
+                    </a>
+                    
+                    <a href="/tags/Effective-Java/">
+                        <span class="chip bg-color">Effective Java</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
         </div>
         
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <section class="site-overview-wrap sidebar-panel">
-        <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-            
-              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460" alt="Wossoneri">
-            
-              <p class="site-author-name" itemprop="name">Wossoneri</p>
-              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
-          </div>
-
-          <nav class="site-state motion-element">
-
-            
-              <div class="site-state-item site-state-posts">
-              
-                <a href="/archives/">
-              
-                  <span class="site-state-item-count">117</span>
-                  <span class="site-state-item-name">日志</span>
-                </a>
-              </div>
-            
-
-            
-              
-              
-              <div class="site-state-item site-state-categories">
-                <a href="/categories/index.html">
-                  <span class="site-state-item-count">17</span>
-                  <span class="site-state-item-name">分类</span>
-                </a>
-              </div>
-            
-
-            
-              
-              
-              <div class="site-state-item site-state-tags">
-                <a href="/tags/index.html">
-                  <span class="site-state-item-count">121</span>
-                  <span class="site-state-item-name">标签</span>
-                </a>
-              </div>
-            
-
-          </nav>
-
-          
-            <div class="feed-link motion-element">
-              <a href="/atom.xml" rel="alternate">
-                <i class="fa fa-rss"></i>
-                RSS
-              </a>
-            </div>
-          
-
-          <div class="links-of-author motion-element">
-            
-              
-                <span class="links-of-author-item">
-                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
-                    
-                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
-                </span>
-              
-                <span class="links-of-author-item">
-                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
-                    
-                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
-                </span>
-              
-            
-          </div>
-
-          
-          
-            <div class="cc-license motion-element" itemprop="license">
-              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
-                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
-              </a>
-            </div>
-          
-
-          
-          
-            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
-              <div class="links-of-blogroll-title">
-                <i class="fa  fa-fw fa-globe"></i>
-                友情链接
-              </div>
-              <ul class="links-of-blogroll-list">
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
-                  </li>
-                
-              </ul>
-            </div>
-          
-
-          
-
-        </div>
-      </section>
-
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#ActivityThread-attach"><span class="nav-number">1.</span> <span class="nav-text">ActivityThread.attach()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BinderInternal-addGcWatcher"><span class="nav-number">2.</span> <span class="nav-text">BinderInternal.addGcWatcher()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BinderInternal-GcWatcher"><span class="nav-number">3.</span> <span class="nav-text">BinderInternal.GcWatcher</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BinderInternal-forceGc"><span class="nav-number">4.</span> <span class="nav-text">BinderInternal.forceGc()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第一种GC条件"><span class="nav-number">5.</span> <span class="nav-text">第一种GC条件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ActivityThread-doGcIfNeeded"><span class="nav-number">5.1.</span> <span class="nav-text">ActivityThread.doGcIfNeeded()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ActivityThread-GcIdler"><span class="nav-number">5.2.</span> <span class="nav-text">ActivityThread.GcIdler</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MessageQueue-IdleHandler"><span class="nav-number">5.3.</span> <span class="nav-text">MessageQueue.IdleHandler</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MessageQueue-next"><span class="nav-number">5.4.</span> <span class="nav-text">MessageQueue.next()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ActivityThread"><span class="nav-number">5.5.</span> <span class="nav-text">ActivityThread</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ActivityThread-unscheduleGcIdler"><span class="nav-number">5.6.</span> <span class="nav-text">ActivityThread.unscheduleGcIdler()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ActivityThread-scheduleGcIdler"><span class="nav-number">5.7.</span> <span class="nav-text">ActivityThread.scheduleGcIdler()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ActivityThread-processInBackground"><span class="nav-number">5.8.</span> <span class="nav-text">ActivityThread.processInBackground()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ActivityManagerService-performAppGcLocked"><span class="nav-number">5.9.</span> <span class="nav-text">ActivityManagerService.performAppGcLocked()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ActivityManagerService-performAppGcsLocked"><span class="nav-number">5.10.</span> <span class="nav-text">ActivityManagerService.performAppGcsLocked()</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二种GC条件"><span class="nav-number">6.</span> <span class="nav-text">第二种GC条件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ActivityThread-handleLowMemory"><span class="nav-number">6.1.</span> <span class="nav-text">ActivityThread.handleLowMemory()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ActivityManagerService-performAppGcLocked-1"><span class="nav-number">6.2.</span> <span class="nav-text">ActivityManagerService.performAppGcLocked()</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ActivityManagerService-releaseSomeActivities"><span class="nav-number">7.</span> <span class="nav-text">ActivityManagerService.releaseSomeActivities()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ActivityStackSupervisor-releaseSomeActivitiesLocked"><span class="nav-number">8.</span> <span class="nav-text">ActivityStackSupervisor.releaseSomeActivitiesLocked()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ActivityStack-releaseSomeActivitiesLocked"><span class="nav-number">9.</span> <span class="nav-text">ActivityStack.releaseSomeActivitiesLocked</span></a></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
-      
-
-      
-
-    </div>
-  </aside>
-
-
         
-      </div>
-    </main>
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                Next&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2019/11/17/[Android][Framework]Android-permission-2/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/14.jpg" class="responsive-img" alt="[Android][Framework] 全方位理解Android权限之Android权限系统1">
+                        
+                        <span class="card-title">[Android][Framework] 全方位理解Android权限之Android权限系统1</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            系列目录请点击这里： 全方位理解Android权限
+因为东忙西忙没时间整理这一块的东西，拖了有点久，现在继续更新
+权限的性质我们知道，Android应用都运行在沙盒中，默认情况下这些应用只能访问他们自己的域，即自己的文件和非常少量的系统服务
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2019-11-17
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Android/" class="post-category">
+                                    Android
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Android/">
+                        <span class="chip bg-color">Android</span>
+                    </a>
+                    
+                    <a href="/tags/Framework/">
+                        <span class="chip bg-color">Framework</span>
+                    </a>
+                    
+                    <a href="/tags/permission/">
+                        <span class="chip bg-color">permission</span>
+                    </a>
+                    
+                    <a href="/tags/AppOps/">
+                        <span class="chip bg-color">AppOps</span>
+                    </a>
+                    
+                    <a href="/tags/PackageManagerService/">
+                        <span class="chip bg-color">PackageManagerService</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
 
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
-  <span class="with-love">
-    <i class="fa fa-user"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
-
-  
 </div>
 
 
-  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
 
 
+<!-- 代码块复制 -->
 
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
 
 
+<!-- 代码块收缩 -->
 
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;TOC</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
 
         
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
 
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
 
-
-
-
-
-
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
         
-      </div>
-    </footer>
-
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
-      </div>
-    
+    });
+</script>
 
     
 
-  </div>
+</main>
 
-  
 
+
+    <footer class="page-footer bg-color">
+    <div class="container row center-align" style="margin-bottom: 15px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            <span id="year">2016</span>
+            <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+            
+            <span id="sitetime">载入运行时间...</span>
+            <script>
+                function siteTime() {
+                    var seconds = 1000;
+                    var minutes = seconds * 60;
+                    var hours = minutes * 60;
+                    var days = hours * 24;
+                    var years = days * 365;
+                    var today = new Date();
+                    var startYear = "2016";
+                    var startMonth = "1";
+                    var startDate = "1";
+                    var startHour = "0";
+                    var startMinute = "0";
+                    var startSecond = "0";
+                    var todayYear = today.getFullYear();
+                    var todayMonth = today.getMonth() + 1;
+                    var todayDate = today.getDate();
+                    var todayHour = today.getHours();
+                    var todayMinute = today.getMinutes();
+                    var todaySecond = today.getSeconds();
+                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
+                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
+                    var diff = t2 - t1;
+                    var diffYears = Math.floor(diff / years);
+                    var diffDays = Math.floor((diff / days) - diffYears * 365);
+                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
+                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
+                        minutes);
+                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
+                        diffMinutes * minutes) / seconds);
+                    if (startYear == todayYear) {
+                        document.getElementById("year").innerHTML = todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
+                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    } else {
+                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
+                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    }
+                }
+                setInterval(siteTime, 1000);
+            </script>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/wossoneri" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:wossoneri@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=478251276" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 478251276" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;Search</span>
+            <input type="search" id="searchInput" name="s" placeholder="Please enter a search keyword"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
 <script type="text/javascript">
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
+$(function () {
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+});
+</script>
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-70716047-2"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-70716047-2');
 </script>
 
 
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
-  
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
-
-
-
-  
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-
-<!-- LOCAL: You can save these files to your site and update links -->
-    
-        
-        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
-        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
-    
-<!-- END LOCAL -->
-
-    
-
-    
-      <script type="text/javascript">
-      function renderGitment(){
-        var gitment = new Gitmint({
-            id: '1574073060000', 
-            owner: 'wossoneri',
-            repo: 'wossoneri.github.io',
-            
-            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
-            
-            oauth: {
-            
-            
-                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
-            
-                client_id: '40b6c719a11e3fca29e8'
-            }});
-        gitment.render('gitment-container');
-      }
-
-      
-      renderGitment();
-      
-      </script>
-    
-
-
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-  
-
-  
-
-  
-  
-
-  
-  
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        tex2jax: {
-          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
-          processEscapes: true,
-          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
         }
-      });
-    </script>
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
 
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for (i=0; i < all.length; i += 1) {
-          all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-      });
-    </script>
-    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-  
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
 
+    
 
-  
+    
 
-  
+    
+
+    
+
+    
+    
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
 
 </body>
+
 </html>

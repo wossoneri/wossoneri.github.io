@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://wossoneri.github.io/2018/07/22/%5BProtocolBuffer%5DProtocol-Buffer-basics-java/</loc>
+    <lastmod>2019-12-31</lastmod>
+  </url>  <url>
+    <loc>http://wossoneri.github.io/2019/12/09/%5BJava%5DUse-Bit-mask-code-By-EnumSet/</loc>
+    <lastmod>2019-12-31</lastmod>
+  </url>  <url>
+    <loc>http://wossoneri.github.io/2015/12/23/%5BMacOS%5D%20Mac-OS-X-El-Captain-Apache-php-mysql/</loc>
+    <lastmod>2019-12-31</lastmod>
+  </url>  <url>
+    <loc>http://wossoneri.github.io/2018/02/14/%5BDeepLearning%5D%5BCharpter%209%5DCNN/</loc>
+    <lastmod>2019-12-31</lastmod>
+  </url>  <url>
+    <loc>http://wossoneri.github.io/2018/05/04/%5BMachineLearning%5Dtesseract-tutorial/</loc>
+    <lastmod>2019-12-31</lastmod>
+  </url>  <url>
+    <loc>http://wossoneri.github.io/2016/05/04/%5B%E9%97%B2%E8%B0%88%5DDoes-experienced-programmer-use-google-frequently/</loc>
+    <lastmod>2019-12-31</lastmod>
+  </url>  <url>
     <loc>http://wossoneri.github.io/2019/04/09/%5BJVM%5Ddalvik-and-jvm/</loc>
     <lastmod>2019-12-31</lastmod>
   </url>  <url>
@@ -23,9 +41,6 @@
     <lastmod>2019-12-10</lastmod>
   </url>  <url>
     <loc>http://wossoneri.github.io/2018/06/03/%5BAndroid%5D%5BFramework%5Dhow-does-Activity-start/</loc>
-    <lastmod>2019-12-09</lastmod>
-  </url>  <url>
-    <loc>http://wossoneri.github.io/2019/12/09/%5BJava%5DUse-Bit-mask-code-By-EnumSet/</loc>
     <lastmod>2019-12-09</lastmod>
   </url>  <url>
     <loc>http://wossoneri.github.io/2019/11/18/%5BAndroid%5D%5BFramework%5DSomething-about-activity-recycle/</loc>
@@ -106,9 +121,6 @@
     <loc>http://wossoneri.github.io/2018/07/05/%5BAndroid%5D%5BFramework%5DSystem-Gesture-and-statusbar/</loc>
     <lastmod>2018-07-22</lastmod>
   </url>  <url>
-    <loc>http://wossoneri.github.io/2018/07/22/%5BProtocolBuffer%5DProtocol-Buffer-basics-java/</loc>
-    <lastmod>2018-07-22</lastmod>
-  </url>  <url>
     <loc>http://wossoneri.github.io/2018/07/10/%5BAndroid%5D%5BFramework%5Dbootchart/</loc>
     <lastmod>2018-07-10</lastmod>
   </url>  <url>
@@ -125,9 +137,6 @@
     <lastmod>2018-05-16</lastmod>
   </url>  <url>
     <loc>http://wossoneri.github.io/2016/10/15/%5BAndroid%5DMultimedia-database/</loc>
-    <lastmod>2018-05-15</lastmod>
-  </url>  <url>
-    <loc>http://wossoneri.github.io/2018/05/04/%5BMachineLearning%5Dtesseract-tutorial/</loc>
     <lastmod>2018-05-15</lastmod>
   </url>  <url>
     <loc>http://wossoneri.github.io/2018/05/08/%5BJava%5DCountDownLatch-and-CyclicBarrier/</loc>
@@ -203,9 +212,6 @@
     <lastmod>2018-04-03</lastmod>
   </url>  <url>
     <loc>http://wossoneri.github.io/2018/01/24/%5BMachineLearning%5DK-Nearest-Neighbor/</loc>
-    <lastmod>2018-04-03</lastmod>
-  </url>  <url>
-    <loc>http://wossoneri.github.io/2018/02/14/%5BDeepLearning%5D%5BCharpter%209%5DCNN/</loc>
     <lastmod>2018-04-03</lastmod>
   </url>  <url>
     <loc>http://wossoneri.github.io/2018/02/06/%5BMachineLearning%5DBackPropagation/</loc>
@@ -307,9 +313,6 @@
     <loc>http://wossoneri.github.io/2016/05/05/%5BiOS%5DWSHorizontalPickerView/</loc>
     <lastmod>2016-05-05</lastmod>
   </url>  <url>
-    <loc>http://wossoneri.github.io/2016/05/04/%5B%E9%97%B2%E8%B0%88%5DDoes-experienced-programmer-use-google-frequently/</loc>
-    <lastmod>2016-05-04</lastmod>
-  </url>  <url>
     <loc>http://wossoneri.github.io/2016/04/16/%5BSwift%5DNotes-of-Swift/</loc>
     <lastmod>2016-04-16</lastmod>
   </url>  <url>
@@ -345,9 +348,6 @@
   </url>  <url>
     <loc>http://wossoneri.github.io/2015/06/22/%5BiOS%5DInstall-OSX-in-Vmware-under-Win8/</loc>
     <lastmod>2016-01-03</lastmod>
-  </url>  <url>
-    <loc>http://wossoneri.github.io/2015/12/23/%5BMacOS%5D%20Mac-OS-X-El-Captain-Apache-php-mysql/</loc>
-    <lastmod>2016-01-02</lastmod>
   </url>  <url>
     <loc>http://wossoneri.github.io/2015/04/12/%5BAndroid%5DSystemBar-And-ImmersiveMode/</loc>
     <lastmod>2016-01-02</lastmod>

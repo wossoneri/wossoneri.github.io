@@ -1,423 +1,581 @@
-<!DOCTYPE html>
-
-
-
-  
-
-
-<html class="theme-next mist use-motion" lang="zh-Hans">
-<head><meta name="generator" content="Hexo 3.8.0">
-  <meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<meta name="theme-color" content="#222">
-
-
-
-
-
-
-
-
-
-<meta http-equiv="Cache-Control" content="no-transform">
-<meta http-equiv="Cache-Control" content="no-siteapp">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
-
-
-
-
-
-
-
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
-
-<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
-
-
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
-
-
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
-
-
-  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
-
-
-
-
-
-  <meta name="keywords" content="Android,Recovery,">
-
-
-
-
-
-  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml">
-
-
-
-
-
-
-<meta name="description" content="研究flash_image脚本时，了解到设备有MTD，EMMC，MMC三种差异，而flash_image仅仅适用于MTD设备。下面记录如何查看这三种设备内部的分区情况">
-<meta name="keywords" content="Android,Recovery">
-<meta property="og:type" content="article">
-<meta property="og:title" content="[Android] 查看MTD，EMMC，MMC三种设备的分区">
-<meta property="og:url" content="http://wossoneri.github.io/2018/11/06/[Android]MTD-MMC-EMMC-partition-layout/index.html">
-<meta property="og:site_name" content="Wossoneri`s Blog">
-<meta property="og:description" content="研究flash_image脚本时，了解到设备有MTD，EMMC，MMC三种差异，而flash_image仅仅适用于MTD设备。下面记录如何查看这三种设备内部的分区情况">
-<meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://iwf1.com/wordpress/wp-content/uploads/2016/02/Android-repartition-parted-print-partitions-table.jpg">
-<meta property="og:image" content="https://iwf1.com/wordpress/wp-content/uploads/2016/02/Android-repartition-parted-help.jpg">
-<meta property="og:updated_time" content="2018-11-06T11:01:16.203Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="[Android] 查看MTD，EMMC，MMC三种设备的分区">
-<meta name="twitter:description" content="研究flash_image脚本时，了解到设备有MTD，EMMC，MMC三种差异，而flash_image仅仅适用于MTD设备。下面记录如何查看这三种设备内部的分区情况">
-<meta name="twitter:image" content="https://iwf1.com/wordpress/wp-content/uploads/2016/02/Android-repartition-parted-print-partitions-table.jpg">
-
-
-
-<script type="text/javascript" id="hexo.configurations">
-  var NexT = window.NexT || {};
-  var CONFIG = {
-    root: '/',
-    scheme: 'Mist',
-    version: '5.1.3',
-    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
-    fancybox: true,
-    tabs: true,
-    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
-    duoshuo: {
-      userId: '6234852363740382000',
-      author: '博主'
-    },
-    algolia: {
-      applicationID: '',
-      apiKey: '',
-      indexName: '',
-      hits: {"per_page":10},
-      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
-    }
-  };
-</script>
-
-
-
-  <link rel="canonical" href="http://wossoneri.github.io/2018/11/06/[Android]MTD-MMC-EMMC-partition-layout/">
-
-
-
-
-
-  <title>[Android] 查看MTD，EMMC，MMC三种设备的分区 | Wossoneri`s Blog</title>
-  
-
-
-
-
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-  ga('create', 'UA-70716047-2', 'auto');
-  ga('send', 'pageview');
-</script>
-
-
-  <script type="text/javascript">
-    var _hmt = _hmt || [];
-    (function() {
-      var hm = document.createElement("script");
-      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
-      var s = document.getElementsByTagName("script")[0];
-      s.parentNode.insertBefore(hm, s);
-    })();
-  </script>
-
-
-
-
-</head>
-
-<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
-
-  
-  
+<!DOCTYPE HTML>
+<html lang="zh-Hans">
+
+
+<head><meta name="generator" content="Hexo 3.9.0">
+    <meta charset="utf-8">
+    <meta name="keywords" content="[Android] 查看MTD，EMMC，MMC三种设备的分区, Wossoneri`s Blog">
+    <meta name="description" content="Begining因为在做系统升级，AOSP的recovery下有一个flash_image工具，这个工具可以在开机状态下刷写系统分区。源码位置在/bootable/recovery/mtdutils/flash_image.c。
+但在实际操">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="renderer" content="webkit|ie-stand|ie-comp">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>[Android] 查看MTD，EMMC，MMC三种设备的分区 | Wossoneri`s Blog</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
+    <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
+    <link rel="stylesheet" type="text/css" href="/libs/materialize/materialize.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/aos/aos.css">
+    <link rel="stylesheet" type="text/css" href="/libs/animate/animate.min.css">
+    <link rel="stylesheet" type="text/css" href="/libs/lightGallery/css/lightgallery.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/matery.css">
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
     
-  
-
-  <div class="container sidebar-position-left page-post-detail">
-    <div class="headband"></div>
-    <a href="https://github.com"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
-
-    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-wrapper">
-  <div class="site-meta ">
+    <script src="/libs/jquery/jquery.min.js"></script>
     
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
 
-    <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
-        <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Wossoneri`s Blog</span>
-        <span class="logo-line-after"><i></i></span>
-      </a>
+
+<body>
+    <header class="navbar-fixed">
+    <nav id="headNav" class="bg-color nav-transparent">
+        <div id="navContainer" class="nav-wrapper head-container">
+            <div class="brand-logo">
+                <a href="/" class="waves-effect waves-light">
+                    
+                    <img src="/medias/logo.png" class="logo-img" alt="LOGO">
+                    
+                    <span class="logo-span">Wossoneri`s Blog</span>
+                </a>
+            </div>
+            
+
+<a href="#" data-target="mobile-nav" class="sidenav-trigger button-collapse"><i class="fas fa-bars"></i></a>
+<ul class="right nav-menu">
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/" class="waves-effect waves-light">
+      
+      <i class="fas fa-home" style="zoom: 0.6;"></i>
+      
+      <span>Index</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/tags" class="waves-effect waves-light">
+      
+      <i class="fas fa-tags" style="zoom: 0.6;"></i>
+      
+      <span>Tags</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/categories" class="waves-effect waves-light">
+      
+      <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
+      
+      <span>Categories</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/archives" class="waves-effect waves-light">
+      
+      <i class="fas fa-archive" style="zoom: 0.6;"></i>
+      
+      <span>Archives</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/about" class="waves-effect waves-light">
+      
+      <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
+      
+      <span>About</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/contact" class="waves-effect waves-light">
+      
+      <i class="fas fa-comments" style="zoom: 0.6;"></i>
+      
+      <span>Contact</span>
+    </a>
+    
+  </li>
+  
+  <li class="hide-on-med-and-down nav-item">
+    
+    <a href="/friends" class="waves-effect waves-light">
+      
+      <i class="fas fa-address-book" style="zoom: 0.6;"></i>
+      
+      <span>Friends</span>
+    </a>
+    
+  </li>
+  
+  <li>
+    <a href="#searchModal" class="modal-trigger waves-effect waves-light">
+      <i id="searchIcon" class="fas fa-search" title="Search" style="zoom: 0.85;"></i>
+    </a>
+  </li>
+</ul>
+
+<div id="mobile-nav" class="side-nav sidenav">
+
+    <div class="mobile-head bg-color">
+        
+        <img src="/medias/logo.png" class="logo-img circle responsive-img">
+        
+        <div class="logo-name">Wossoneri`s Blog</div>
+        <div class="logo-desc">
+            
+            就怕你一生碌碌无为，还安慰自己平凡可贵
+            
+        </div>
     </div>
-      
-        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
-      
-  </div>
 
-  <div class="site-nav-toggle">
-    <button>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-      <span class="btn-bar"></span>
-    </button>
-  </div>
+    
+
+    <ul class="menu-list mobile-menu-list">
+        
+        <li class="m-nav-item">
+	  
+		<a href="/" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-home"></i>
+			
+			Index
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/tags" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-tags"></i>
+			
+			Tags
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/categories" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-bookmark"></i>
+			
+			Categories
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/archives" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-archive"></i>
+			
+			Archives
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/about" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-user-circle"></i>
+			
+			About
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/contact" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-comments"></i>
+			
+			Contact
+		</a>
+          
+        </li>
+        
+        <li class="m-nav-item">
+	  
+		<a href="/friends" class="waves-effect waves-light">
+			
+			    <i class="fa-fw fas fa-address-book"></i>
+			
+			Friends
+		</a>
+          
+        </li>
+        
+        
+        <li><div class="divider"></div></li>
+        <li>
+            <a href="https://github.com/wossoneri" class="waves-effect waves-light" target="_blank">
+                <i class="fab fa-github-square fa-fw"></i>Fork Me
+            </a>
+        </li>
+        
+    </ul>
 </div>
 
-<nav class="site-nav">
-  
+        </div>
 
-  
-    <ul id="menu" class="menu">
-      
         
-        <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
-            
-            首页
-          </a>
-        </li>
-      
+            <style>
+    .nav-transparent .github-corner {
+        display: none !important;
+    }
+
+    .github-corner {
+        position: absolute;
+        z-index: 10;
+        top: 0;
+        right: 0;
+        border: 0;
+        transform: scale(1.1);
+    }
+
+    .github-corner svg {
+        color: #0f9d58;
+        fill: #fff;
+        height: 64px;
+        width: 64px;
+    }
+
+    .github-corner:hover .octo-arm {
+        animation: a 0.56s ease-in-out;
+    }
+
+    .github-corner .octo-arm {
+        animation: none;
+    }
+
+    @keyframes a {
+        0%,
+        to {
+            transform: rotate(0);
+        }
+        20%,
+        60% {
+            transform: rotate(-25deg);
+        }
+        40%,
+        80% {
+            transform: rotate(10deg);
+        }
+    }
+</style>
+
+<a href="https://github.com/wossoneri" class="github-corner tooltipped hide-on-med-and-down" target="_blank"
+   data-tooltip="Fork Me" data-position="left" data-delay="50">
+    <svg viewBox="0 0 250 250" aria-hidden="true">
+        <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+        <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+              fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path>
+        <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+              fill="currentColor" class="octo-body"></path>
+    </svg>
+</a>
         
-        <li class="menu-item menu-item-categories">
-          <a href="/categories/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
-            
-            分类
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-archives">
-          <a href="/archives/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
-            
-            归档
-          </a>
-        </li>
-      
-        
-        <li class="menu-item menu-item-tags">
-          <a href="/tags/" rel="section">
-            
-              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
-            
-            标签
-          </a>
-        </li>
-      
+    </nav>
 
-      
-    </ul>
-  
+</header>
 
-  
-</nav>
-
-
-
- </div>
-    </header>
-
-    <main id="main" class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          <div id="content" class="content">
-            
-
-  <div id="posts" class="posts-expand">
     
 
-  
 
-  
-  
-  
 
-  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2018/11/06/[Android]MTD-MMC-EMMC-partition-layout/">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/18.jpg')">
+    <div class="container" style="right: 0px;left: 0px;">
+        <div class="row">
+            <div class="col s12 m12 l12">
+                <div class="brand">
+                    <h1 class="description center-align post-title">[Android] 查看MTD，EMMC，MMC三种设备的分区</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Wossoneri">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
-    </span>
 
-    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Wossoneri`s Blog">
-    </span>
+
+
+<main class="post-container content">
 
     
-      <header class="post-header">
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
 
-        
-        
-          <h1 class="post-title" itemprop="name headline">[Android] 查看MTD，EMMC，MMC三种设备的分区</h1>
-        
+    #articleContent :focus {
+        outline: none;
+    }
 
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-06T18:58:00+08:00">
-                2018-11-06
-              </time>
-            
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
 
-            
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
 
-            
-          </span>
+    .toc-widget .toc-title {
+        margin: 35px 0 15px 0;
+        padding-left: 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
 
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android/" itemprop="url" rel="index">
-                    <span itemprop="name">Android</span>
-                  </a>
-                </span>
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        height: calc(100vh - 250px);
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #toc-content .is-active-link::before {
+        background-color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
+<div id="artDetail">
+    <div class="card">
+        <div class="card-content article-info">
+            <div class="row tag-cate">
+                <div class="col s7">
+                    
+                    <div class="article-tag">
+                        
+                            <a href="/tags/Android/">
+                                <span class="chip bg-color">Android</span>
+                            </a>
+                        
+                            <a href="/tags/Recovery/">
+                                <span class="chip bg-color">Recovery</span>
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+                <div class="col s5 right-align">
+                    
+                    <div class="post-cate">
+                        <i class="fas fa-bookmark fa-fw icon-category"></i>
+                        
+                            <a href="/categories/Android/" class="post-category">
+                                Android
+                            </a>
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="post-info">
+                
+                <div class="post-date info-break-policy">
+                    <i class="far fa-calendar-minus fa-fw"></i>Publish Date:&nbsp;&nbsp;
+                    2018-11-06
+                </div>
+                
 
                 
+
                 
-              
-            </span>
-          
+                <div class="info-break-policy">
+                    <i class="far fa-file-word fa-fw"></i>Word Count:&nbsp;&nbsp;
+                    2,664
+                </div>
+                
 
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/11/06/[Android]MTD-MMC-EMMC-partition-layout/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count gitment-comments-count" data-xid="/2018/11/06/[Android]MTD-MMC-EMMC-partition-layout/" itemprop="commentsCount"></span>
-                </a>
-              </span>
-            
-          
+                
+                <div class="info-break-policy">
+                    <i class="far fa-clock fa-fw"></i>Read Times:&nbsp;&nbsp;
+                    13 Min
+                </div>
+                
 
-          
-          
-	
-  		  <span class="post-letters-count">
-            &nbsp; | &nbsp;
-            <span class="post-meta-item-icon">
-                 <i class="fa fa-clock-o"></i>
-            </span>
-		        <span class="post-meta-item-text">总记</span>
-            <span class="post-count">2,712 字</span>
-		        <span class="post-meta-item-text">读完需要</span>
-    		    <span class="post-count">14 分</span>
-  		  </span>
-           
-         
-
-          
-
-          
-
-          
-              <div class="post-description">
-                  研究flash_image脚本时，了解到设备有MTD，EMMC，MMC三种差异，而flash_image仅仅适用于MTD设备。下面记录如何查看这三种设备内部的分区情况
-              </div>
-          
+                
+                    <div id="busuanzi_container_page_pv" class="info-break-policy">
+                        <i class="far fa-eye fa-fw"></i>Read Count:&nbsp;&nbsp;
+                        <span id="busuanzi_value_page_pv"></span>
+                    </div>
+				
+            </div>
 
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        <h1 id="Begining"><a href="#Begining" class="headerlink" title="Begining"></a>Begining</h1><p>因为在做系统升级，AOSP的recovery下有一个flash_image工具，这个工具可以在开机状态下刷写系统分区。源码位置在/bootable/recovery/mtdutils/flash_image.c。</p>
+        <hr class="clearfix">
+        <div class="card-content article-card-content">
+            <div id="articleContent">
+                <h1 id="Begining"><a href="#Begining" class="headerlink" title="Begining"></a>Begining</h1><p>因为在做系统升级，AOSP的recovery下有一个flash_image工具，这个工具可以在开机状态下刷写系统分区。源码位置在/bootable/recovery/mtdutils/flash_image.c。</p>
 <p>但在实际操作中，发现flash_image会报错：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">error scanning partitions: No such file or directory</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-shell"><code class="language-lang-shell">error scanning partitions: No such file or directory
+</code></pre>
 <p>说找不到分区。调查源码发现</p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// flash_image.c</span></span><br><span class="line"><span class="keyword">if</span> (mtd_scan_partitions() &lt;= <span class="number">0</span>) die(<span class="string">"error scanning partitions"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// mtdutils.c  mtd_scan_partitions()</span></span><br><span class="line"><span class="comment">/* Parse the contents of the file, which looks like:</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *     # cat /proc/mtd</span></span><br><span class="line"><span class="comment"> *     dev:    size   erasesize  name</span></span><br><span class="line"><span class="comment"> *     mtd0: 00080000 00020000 "bootloader"</span></span><br><span class="line"><span class="comment"> *     mtd1: 00400000 00020000 "mfg_and_gsm"</span></span><br><span class="line"><span class="comment"> *     mtd2: 00400000 00020000 "0000000c"</span></span><br><span class="line"><span class="comment"> *     mtd3: 00200000 00020000 "0000000d"</span></span><br><span class="line"><span class="comment"> *     mtd4: 04000000 00020000 "system"</span></span><br><span class="line"><span class="comment"> *     mtd5: 03280000 00020000 "userdata"</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-c"><code class="language-lang-c">// flash_image.c
+if (mtd_scan_partitions() <= 0) die("error scanning partitions");
+
+// mtdutils.c  mtd_scan_partitions()
+/* Parse the contents of the file, which looks like:
+ *
+ *     # cat /proc/mtd
+ *     dev:    size   erasesize  name
+ *     mtd0: 00080000 00020000 "bootloader"
+ *     mtd1: 00400000 00020000 "mfg_and_gsm"
+ *     mtd2: 00400000 00020000 "0000000c"
+ *     mtd3: 00200000 00020000 "0000000d"
+ *     mtd4: 04000000 00020000 "system"
+ *     mtd5: 03280000 00020000 "userdata"
+ */
+</code></pre>
 <p>大概就是会通过<code>/proc/mtd</code>这个文件查找分区信息，然后进行刷写。然后我去找这个文件，结果发现设备里面并没有这个文件。于是开始查找这个mtd相关信息。</p>
 <p>Android设备有多个分区存储不同的数据，通常的分区有recovery，boot，system，data和cache分区。几乎每个设备都有它自己的分区设计，这个和生产商有关，但常见的有MTD，EMMC和MMC设备。</p>
 <h1 id="MTD"><a href="#MTD" class="headerlink" title="MTD"></a>MTD</h1><p>Memory Technology Device，内存技术设备，是用于访问memory设备（ROM、flash）的Linux子系统。MTD的主要目的是为了使新的memory设备的驱动更加简单，为此它在硬件和上层之间提供了一个抽象的接口，并进行了一个层次划分，层次从上到下大致为：设备文件、MTD设备层、MTD原始设备层、硬件驱动层。MTD的所有源代码在/drivers/mtd子目录下。</p>
 <blockquote>
 <p>更详细的MTD设备分析见<a href="https://opensourceforu.com/2012/01/working-with-mtd-devices/" target="_blank" rel="noopener">https://opensourceforu.com/2012/01/working-with-mtd-devices/</a></p>
 </blockquote>
-<h2 id="MTD设备文件"><a href="#MTD设备文件" class="headerlink" title="MTD设备文件"></a>MTD设备文件</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">~ $ ls /dev/mtd* -l</span><br><span class="line">crw-rw----    1 root     root      90,   0 Jan  1 00:00 /dev/mtd0</span><br><span class="line">crw-rw----    1 root     root      90,   1 Jan  1 00:00 /dev/mtd0ro</span><br><span class="line">crw-rw----    1 root     root      90,   2 Jan  1 00:00 /dev/mtd1</span><br><span class="line">crw-rw----    1 root     root      90,   3 Jan  1 00:00 /dev/mtd1ro</span><br><span class="line">crw-rw----    1 root     root      90,   4 Jan  1 00:00 /dev/mtd2</span><br><span class="line">crw-rw----    1 root     root      90,   5 Jan  1 00:00 /dev/mtd2ro</span><br><span class="line">crw-rw----    1 root     root      90,   6 Jan  1 00:00 /dev/mtd3</span><br><span class="line">crw-rw----    1 root     root      90,   7 Jan  1 00:00 /dev/mtd3ro</span><br><span class="line">brw-rw----    1 root     root      31,   0 Jan  1 00:00 /dev/mtdblock0</span><br><span class="line">brw-rw----    1 root     root      31,   1 Jan  1 00:00 /dev/mtdblock1</span><br><span class="line">brw-rw----    1 root     root      31,   2 Jan  1 00:00 /dev/mtdblock2</span><br><span class="line">brw-rw----    1 root     root      31,   3 Jan  1 00:00 /dev/mtdblock3</span><br><span class="line"></span><br><span class="line">/dev/mtd:</span><br><span class="line">crw-rw-rw-    1 root     root      90,   0 Jan  1 00:00 0</span><br><span class="line">cr--r--r--    1 root     root      90,   1 Jan  1 00:00 0ro</span><br><span class="line">crw-rw-rw-    1 root     root      90,   2 Jan  1 00:00 1</span><br><span class="line">cr--r--r--    1 root     root      90,   3 Jan  1 00:00 1ro</span><br><span class="line">crw-rw-rw-    1 root     root      90,   4 Jan  1 00:00 2</span><br><span class="line">cr--r--r--    1 root     root      90,   5 Jan  1 00:00 2ro</span><br><span class="line">crw-rw-rw-    1 root     root      90,   6 Jan  1 00:00 3</span><br><span class="line">cr--r--r--    1 root     root      90,   7 Jan  1 00:00 3ro</span><br><span class="line"></span><br><span class="line">/dev/mtdblock:</span><br><span class="line">brw-------    1 root     root      31,   0 Jan  1 00:00 0</span><br><span class="line">brw-------    1 root     root      31,   1 Jan  1 00:00 1</span><br><span class="line">brw-------    1 root     root      31,   2 Jan  1 00:00 2</span><br><span class="line">brw-------    1 root     root      31,   3 Jan  1 00:00 3</span><br></pre></td></tr></table></figure>
+<h2 id="MTD设备文件"><a href="#MTD设备文件" class="headerlink" title="MTD设备文件"></a>MTD设备文件</h2><pre class=" language-lang-shell"><code class="language-lang-shell">~ $ ls /dev/mtd* -l
+crw-rw----    1 root     root      90,   0 Jan  1 00:00 /dev/mtd0
+crw-rw----    1 root     root      90,   1 Jan  1 00:00 /dev/mtd0ro
+crw-rw----    1 root     root      90,   2 Jan  1 00:00 /dev/mtd1
+crw-rw----    1 root     root      90,   3 Jan  1 00:00 /dev/mtd1ro
+crw-rw----    1 root     root      90,   4 Jan  1 00:00 /dev/mtd2
+crw-rw----    1 root     root      90,   5 Jan  1 00:00 /dev/mtd2ro
+crw-rw----    1 root     root      90,   6 Jan  1 00:00 /dev/mtd3
+crw-rw----    1 root     root      90,   7 Jan  1 00:00 /dev/mtd3ro
+brw-rw----    1 root     root      31,   0 Jan  1 00:00 /dev/mtdblock0
+brw-rw----    1 root     root      31,   1 Jan  1 00:00 /dev/mtdblock1
+brw-rw----    1 root     root      31,   2 Jan  1 00:00 /dev/mtdblock2
+brw-rw----    1 root     root      31,   3 Jan  1 00:00 /dev/mtdblock3
+
+/dev/mtd:
+crw-rw-rw-    1 root     root      90,   0 Jan  1 00:00 0
+cr--r--r--    1 root     root      90,   1 Jan  1 00:00 0ro
+crw-rw-rw-    1 root     root      90,   2 Jan  1 00:00 1
+cr--r--r--    1 root     root      90,   3 Jan  1 00:00 1ro
+crw-rw-rw-    1 root     root      90,   4 Jan  1 00:00 2
+cr--r--r--    1 root     root      90,   5 Jan  1 00:00 2ro
+crw-rw-rw-    1 root     root      90,   6 Jan  1 00:00 3
+cr--r--r--    1 root     root      90,   7 Jan  1 00:00 3ro
+
+/dev/mtdblock:
+brw-------    1 root     root      31,   0 Jan  1 00:00 0
+brw-------    1 root     root      31,   1 Jan  1 00:00 1
+brw-------    1 root     root      31,   2 Jan  1 00:00 2
+brw-------    1 root     root      31,   3 Jan  1 00:00 3
+</code></pre>
 <p>可以看到有mtdN和对应的/dev/mtd/N、mtdblockN和对应的/dev/mtdblock/N两类MTD设备，分别是字符设备，主设备号90和块设备，主设备号31。其中/dev/mtd0和/dev/mtd/0是完全等价的，/dev/mtdblock0和/dev/mtdblock/0是完全等价的，而/dev/mtd0和/dev/mtdblock0则是同一个MTD分区的两种不同应用描述，操作上是有区别的。</p>
 <h3 id="dev-mtdN设备"><a href="#dev-mtdN设备" class="headerlink" title="/dev/mtdN设备"></a>/dev/mtdN设备</h3><p>/dev/mtdN 是MTD架构中实现的mtd分区所对应的字符设备(将mtd设备分成多个区，每个区就为一个字符设备)，其里面添加了一些ioctl，支持很多命令，如MEMGETINFO，MEMERASE等。</p>
 <p>mtd-utils中的flash_eraseall等工具，就是以这些ioctl为基础而实现的工具，实现一些关于Flash的操作。比如，mtd 工具中 flash_eraseall中：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">if (ioctl(fd, MEMGETINFO, &amp;meminfo) != 0) </span><br><span class="line">&#123;</span><br><span class="line">   fprintf(stderr, "%s: %s: unable to get MTD device info\n",exe_name, mtd_device);</span><br><span class="line">   return 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-shell"><code class="language-lang-shell">if (ioctl(fd, MEMGETINFO, &meminfo) != 0) 
+{
+   fprintf(stderr, "%s: %s: unable to get MTD device info\n",exe_name, mtd_device);
+   return 1;
+}
+</code></pre>
 <p>MEMGETINFO是Linux MTD中的drivers/mtd/mtdchar.c中的ioctl命令，使用mtd字符设备需要加载mtdchar内核模块。该代码解释了上面的第一个现象。</p>
 <h3 id="dev-mtdblockN设备"><a href="#dev-mtdblockN设备" class="headerlink" title="/dev/mtdblockN设备"></a>/dev/mtdblockN设备</h3><p>/dev/mtdblockN，是<strong>Flash驱动</strong>中用add_mtd_partitions()添加MTD设备分区，而生成的对应的块设备。MTD块设备驱动程序可以让flash器件伪装成块设备，实际上它通过把整块的erase block放到ram里面进行访问，然后再更新到flash，用户可以在这个块设备上创建通常的文件系统。</p>
 <p>而对于MTD块设备，MTD设备层是不提供ioctl的实现方法的，也就不会有对应的MEMGETINFO命令之类，因此不能使用nandwrite,flash_eraseall,flash_erase等工具去对/dev/mtdblockN去进行操作，否则就会出现上面的现象一，同时也解释了现象3——用mtd2擦除分区后，在用mtdblock2进行umount就会造成混乱。</p>
 <p>mtd块设备的大小可以通过proc文件系统进行查看：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">~ $ cat /proc/partitions</span><br><span class="line">major minor  #blocks  name</span><br><span class="line"></span><br><span class="line">  31     0        512 mtdblock0</span><br><span class="line">  31     1       1024 mtdblock1</span><br><span class="line">  31     2       5632 mtdblock2</span><br><span class="line">  31     3       9216 mtdblock3</span><br><span class="line"> 254     0   30760960 mmcblk0    </span><br><span class="line"> 254     1   30756864 mmcblk0p1</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-shell"><code class="language-lang-shell">~ $ cat /proc/partitions
+major minor  #blocks  name
+
+  31     0        512 mtdblock0
+  31     1       1024 mtdblock1
+  31     2       5632 mtdblock2
+  31     3       9216 mtdblock3
+ 254     0   30760960 mmcblk0    
+ 254     1   30756864 mmcblk0p1
+</code></pre>
 <p>后面的两个是SD块设备的分区大小。每个block的大小是1KB。</p>
 <h2 id="MTD设备分区"><a href="#MTD设备分区" class="headerlink" title="MTD设备分区"></a>MTD设备分区</h2><p>通过proc文件系统查看mtd设备的分区情况：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">~ $ cat /proc/mtd</span><br><span class="line">dev:    size   erasesize  name</span><br><span class="line">mtd0: 00080000 00020000 "boot"</span><br><span class="line">mtd1: 00100000 00020000 "kernel"</span><br><span class="line">mtd2: 00580000 00020000 "roofs70"</span><br><span class="line">mtd3: 00900000 00020000 "app"</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-shell"><code class="language-lang-shell">~ $ cat /proc/mtd
+dev:    size   erasesize  name
+mtd0: 00080000 00020000 "boot"
+mtd1: 00100000 00020000 "kernel"
+mtd2: 00580000 00020000 "roofs70"
+mtd3: 00900000 00020000 "app"
+</code></pre>
 <p>可以发现，实际上mtdN和mtdblockN描述的是同一个MTD分区，对应同一个硬件分区，两者的大小是一样的，只不过是MTD设备层提供给上层的视图不一样，给上层提供了字符和块设备两种操作视图——为了上层使用的便利和需要，比如mount命令的需求，你只能挂载块设备(有文件系统)，而不能对字符设备进行挂载，否则会出现上面的现象2:无效参数。</p>
 <p>这里对于mtd和mtdblock设备的使用场景进行简单总结：</p>
 <ol>
@@ -427,23 +585,144 @@
 </ol>
 <h1 id="EMMC"><a href="#EMMC" class="headerlink" title="EMMC"></a>EMMC</h1><p>Embedded MultiMedia Card</p>
 <p>分区信息可以从<code>/proc/emmc</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cat /proc/emmc</span><br><span class="line">dev:        size     erasesize name</span><br><span class="line">mmcblk0p17: 00040000 00000200 "misc"</span><br><span class="line">mmcblk0p21: 0087f400 00000200 "recovery"</span><br><span class="line">mmcblk0p22: 00400000 00000200 "boot"</span><br><span class="line">mmcblk0p25: 22dffe00 00000200 "system"</span><br><span class="line">mmcblk0p29: 002ffc00 00000200 "local"</span><br><span class="line">mmcblk0p27: 090ffe00 00000200 "cache"</span><br><span class="line">mmcblk0p26: 496ffe00 00000200 "userdata"</span><br><span class="line">mmcblk0p30: 014bfe00 00000200 "devlog"</span><br><span class="line">mmcblk0p31: 00040000 00000200 "pdata"</span><br><span class="line">mmcblk0p28: 09800000 00000200 "lib"</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-shell"><code class="language-lang-shell">cat /proc/emmc
+dev:        size     erasesize name
+mmcblk0p17: 00040000 00000200 "misc"
+mmcblk0p21: 0087f400 00000200 "recovery"
+mmcblk0p22: 00400000 00000200 "boot"
+mmcblk0p25: 22dffe00 00000200 "system"
+mmcblk0p29: 002ffc00 00000200 "local"
+mmcblk0p27: 090ffe00 00000200 "cache"
+mmcblk0p26: 496ffe00 00000200 "userdata"
+mmcblk0p30: 014bfe00 00000200 "devlog"
+mmcblk0p31: 00040000 00000200 "pdata"
+mmcblk0p28: 09800000 00000200 "lib"
+</code></pre>
 <p>来获取。</p>
 <h1 id="MMC"><a href="#MMC" class="headerlink" title="MMC"></a>MMC</h1><p>MultiMedia Card</p>
 <p>它的分区信息只能从<code>/proc/partitions</code>获得：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cat /proc/partitions</span><br><span class="line">major minor  #blocks  name</span><br><span class="line"> 254        0     524288 zram0</span><br><span class="line"> 179        0   15388672 mmcblk0</span><br><span class="line"> 179        1      86016 mmcblk0p1</span><br><span class="line"> 179        2          1 mmcblk0p2</span><br><span class="line"> 179        3          8 mmcblk0p3</span><br><span class="line"> 179        4        512 mmcblk0p4</span><br><span class="line"> 179        5        512 mmcblk0p5</span><br><span class="line"> 179        6        512 mmcblk0p6</span><br><span class="line"> 179        7        512 mmcblk0p7</span><br><span class="line"> 179        8       2048 mmcblk0p8</span><br><span class="line"> 179        9       2048 mmcblk0p9</span><br><span class="line"> 179       10        256 mmcblk0p10</span><br><span class="line"> 179       11        256 mmcblk0p11</span><br><span class="line"> 179       12      16384 mmcblk0p12</span><br><span class="line"> 179       13       1536 mmcblk0p13</span><br><span class="line"> 179       14       1536 mmcblk0p14</span><br><span class="line"> 179       15         32 mmcblk0p15</span><br><span class="line"> 179       16       1536 mmcblk0p16</span><br><span class="line"> 179       17         16 mmcblk0p17</span><br><span class="line"> 179       18      33792 mmcblk0p18</span><br><span class="line"> 179       19       1024 mmcblk0p19</span><br><span class="line"> 179       20       1024 mmcblk0p20</span><br><span class="line"> 179       21      65536 mmcblk0p21</span><br><span class="line"> 179       22      65536 mmcblk0p22</span><br><span class="line"> 179       23       1024 mmcblk0p23</span><br><span class="line"> 179       24    2883584 mmcblk0p24</span><br><span class="line"> 179       25     262144 mmcblk0p25</span><br><span class="line"> 179       26      32768 mmcblk0p26</span><br><span class="line"> 179       27       1024 mmcblk0p27</span><br><span class="line"> 179       28        512 mmcblk0p28</span><br><span class="line"> 179       29         32 mmcblk0p29</span><br><span class="line"> 179       30     524288 mmcblk0p30</span><br><span class="line"> 179       31         32 mmcblk0p31</span><br><span class="line"> 259        0        512 mmcblk0p32</span><br><span class="line"> 259        1       1024 mmcblk0p33</span><br><span class="line"> 259        2      32768 mmcblk0p34</span><br><span class="line"> 259        3        512 mmcblk0p35</span><br><span class="line"> 259        4       4096 mmcblk0p36</span><br><span class="line"> 259        5        256 mmcblk0p37</span><br><span class="line"> 259        6        256 mmcblk0p38</span><br><span class="line"> 259        7        256 mmcblk0p39</span><br><span class="line"> 259        8        256 mmcblk0p40</span><br><span class="line"> 259        9        256 mmcblk0p41</span><br><span class="line"> 259       10        256 mmcblk0p42</span><br><span class="line"> 259       11        256 mmcblk0p43</span><br><span class="line"> 259       12        256 mmcblk0p44</span><br><span class="line"> 259       13          8 mmcblk0p45</span><br><span class="line"> 259       14      65536 mmcblk0p46</span><br><span class="line"> 259       15        512 mmcblk0p47</span><br><span class="line"> 259       16        512 mmcblk0p48</span><br><span class="line"> 259       17   10670063 mmcblk0p49</span><br><span class="line"> 179       32       4096 mmcblk0rpmb</span><br><span class="line"> 179       64   30375936 mmcblk1</span><br><span class="line"> 179       65   30371840 mmcblk1p1</span><br><span class="line"> 253        0   10670047 dm-0</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-shell"><code class="language-lang-shell">cat /proc/partitions
+major minor  #blocks  name
+ 254        0     524288 zram0
+ 179        0   15388672 mmcblk0
+ 179        1      86016 mmcblk0p1
+ 179        2          1 mmcblk0p2
+ 179        3          8 mmcblk0p3
+ 179        4        512 mmcblk0p4
+ 179        5        512 mmcblk0p5
+ 179        6        512 mmcblk0p6
+ 179        7        512 mmcblk0p7
+ 179        8       2048 mmcblk0p8
+ 179        9       2048 mmcblk0p9
+ 179       10        256 mmcblk0p10
+ 179       11        256 mmcblk0p11
+ 179       12      16384 mmcblk0p12
+ 179       13       1536 mmcblk0p13
+ 179       14       1536 mmcblk0p14
+ 179       15         32 mmcblk0p15
+ 179       16       1536 mmcblk0p16
+ 179       17         16 mmcblk0p17
+ 179       18      33792 mmcblk0p18
+ 179       19       1024 mmcblk0p19
+ 179       20       1024 mmcblk0p20
+ 179       21      65536 mmcblk0p21
+ 179       22      65536 mmcblk0p22
+ 179       23       1024 mmcblk0p23
+ 179       24    2883584 mmcblk0p24
+ 179       25     262144 mmcblk0p25
+ 179       26      32768 mmcblk0p26
+ 179       27       1024 mmcblk0p27
+ 179       28        512 mmcblk0p28
+ 179       29         32 mmcblk0p29
+ 179       30     524288 mmcblk0p30
+ 179       31         32 mmcblk0p31
+ 259        0        512 mmcblk0p32
+ 259        1       1024 mmcblk0p33
+ 259        2      32768 mmcblk0p34
+ 259        3        512 mmcblk0p35
+ 259        4       4096 mmcblk0p36
+ 259        5        256 mmcblk0p37
+ 259        6        256 mmcblk0p38
+ 259        7        256 mmcblk0p39
+ 259        8        256 mmcblk0p40
+ 259        9        256 mmcblk0p41
+ 259       10        256 mmcblk0p42
+ 259       11        256 mmcblk0p43
+ 259       12        256 mmcblk0p44
+ 259       13          8 mmcblk0p45
+ 259       14      65536 mmcblk0p46
+ 259       15        512 mmcblk0p47
+ 259       16        512 mmcblk0p48
+ 259       17   10670063 mmcblk0p49
+ 179       32       4096 mmcblk0rpmb
+ 179       64   30375936 mmcblk1
+ 179       65   30371840 mmcblk1p1
+ 253        0   10670047 dm-0
+</code></pre>
 <p>但这里显示的一堆盘符并不直观，所以还需要通过name表找到盘符对应分区关系：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">msm8937_32:/ # ls -l /dev/block/platform/soc/7824900.sdhci/by-name/</span><br><span class="line">total 0</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 DDR -&gt; /dev/block/mmcblk0p15</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 aboot -&gt; /dev/block/mmcblk0p19</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 abootbak -&gt; /dev/block/mmcblk0p20</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 apdp -&gt; /dev/block/mmcblk0p43</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 boot -&gt; /dev/block/mmcblk0p21</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 cache -&gt; /dev/block/mmcblk0p25</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 cmnlib -&gt; /dev/block/mmcblk0p37</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 cmnlib64 -&gt; /dev/block/mmcblk0p39</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 cmnlib64bak -&gt; /dev/block/mmcblk0p40</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 cmnlibbak -&gt; /dev/block/mmcblk0p38</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 config -&gt; /dev/block/mmcblk0p29</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 devcfg -&gt; /dev/block/mmcblk0p10</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 devcfgbak -&gt; /dev/block/mmcblk0p11</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 devinfo -&gt; /dev/block/mmcblk0p23</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 dip -&gt; /dev/block/mmcblk0p33</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 dpo -&gt; /dev/block/mmcblk0p45</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 dsp -&gt; /dev/block/mmcblk0p12</span><br><span class="line">lrwxrwxrwx 1 root root 20 1970-01-01 09:07 fsc -&gt; /dev/block/mmcblk0p2</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 fsg -&gt; /dev/block/mmcblk0p16</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 keymaster -&gt; /dev/block/mmcblk0p41</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 keymasterbak -&gt; /dev/block/mmcblk0p42</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 keystore -&gt; /dev/block/mmcblk0p28</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 limits -&gt; /dev/block/mmcblk0p31</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 logdump -&gt; /dev/block/mmcblk0p46</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 mcfg -&gt; /dev/block/mmcblk0p36</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 mdtp -&gt; /dev/block/mmcblk0p34</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 misc -&gt; /dev/block/mmcblk0p27</span><br><span class="line">lrwxrwxrwx 1 root root 20 1970-01-01 09:07 modem -&gt; /dev/block/mmcblk0p1</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 modemst1 -&gt; /dev/block/mmcblk0p13</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 modemst2 -&gt; /dev/block/mmcblk0p14</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 mota -&gt; /dev/block/mmcblk0p32</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 msadp -&gt; /dev/block/mmcblk0p44</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 odm -&gt; /dev/block/mmcblk0p47</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 oem -&gt; /dev/block/mmcblk0p30</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 persist -&gt; /dev/block/mmcblk0p26</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 recovery -&gt; /dev/block/mmcblk0p22</span><br><span class="line">lrwxrwxrwx 1 root root 20 1970-01-01 09:07 rpm -&gt; /dev/block/mmcblk0p6</span><br><span class="line">lrwxrwxrwx 1 root root 20 1970-01-01 09:07 rpmbak -&gt; /dev/block/mmcblk0p7</span><br><span class="line">lrwxrwxrwx 1 root root 20 1970-01-01 09:07 sbl1 -&gt; /dev/block/mmcblk0p4</span><br><span class="line">lrwxrwxrwx 1 root root 20 1970-01-01 09:07 sbl1bak -&gt; /dev/block/mmcblk0p5</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 sec -&gt; /dev/block/mmcblk0p17</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 splash -&gt; /dev/block/mmcblk0p18</span><br><span class="line">lrwxrwxrwx 1 root root 20 1970-01-01 09:07 ssd -&gt; /dev/block/mmcblk0p3</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 ssign -&gt; /dev/block/mmcblk0p48</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 syscfg -&gt; /dev/block/mmcblk0p35</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 system -&gt; /dev/block/mmcblk0p24</span><br><span class="line">lrwxrwxrwx 1 root root 20 1970-01-01 09:07 tz -&gt; /dev/block/mmcblk0p8</span><br><span class="line">lrwxrwxrwx 1 root root 20 1970-01-01 09:07 tzbak -&gt; /dev/block/mmcblk0p9</span><br><span class="line">lrwxrwxrwx 1 root root 21 1970-01-01 09:07 userdata -&gt; /dev/block/mmcblk0p49</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-shell"><code class="language-lang-shell">msm8937_32:/ # ls -l /dev/block/platform/soc/7824900.sdhci/by-name/
+total 0
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 DDR -> /dev/block/mmcblk0p15
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 aboot -> /dev/block/mmcblk0p19
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 abootbak -> /dev/block/mmcblk0p20
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 apdp -> /dev/block/mmcblk0p43
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 boot -> /dev/block/mmcblk0p21
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 cache -> /dev/block/mmcblk0p25
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 cmnlib -> /dev/block/mmcblk0p37
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 cmnlib64 -> /dev/block/mmcblk0p39
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 cmnlib64bak -> /dev/block/mmcblk0p40
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 cmnlibbak -> /dev/block/mmcblk0p38
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 config -> /dev/block/mmcblk0p29
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 devcfg -> /dev/block/mmcblk0p10
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 devcfgbak -> /dev/block/mmcblk0p11
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 devinfo -> /dev/block/mmcblk0p23
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 dip -> /dev/block/mmcblk0p33
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 dpo -> /dev/block/mmcblk0p45
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 dsp -> /dev/block/mmcblk0p12
+lrwxrwxrwx 1 root root 20 1970-01-01 09:07 fsc -> /dev/block/mmcblk0p2
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 fsg -> /dev/block/mmcblk0p16
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 keymaster -> /dev/block/mmcblk0p41
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 keymasterbak -> /dev/block/mmcblk0p42
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 keystore -> /dev/block/mmcblk0p28
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 limits -> /dev/block/mmcblk0p31
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 logdump -> /dev/block/mmcblk0p46
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 mcfg -> /dev/block/mmcblk0p36
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 mdtp -> /dev/block/mmcblk0p34
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 misc -> /dev/block/mmcblk0p27
+lrwxrwxrwx 1 root root 20 1970-01-01 09:07 modem -> /dev/block/mmcblk0p1
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 modemst1 -> /dev/block/mmcblk0p13
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 modemst2 -> /dev/block/mmcblk0p14
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 mota -> /dev/block/mmcblk0p32
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 msadp -> /dev/block/mmcblk0p44
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 odm -> /dev/block/mmcblk0p47
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 oem -> /dev/block/mmcblk0p30
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 persist -> /dev/block/mmcblk0p26
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 recovery -> /dev/block/mmcblk0p22
+lrwxrwxrwx 1 root root 20 1970-01-01 09:07 rpm -> /dev/block/mmcblk0p6
+lrwxrwxrwx 1 root root 20 1970-01-01 09:07 rpmbak -> /dev/block/mmcblk0p7
+lrwxrwxrwx 1 root root 20 1970-01-01 09:07 sbl1 -> /dev/block/mmcblk0p4
+lrwxrwxrwx 1 root root 20 1970-01-01 09:07 sbl1bak -> /dev/block/mmcblk0p5
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 sec -> /dev/block/mmcblk0p17
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 splash -> /dev/block/mmcblk0p18
+lrwxrwxrwx 1 root root 20 1970-01-01 09:07 ssd -> /dev/block/mmcblk0p3
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 ssign -> /dev/block/mmcblk0p48
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 syscfg -> /dev/block/mmcblk0p35
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 system -> /dev/block/mmcblk0p24
+lrwxrwxrwx 1 root root 20 1970-01-01 09:07 tz -> /dev/block/mmcblk0p8
+lrwxrwxrwx 1 root root 20 1970-01-01 09:07 tzbak -> /dev/block/mmcblk0p9
+lrwxrwxrwx 1 root root 21 1970-01-01 09:07 userdata -> /dev/block/mmcblk0p49
+</code></pre>
 <p>这样结合两个表就可以找到对应的盘符了。</p>
 <p>比如，<code>system</code>分区对应着<code>mmcblk0p24</code>。</p>
 <p>如果设备里有<code>parted</code>工具，就可以看更多信息</p>
 <h2 id="parted-工具"><a href="#parted-工具" class="headerlink" title="parted 工具"></a>parted 工具</h2><p>从上面的<code>cat /proc/partitions</code>看到<strong>mmcblk0</strong>是储存所有分区信息的主block，如果设备root过，就可以通过<code>parted</code>获取上面的信息：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">parted /dev/block/mmcblk0</span><br></pre></td></tr></table></figure>
+<pre class=" language-lang-shell"><code class="language-lang-shell">parted /dev/block/mmcblk0
+</code></pre>
 <p>使用参数p(rint)打印信息</p>
-<p><img src="https://iwf1.com/wordpress/wp-content/uploads/2016/02/Android-repartition-parted-print-partitions-table.jpg" alt=""></p>
+<p><img src="https://iwf1.com/wordpress/wp-content/uploads/2016/02/Android-repartition-parted-print-partitions-table.jpg" alt></p>
 <p>上面打印出来的大小单位都不统一，所以可以改成用<strong>unit b</strong>将单位统一成bytes，这样看起来会更加方便。</p>
 <p>help查看可用参数</p>
-<p><img src="https://iwf1.com/wordpress/wp-content/uploads/2016/02/Android-repartition-parted-help.jpg" alt=""></p>
+<p><img src="https://iwf1.com/wordpress/wp-content/uploads/2016/02/Android-repartition-parted-help.jpg" alt></p>
 <blockquote>
 <p>更多parted操作见<a href="https://iwf1.com/how-to-re-partition-your-android-tablet-or-smartphone-all-options-included-change-size-fs-type-etc/2" target="_blank" rel="noopener">https://iwf1.com/how-to-re-partition-your-android-tablet-or-smartphone-all-options-included-change-size-fs-type-etc/2</a></p>
 </blockquote>
@@ -451,547 +730,705 @@
 <p><a href="https://my.oschina.net/shelllife/blog/123482" target="_blank" rel="noopener">https://my.oschina.net/shelllife/blog/123482</a></p>
 <p><a href="https://www.cnblogs.com/shangdawei/p/4514128.html" target="_blank" rel="noopener">https://www.cnblogs.com/shangdawei/p/4514128.html</a></p>
 
-      
+            </div>
+            <hr/>
+
+            
+
+    <div class="reprint" id="reprint-statement">
+        
+            <div class="reprint__author">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-user">
+                        Author:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://wossoneri.github.io" rel="external nofollow noreferrer">Wossoneri</a>
+                </span>
+            </div>
+            <div class="reprint__type">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-link">
+                        Link:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    <a href="http://wossoneri.github.io/2018/11/06/[Android]MTD-MMC-EMMC-partition-layout/">http://wossoneri.github.io/2018/11/06/[Android]MTD-MMC-EMMC-partition-layout/</a>
+                </span>
+            </div>
+            <div class="reprint__notice">
+                <span class="reprint-meta" style="font-weight: bold;">
+                    <i class="fas fa-copyright">
+                        Reprint policy:
+                    </i>
+                </span>
+                <span class="reprint-info">
+                    All articles in this blog are used except for special statements
+                    <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY-NC 4.0</a>
+                    reprint polocy. If reproduced, please indicate source
+                    <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
+                    !
+                </span>
+            </div>
+        
     </div>
+
+    <script async defer>
+      document.addEventListener("copy", function (e) {
+        let toastHTML = '<span>Copied successfully, please follow the reprint policy of this article</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">more</a>';
+        M.toast({html: toastHTML})
+      });
+
+      function navToReprintStatement() {
+        $("html, body").animate({scrollTop: $("#reprint-statement").offset().top - 80}, 800);
+      }
+    </script>
+
+
+
+            <div class="tag_share" style="display: block;">
+                <div class="post-meta__tag-list" style="display: inline-block;">
+                    
+                        <div class="article-tag">
+                            
+                                <a href="/tags/Android/">
+                                    <span class="chip bg-color">Android</span>
+                                </a>
+                            
+                                <a href="/tags/Recovery/">
+                                    <span class="chip bg-color">Recovery</span>
+                                </a>
+                            
+                        </div>
+                    
+                </div>
+                <div class="post_share" style="zoom: 80%; width: fit-content; display: inline-block; float: right; margin: -0.15rem 0;">
+                    <link rel="stylesheet" type="text/css" href="/libs/share/css/share.min.css">
+
+<div id="article-share">
     
     
+    <div class="social-share" data-sites="twitter,facebook,google,qq,qzone,wechat,weibo,douban,linkedin" data-wechat-qrcode-helper="<p>微信扫一扫即可分享！</p>"></div>
+    <script src="/libs/share/js/social-share.min.js"></script>
     
 
     
 
-    
-      <div>
-        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
-  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
-  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
-    <span>打赏</span>
-  </button>
-  <div id="QR" style="display: none;">
-
-    
-      <div id="wechat" style="display: inline-block">
-        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付">
-        <p>微信支付</p>
-      </div>
-    
-
-    
-      <div id="alipay" style="display: inline-block">
-        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝">
-        <p>支付宝</p>
-      </div>
-    
-
-    
-
-  </div>
 </div>
 
-      </div>
-    
+                </div>
+            </div>
+            
+                <style>
+    #reward {
+        margin: 40px 0;
+        text-align: center;
+    }
 
-    
-      <div>
-        <ul class="post-copyright">
-  <li class="post-copyright-author">
-    <strong>本文作者：</strong>
-    Wossoneri
-  </li>
-  <li class="post-copyright-link">
-    <strong>本文链接：</strong>
-    <a href="http://wossoneri.github.io/2018/11/06/[Android]MTD-MMC-EMMC-partition-layout/" title="[Android] 查看MTD，EMMC，MMC三种设备的分区">http://wossoneri.github.io/2018/11/06/[Android]MTD-MMC-EMMC-partition-layout/</a>
-  </li>
-  <li class="post-copyright-license">
-    <strong>版权声明： </strong>
-    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
-  </li>
-</ul>
+    #reward .reward-link {
+        font-size: 1.4rem;
+        line-height: 38px;
+    }
 
-      </div>
-    
+    #reward .btn-floating:hover {
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
 
-    <footer class="post-footer">
-      
-        <div class="post-tags">
-          
-            <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
-          
-            <a href="/tags/Recovery/" rel="tag"><i class="fa fa-tag"></i> Recovery</a>
-          
+    #rewardModal {
+        width: 320px;
+        height: 350px;
+    }
+
+    #rewardModal .reward-title {
+        margin: 15px auto;
+        padding-bottom: 5px;
+    }
+
+    #rewardModal .modal-content {
+        padding: 10px;
+    }
+
+    #rewardModal .close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        color: rgba(0, 0, 0, 0.5);
+        font-size: 1.3rem;
+        line-height: 20px;
+        cursor: pointer;
+    }
+
+    #rewardModal .close:hover {
+        color: #ef5350;
+        transform: scale(1.3);
+        -moz-transform:scale(1.3);
+        -webkit-transform:scale(1.3);
+        -o-transform:scale(1.3);
+    }
+
+    #rewardModal .reward-tabs {
+        margin: 0 auto;
+        width: 210px;
+    }
+
+    .reward-tabs .tabs {
+        height: 38px;
+        margin: 10px auto;
+        padding-left: 0;
+    }
+
+    .reward-content ul {
+        padding-left: 0 !important;
+    }
+
+    .reward-tabs .tabs .tab {
+        height: 38px;
+        line-height: 38px;
+    }
+
+    .reward-tabs .tab a {
+        color: #fff;
+        background-color: #ccc;
+    }
+
+    .reward-tabs .tab a:hover {
+        background-color: #ccc;
+        color: #fff;
+    }
+
+    .reward-tabs .wechat-tab .active {
+        color: #fff !important;
+        background-color: #22AB38 !important;
+    }
+
+    .reward-tabs .alipay-tab .active {
+        color: #fff !important;
+        background-color: #019FE8 !important;
+    }
+
+    .reward-tabs .reward-img {
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<div id="reward">
+    <a href="#rewardModal" class="reward-link modal-trigger btn-floating btn-medium waves-effect waves-light red">赏</a>
+
+    <!-- Modal Structure -->
+    <div id="rewardModal" class="modal">
+        <div class="modal-content">
+            <a class="close modal-close"><i class="fas fa-times"></i></a>
+            <h4 class="reward-title">你的赏识是我前进的动力</h4>
+            <div class="reward-content">
+                <div class="reward-tabs">
+                    <ul class="tabs row">
+                        <li class="tab col s6 alipay-tab waves-effect waves-light"><a href="#alipay">支付宝</a></li>
+                        <li class="tab col s6 wechat-tab waves-effect waves-light"><a href="#wechat">微 信</a></li>
+                    </ul>
+                    <div id="alipay">
+                        <img src="/medias/reward/alipay.png" class="reward-img" alt="支付宝打赏二维码">
+                    </div>
+                    <div id="wechat">
+                        <img src="/medias/reward/wechat.png" class="reward-img" alt="微信打赏二维码">
+                    </div>
+                </div>
+            </div>
         </div>
-      
+    </div>
+</div>
 
-      
-      
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
+<script>
+    $(function () {
+        $('.tabs').tabs();
+    });
+</script>
             
-              <a href="/2018/11/02/[Android][Recovery]recovery-cannot-locate-sdcard/" rel="next" title="[Android][Recovery] Recovery下找不到sdcard路径">
-                <i class="fa fa-chevron-left"></i> [Android][Recovery] Recovery下找不到sdcard路径
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/11/14/[Android][Framework]SystemProperties/" rel="prev" title="[Android][Framework]SystemProperties">
-                [Android][Framework]SystemProperties <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
         </div>
-      
-
-      
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-
-    <div class="post-spread">
-      
-    </div>
-  </div>
-
-
-          </div>
-          
-
-
-          
-
-  
-    <div class="comments" id="comments">
-      
-        <div id="gitment-container"></div>
-      
     </div>
 
-  
+    
 
+    
+        <link rel="stylesheet" href="/libs/gitment/gitment-default.css">
+<link rel="stylesheet" href="/css/gitment.css">
 
+<div class="gitment-card card" data-aos="fade-up">
+    <div class="comment_headling" style="font-size: 20px; font-weight: 700; position: relative; left: 20px; top: 15px; padding-bottom: 5px;">
+        <i class="fas fa-comments fa-fw" aria-hidden="true"></i>
+        <span>评论</span>
+    </div>
+    <div id="gitment-content" class="card-content"></div>
+</div>
 
+<script src="/libs/gitment/gitment.js"></script>
+<script>
+var gitment = new Gitment({
+    id: 'Tue Nov 06 2018 18:58:00 GMT+0800',
+    owner: 'wossoneri',
+    repo: 'wossoneri.github.io',
+    oauth: {
+        client_id: '40b6c719a11e3fca29e8',
+        client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77'
+    }
+});
+
+gitment.render('gitment-content');
+</script>
+    
+
+    
+
+    
+
+    
+
+    
+
+<article id="prenext-posts" class="prev-next articles">
+    <div class="row article-row">
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge left-badge text-color">
+                <i class="fas fa-chevron-left"></i>&nbsp;Previous</div>
+            <div class="card">
+                <a href="/2018/11/14/[Android][Framework]SystemProperties/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/21.jpg" class="responsive-img" alt="[Android][Framework]SystemProperties">
+                        
+                        <span class="card-title">[Android][Framework]SystemProperties</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            属性简介在Android 系统中，为统一管理系统的属性，设计了一个统一的属性系统。每个属性都有一个名称和值，他们都是字符串格式。属性被大量使用在Android系统中，用来记录系统设置或进程之间的信息交换。属性是在整个系统中全局可见的。每个进
+                        
+                    </div>
+                    <div class="publish-info">
+                        <span class="publish-date">
+                            <i class="far fa-clock fa-fw icon-date"></i>2018-11-14
+                        </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Android/" class="post-category">
+                                    Android
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Android/">
+                        <span class="chip bg-color">Android</span>
+                    </a>
+                    
+                    <a href="/tags/SystemProperties/">
+                        <span class="chip bg-color">SystemProperties</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
         </div>
         
-          
-  
-  <div class="sidebar-toggle">
-    <div class="sidebar-toggle-line-wrap">
-      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
-      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
-    </div>
-  </div>
-
-  <aside id="sidebar" class="sidebar">
-    
-    <div class="sidebar-inner">
-
-      
-
-      
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
-
-      <section class="site-overview-wrap sidebar-panel">
-        <div class="site-overview">
-          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-            
-              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460" alt="Wossoneri">
-            
-              <p class="site-author-name" itemprop="name">Wossoneri</p>
-              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
-          </div>
-
-          <nav class="site-state motion-element">
-
-            
-              <div class="site-state-item site-state-posts">
-              
-                <a href="/archives/">
-              
-                  <span class="site-state-item-count">117</span>
-                  <span class="site-state-item-name">日志</span>
-                </a>
-              </div>
-            
-
-            
-              
-              
-              <div class="site-state-item site-state-categories">
-                <a href="/categories/index.html">
-                  <span class="site-state-item-count">17</span>
-                  <span class="site-state-item-name">分类</span>
-                </a>
-              </div>
-            
-
-            
-              
-              
-              <div class="site-state-item site-state-tags">
-                <a href="/tags/index.html">
-                  <span class="site-state-item-count">121</span>
-                  <span class="site-state-item-name">标签</span>
-                </a>
-              </div>
-            
-
-          </nav>
-
-          
-            <div class="feed-link motion-element">
-              <a href="/atom.xml" rel="alternate">
-                <i class="fa fa-rss"></i>
-                RSS
-              </a>
-            </div>
-          
-
-          <div class="links-of-author motion-element">
-            
-              
-                <span class="links-of-author-item">
-                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
-                    
-                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
-                </span>
-              
-                <span class="links-of-author-item">
-                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
-                    
-                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
-                </span>
-              
-            
-          </div>
-
-          
-          
-            <div class="cc-license motion-element" itemprop="license">
-              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
-                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
-              </a>
-            </div>
-          
-
-          
-          
-            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
-              <div class="links-of-blogroll-title">
-                <i class="fa  fa-fw fa-globe"></i>
-                友情链接
-              </div>
-              <ul class="links-of-blogroll-list">
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
-                  </li>
-                
-                  <li class="links-of-blogroll-item">
-                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
-                  </li>
-                
-              </ul>
-            </div>
-          
-
-          
-
-        </div>
-      </section>
-
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Begining"><span class="nav-number">1.</span> <span class="nav-text">Begining</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MTD"><span class="nav-number">2.</span> <span class="nav-text">MTD</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MTD设备文件"><span class="nav-number">2.1.</span> <span class="nav-text">MTD设备文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#dev-mtdN设备"><span class="nav-number">2.1.1.</span> <span class="nav-text">/dev/mtdN设备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dev-mtdblockN设备"><span class="nav-number">2.1.2.</span> <span class="nav-text">/dev/mtdblockN设备</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MTD设备分区"><span class="nav-number">2.2.</span> <span class="nav-text">MTD设备分区</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#EMMC"><span class="nav-number">3.</span> <span class="nav-text">EMMC</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MMC"><span class="nav-number">4.</span> <span class="nav-text">MMC</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#parted-工具"><span class="nav-number">4.1.</span> <span class="nav-text">parted 工具</span></a></li></ol></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
-      
-
-      
-
-    </div>
-  </aside>
-
-
         
-      </div>
-    </main>
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                Next&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="card">
+                <a href="/2018/11/02/[Android][Recovery]recovery-cannot-locate-sdcard/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/3.jpg" class="responsive-img" alt="[Android][Recovery] Recovery下找不到sdcard路径">
+                        
+                        <span class="card-title">[Android][Recovery] Recovery下找不到sdcard路径</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            做升级的时候，把更新包拷贝到sd卡中，然后调用接口进行重启升级
+File update_file = new File("/sdcard/update.zip");
+try {
+    Log.d("WOW", "install " + u
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2018-11-02
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/Android/" class="post-category">
+                                    Android
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/Android/">
+                        <span class="chip bg-color">Android</span>
+                    </a>
+                    
+                    <a href="/tags/Recovery/">
+                        <span class="chip bg-color">Recovery</span>
+                    </a>
+                    
+                    <a href="/tags/Framework/">
+                        <span class="chip bg-color">Framework</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+    </div>
+</article>
 
-    <footer id="footer" class="footer">
-      <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
-  <span class="with-love">
-    <i class="fa fa-user"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
-
-  
 </div>
 
 
-  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+<!-- 代码块功能依赖 -->
+<script type="text/javascript" src="/libs/codeBlock/codeBlockFuction.js"></script>
+
+<!-- 代码语言 -->
+
+<script type="text/javascript" src="/libs/codeBlock/codeLang.js"></script>
 
 
+<!-- 代码块复制 -->
 
-  <span class="post-meta-divider">|</span>
-
-
-
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+<script type="text/javascript" src="/libs/codeBlock/codeCopy.js"></script>
 
 
+<!-- 代码块收缩 -->
 
+<script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
+
+
+<!-- 代码块折行 -->
+
+<style type="text/css">
+code[class*="language-"], pre[class*="language-"] { white-space: pre !important; }
+</style>
+
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;TOC</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
 
         
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
 
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
 
-
-
-
-
-
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
         
-      </div>
-    </footer>
-
-    
-      <div class="back-to-top">
-        <i class="fa fa-arrow-up"></i>
-        
-      </div>
-    
+    });
+</script>
 
     
 
-  </div>
+</main>
 
-  
 
+
+    <footer class="page-footer bg-color">
+    <div class="container row center-align" style="margin-bottom: 15px !important;">
+        <div class="col s12 m8 l8 copy-right">
+            Copyright&nbsp;&copy;
+            <span id="year">2016</span>
+            <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
+            |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
+            |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
+            <br>
+            
+            
+            
+            
+            
+            
+            <span id="busuanzi_container_site_pv">
+                |&nbsp;<i class="far fa-eye"></i>&nbsp;总访问量:&nbsp;<span id="busuanzi_value_site_pv"
+                    class="white-color"></span>&nbsp;次
+            </span>
+            
+            
+            <span id="busuanzi_container_site_uv">
+                |&nbsp;<i class="fas fa-users"></i>&nbsp;总访问人数:&nbsp;<span id="busuanzi_value_site_uv"
+                    class="white-color"></span>&nbsp;人
+            </span>
+            
+            <br>
+            
+            <span id="sitetime">载入运行时间...</span>
+            <script>
+                function siteTime() {
+                    var seconds = 1000;
+                    var minutes = seconds * 60;
+                    var hours = minutes * 60;
+                    var days = hours * 24;
+                    var years = days * 365;
+                    var today = new Date();
+                    var startYear = "2016";
+                    var startMonth = "1";
+                    var startDate = "1";
+                    var startHour = "0";
+                    var startMinute = "0";
+                    var startSecond = "0";
+                    var todayYear = today.getFullYear();
+                    var todayMonth = today.getMonth() + 1;
+                    var todayDate = today.getDate();
+                    var todayHour = today.getHours();
+                    var todayMinute = today.getMinutes();
+                    var todaySecond = today.getSeconds();
+                    var t1 = Date.UTC(startYear, startMonth, startDate, startHour, startMinute, startSecond);
+                    var t2 = Date.UTC(todayYear, todayMonth, todayDate, todayHour, todayMinute, todaySecond);
+                    var diff = t2 - t1;
+                    var diffYears = Math.floor(diff / years);
+                    var diffDays = Math.floor((diff / days) - diffYears * 365);
+                    var diffHours = Math.floor((diff - (diffYears * 365 + diffDays) * days) / hours);
+                    var diffMinutes = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours) /
+                        minutes);
+                    var diffSeconds = Math.floor((diff - (diffYears * 365 + diffDays) * days - diffHours * hours -
+                        diffMinutes * minutes) / seconds);
+                    if (startYear == todayYear) {
+                        document.getElementById("year").innerHTML = todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffDays + " 天 " + diffHours +
+                            " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    } else {
+                        document.getElementById("year").innerHTML = startYear + " - " + todayYear;
+                        document.getElementById("sitetime").innerHTML = "本站已安全运行 " + diffYears + " 年 " + diffDays +
+                            " 天 " + diffHours + " 小时 " + diffMinutes + " 分钟 " + diffSeconds + " 秒";
+                    }
+                }
+                setInterval(siteTime, 1000);
+            </script>
+            
+            <br>
+            
+        </div>
+        <div class="col s12 m4 l4 social-link social-statis">
+    <a href="https://github.com/wossoneri" class="tooltipped" target="_blank" data-tooltip="访问我的GitHub" data-position="top" data-delay="50">
+        <i class="fab fa-github"></i>
+    </a>
+
+
+
+    <a href="mailto:wossoneri@163.com" class="tooltipped" target="_blank" data-tooltip="邮件联系我" data-position="top" data-delay="50">
+        <i class="fas fa-envelope-open"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="tencent://AddContact/?fromId=50&fromSubId=1&subcmd=all&uin=478251276" class="tooltipped" target="_blank" data-tooltip="QQ联系我: 478251276" data-position="top" data-delay="50">
+        <i class="fab fa-qq"></i>
+    </a>
+
+
+
+
+
+
+
+    <a href="/atom.xml" class="tooltipped" target="_blank" data-tooltip="RSS 订阅" data-position="top" data-delay="50">
+        <i class="fas fa-rss"></i>
+    </a>
+
+</div>
+    </div>
+</footer>
+
+<div class="progress-bar"></div>
+
+
+    <!-- 搜索遮罩框 -->
+<div id="searchModal" class="modal">
+    <div class="modal-content">
+        <div class="search-header">
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;Search</span>
+            <input type="search" id="searchInput" name="s" placeholder="Please enter a search keyword"
+                   class="search-input">
+        </div>
+        <div id="searchResult"></div>
+    </div>
+</div>
+
+<script src="/js/search.js"></script>
 <script type="text/javascript">
-  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
-    window.Promise = null;
-  }
+$(function () {
+    searchFunc("/" + "search.xml", 'searchInput', 'searchResult');
+});
+</script>
+    <!-- 回到顶部按钮 -->
+<div id="backTop" class="top-scroll">
+    <a class="btn-floating btn-large waves-effect waves-light" href="#!">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+</div>
+
+
+    <script src="/libs/materialize/materialize.min.js"></script>
+    <script src="/libs/masonry/masonry.pkgd.min.js"></script>
+    <script src="/libs/aos/aos.js"></script>
+    <script src="/libs/scrollprogress/scrollProgress.min.js"></script>
+    <script src="/libs/lightGallery/js/lightgallery-all.min.js"></script>
+    <script src="/js/matery.js"></script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-70716047-2"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+    gtag('config', 'UA-70716047-2');
 </script>
 
 
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
-  
-
-  
-  
-    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
-  
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
-
-
-
-  
-  
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
-
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
-
-
-
-  
-
-
-  
-
-
-
-
-	
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-
-
-
-
-
-
-<!-- LOCAL: You can save these files to your site and update links -->
-    
-        
-        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
-        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
-    
-<!-- END LOCAL -->
-
-    
-
-    
-      <script type="text/javascript">
-      function renderGitment(){
-        var gitment = new Gitmint({
-            id: '1541501880000', 
-            owner: 'wossoneri',
-            repo: 'wossoneri.github.io',
-            
-            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
-            
-            oauth: {
-            
-            
-                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
-            
-                client_id: '40b6c719a11e3fca29e8'
-            }});
-        gitment.render('gitment-container');
-      }
-
-      
-      renderGitment();
-      
-      </script>
-    
-
-
-
-
-
-
-
-  
-
-
-
-
-
-  
-
-  
-
-  
-
-  
-  
-
-  
-  
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-        tex2jax: {
-          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
-          processEscapes: true,
-          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    <!-- Baidu Analytics -->
+
+    <!-- Baidu Push -->
+
+<script>
+    (function () {
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        } else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
         }
-      });
-    </script>
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+</script>
 
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Queue(function() {
-        var all = MathJax.Hub.getAllJax(), i;
-        for (i=0; i < all.length; i += 1) {
-          all[i].SourceElement().parentNode.className += ' has-jax';
-        }
-      });
-    </script>
-    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-  
+    
+    
+    <script async src="/libs/others/busuanzi.pure.mini.js"></script>
+    
 
+    
 
-  
+    
 
-  
+    
+
+    
+
+    
+    
+    
+    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    
 
 </body>
+
 </html>
