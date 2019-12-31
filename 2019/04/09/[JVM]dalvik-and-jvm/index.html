@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="JVM,dalvik,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Wossoneri`s Blog" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="记录dalvik的调优">
+<meta name="keywords" content="JVM,dalvik">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[JVM] Dalvik配置与JVM">
+<meta property="og:url" content="http://wossoneri.github.io/2019/04/09/[JVM]dalvik-and-jvm/index.html">
+<meta property="og:site_name" content="Wossoneri`s Blog">
+<meta property="og:description" content="记录dalvik的调优">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/JVM.png?raw=true">
+<meta property="og:updated_time" content="2019-12-31T07:27:32.075Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[JVM] Dalvik配置与JVM">
+<meta name="twitter:description" content="记录dalvik的调优">
+<meta name="twitter:image" content="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/JVM.png?raw=true">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '6234852363740382000',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://wossoneri.github.io/2019/04/09/[JVM]dalvik-and-jvm/">
+
+
+
+
+
+  <title>[JVM] Dalvik配置与JVM | Wossoneri`s Blog</title>
+  
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  ga('create', 'UA-70716047-2', 'auto');
+  ga('send', 'pageview');
+</script>
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0af9c6850b24b42a4713ad1c9c691675";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Wossoneri`s Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">业 精于勤而荒于嬉，行 成于思而毁于随</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://wossoneri.github.io/2019/04/09/[JVM]dalvik-and-jvm/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Wossoneri">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Wossoneri`s Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">[JVM] Dalvik配置与JVM</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-09T19:30:00+08:00">
+                2019-04-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">JVM</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/04/09/[JVM]dalvik-and-jvm/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count gitment-comments-count" data-xid="/2019/04/09/[JVM]dalvik-and-jvm/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+	
+  		  <span class="post-letters-count">
+            &nbsp; | &nbsp;
+            <span class="post-meta-item-icon">
+                 <i class="fa fa-clock-o"></i>
+            </span>
+		        <span class="post-meta-item-text">总记</span>
+            <span class="post-count">3,314 字</span>
+		        <span class="post-meta-item-text">读完需要</span>
+    		    <span class="post-count">13 分</span>
+  		  </span>
+           
+         
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  记录dalvik的调优
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>内容有点乱，有空再整理一下</p>
+<h2 id="JVM内存"><a href="#JVM内存" class="headerlink" title="JVM内存"></a>JVM内存</h2><p>在了解dalvik之前，需要认识一下JVM，我整理了一张图：</p>
+<p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/JVM.png?raw=true" alt=""></p>
+<h2 id="dalvik"><a href="#dalvik" class="headerlink" title="dalvik"></a>dalvik</h2><p>在dalvik中，GC的类型有三种：</p>
+<p>1、GC_EXPLICIT：</p>
+<p>​    应用主动调用System.gc()产生的GC事件。</p>
+<p>2、GC_FOR_ALLOC：</p>
+<p>​    内存分配时，发现可用内存不够时触发的GC事件。</p>
+<p>3、GC_CONCURRENT：</p>
+<p>   给Java层的class分配内存后，计算已分配的大小达到阈值(当前DVM heap size小一点)时会触发的GC事件。</p>
+<p>因为第2和第3中GC是由系统触发的，所以应用是无法减少这两种类型的GC事件。但需要减少这两种GC事件是，可以通过配置dalvik的系统属性或者修改dalvik的GC算法来实现，本文只对修改dalvik的系统属性的方式进行介绍。</p>
+<p>dalvik与GC相关的属性有：</p>
+<p>dalvik.vm.heapstartsize：初始化dalvik分配的内存大小。</p>
+<p>dalvik.vm.heapsize：在mainfest中设置android:largeheap=”true”时，应用的最大内存，超过这个值会有OOM产生。</p>
+<p>dalvik.vm.heaputilization、dalvik.vm.heapminfree 、dalvik.vm.heapmaxfree：dalvik GC时使用的参数。</p>
+<p>设备列出的dalvik属性</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">dalvik.vm.heapstartsize=14m</span><br><span class="line">dalvik.vm.heapgrowthlimit=192m</span><br><span class="line">dalvik.vm.heapsize=512m</span><br><span class="line">dalvik.vm.heaptargetutilization=0.75</span><br><span class="line">dalvik.vm.heapminfree=6m</span><br><span class="line">dalvik.vm.heapmaxfree=8m</span><br><span class="line"></span><br><span class="line">dalvik.vm.heapstartsize=8m</span><br><span class="line">dalvik.vm.heapgrowthlimit=96m</span><br><span class="line">dalvik.vm.heapsize=256m</span><br><span class="line">dalvik.vm.heaptargetutilization=0.75</span><br><span class="line">dalvik.vm.heapminfree=2m</span><br><span class="line">dalvik.vm.heapmaxfree=8m</span><br><span class="line"></span><br><span class="line">dalvik.vm.heapstartsize=8m</span><br><span class="line">dalvik.vm.heapgrowthlimit=128m</span><br><span class="line">dalvik.vm.heapsize=512m</span><br><span class="line">dalvik.vm.heaptargetutilization=0.75</span><br><span class="line">dalvik.vm.heapminfree=2m</span><br><span class="line">dalvik.vm.heapmaxfree=8m</span><br><span class="line"></span><br><span class="line">512m gives enough for the rest of the system and 128m splits 512m in half giving the java heap zize enough for apps to load fast and run smoothly, ive tested this on a few devices and each one passed.</span><br><span class="line"></span><br><span class="line">超级急速流畅型： </span><br><span class="line">dalvik.vm.startheapsize=16m </span><br><span class="line">dalvik.vm.heapsize=48m </span><br><span class="line">dalvik.vm.execution-mode=int:jit </span><br><span class="line">dalvik.vm.dexopt-flags=v=n,o=v </span><br><span class="line">dalvik.vm.checkjni=false </span><br><span class="line"></span><br><span class="line">常用稳定加流畅型： </span><br><span class="line">dalvik.vm.startheapsize=8m </span><br><span class="line">dalvik.vm.heapsize=40m </span><br><span class="line">dalvik.vm.execution-mode=int:fast </span><br><span class="line">dalvik.vm.dexopt-flags=m=y </span><br><span class="line">dalvik.vm.checkjni=false </span><br><span class="line"></span><br><span class="line">超级稳定大内存型： </span><br><span class="line">dalvik.vm.startheapsize=4m </span><br><span class="line">dalvik.vm.heapsize=30m </span><br><span class="line">dalvik.vm.execution-mode=int:portable </span><br><span class="line">dalvik.vm.dexopt-flags=v=a,o=v dalvik.vm.verify-bytecode=true </span><br><span class="line">dalvik.vm.checkjni=true</span><br></pre></td></tr></table></figure>
+<p>Dalvik虚拟机 Dalvik虚拟机是Android操作系统的核心，是一切应用程序的基础。</p>
+<p>所有程序在运行时均有Dalvik虚拟机对其进行解析和执行。 </p>
+<p>以下参数参加源码：platform/dalvik/kitkat-release/./vm/alloc/HeapSource.cpp</p>
+<ul>
+<li><p>dalvik.vm.heapstartsize</p>
+<p>本参数控制Dalvik虚拟机在启动一个应用程序之后为其分配的初始堆栈大小，可填写的值为2m~48m。这里分配的内存容量会影响到整个系统对RAM的使用程度，和第一次使用应用程序时的流畅程序。这个值越大，系统消耗RAM则越快，但是应用程序打开后的反应也越快。值越小，系统的RAM剩余则越多，但是程序在启动后会很卡。它被转化为<code>-Xms</code>的选项。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">parseRuntimeOption(<span class="string">"dalvik.vm.heapstartsize"</span>, heapstartsizeOptsBuf, <span class="string">"-Xms"</span>, <span class="string">"4m"</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>dalvik.vm.heapsize</p>
+<p>本参数控制单个Dalvik虚拟机可以分配到的最大堆栈量。这里分配的内存容量会影响到整个系统对RAM的使用程序，和程序在运行一段时间后的反应速度。这个值越大，系统消耗RAM则越快，但是程序会运行的非常稳定，尤其是游戏和视频程序的内容加载速度可以大幅度提升。值越小，系统的RAM剩余则越多，但是程序会很卡，尤其是游戏在切换场景Loading的时候会花费很多的时间。若应用程序需要使用超过这个值的内存时，将会触发系统的垃圾收集器，系统和程序就会卡顿。它被转化为<code>-Xmx</code>选项。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">parseRuntimeOption(<span class="string">"dalvik.vm.heapsize"</span>, heapsizeOptsBuf, <span class="string">"-Xmx"</span>, <span class="string">"16m"</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>dalvik.vm.heapgrowthlimit</p>
+<p>它指定标准app的最大堆栈，如果在mainfest中设置Android:largeheap=”true”时，应用会使用最大内存，超过这个值会有  OOM产生。它被转化为<code>-XX:HeapGrowthLimit</code>选项。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">parseRuntimeOption(<span class="string">"dalvik.vm.heapgrowthlimit"</span>, heapgrowthlimitOptsBuf, <span class="string">"-XX:HeapGrowthLimit="</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>dalvik.vm.heaptargetutilization</p>
+<p>它为VM提供了关于应该允许托管堆满的程度的提示。它被转化为<code>-XX:HeapTargetUtilization</code>选项。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">parseRuntimeOption(<span class="string">"dalvik.vm.heaptargetutilization"</span>,</span><br><span class="line">                         heaptargetutilizationOptsBuf,</span><br><span class="line">                         <span class="string">"-XX:HeapTargetUtilization="</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>dalvik.vm.heapminfree &amp; dalvik.vm.heapmaxfree</p>
+<p>它们分别被转化为<code>-XX:HeapMinFree</code>和<code>-XX:HeapMaxFree</code>。它们与<code>-XX：HeapTargetUtilization</code>结合使用，以确定堆需要增长时堆的增长量。</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line">parseRuntimeOption(<span class="string">"dalvik.vm.heapminfree"</span>, heapminfreeOptsBuf, <span class="string">"-XX:HeapMinFree="</span>);</span><br><span class="line">parseRuntimeOption(<span class="string">"dalvik.vm.heapmaxfree"</span>, heapmaxfreeOptsBuf, <span class="string">"-XX:HeapMaxFree="</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>dalvik.vm.lockprof.threshold： 本参数控制Dalvik虚拟机调试记录程序内部锁资源争夺的阈值，默认值是500。多用于程序的数据统计，对性能较调意义不大。 </p>
+</li>
+<li><p>dalvik.vm.stack-trace-file： 本参数控制Dalvik虚拟机的堆栈记录调试文件。用于系统调试，一般用户对其调整无意义。 </p>
+</li>
+<li><p>dalvik.vm.execution-mode： 本参数控制Dalvik虚拟机的程序执行机制。可填写的值有”int:portable”、”int:fast”和”int:jit”。 int:portable表示以兼容模式运行(脚本翻译模式)，此模式下程序的兼容性最高，但其执行效率最低(程序优化度依赖于dalvik虚拟机版本)。官方默认此模式。　int:fast表示以快速自优化模式运行(脚本翻译和预优化混合)，此模式下程序的兼容性很高，执行效率也比较高。因为此时dalvik虚拟机允许程序使用自己的预定义优化模式和代码(包括C/C++/汇编代码)。推荐使用。　int:jit表示以Just-In-Time模式运行(JIT模式)，此模式下程序的兼容性最差，但程序一旦加载后其运行效率最高(与C/C++直接编 写的程序效率无异)，因为在此模式下dalvik虚拟机会预先将Java程序翻译成针对机器平台的本地语言(Native)，同时完全允许代码中的所有预 优化和代码，允许所有不安全的非托管代码，同时不严谨的程序如果运行在JIT模式可能会造成内存泄露。但要注意，很多Dalvik虚拟机并不支持此模式 (如官方2.2)。 </p>
+</li>
+<li><p>dalvik.vm.dexopt-flags： 本参数控制Dalvik虚拟机的程序代码校验和优化。可填写的值有m、v和o。　m为标准选项，可以是m=y或m=n。若m=y则启用不安全代码的校验和托管代码的优化。兼容性和安全性最高，推荐使用。　v为校验选项，可与o并存。可以是v=a或v=n。若v=a则表示校验所有代码，v=n则关闭代码的校验。　o为优化选项，可与v并存。可以是o=v或o=a。若o=v则表示优化以校验过的代码，o=a则表示优化所有代码。　例如：　dalvik.vm.dexopt-flags=m=y　dalvik.vm.dexopt-flags=v=n,o=v 注意，这个参数只会影响到安装APK之后或初次使用APK时生成dex文件时有效。若整个系统(包括应用程序)为odex化，则无意义。 </p>
+</li>
+<li><p>dalvik.vm.verify-bytecode： 本参数控制Dalvik虚拟机是否验证应用程序的可执行代码。可以与上一个参数配合使用。可填写的值为true和false。　其具体意义与dalvik.vm.dexopt-flags的v=n一模一样。但可以与dalvik.vm.dexopt-flags配合使用以取得更好的效果。 例如：　dalvik.vm.dexopt-flags=v=n,o=v　dalvik.vm.verify-bytecode=false　这样可以令后来安装的apk文件可以被优化而不被检验。 </p>
+</li>
+<li><p>dalvik.vm.checkjni： 本参数控制Dalvik虚拟机在调用外部jni链接库的时候是否对其做安全性检验。可填写的值为true和false。　此参数会覆盖ro.kernel.android.checkjni。　若值为true，会增加程序的兼容性和稳定性，但也会增加其加载和执行的时间。 推荐为false。 dalvik.vm.deadlock-predict： 本参数控制Dalvik虚拟机对程序死锁预测处理。可填写的值有off、warn和err。　off表示关闭死锁预测功能(默认设置)。　warn表示在继续程序运行的同时只记录该死锁预测(如果为真死锁就会出现程序假死现象，然后等N久出现关闭)。　err表示预测到死锁时马上弹出FC。 注意：有些Dalvik虚拟机版本并不支持此参数。</p>
+</li>
+</ul>
+<p>所以，如果设定：</p>
+<p>dalvik.vm.heapstartsize=8m</p>
+<p>dalvik.vm.heapgrowthlimit=64m</p>
+<p>dalvik.vm.heapsize=256m</p>
+<p>所以，每开启一个App，就会划出8m空间给它。如果使用过程超出8m，就会再次增加8m。但是只能增加7次空间，因为最大的空间为64m。超过了就会产生OOM。</p>
+<p>由heapsize=256m，单个虚拟机分配的最大内存，相当于可以运行4个64m的应用。超过内存的部分就会进行内存回收，一方面是强制关闭一些应用，另一方面是加载新应用划分新的内存，这时候设备就会出现卡顿。</p>
+<p>有些人喜欢用小widget，比如每个只占3-5m，如果按照8m去分配，每个小应用都会多浪费3m的内存。这种情况就可以把heapstartsize改小，可以增加可用内存。heapgrowthlimit倒不用改，因为现在应用使用内存整体都比较高。</p>
+<p>内存分配流程</p>
+<ol>
+<li>首先判断一下需要申请的size是不是过大，如果申请的size超过了堆的最大限制，则转入步骤6</li>
+<li>尝试分配，如果成功则返回，失败则转入步骤3</li>
+<li>判断是否gc正在进行垃圾回收，如果正在进行则等待回收完成之后，尝试分配。如果成功则返回，失败则转入步骤4</li>
+<li>自己启动gc进行垃圾回收，这里gcForMalloc的参数是false。所以不会回收软引用，回收完成后尝试分配，如果成功则返回，失败则转入步骤5</li>
+<li>调用dvmHeapSourceAllocAndGrow尝试分配，这个函数会扩张堆。所以heap startup的时候可以给一个比较小的初始堆，实在不够用再调用它进行扩张</li>
+<li>进入回收软引用阶段，这里gcForMalloc的参数是ture，所以需要回收软引用。然后调用dvmHeapSourceAllocAndGrow尝试分配，如果失败则抛出OOM。</li>
+</ol>
+<p>参数调整总结</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">dalvik.vm.heapstartsize  </span><br><span class="line">堆分配的初始大小，调整这个值会影响到应用的流畅性和整体ram消耗。这个值越小，系统ram消耗越慢，但是由于初始值较小，一些较大的应用需要扩张这个堆，从而引发gc和堆调整的策略，会应用反应更慢。相反，这个值越大系统ram消耗越快，但是程序更流畅。</span><br><span class="line"></span><br><span class="line">dalvik.vm.heapgrowthlimit       </span><br><span class="line">极限堆大小，dvm heap是可增长的，但是正常情况下dvm heap的大小是不会超过dalvik.vm.heapgrowthlimit的值。如果受控的应用dvm heap size超过该值，则将引发oom。</span><br><span class="line"></span><br><span class="line">dalvik.vm.heapsize</span><br><span class="line">使用大堆时，极限堆大小。一旦dalvik heap size超过这个值，直接引发oom。在android开发中，如果要使用大堆，需要在manifest中指定android:largeHeap为true。这样dvm heap最大可达dalvik.vm.heapsize。</span><br><span class="line"></span><br><span class="line">[dalvik.vm.heaptargetutilization]: [0.75]   可以设定内存利用率的百分比，当实际的利用率偏离这个百分比的时候，虚拟机会在GC的时候调整堆内存大小，让实际占用率向个百分比靠拢。</span><br></pre></td></tr></table></figure>
+<p><strong>dalvim GC策略是：</strong></p>
+<p>1.在一次GC后，根据当前Heap中已分配的内存大小除以dalvik.vm.heaputilization(0.75),得到一个目标值。</p>
+<p>2.如果目标值不在（已分配的值+dalvik.vm.heapminfree）到（已分配的值+dalvik.vm.heapmaxfree）这个区间，即取区间边界值做为目标值(运行一段时间后第1步得到的目标值肯定会超过这个范围)。</p>
+<p>3.虚拟机记录这个目标值，当做当前允许总的可以分配到的内存。同时根据目标值减去固定值（200~500K),当做触发GC_CONCURRENT事件的阈值。</p>
+<p>4.当下一次分配内存，分配成功时。重新计算已分配的内存大小；若有达到GC_CONCURRENT的阈值，则产生GC。</p>
+<p>5.当下一次分配内存，开始分配失败时。则会产生GC_FOR_ALLOC事件，释放内存；然后再尝试分配。</p>
+<p>可以通过调整dalvik.vm.heapminfree 和dalvik.vm.heapmaxfree属性的值，减少GC_FOR_ALLOC和GC_CONCURRENT的次数，如果这两个值设置的过大，则会导致一次GC的时间过长，从而会看到明显的卡顿现象，设置的值既要使GC的次数减少，也不能是一次GC的时间过长。</p>
+<p>  在有的平台上，可以通过代码对单个应用的dalvik的属性进行设置，以减少对全局设置对系统的影响，可以再App里面通过如下的方式对当前的App的dalvik属性设置：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> dalvik.system.VMRuntime;  </span><br><span class="line"><span class="keyword">import</span> android.os.SystemProperties;  </span><br><span class="line">...  </span><br><span class="line">VMRuntime.getRuntime().setTargetHeapUtilization(<span class="number">0.75f</span>);  </span><br><span class="line">VMRuntime.getRuntime().setTargetHeapMinFree(<span class="number">2</span>*<span class="number">1024</span>*<span class="number">1024</span>);  </span><br><span class="line">VMRuntime.getRuntime().setTargetHeapConcurrentStart(<span class="number">8</span>*<span class="number">1024</span>*<span class="number">1024</span>);  </span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>如果想通过系统进行控制，也可以在framework里面的ActivityThread的handleBindApplication函数里面进行设置：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> dalvik.system.VMRuntime;  </span><br><span class="line"><span class="keyword">import</span> android.os.SystemProperties;  </span><br><span class="line"><span class="keyword">import</span> java.lang.*;  </span><br><span class="line">...  </span><br><span class="line"><span class="keyword">if</span>( data.processName.equals(<span class="string">"com.android.launcher"</span>)) &#123;  </span><br><span class="line">VMRuntime.getRuntime().setTargetHeapUtilization(<span class="number">0.75f</span>);  </span><br><span class="line">    VMRuntime.getRuntime().setTargetHeapMinFree(<span class="number">2</span>*<span class="number">1024</span>*<span class="number">1024</span>);  </span><br><span class="line">    VMRuntime.getRuntime().setTargetHeapConcurrentStart(<span class="number">8</span>*<span class="number">1024</span>*<span class="number">1024</span>);  </span><br><span class="line">&#125;  </span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/wechatpay.JPG?raw=true" alt="Wossoneri 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="https://github.com/wossoneri/wossoneri.github.io/blob/master/pay/alipay.JPG?raw=true" alt="Wossoneri 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    Wossoneri
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://wossoneri.github.io/2019/04/09/[JVM]dalvik-and-jvm/" title="[JVM] Dalvik配置与JVM">http://wossoneri.github.io/2019/04/09/[JVM]dalvik-and-jvm/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JVM/" rel="tag"><i class="fa fa-tag"></i> JVM</a>
+          
+            <a href="/tags/dalvik/" rel="tag"><i class="fa fa-tag"></i> dalvik</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/02/09/[Android]Background-task-Jobscheduler/" rel="next" title="[Android] 后台任务系列之JobScheduler">
+                <i class="fa fa-chevron-left"></i> [Android] 后台任务系列之JobScheduler
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/09/[Android][Framework]PackageManagerService-process-app-permission/" rel="prev" title="[Android][Framework]PackageManagerService处理应用权限流程">
+                [Android][Framework]PackageManagerService处理应用权限流程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      
+        <div id="gitment-container"></div>
+      
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="https://avatars2.githubusercontent.com/u/11764431?v=3&s=460" alt="Wossoneri">
+            
+              <p class="site-author-name" itemprop="name">Wossoneri</p>
+              <p class="site-description motion-element" itemprop="description">就怕你一生碌碌无为，还安慰自己平凡可贵</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">117</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">121</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/wossoneri" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="http://weibo.com/u/1171637315/home?topnav=1&wvr=5" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+            <div class="cc-license motion-element" itemprop="license">
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" target="_blank">
+                <img src="/images/cc-by-nc-sa.svg" alt="Creative Commons">
+              </a>
+            </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-globe"></i>
+                友情链接
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.cnblogs.com/rossoneri/" title="我的博客园博客" target="_blank">我的博客园博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://zhangqinglian.github.io/" title="清廉的Android博客" target="_blank">清廉的Android博客</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#JVM内存"><span class="nav-number">1.</span> <span class="nav-text">JVM内存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dalvik"><span class="nav-number">2.</span> <span class="nav-text">dalvik</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Wossoneri</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+<!-- LOCAL: You can save these files to your site and update links -->
+    
+        
+        <link rel="stylesheet" href="https://aimingoo.github.io/gitmint/style/default.css">
+        <script src="https://aimingoo.github.io/gitmint/dist/gitmint.browser.js"></script>
+    
+<!-- END LOCAL -->
+
+    
+
+    
+      <script type="text/javascript">
+      function renderGitment(){
+        var gitment = new Gitmint({
+            id: '1554809400000', 
+            owner: 'wossoneri',
+            repo: 'wossoneri.github.io',
+            
+            lang: "" || navigator.language || navigator.systemLanguage || navigator.userLanguage,
+            
+            oauth: {
+            
+            
+                client_secret: '9d7241035e9211e280e753883f5b8f5a1a49bf77',
+            
+                client_id: '40b6c719a11e3fca29e8'
+            }});
+        gitment.render('gitment-container');
+      }
+
+      
+      renderGitment();
+      
+      </script>
+    
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
