@@ -495,7 +495,7 @@
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                首先我不做AndroidTV，只是因为一些汽车的屏幕无法触摸，所以无法获得Touch事件，但是车机上有一些旋钮，可以拿到一些键盘事件，因此需要用这些键盘事件对系统（不是应用）进行交互。所以，为了解决这个问题，就需要先了解一下Android 
+                                因为一个需求，需要研究一下AndroidTV焦点切换原理。
                             
                         </div>
                         <div class="publish-info">
@@ -549,8 +549,7 @@
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                之前分析过一篇:ActivityThread流程wossoneri.github.io，简单了解了从ActivityThread创建到Application的启动流程。
-但毕竟Android源码是个大工程，分析流程的时候很多地方不会特别去关
+                                你知道Activity是怎么被回收的吗
                             
                         </div>
                         <div class="publish-info">
@@ -604,9 +603,7 @@
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                系列目录请点击这里： 全方位理解Android权限
-因为东忙西忙没时间整理这一块的东西，拖了有点久，现在继续更新
-权限的性质我们知道，Android应用都运行在沙盒中，默认情况下这些应用只能访问他们自己的域，即自己的文件和非常少量的系统服务
+                                因为东忙西忙没时间整理这一块的东西，拖了有点久，现在继续更新
                             
                         </div>
                         <div class="publish-info">
@@ -668,9 +665,7 @@
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                前因最近遇到一个问题，涉及到一个三方应用在系统中的方向显示。三方应用设置了强制竖屏，我需要将其变成横屏。
-应用设置屏幕方向有两种方式，一种是在Manifest文件里配置：
-android:screenOrientation="portrai
+                                你知道AndroidManifest.xml是怎么起作用的吗？
                             
                         </div>
                         <div class="publish-info">
@@ -728,8 +723,7 @@ android:screenOrientation="portrai
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                对抗反编译混淆使用混淆主要可以减小包的大小。混淆对于安全保护来说，只是增加了阅读难度而已。混淆不会把关键代码混淆掉，比如MainActivity，Application等，可以通过分析smali和阅读jar包定位代码。
-资源混淆也是换汤不换
+                                如何防止别人逆向我们的应用
                             
                         </div>
                         <div class="publish-info">
@@ -787,9 +781,7 @@ android:screenOrientation="portrai
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                Xposed网上关于Xposed的介绍很多，但都是点到为止，比如：
-
- 在Android系统中，应用程序进程以及系统服务进程SystemServer都是由Zygote进程孵化出来的，而Zygote进程是由Init进程启动的，Zygote进程
+                                简单介绍xposed逆向的一些思路
                             
                         </div>
                         <div class="publish-info">
@@ -847,8 +839,7 @@ android:screenOrientation="portrai
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                几个概念APKAPK其实就是一个ZIP压缩包，将APK后缀改成ZIP后就可以解压出APK内部文件。
-Dalvik字节码Dalvik是google专门为Android操作系统设计的一个虚拟机，经过深度的优化。虽然Android上的程序是使用j
+                                简单介绍Android逆向的一些思路
                             
                         </div>
                         <div class="publish-info">
@@ -906,9 +897,7 @@ Dalvik字节码Dalvik是google专门为Android操作系统设计的一个虚拟�
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                首先，关于Handler相关机制，可以参考我之前整理的[Android] Handler消息传递机制。
-然后我们分解问题，一点点去看这个问题。
-Looper.loop和主线程的关系分析Handler和应用启动的时候讲过，在创建Activit
+                                一开始还以为这个问题问的是Looper机制，其实这更是一个概念考察问题
                             
                         </div>
                         <div class="publish-info">
@@ -974,8 +963,7 @@ Looper.loop和主线程的关系分析Handler和应用启动的时候讲过，�
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                app种类1、system app (有ApplicationInfo.FLAG_SYSTEM标记)
-2、privileged app (有ApplicationInfo.FLAG_SYSTEM和ApplicationInfo.PRIVAT
+                                PMS权限管理流程小记
                             
                         </div>
                         <div class="publish-info">
@@ -1029,8 +1017,7 @@ Looper.loop和主线程的关系分析Handler和应用启动的时候讲过，�
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                上次分析Android O广播的问题遗留了一个东西没提，那就是官方推荐使用的JobScheduler。这篇就简单了解一下这是个什么东西。
-JobScheduler是什么JobScheduler允许开发者创建在后台执行的job，当预置的条件被
+                                简单分析Android的后台任务：JobScheduler
                             
                         </div>
                         <div class="publish-info">
@@ -1084,10 +1071,7 @@ JobScheduler是什么JobScheduler允许开发者创建在后台执行的job，�
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                问题因为项目需要迁移到8.0平台，发现有一个系统应用打不开，从log发现如下描述：
-BroadcastQueue: Background execution not allowed: receiving Intent {...}
-
-实际上，
+                                在Android O遇到了一个广播不响应的问题，印象里Android O的广播系统有一次改动，于是翻了翻文档，做个系统整理。
                             
                         </div>
                         <div class="publish-info">
@@ -1137,7 +1121,7 @@ BroadcastQueue: Background execution not allowed: receiving Intent {...}
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                0000 目录这个阶段搞了很多和Android文件权限相关的问题，虽然一知半解，但也算是对Android权限机制有一些自己的理解。遂将这些内容整理出来。因为权限这部分涉及到的内容很多，故将知识分为几块内容分别去整理。目前能想到的概要如下（现
+                                近期处理了很多Android文件权限相关的问题，遂趁热打铁，将这部分知识整理出来。
                             
                         </div>
                         <div class="publish-info">
@@ -1212,7 +1196,7 @@ BroadcastQueue: Background execution not allowed: receiving Intent {...}
     <div class="container row center-align" style="margin-bottom: 15px !important;">
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
-            <span id="year">2016</span>
+            <span id="year">2014</span>
             <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
             |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
@@ -1245,7 +1229,7 @@ BroadcastQueue: Background execution not allowed: receiving Intent {...}
                     var days = hours * 24;
                     var years = days * 365;
                     var today = new Date();
-                    var startYear = "2016";
+                    var startYear = "2014";
                     var startMonth = "1";
                     var startDate = "1";
                     var startHour = "0";

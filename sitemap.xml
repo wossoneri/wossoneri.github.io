@@ -2,184 +2,821 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://wossoneri.github.io/2019/11/17/%5BAndroid%5D%5BFramework%5DAndroid-permission-2/</loc>
+    <loc>http://wossoneri.github.io/2019/12/09/%5BJava%5DUse-Bit-mask-code-By-EnumSet/</loc>
     
-    <lastmod>2020-01-02T02:56:55.709Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/04/25/%5BAndroid%5D%5BFramework%5DGallery-slideshow/</loc>
-    
-    <lastmod>2020-01-02T02:56:51.953Z</lastmod>
+    <lastmod>2020-01-02T05:25:27.601Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://wossoneri.github.io/2019/04/09/%5BAndroid%5D%5BFramework%5DPackageManagerService-process-app-permission/</loc>
+    <loc>http://wossoneri.github.io/2017/11/15/%5BTensorflow%5DThe-dimension-of-Tensor/</loc>
     
-    <lastmod>2020-01-02T02:56:47.964Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/01/12/%5BJVM%5DNote-of-JVM-Charpter2/</loc>
-    
-    <lastmod>2020-01-02T02:56:30.285Z</lastmod>
+    <lastmod>2020-01-02T03:51:37.328Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://wossoneri.github.io/2017/12/15/%5BCS%5DTalk-about-char-encode/</loc>
+    <loc>http://wossoneri.github.io/2017/12/10/%5BTensorflow%5DRun-TF-model-in-Android/</loc>
     
-    <lastmod>2020-01-02T02:56:26.451Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/04/02/%5BAndroid%5DMediaProjection-Screenshot/</loc>
-    
-    <lastmod>2020-01-02T02:56:21.932Z</lastmod>
+    <lastmod>2020-01-02T03:51:37.211Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://wossoneri.github.io/2018/07/16/%5BAndroid%5D%5BFramework%5Dembed-apk-with-so/</loc>
+    <loc>http://wossoneri.github.io/2017/12/16/%5BTensorflow%5DFasterRCNN_and_VOC_dataset/</loc>
     
-    <lastmod>2020-01-02T02:56:17.900Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/11/06/%5BAndroid%5DMTD-MMC-EMMC-partition-layout/</loc>
-    
-    <lastmod>2020-01-02T02:56:11.781Z</lastmod>
+    <lastmod>2020-01-02T03:51:37.096Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://wossoneri.github.io/2019/11/18/%5BAndroid%5D%5BFramework%5DSomething-about-activity-recycle/</loc>
+    <loc>http://wossoneri.github.io/2017/12/16/%5BTensorflow%5Dconv-in-tf/</loc>
     
-    <lastmod>2020-01-02T02:56:07.711Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2019/12/19/%5BAndroid%5D%5BFramework%5Dglance-of-androidTV/</loc>
-    
-    <lastmod>2020-01-02T02:56:03.018Z</lastmod>
+    <lastmod>2020-01-02T03:51:36.982Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://wossoneri.github.io/2017/06/19/%5BAndroid%5D%5BFramework%5DPlayAutoInstall/</loc>
+    <loc>http://wossoneri.github.io/2016/04/16/%5BSwift%5DNotes-of-Swift/</loc>
     
-    <lastmod>2020-01-02T02:55:59.109Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/12/09/%5BAndroid%5D%5BFramework%5Dmastering-system-jar-and-sdk/</loc>
-    
-    <lastmod>2020-01-02T02:55:55.242Z</lastmod>
+    <lastmod>2020-01-02T03:51:36.863Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://wossoneri.github.io/2019/10/12/%5BAndroid%5D%5BSecurity%5DDecompile-xposed/</loc>
+    <loc>http://wossoneri.github.io/2015/03/30/%5BSublime-Text%5DUse-Sublime-Text3-compile-Java/</loc>
     
-    <lastmod>2020-01-02T02:55:51.736Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2019/10/15/%5BAndroid%5D%5BSecurity%5DDefence-policy/</loc>
-    
-    <lastmod>2020-01-02T02:55:45.525Z</lastmod>
+    <lastmod>2020-01-02T03:51:36.731Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://wossoneri.github.io/2019/11/05/%5BAndroid%5D%5BFramework%5DHowDoesAndroidManifestWork/</loc>
+    <loc>http://wossoneri.github.io/2018/06/27/%5BPython%5Dspider-explaination/</loc>
     
-    <lastmod>2020-01-02T02:55:41.546Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2019/01/04/%5BAndroid%5D%5BFramework%5DA-wired-bug-related-uri/</loc>
-    
-    <lastmod>2020-01-02T02:55:37.436Z</lastmod>
+    <lastmod>2020-01-02T03:51:36.614Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://wossoneri.github.io/2019/09/12/%5BAndroid%5D%5BSecurity%5DDecompile-smali/</loc>
+    <loc>http://wossoneri.github.io/2018/07/22/%5BProtocolBuffer%5DProtocol-Buffer-basics-java/</loc>
     
-    <lastmod>2020-01-02T02:55:33.417Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/04/03/%5BAndroid%5D%5BFramework%5DAccessibilityShortcut/</loc>
-    
-    <lastmod>2020-01-02T02:55:29.172Z</lastmod>
+    <lastmod>2020-01-02T03:51:36.449Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://wossoneri.github.io/2018/03/25/%5BAndroid%5D%5BFramework%5Dstart-of-SystemServer/</loc>
+    <loc>http://wossoneri.github.io/2015/12/29/%5BObjective-C%5DType-of-id-and-instancetype/</loc>
     
-    <lastmod>2020-01-02T02:55:23.971Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/04/09/%5BAndroid%5D%5BFramework%5Da-issue-of-SIMToolKit/</loc>
-    
-    <lastmod>2020-01-02T02:55:16.405Z</lastmod>
+    <lastmod>2020-01-02T03:51:36.328Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://wossoneri.github.io/2019/01/11/%5BAndroid%5D%5BFramework%5DAndroid-permission-1/</loc>
+    <loc>http://wossoneri.github.io/2016/02/18/%5BObjective-C%5DTalk-about-NSInteger/</loc>
     
-    <lastmod>2020-01-02T02:55:11.986Z</lastmod>
+    <lastmod>2020-01-02T03:51:36.211Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://wossoneri.github.io/2018/09/15/%5BAndroid%5D%5BFramework%5Dcreate-system-service/</loc>
+    <loc>http://wossoneri.github.io/2016/05/30/%5BObjective-C%5DMultithreading-and-GCD/</loc>
     
-    <lastmod>2020-01-02T02:55:06.048Z</lastmod>
+    <lastmod>2020-01-02T03:51:36.030Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2016/04/29/%5BObjective-C%5DKVC-and-KVO/</loc>
+    
+    <lastmod>2020-01-02T03:51:35.882Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2016/05/30/%5BObjective-C%5DGCD-in-depth/</loc>
+    
+    <lastmod>2020-01-02T03:51:35.753Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2016/05/19/%5BObjective-C%5DCreate-Constants/</loc>
+    
+    <lastmod>2020-01-02T03:51:35.582Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2016/06/04/%5BObjective-C%5DCopy-and-MutableCopy/</loc>
+    
+    <lastmod>2020-01-02T03:51:35.428Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2016/06/30/%5BObjective-C%5DChain-programming-using-Block/</loc>
+    
+    <lastmod>2020-01-02T03:51:35.312Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2016/02/20/%5BObjective-C%5DCallback-with-block/</loc>
+    
+    <lastmod>2020-01-02T03:51:35.195Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2016/06/28/%5BObjective-C%5DArt-Of-Code/</loc>
+    
+    <lastmod>2020-01-02T03:51:35.064Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2015/04/24/%5BMarkDown%5DSyntax-of-markdown/</loc>
+    
+    <lastmod>2020-01-02T03:51:34.916Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2015/12/23/%5BMacOS%5D%20Mac-OS-X-El-Captain-Apache-php-mysql/</loc>
+    
+    <lastmod>2020-01-02T03:51:34.745Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/03/14/%5BMachingLearning%5D%5BRepost%5DUnderstanding-LSTM/</loc>
+    
+    <lastmod>2020-01-02T03:51:34.585Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/05/04/%5BMachineLearning%5Dtesseract-tutorial/</loc>
+    
+    <lastmod>2020-01-02T03:51:34.413Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/01/24/%5BMachineLearning%5DK-Nearest-Neighbor/</loc>
+    
+    <lastmod>2020-01-02T03:51:34.262Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/01/24/%5BMachineLearning%5DHyperparameters-learning-rate/</loc>
+    
+    <lastmod>2020-01-02T03:51:34.116Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/02/06/%5BMachineLearning%5DBackPropagation/</loc>
+    
+    <lastmod>2020-01-02T03:51:33.997Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/03/14/%5BMachineLearning%5DActivation-Function/</loc>
+    
+    <lastmod>2020-01-02T03:51:33.800Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/06/05/%5BLinux%5Destablish-rstp-server/</loc>
+    
+    <lastmod>2020-01-02T03:51:33.645Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/07/27/%5BLeetCode%5D001_TwoSum/</loc>
+    
+    <lastmod>2020-01-02T03:51:33.529Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://wossoneri.github.io/2018/01/13/%5BJVM%5DNote-of-JVM-Charpter3/</loc>
     
-    <lastmod>2020-01-02T02:55:00.177Z</lastmod>
+    <lastmod>2020-01-02T03:51:33.415Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/01/12/%5BJVM%5DNote-of-JVM-Charpter2/</loc>
+    
+    <lastmod>2020-01-02T03:51:33.261Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://wossoneri.github.io/2019/04/09/%5BJVM%5Ddalvik-and-jvm/</loc>
     
-    <lastmod>2020-01-02T02:54:54.233Z</lastmod>
+    <lastmod>2020-01-02T03:51:33.150Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2015/09/29/%5BJava%5DMulti-Thread/</loc>
+    
+    <lastmod>2020-01-02T03:51:33.032Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/05/08/%5BJava%5DCountDownLatch-and-CyclicBarrier/</loc>
+    
+    <lastmod>2020-01-02T03:51:32.900Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2016/05/05/%5BiOS%5DWSHorizontalPickerView/</loc>
+    
+    <lastmod>2020-01-02T03:51:32.776Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2016/02/22/%5BiOS%5DScroll-to-hide-show-HeaderView/</loc>
+    
+    <lastmod>2020-01-02T03:51:32.660Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2015/06/22/%5BiOS%5DInstall-OSX-in-Vmware-under-Win8/</loc>
+    
+    <lastmod>2020-01-02T03:51:32.511Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2016/02/18/%5BiOS%5DInput-height-changed-by-content/</loc>
+    
+    <lastmod>2020-01-02T03:51:32.360Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2016/01/21/%5BiOS%5DInit-UICollectionView-to-Center/</loc>
+    
+    <lastmod>2020-01-02T03:51:32.245Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2016/01/09/%5BiOS%5DHorizon-Scroll-UICollectionView/</loc>
+    
+    <lastmod>2020-01-02T03:51:32.081Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2016/04/18/%5BiOS%5DCollections-of-issues/</loc>
+    
+    <lastmod>2020-01-02T03:51:31.945Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2016/05/04/%5BiOS%5DCollection-of-Articles/</loc>
+    
+    <lastmod>2020-01-02T03:51:31.797Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2015/10/11/%5BiOS%5DCircle-Progress-Bar/</loc>
+    
+    <lastmod>2020-01-02T03:51:31.660Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2016/06/29/%5BiOS%5DAbout-Creating-UI/</loc>
+    
+    <lastmod>2020-01-02T03:51:31.514Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/03/09/%5BDesign-Pattern%5DTemplateMethod/</loc>
+    
+    <lastmod>2020-01-02T03:51:31.394Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2016/05/15/%5BDesign-Pattern%5DStrategy/</loc>
+    
+    <lastmod>2020-01-02T03:51:31.264Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/04/02/%5BDesign-Pattern%5DState/</loc>
+    
+    <lastmod>2020-01-02T03:51:31.128Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2016/05/23/%5BDesign-Pattern%5DSingleton/</loc>
+    
+    <lastmod>2020-01-02T03:51:31.014Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2016/05/13/%5BDesign-Pattern%5DSimple-Factory/</loc>
+    
+    <lastmod>2020-01-02T03:51:30.894Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/04/07/%5BDesign-Pattern%5DProxy/</loc>
+    
+    <lastmod>2020-01-02T03:51:30.747Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/04/10/%5BDesign-Pattern%5DPrototype/</loc>
+    
+    <lastmod>2020-01-02T03:51:30.608Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2016/05/12/%5BDesign-Pattern%5DPrinciples/</loc>
+    
+    <lastmod>2020-01-02T03:51:30.499Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/04/05/%5BDesign-Pattern%5DObserver/</loc>
+    
+    <lastmod>2020-01-02T03:51:30.361Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/03/26/%5BDesign-Pattern%5DMore-about-Singleton/</loc>
+    
+    <lastmod>2020-01-02T03:51:30.243Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/04/04/%5BDesign-Pattern%5DMemento/</loc>
+    
+    <lastmod>2020-01-02T03:51:30.096Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/03/30/%5BDesign-Pattern%5DMediator/</loc>
+    
+    <lastmod>2020-01-02T03:51:29.976Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/03/31/%5BDesign-Pattern%5DIterator/</loc>
+    
+    <lastmod>2020-01-02T03:51:29.863Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/04/11/%5BDesign-Pattern%5DFactory/</loc>
+    
+    <lastmod>2020-01-02T03:51:29.729Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/04/06/%5BDesign-Pattern%5DFacade/</loc>
+    
+    <lastmod>2020-01-02T03:51:29.593Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/04/08/%5BDesign-Pattern%5DDecorator/</loc>
+    
+    <lastmod>2020-01-02T03:51:29.464Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/03/31/%5BDesign-Pattern%5DComposite/</loc>
+    
+    <lastmod>2020-01-02T03:51:29.322Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/03/29/%5BDesign-Pattern%5DCommand/</loc>
+    
+    <lastmod>2020-01-02T03:51:28.821Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/03/27/%5BDesign-Pattern%5DChain-of-responsibility/</loc>
+    
+    <lastmod>2020-01-02T03:51:28.484Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/04/04/%5BDesign-Pattern%5DBuilder/</loc>
+    
+    <lastmod>2020-01-02T03:51:28.286Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/03/28/%5BDesign-Pattern%5DBridge/</loc>
+    
+    <lastmod>2020-01-02T03:51:27.988Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/04/01/%5BDesign-Pattern%5DAdapter/</loc>
+    
+    <lastmod>2020-01-02T03:51:27.601Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/04/03/%5BDesign-Pattern%5DAbstractFactory/</loc>
+    
+    <lastmod>2020-01-02T03:51:27.288Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/02/14/%5BDeepLearning%5D%5BCharpter%209%5DCNN/</loc>
+    
+    <lastmod>2020-01-02T03:51:26.887Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/12/15/%5BCS%5DTalk-about-char-encode/</loc>
+    
+    <lastmod>2020-01-02T03:51:26.470Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/05/10/%5BAndroid%5Dwhy-Looper-loop-will-not-block-main-thread/</loc>
+    
+    <lastmod>2020-01-02T03:51:26.122Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2015/04/12/%5BAndroid%5DSystemBar-And-ImmersiveMode/</loc>
+    
+    <lastmod>2020-01-02T03:51:25.706Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/06/20/%5BAndroid%5DSecretCode/</loc>
+    
+    <lastmod>2020-01-02T03:51:25.320Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/02/10/%5BAndroid%5Doptimize-gallery-album-loader/</loc>
+    
+    <lastmod>2020-01-02T03:51:24.872Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2015/04/01/%5BAndroid%5DNew-Image-not-show-in-Gallery/</loc>
+    
+    <lastmod>2020-01-02T03:51:24.487Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2016/10/15/%5BAndroid%5DMultimedia-database/</loc>
+    
+    <lastmod>2020-01-02T03:51:24.038Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/11/06/%5BAndroid%5DMTD-MMC-EMMC-partition-layout/</loc>
+    
+    <lastmod>2020-01-02T03:51:23.534Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/04/02/%5BAndroid%5DMediaProjection-Screenshot/</loc>
+    
+    <lastmod>2020-01-02T03:51:23.042Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/05/10/%5BAndroid%5Dhandler-message-delivery/</loc>
+    
+    <lastmod>2020-01-02T03:51:22.538Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2015/05/26/%5BAndroid%5DDetail-of-Service/</loc>
+    
+    <lastmod>2020-01-02T03:51:21.997Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/02/09/%5BAndroid%5DBackground-task-Jobscheduler/</loc>
+    
+    <lastmod>2020-01-02T03:51:21.383Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2015/06/08/%5BAndroid%5DA-Demo-Of-Last-App-Switcher/</loc>
+    
+    <lastmod>2020-01-02T03:51:20.766Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/10/15/%5BAndroid%5D%5BSecurity%5DDefence-policy/</loc>
+    
+    <lastmod>2020-01-02T03:51:19.348Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/10/12/%5BAndroid%5D%5BSecurity%5DDecompile-xposed/</loc>
+    
+    <lastmod>2020-01-02T03:51:18.821Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/09/12/%5BAndroid%5D%5BSecurity%5DDecompile-smali/</loc>
+    
+    <lastmod>2020-01-02T03:51:18.281Z</lastmod>
     
   </url>
   
   <url>
     <loc>http://wossoneri.github.io/2018/11/02/%5BAndroid%5D%5BRecovery%5Drecovery-cannot-locate-sdcard/</loc>
     
-    <lastmod>2020-01-02T02:54:47.671Z</lastmod>
+    <lastmod>2020-01-02T03:51:17.728Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://wossoneri.github.io/2019/12/09/%5BJava%5DUse-Bit-mask-code-By-EnumSet/</loc>
+    <loc>http://wossoneri.github.io/2018/12/10/%5BAndroid%5D%5BRecovery%5Drecovery-auto-mount-system/</loc>
     
-    <lastmod>2020-01-02T02:54:17.258Z</lastmod>
+    <lastmod>2020-01-02T03:51:17.191Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/12/10/%5BAndroid%5D%5BRecovery%5Denable-shell-in-recovery/</loc>
+    
+    <lastmod>2020-01-02T03:51:16.670Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/11/14/%5BAndroid%5D%5BFramework%5DSystemProperties/</loc>
+    
+    <lastmod>2020-01-02T03:51:16.010Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/07/05/%5BAndroid%5D%5BFramework%5DSystem-Gesture-and-statusbar/</loc>
+    
+    <lastmod>2020-01-02T03:51:15.447Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/12/09/%5BAndroid%5D%5BFramework%5Dsystem-AlertDialog-and-WindowManager/</loc>
+    
+    <lastmod>2020-01-02T03:51:14.949Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/03/25/%5BAndroid%5D%5BFramework%5Dstart-of-SystemServer/</loc>
+    
+    <lastmod>2020-01-02T03:51:14.406Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/11/18/%5BAndroid%5D%5BFramework%5DSomething-about-activity-recycle/</loc>
+    
+    <lastmod>2020-01-02T03:51:13.876Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/11/14/%5BAndroid%5D%5BFramework%5DSet-default-wifi-ap-conf/</loc>
+    
+    <lastmod>2020-01-02T03:51:13.324Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2016/10/28/%5BAndroid%5D%5BFramework%5DProvision/</loc>
+    
+    <lastmod>2020-01-02T03:51:12.761Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/06/19/%5BAndroid%5D%5BFramework%5DPlayAutoInstall/</loc>
+    
+    <lastmod>2020-01-02T03:51:12.186Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/04/09/%5BAndroid%5D%5BFramework%5DPackageManagerService-process-app-permission/</loc>
+    
+    <lastmod>2020-01-02T03:51:11.602Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/12/09/%5BAndroid%5D%5BFramework%5Dmastering-system-jar-and-sdk/</loc>
+    
+    <lastmod>2020-01-02T03:51:10.717Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/11/05/%5BAndroid%5D%5BFramework%5DHowDoesAndroidManifestWork/</loc>
+    
+    <lastmod>2020-01-02T03:51:09.421Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/06/03/%5BAndroid%5D%5BFramework%5Dhow-does-Activity-start/</loc>
+    
+    <lastmod>2020-01-02T03:51:08.263Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/12/19/%5BAndroid%5D%5BFramework%5Dglance-of-androidTV/</loc>
+    
+    <lastmod>2020-01-02T03:51:07.701Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/04/25/%5BAndroid%5D%5BFramework%5DGallery-slideshow/</loc>
+    
+    <lastmod>2020-01-02T03:51:07.090Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/08/30/%5BAndroid%5D%5BFramework%5Dcrop-SystemServer-and-SystemFeature/</loc>
+    
+    <lastmod>2020-01-02T03:51:06.049Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/07/10/%5BAndroid%5D%5BFramework%5Dbootchart/</loc>
+    
+    <lastmod>2020-01-02T03:51:04.919Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/12/10/%5BAndroid%5D%5BFramework%5Dadd-system-jar/</loc>
+    
+    <lastmod>2020-01-02T03:51:04.382Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/05/17/%5BAndroid%5D%5BFramework%5DActivityThread/</loc>
+    
+    <lastmod>2020-01-02T03:51:03.703Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/12/12/%5BTensorflow%5DTrain-model-with-SSD-MobileNet/</loc>
+    
+    <lastmod>2020-01-02T03:51:00.618Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2016/05/04/%5B%E9%97%B2%E8%B0%88%5DDoes-experienced-programmer-use-google-frequently/</loc>
+    
+    <lastmod>2020-01-02T03:50:59.193Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/07/16/%5BAndroid%5D%5BFramework%5Dembed-apk-with-so/</loc>
+    
+    <lastmod>2020-01-02T03:50:27.212Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/09/15/%5BAndroid%5D%5BFramework%5Dcreate-system-service/</loc>
+    
+    <lastmod>2020-01-02T03:50:19.217Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/09/21/%5BAndroid%5D%5BFramework%5Dcreate-ota-update-zip/</loc>
+    
+    <lastmod>2020-01-02T03:50:15.165Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/02/08/%5BAndroid%5D%5BFramework%5DAndroidO-Broadcast-Limit/</loc>
+    
+    <lastmod>2020-01-02T03:50:08.011Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/11/17/%5BAndroid%5D%5BFramework%5DAndroid-permission-2/</loc>
+    
+    <lastmod>2020-01-02T03:50:03.108Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/01/11/%5BAndroid%5D%5BFramework%5DAndroid-permission-1/</loc>
+    
+    <lastmod>2020-01-02T03:49:57.580Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/04/03/%5BAndroid%5D%5BFramework%5DAccessibilityShortcut/</loc>
+    
+    <lastmod>2020-01-02T03:49:21.622Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/06/01/%5BAndroid%5D%5BFramework%5DAB-system-update/</loc>
+    
+    <lastmod>2020-01-02T03:49:15.784Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/01/04/%5BAndroid%5D%5BFramework%5DA-wired-bug-related-uri/</loc>
+    
+    <lastmod>2020-01-02T03:49:09.798Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/04/09/%5BAndroid%5D%5BFramework%5Da-issue-of-SIMToolKit/</loc>
+    
+    <lastmod>2020-01-02T03:49:02.870Z</lastmod>
     
   </url>
   
@@ -191,604 +828,9 @@
   </url>
   
   <url>
-    <loc>http://wossoneri.github.io/2018/07/22/%5BProtocolBuffer%5DProtocol-Buffer-basics-java/</loc>
-    
-    <lastmod>2019-12-31T11:08:32.650Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2015/12/23/%5BMacOS%5D%20Mac-OS-X-El-Captain-Apache-php-mysql/</loc>
-    
-    <lastmod>2019-12-31T11:05:54.378Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/02/14/%5BDeepLearning%5D%5BCharpter%209%5DCNN/</loc>
-    
-    <lastmod>2019-12-31T11:05:03.801Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/05/04/%5BMachineLearning%5Dtesseract-tutorial/</loc>
-    
-    <lastmod>2019-12-31T11:04:22.642Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://wossoneri.github.io/categories/index.html</loc>
     
     <lastmod>2019-12-31T11:00:07.564Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/05/04/%5B%E9%97%B2%E8%B0%88%5DDoes-experienced-programmer-use-google-frequently/</loc>
-    
-    <lastmod>2019-12-31T10:34:04.142Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2019/05/10/%5BAndroid%5Dwhy-Looper-loop-will-not-block-main-thread/</loc>
-    
-    <lastmod>2019-12-10T08:40:09.603Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/05/10/%5BAndroid%5Dhandler-message-delivery/</loc>
-    
-    <lastmod>2019-12-10T07:55:18.437Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/06/03/%5BAndroid%5D%5BFramework%5Dhow-does-Activity-start/</loc>
-    
-    <lastmod>2019-12-09T10:36:26.234Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2019/02/09/%5BAndroid%5DBackground-task-Jobscheduler/</loc>
-    
-    <lastmod>2019-11-13T09:39:10.858Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2019/02/08/%5BAndroid%5D%5BFramework%5DAndroidO-Broadcast-Limit/</loc>
-    
-    <lastmod>2019-11-12T17:00:26.988Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/12/10/%5BAndroid%5D%5BRecovery%5Drecovery-auto-mount-system/</loc>
-    
-    <lastmod>2018-12-10T05:04:41.028Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/12/10/%5BAndroid%5D%5BRecovery%5Denable-shell-in-recovery/</loc>
-    
-    <lastmod>2018-12-10T04:31:51.609Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/12/10/%5BAndroid%5D%5BFramework%5Dadd-system-jar/</loc>
-    
-    <lastmod>2018-12-09T18:33:38.785Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/12/09/%5BAndroid%5D%5BFramework%5Dsystem-AlertDialog-and-WindowManager/</loc>
-    
-    <lastmod>2018-12-09T11:15:46.078Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/11/14/%5BAndroid%5D%5BFramework%5DSet-default-wifi-ap-conf/</loc>
-    
-    <lastmod>2018-11-14T10:05:45.766Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/11/14/%5BAndroid%5D%5BFramework%5DSystemProperties/</loc>
-    
-    <lastmod>2018-11-14T08:34:26.201Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/06/01/%5BAndroid%5D%5BFramework%5DAB-system-update/</loc>
-    
-    <lastmod>2018-11-14T08:30:26.481Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/09/21/%5BAndroid%5D%5BFramework%5Dcreate-ota-update-zip/</loc>
-    
-    <lastmod>2018-09-21T11:12:58.753Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/08/30/%5BAndroid%5D%5BFramework%5Dcrop-SystemServer-and-SystemFeature/</loc>
-    
-    <lastmod>2018-09-11T13:02:04.120Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/10/28/%5BAndroid%5D%5BFramework%5DProvision/</loc>
-    
-    <lastmod>2018-07-31T06:19:38.232Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/07/05/%5BAndroid%5D%5BFramework%5DSystem-Gesture-and-statusbar/</loc>
-    
-    <lastmod>2018-07-22T10:40:38.562Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/07/10/%5BAndroid%5D%5BFramework%5Dbootchart/</loc>
-    
-    <lastmod>2018-07-10T06:21:11.276Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/06/27/%5BPython%5Dspider-explaination/</loc>
-    
-    <lastmod>2018-06-26T20:30:24.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/06/20/%5BAndroid%5DSecretCode/</loc>
-    
-    <lastmod>2018-06-20T16:04:45.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/06/05/%5BLinux%5Destablish-rstp-server/</loc>
-    
-    <lastmod>2018-06-04T17:46:15.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/05/17/%5BAndroid%5D%5BFramework%5DActivityThread/</loc>
-    
-    <lastmod>2018-05-16T17:35:33.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/10/15/%5BAndroid%5DMultimedia-database/</loc>
-    
-    <lastmod>2018-05-15T17:08:10.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/05/08/%5BJava%5DCountDownLatch-and-CyclicBarrier/</loc>
-    
-    <lastmod>2018-05-09T09:33:06.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/02/10/%5BAndroid%5Doptimize-gallery-album-loader/</loc>
-    
-    <lastmod>2018-05-02T17:50:02.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/04/03/%5BDesign-Pattern%5DAbstractFactory/</loc>
-    
-    <lastmod>2018-05-02T16:42:22.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/04/01/%5BDesign-Pattern%5DAdapter/</loc>
-    
-    <lastmod>2018-05-02T16:42:07.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/03/28/%5BDesign-Pattern%5DBridge/</loc>
-    
-    <lastmod>2018-05-02T16:41:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/04/04/%5BDesign-Pattern%5DBuilder/</loc>
-    
-    <lastmod>2018-05-02T16:41:49.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/03/27/%5BDesign-Pattern%5DChain-of-responsibility/</loc>
-    
-    <lastmod>2018-05-02T16:41:40.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/03/29/%5BDesign-Pattern%5DCommand/</loc>
-    
-    <lastmod>2018-05-02T16:41:32.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/03/31/%5BDesign-Pattern%5DComposite/</loc>
-    
-    <lastmod>2018-05-02T16:41:22.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/04/08/%5BDesign-Pattern%5DDecorator/</loc>
-    
-    <lastmod>2018-05-02T16:41:14.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/04/06/%5BDesign-Pattern%5DFacade/</loc>
-    
-    <lastmod>2018-05-02T16:41:06.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/04/11/%5BDesign-Pattern%5DFactory/</loc>
-    
-    <lastmod>2018-05-02T16:40:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/03/31/%5BDesign-Pattern%5DIterator/</loc>
-    
-    <lastmod>2018-05-02T16:40:47.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/03/30/%5BDesign-Pattern%5DMediator/</loc>
-    
-    <lastmod>2018-05-02T16:40:38.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/04/04/%5BDesign-Pattern%5DMemento/</loc>
-    
-    <lastmod>2018-05-02T16:40:28.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/03/26/%5BDesign-Pattern%5DMore-about-Singleton/</loc>
-    
-    <lastmod>2018-05-02T16:40:18.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/04/05/%5BDesign-Pattern%5DObserver/</loc>
-    
-    <lastmod>2018-05-02T16:40:06.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/04/10/%5BDesign-Pattern%5DPrototype/</loc>
-    
-    <lastmod>2018-05-02T16:39:51.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/04/07/%5BDesign-Pattern%5DProxy/</loc>
-    
-    <lastmod>2018-05-02T16:39:40.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/04/02/%5BDesign-Pattern%5DState/</loc>
-    
-    <lastmod>2018-05-02T16:39:15.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/03/09/%5BDesign-Pattern%5DTemplateMethod/</loc>
-    
-    <lastmod>2018-05-02T16:38:41.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/01/24/%5BMachineLearning%5DK-Nearest-Neighbor/</loc>
-    
-    <lastmod>2018-04-03T03:18:24.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/02/06/%5BMachineLearning%5DBackPropagation/</loc>
-    
-    <lastmod>2018-04-03T02:43:40.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/12/10/%5BTensorflow%5DRun-TF-model-in-Android/</loc>
-    
-    <lastmod>2018-04-02T08:04:51.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/03/14/%5BMachingLearning%5D%5BRepost%5DUnderstanding-LSTM/</loc>
-    
-    <lastmod>2018-03-14T12:10:13.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/03/14/%5BMachineLearning%5DActivation-Function/</loc>
-    
-    <lastmod>2018-03-14T12:04:40.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/01/24/%5BMachineLearning%5DHyperparameters-learning-rate/</loc>
-    
-    <lastmod>2018-01-23T16:56:24.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/12/16/%5BTensorflow%5Dconv-in-tf/</loc>
-    
-    <lastmod>2017-12-26T16:22:15.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/12/16/%5BTensorflow%5DFasterRCNN_and_VOC_dataset/</loc>
-    
-    <lastmod>2017-12-26T16:22:13.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/05/15/%5BDesign-Pattern%5DStrategy/</loc>
-    
-    <lastmod>2017-12-14T13:32:27.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/05/13/%5BDesign-Pattern%5DSimple-Factory/</loc>
-    
-    <lastmod>2017-12-14T13:32:10.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/05/23/%5BDesign-Pattern%5DSingleton/</loc>
-    
-    <lastmod>2017-12-14T13:32:04.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/05/12/%5BDesign-Pattern%5DPrinciples/</loc>
-    
-    <lastmod>2017-12-14T13:31:50.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/12/12/%5BTensorflow%5DTrain-model-with-SSD-MobileNet/</loc>
-    
-    <lastmod>2017-12-12T14:09:48.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/11/15/%5BTensorflow%5DThe-dimension-of-Tensor/</loc>
-    
-    <lastmod>2017-12-12T13:45:50.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/07/27/%5BLeetCode%5D001_TwoSum/</loc>
-    
-    <lastmod>2017-07-26T16:34:59.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2015/05/26/%5BAndroid%5DDetail-of-Service/</loc>
-    
-    <lastmod>2016-08-10T14:13:57.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/05/04/%5BiOS%5DCollection-of-Articles/</loc>
-    
-    <lastmod>2016-07-04T05:35:03.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/06/30/%5BObjective-C%5DChain-programming-using-Block/</loc>
-    
-    <lastmod>2016-06-30T10:52:01.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/06/29/%5BiOS%5DAbout-Creating-UI/</loc>
-    
-    <lastmod>2016-06-29T07:34:40.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/06/28/%5BObjective-C%5DArt-Of-Code/</loc>
-    
-    <lastmod>2016-06-29T07:33:39.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/06/04/%5BObjective-C%5DCopy-and-MutableCopy/</loc>
-    
-    <lastmod>2016-06-29T02:45:11.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/05/19/%5BObjective-C%5DCreate-Constants/</loc>
-    
-    <lastmod>2016-06-28T10:39:04.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/04/29/%5BObjective-C%5DKVC-and-KVO/</loc>
-    
-    <lastmod>2016-06-13T02:23:29.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/05/30/%5BObjective-C%5DMultithreading-and-GCD/</loc>
-    
-    <lastmod>2016-06-08T10:03:08.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/05/30/%5BObjective-C%5DGCD-in-depth/</loc>
-    
-    <lastmod>2016-06-08T10:03:04.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2015/09/29/%5BJava%5DMulti-Thread/</loc>
-    
-    <lastmod>2016-05-30T15:12:43.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/04/18/%5BiOS%5DCollections-of-issues/</loc>
-    
-    <lastmod>2016-05-20T09:38:00.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2015/12/29/%5BObjective-C%5DType-of-id-and-instancetype/</loc>
-    
-    <lastmod>2016-05-18T14:15:00.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/01/09/%5BiOS%5DHorizon-Scroll-UICollectionView/</loc>
-    
-    <lastmod>2016-05-07T15:39:17.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/05/05/%5BiOS%5DWSHorizontalPickerView/</loc>
-    
-    <lastmod>2016-05-05T13:30:59.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/04/16/%5BSwift%5DNotes-of-Swift/</loc>
-    
-    <lastmod>2016-04-16T15:38:52.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2015/10/11/%5BiOS%5DCircle-Progress-Bar/</loc>
-    
-    <lastmod>2016-03-12T14:05:15.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/02/18/%5BObjective-C%5DTalk-about-NSInteger/</loc>
-    
-    <lastmod>2016-02-27T17:46:15.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/02/22/%5BiOS%5DScroll-to-hide-show-HeaderView/</loc>
-    
-    <lastmod>2016-02-23T16:25:29.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/02/20/%5BObjective-C%5DCallback-with-block/</loc>
-    
-    <lastmod>2016-02-19T16:35:11.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/02/18/%5BiOS%5DInput-height-changed-by-content/</loc>
-    
-    <lastmod>2016-02-19T15:48:33.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2016/01/21/%5BiOS%5DInit-UICollectionView-to-Center/</loc>
-    
-    <lastmod>2016-02-18T13:01:11.000Z</lastmod>
     
   </url>
   
@@ -807,41 +849,6 @@
   </url>
   
   <url>
-    <loc>http://wossoneri.github.io/2015/03/30/%5BSublime-Text%5DUse-Sublime-Text3-compile-Java/</loc>
-    
-    <lastmod>2016-01-03T13:21:23.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2015/04/01/%5BAndroid%5DNew-Image-not-show-in-Gallery/</loc>
-    
-    <lastmod>2016-01-03T13:18:02.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2015/04/24/%5BMarkDown%5DSyntax-of-markdown/</loc>
-    
-    <lastmod>2016-01-03T13:15:19.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2015/06/08/%5BAndroid%5DA-Demo-Of-Last-App-Switcher/</loc>
-    
-    <lastmod>2016-01-03T13:10:41.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2015/06/22/%5BiOS%5DInstall-OSX-in-Vmware-under-Win8/</loc>
-    
-    <lastmod>2016-01-03T13:07:03.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://wossoneri.github.io/baidu_verify_merBtS3eeX.html</loc>
     
     <lastmod>2016-01-02T16:47:45.000Z</lastmod>
@@ -852,13 +859,6 @@
     <loc>http://wossoneri.github.io/google9d91c53bd1766bb2.html</loc>
     
     <lastmod>2016-01-02T16:47:37.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2015/04/12/%5BAndroid%5DSystemBar-And-ImmersiveMode/</loc>
-    
-    <lastmod>2016-01-02T06:44:34.000Z</lastmod>
     
   </url>
   

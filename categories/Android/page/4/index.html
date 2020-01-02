@@ -495,9 +495,7 @@
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                BackgroundAndroid5.0以上提供了MediaProjection，方便截屏录屏等功能。
-详细代码参阅Github：https://github.com/wossoneri/ScreenCapture
-一个完整的创建Media
+                                用MediaProjection实现Android快速截屏
                             
                         </div>
                         <div class="publish-info">
@@ -551,9 +549,7 @@
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                
-SystemServer.mainSystemServer通过ZygoteInit.java反射启动，首先会进入main方法，main会构造一个新的SystemServer，然后运行run()方法
-/frameworks/base/ser
+                                简单了解Android O SystemServer启动流程
                             
                         </div>
                         <div class="publish-info">
@@ -607,7 +603,7 @@ SystemServer.mainSystemServer通过ZygoteInit.java反射启动，首先会进入
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                问题描述在手机中有多个存有图片的文件夹，在recent界面清掉所有的应用，点击进入图库，切换到相册列表。发现要过几秒钟才能从空白页面开始显示文件夹。同时会引起另一问题，在有大量图片文件夹的情况下删除一个文件夹，这个被删除的文件夹还会在界面上
+                                之前整理的一个Gallery性能优化问题
                             
                         </div>
                         <div class="publish-info">
@@ -657,11 +653,7 @@ SystemServer.mainSystemServer通过ZygoteInit.java反射启动，首先会进入
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                
-我这里有谷歌给OEM提供的官方文档，需要的可以联系
-
-什么是PAIPAI （PlayAutoInstall） 是一个自动下载安装APK到手机，并且摆放在Launcher对应位置的一个机制。
-因为国内没有GMS，所以很多人没接触过这个机制。
+                                因为流程上的种种不方便，当时折腾这个PAI花了好多时间，趁着调好了，总结一下
                             
                         </div>
                         <div class="publish-info">
@@ -711,9 +703,7 @@ SystemServer.mainSystemServer通过ZygoteInit.java反射启动，首先会进入
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                Provision是什么？Provision的作用很简单，就是一个系统初始化引导程序，源生的Android里面Provision只做了一件事，就是写入一个DEVICE_PROVISIONED标记。
-
-这个标记作用很大，这个标记只会在系统 全
+                                Android Provision介绍
                             
                         </div>
                         <div class="publish-info">
@@ -763,9 +753,7 @@ SystemServer.mainSystemServer通过ZygoteInit.java反射启动，首先会进入
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                多媒体数据库
-以 root 权限进入 adb shell， /data/data/com.android.providers.media/databases 目录下就是存放数据库的地方。
-以 external 开头的数据库存储的是 SD 卡
+                                做Gallery的时候经常会看图片数据库，随便整理了一些数据库表的含义
                             
                         </div>
                         <div class="publish-info">
@@ -815,7 +803,7 @@ SystemServer.mainSystemServer通过ZygoteInit.java反射启动，首先会进入
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                &emsp;&emsp;在Android众多工具类app中，Last App Switcher绝对算是一个让人用过就不会卸载的工具。LAS这个应用，它的功能很简单，就是通过一个浮动按钮实现在两个应用之间一键切换，但是非常实用，尤其是在边玩边
+                                在Android众多工具类app中，`Last App Switcher`绝对算是一个让人用过就不会卸载的工具。`LAS`这个应用，它的功能很简单，就是通过一个浮动按钮实现在两个应用之间一键切换，但是非常实用，尤其是在边玩边聊天需要频繁切换应用的时候。所以可以看出，想开发一款受欢迎的应用，一定要注重用户体验，只要用户用的爽，功能再再再简单，它也会受欢迎。那么这功能到底有多简单呢？跟我来实现一下就好了。
                             
                         </div>
                         <div class="publish-info">
@@ -877,7 +865,7 @@ SystemServer.mainSystemServer通过ZygoteInit.java反射启动，首先会进入
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                Services&emsp;&emsp;服务是一个应用程序组件,可以在后台执行长时间运行的操作,不提供用户界面。一个应用程序组件可以启动一个服务,它将继续在后台运行,即使用户切换到另一个应用程序。此外,一个组件可以绑定到一个服务与它交互,甚
+                                简单说明Android的service的几种用法，并介绍一些让service不被杀死的办法。
                             
                         </div>
                         <div class="publish-info">
@@ -927,11 +915,7 @@ SystemServer.mainSystemServer通过ZygoteInit.java反射启动，首先会进入
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                关于System Bars，之前写过几篇相关的文章：(链接等我把博客迁移好之后补上)
-
-[Android]获取系统顶部状态栏(Status Bar)与底部导航栏(Navigation Bar)的高度
-[Android]状态栏的一些认识
-[A
+                                对Android的顶部状态栏，下方导航栏以及新的全屏沉浸模式的知识点进行最后一次总结。
                             
                         </div>
                         <div class="publish-info">
@@ -985,7 +969,7 @@ SystemServer.mainSystemServer通过ZygoteInit.java反射启动，首先会进入
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                　　之前遇到过一个问题，就是发现我在程序中生成一个新的 Bitmap 之后，当我打开系统的 Gallery 查看时，并没有看到新生成的图像。然而打开文件浏览器，找到保存 Bitmap 所在的文件夹下，还能看到程序生成的 Bitmap 文件。
+                                之前遇到过一个问题，就是发现我在程序中生成一个新的 Bitmap 之后，当我打开系统的 Gallery 查看时，并没有看到新生成的图像。然而打开文件浏览器，找到保存 Bitmap 所在的文件夹下，还能看到程序生成的 Bitmap 文件。也就是说，文件其实存在，但 Gallery 似乎并没有刷新。
                             
                         </div>
                         <div class="publish-info">
@@ -1056,7 +1040,7 @@ SystemServer.mainSystemServer通过ZygoteInit.java反射启动，首先会进入
     <div class="container row center-align" style="margin-bottom: 15px !important;">
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
-            <span id="year">2016</span>
+            <span id="year">2014</span>
             <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
             |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
@@ -1089,7 +1073,7 @@ SystemServer.mainSystemServer通过ZygoteInit.java反射启动，首先会进入
                     var days = hours * 24;
                     var years = days * 365;
                     var today = new Date();
-                    var startYear = "2016";
+                    var startYear = "2014";
                     var startMonth = "1";
                     var startDate = "1";
                     var startHour = "0";

@@ -5,7 +5,7 @@
 <head><meta name="generator" content="Hexo 3.9.0">
     <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
     <meta name="keywords" content="[Android][Framework] Gallery幻灯片流程以及一个Bitmap的bug, wOw的博客">
-    <meta name="description" content="一个奇怪的Bug用Camera录制任意长度视频。进入Gallery，打开包含刚拍好的视频的相册，然后右上角选择展示“幻灯片”，发现，刚才的视频的Thumbnail出现倾斜，被分割成三段展示。当第一遍循环展示结束，再次展示这张图时，图片就正常">
+    <meta name="description" content="Gallery的幻灯片出现一个和Bitmap相关的很诡异的BUG">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -1196,9 +1196,7 @@ gitment.render('gitment-content');
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            tesseract 项目google的一个开源OCR项目，详情读项目README吧。
-https://github.com/tesseract-ocr/tesseract
-安装方法https://github.com/tesseract-o
+                            接到个调研OCR数字识别的任务，看到了tesseract项目，记录一下使用过程
                         
                     </div>
                     <div class="publish-info">
@@ -1251,9 +1249,7 @@ https://github.com/tesseract-ocr/tesseract
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            STK就是SIMToolKit。
-问题如图，STK一个case的输入框，不应该能输入+：
-这个界面从哪来的？实际上，我们插入SIM卡，手机就会显示SimToolKit，打开就能看到一些和运营商相关的菜单。换了不同的卡菜单也会变。所以大概可以
+                            没做过STK，因为分析一个问题看到了，就记录一下，万一以后再遇到呢。
                         
                     </div>
                     <div class="publish-info">
@@ -1297,6 +1293,43 @@ https://github.com/tesseract-ocr/tesseract
 
 </div>
 
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('120')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: wOw的博客<br />'
+            + '文章作者: Wossoneri<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
 
 
 <!-- 代码块功能依赖 -->
@@ -1350,7 +1383,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             contentSelector: '#articleContent',
             headingsOffset: -($(window).height() * 0.4 - 45),
             collapseDepth: Number('0'),
-            headingSelector: 'h2, h3, h4'
+            headingSelector: 'h1, h2, h3, h4, h5'
         });
 
         // modify the toc link href to support Chinese.
@@ -1362,7 +1395,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
 
         // modify the heading title id to support Chinese.
         i = 0;
-        $('#articleContent').children('h2, h3, h4').each(function () {
+        $('#articleContent').children('h1, h2, h3, h4, h5').each(function () {
             $(this).attr('id', tocHeading + (++i));
         });
 
@@ -1428,7 +1461,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
     <div class="container row center-align" style="margin-bottom: 15px !important;">
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
-            <span id="year">2016</span>
+            <span id="year">2014</span>
             <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
             |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
@@ -1461,7 +1494,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
                     var days = hours * 24;
                     var years = days * 365;
                     var today = new Date();
-                    var startYear = "2016";
+                    var startYear = "2014";
                     var startMonth = "1";
                     var startDate = "1";
                     var startHour = "0";

@@ -495,7 +495,7 @@
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                坏习惯的开端初写iOS时，我做的是把原项目从Android端移植到iOS端。因为涉及到不同语言，又因为不熟悉iOS，加上还要与用C写的网络库进行纠缠，我小心翼翼的用了基本数据类型完成大多数编码。能用int就坚决不用NSInteger，能用f
+                                在iOS开发过程中，我一直习惯于使用C语法里的基本类型，而很少用（除非必须使用）Foundation的数据类型。最近看了一些资料，发现自己这样写可能有风险，虽然目前没遇到过相关的问题，但这是非常需要注意的一点。
                             
                         </div>
                         <div class="publish-info">
@@ -545,13 +545,7 @@
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                id类型id数据类型可以存储任何类型的对象。可以说，它是一般对象类型。例如可以声明一个为id类型的变量：
-id graphicObject
-
-也可声明方法使其具有id类型的返回值：
-- (id)newObject:(int)type;
-
-i
+                                前些时间在源码里看到instancetype返回类型，一脸惊异，表示接触iOS不久没见过这东西，但发现跟id功能差不多。故查了一些资料，了解了两者之间的区别，故将资料简单翻译整理了一下，为博客充一个数 : )
                             
                         </div>
                         <div class="publish-info">
@@ -605,8 +599,7 @@ i
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                线程的概念和其他多数计算机语言不同，Java内置支持多线程编程（multithreaded programming）。
-多线程程序包含两条或两条以上并发运行的部分。程序中每个这样的部分都叫一个线程（thread），每个线程都有独立的执行路径
+                                最近复习java，发现一本很好的资料，《J​a​v​a​2​参​考​大​全​ ​(​第​五​版​)​》 ​ ​H​e​r​b​e​r​t​.Schildt。书比较老了，06年的，一些内容有些旧了，翻译也不是太好，但这本书的知识覆盖面还是非常全面，讲述也是由浅入深，很值得参考的一本口碑非常好的书。我把一些内容加以整理，再配合着《think in Java》，把知识点梳理一遍。因为这本书的结构很好，所以目录就以这本书为主。后面看到更好的资料或有使用心得后会不断更新此文章。
                             
                         </div>
                         <div class="publish-info">
@@ -656,9 +649,7 @@ i
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                特殊字符自动转换HTML中，&copy; 可以写成&amp;copy;也可以直接输 ©
-HTML中 &lt; 和 &amp; 都要转码  但markdown不必，输入&amp; 和 &amp;amp; 都显示 &amp;，&lt; 也一样
-
+                                因为在弄github，要往readme里面写东西，发现是.md的格式，原来是要用markdown来写，索性看了看md的语法，发现蛮简单的，加上本来就会写html，所以理解起来很快，网上看了一点资料，就总结一下吧。我在ubuntu下使用的编辑器叫 haroopad，感觉不错。。这个也是我第一次用md写博客，排版渣就凑合看看吧。。另外上面的目录是js提的，下面的目录是md的。最后如果有错误的话给我指明一下，谢谢了。
                             
                         </div>
                         <div class="publish-info">
@@ -725,7 +716,7 @@ HTML中 &lt; 和 &amp; 都要转码  但markdown不必，输入&amp; 和 &amp;am
     <div class="container row center-align" style="margin-bottom: 15px !important;">
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
-            <span id="year">2016</span>
+            <span id="year">2014</span>
             <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
             |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
@@ -758,7 +749,7 @@ HTML中 &lt; 和 &amp; 都要转码  但markdown不必，输入&amp; 和 &amp;am
                     var days = hours * 24;
                     var years = days * 365;
                     var today = new Date();
-                    var startYear = "2016";
+                    var startYear = "2014";
                     var startMonth = "1";
                     var startDate = "1";
                     var startHour = "0";

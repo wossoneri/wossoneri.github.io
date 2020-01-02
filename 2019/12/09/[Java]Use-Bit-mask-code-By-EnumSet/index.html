@@ -5,10 +5,7 @@
 <head><meta name="generator" content="Hexo 3.9.0">
     <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
     <meta name="keywords" content="[Java] 使用EnumSet代替位运算简化代码逻辑, wOw的博客">
-    <meta name="description" content="位运算在Review代码时候，看到一段涉及到USB的逻辑代码，他是这样写的
-private boolean isUsbConnected;
-private boolean isUsbModeNCM;
-private boolean isUs">
+    <meta name="description" content="Review代码的时候，看到别人状态逻辑的一些代码有点复杂，就改了一下">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -470,14 +467,14 @@ private boolean isUs">
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1,508
+                    1,455
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    7 分
+                    6 分
                 </div>
                 
 
@@ -494,7 +491,7 @@ private boolean isUs">
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <h2 id="位运算"><a href="#位运算" class="headerlink" title="位运算"></a>位运算</h2><p>在Review代码时候，看到一段涉及到USB的逻辑代码，他是这样写的</p>
-<pre><code class="lang-java">private boolean isUsbConnected;
+<pre class=" language-lang-java"><code class="language-lang-java">private boolean isUsbConnected;
 private boolean isUsbModeNCM;
 private boolean isUsbModeAccessory;
 private boolean isUsbModeAdb;
@@ -503,12 +500,12 @@ private boolean isUsbModeMTP;
 </code></pre>
 <p>然后代码逻辑里是大量的成员变量的判断，显得非常臃肿而且难读懂，大量的if-else判断让代码逻辑很脆弱，稍微一个情况没考虑好就会出现难以排查的bug。</p>
 <p>所以这种情况使用位掩码进行处理会更简单：</p>
-<pre><code class="lang-java">// 博客地址：wossoneri.github.io
+<pre class=" language-lang-java"><code class="language-lang-java">// 博客地址：wossoneri.github.io
 private static final int FLAG_USB_CONNECTED = 0x1;
-private static final int FLAG_USB_MODE_NCM = 0x1 &lt;&lt; 1;
-private static final int FLAG_USB_MODE_ACY = 0x1 &lt;&lt; 2;
-private static final int FLAG_USB_MODE_ADB = 0x1 &lt;&lt; 3;
-private static final int FLAG_USB_MODE_MTP = 0x1 &lt;&lt; 4;
+private static final int FLAG_USB_MODE_NCM = 0x1 << 1;
+private static final int FLAG_USB_MODE_ACY = 0x1 << 2;
+private static final int FLAG_USB_MODE_ADB = 0x1 << 3;
+private static final int FLAG_USB_MODE_MTP = 0x1 << 4;
 ...
 private int mUsbState;
 
@@ -517,11 +514,11 @@ public void addUsbState(int flag) {
 }
 
 public void removeUsbState(int flag) {
-  mUsbState &amp;= ~flag;
+  mUsbState &= ~flag;
 }
 
 public boolean isUsbStateEnable(int flag) {
-  return (mUsbState &amp; flag) == flag;
+  return (mUsbState & flag) == flag;
 }
 </code></pre>
 <p>简单分析一下这样写的好处：</p>
@@ -533,52 +530,60 @@ public boolean isUsbStateEnable(int flag) {
 </blockquote>
 <p>通过移位，使得每一位都有独立的代表的意义，1代表enable，0代表disable。</p>
 <p>如果要<strong>添加状态</strong>（Java里int值默认赋值为0）：</p>
-<pre><code class="lang-java">public void addUsbState(int flag) {
+<pre class=" language-lang-java"><code class="language-lang-java">public void addUsbState(int flag) {
      mUsbState |= flag; 
 }
 </code></pre>
 <p>假设添加accessory状态FLAG_USB_MODE_ACY</p>
-<pre><code>0000 |= 0100 -&gt; 0100
-</code></pre><p>所以mUsbState就是0100的状态了。</p>
+<pre class=" language-lang-txt"><code class="language-lang-txt">0000 |= 0100 -> 0100
+</code></pre>
+<p>所以mUsbState就是0100的状态了。</p>
 <p>继续添加FLAG_USB_MODE_ADB状态</p>
-<pre><code>0100 |= 1000 -&gt; 1100
-</code></pre><p>也可以一次添加多个状态，比如上面的两个状态在一次设置同时添加：</p>
-<pre><code>addUsbState(FLAG_USB_MODE_ACY | FLAG_USB_MODE_ADB);
-</code></pre><p>结果就是：</p>
-<pre><code>0000 |= (0100 | 1000)
--&gt; 0000 |= 1100
--&gt; 1100
-</code></pre><p>如果是原来的boolean变量，就需要单独为每一个变量设置，就会很麻烦。</p>
+<pre class=" language-lang-txt"><code class="language-lang-txt">0100 |= 1000 -> 1100
+</code></pre>
+<p>也可以一次添加多个状态，比如上面的两个状态在一次设置同时添加：</p>
+<pre class=" language-lang-java"><code class="language-lang-java">addUsbState(FLAG_USB_MODE_ACY | FLAG_USB_MODE_ADB);
+</code></pre>
+<p>结果就是：</p>
+<pre class=" language-lang-txt"><code class="language-lang-txt">0000 |= (0100 | 1000)
+-> 0000 |= 1100
+-> 1100
+</code></pre>
+<p>如果是原来的boolean变量，就需要单独为每一个变量设置，就会很麻烦。</p>
 <hr>
 <p>然后是<strong>移除状态</strong>：</p>
-<pre><code class="lang-java">public void removeUsbState(int flag) {
-  mUsbState &amp;= ~flag;
+<pre class=" language-lang-java"><code class="language-lang-java">public void removeUsbState(int flag) {
+  mUsbState &= ~flag;
 }
 </code></pre>
 <p>比如接着上面移除FLAG_USB_MODE_ADB状态</p>
-<pre><code>1100 &amp;= ~1000
--&gt; 1100 &amp;= 0111
--&gt; 0100
-</code></pre><p>如果移除一个不存在的状态比如FLAG_USB_MODE_NCM</p>
-<pre><code>0100 &amp;= ~0010
--&gt; 0100 &amp;= 1101
--&gt; 0100
-</code></pre><p>可以看到并不会对当前状态造成任何影响。</p>
+<pre class=" language-lang-txt"><code class="language-lang-txt">1100 &= ~1000
+-> 1100 &= 0111
+-> 0100
+</code></pre>
+<p>如果移除一个不存在的状态比如FLAG_USB_MODE_NCM</p>
+<pre class=" language-lang-txt"><code class="language-lang-txt">0100 &= ~0010
+-> 0100 &= 1101
+-> 0100
+</code></pre>
+<p>可以看到并不会对当前状态造成任何影响。</p>
 <hr>
 <p>最后看一下<strong>检查状态</strong>：</p>
-<pre><code class="lang-java">public boolean isUsbStateEnable(int flag) {
-  return (mUsbState &amp; flag) == flag;
+<pre class=" language-lang-java"><code class="language-lang-java">public boolean isUsbStateEnable(int flag) {
+  return (mUsbState & flag) == flag;
 }
 </code></pre>
 <p>首先检查一下当前拥有的状态：</p>
-<pre><code>(0100 &amp; 0100) == 0100
--&gt; 0100 == 0100
--&gt; true
-</code></pre><p>可以检测到该状态。然后换一个状态：</p>
-<pre><code>(0100 &amp; 1000) == 1000
--&gt; 0000 == 1000
--&gt; false
-</code></pre><p>没有检测到该状态。</p>
+<pre class=" language-lang-txt"><code class="language-lang-txt">(0100 & 0100) == 0100
+-> 0100 == 0100
+-> true
+</code></pre>
+<p>可以检测到该状态。然后换一个状态：</p>
+<pre class=" language-lang-txt"><code class="language-lang-txt">(0100 & 1000) == 1000
+-> 0000 == 1000
+-> false
+</code></pre>
+<p>没有检测到该状态。</p>
 <p>所以，通过三个简单的方法，就可以检查一个变量里保存的所有状态，避免了使用大量bool变量进行挨个检查。简化了代码，增加代码可读性，并且使代码更加稳定。</p>
 <h2 id="进阶！使用EnumSet替代位运算"><a href="#进阶！使用EnumSet替代位运算" class="headerlink" title="进阶！使用EnumSet替代位运算"></a>进阶！使用EnumSet替代位运算</h2><p>到这里你可能觉得问题解决了就完了，但是还没有！</p>
 <p>实际上，《Effective Java》这本书有对位域的一项讨论：</p>
@@ -588,10 +593,10 @@ public boolean isUsbStateEnable(int flag) {
 <p>Java.util包提供了EnumSet类来有效地表示从单个枚举类型中提取的多个值的多个集合。这个类实现Set<strong>接口</strong>，提供丰富的功能、类型安全性以及可从其他Set实现中得到的互用性。</p>
 <p>内部实现上，每个EnumSet内容都表示为位矢量，一般（低于64个元素）整个EnumSet就是用一个long的位运算来表示的。也就是说它替你使用位算法实现了这一切，避免你自己写位运算导致代码难读懂的情况。</p>
 <p>下面是用EnumSet修改后的示例代码，它更加简短，清楚也更安全。</p>
-<pre><code class="lang-java">// 博客地址：wossoneri.github.io
+<pre class=" language-lang-java"><code class="language-lang-java">// 博客地址：wossoneri.github.io
 public class UsbManager {
 
-    private EnumSet&lt;UsbFlags&gt; mUsbState = EnumSet.noneOf(UsbFlags.class);
+    private EnumSet<UsbFlags> mUsbState = EnumSet.noneOf(UsbFlags.class);
 
     public enum UsbFlags {
         CONNECTED, NCM, ACCESSORY, ADB, MTP
@@ -599,39 +604,39 @@ public class UsbManager {
 
     public void addFlag(UsbFlags flag) {
         mUsbState.add(flag);
-        System.out.println(&quot;After add flag &quot; + flag + &quot;, Now state is &quot; + this.mUsbState);
+        System.out.println("After add flag " + flag + ", Now state is " + this.mUsbState);
     }
 
-    public void addFlag(Set&lt;UsbFlags&gt; flags) {
+    public void addFlag(Set<UsbFlags> flags) {
         mUsbState.addAll(flags);
-        System.out.println(&quot;After add flags &quot; + flags + &quot;, Now state is &quot; + this.mUsbState);
+        System.out.println("After add flags " + flags + ", Now state is " + this.mUsbState);
     }
 
     public void removeFlag(UsbFlags flag) {
         mUsbState.remove(flag);
-        System.out.println(&quot;After remove flag &quot; + flag + &quot;, Now state is &quot; + this.mUsbState);
+        System.out.println("After remove flag " + flag + ", Now state is " + this.mUsbState);
     }
 
-    public void removeFlag(Set&lt;UsbFlags&gt; flags) {
+    public void removeFlag(Set<UsbFlags> flags) {
         mUsbState.removeAll(flags);
-        System.out.println(&quot;After remove flags &quot; + flags + &quot;, Now state is &quot; + this.mUsbState);
+        System.out.println("After remove flags " + flags + ", Now state is " + this.mUsbState);
     }
 
     public boolean checkFlagEnabled(UsbFlags flag) {
         return mUsbState.contains(flag);
     }
 
-    public boolean checkFlagEnabled(Set&lt;UsbFlags&gt; flag) {
+    public boolean checkFlagEnabled(Set<UsbFlags> flag) {
         return mUsbState.containsAll(flag);
     }
 
     public void printUsbState() {
-        System.out.println(&quot;Current usb state is &quot; + mUsbState);
+        System.out.println("Current usb state is " + mUsbState);
     }
 }
 </code></pre>
 <p>测试用例以及输出</p>
-<pre><code class="lang-java">public static void main(String[] args) {
+<pre class=" language-lang-java"><code class="language-lang-java">public static void main(String[] args) {
   // 博客地址：wossoneri.github.io
   UsbManager usbManager = new UsbManager();
   usbManager.printUsbState();
@@ -641,19 +646,19 @@ public class UsbManager {
   usbManager.addFlag(EnumSet.of(UsbFlags.ACCESSORY, UsbFlags.ADB));
 
   // 检查存在的一个flag
-  System.out.println(&quot;mUsbState contains flag &quot; + UsbFlags.ACCESSORY + &quot;: &quot; +
+  System.out.println("mUsbState contains flag " + UsbFlags.ACCESSORY + ": " +
                      usbManager.checkFlagEnabled(UsbFlags.ACCESSORY));
   // 检查不存在的一个flag
-  System.out.println(&quot;mUsbState contains flag &quot; + UsbFlags.MTP + &quot;: &quot; +
+  System.out.println("mUsbState contains flag " + UsbFlags.MTP + ": " +
                      usbManager.checkFlagEnabled(UsbFlags.MTP));
   // 检查一组存在的flag
-  System.out.println(&quot;mUsbState contains flag &quot; + EnumSet.of(UsbFlags.ACCESSORY, UsbFlags.ADB) + &quot;: &quot; +
+  System.out.println("mUsbState contains flag " + EnumSet.of(UsbFlags.ACCESSORY, UsbFlags.ADB) + ": " +
                      usbManager.checkFlagEnabled(EnumSet.of(UsbFlags.ACCESSORY, UsbFlags.ADB)));
   // 检查一组包含不存在的flag
-  System.out.println(&quot;mUsbState contains flag &quot; + EnumSet.of(UsbFlags.ACCESSORY, UsbFlags.MTP) + &quot;: &quot; +
+  System.out.println("mUsbState contains flag " + EnumSet.of(UsbFlags.ACCESSORY, UsbFlags.MTP) + ": " +
                      usbManager.checkFlagEnabled(EnumSet.of(UsbFlags.ACCESSORY, UsbFlags.MTP)));
   // 检查一组都不存在的flag
-  System.out.println(&quot;mUsbState contains flag &quot; + EnumSet.of(UsbFlags.NCM, UsbFlags.MTP) + &quot;: &quot; +
+  System.out.println("mUsbState contains flag " + EnumSet.of(UsbFlags.NCM, UsbFlags.MTP) + ": " +
                      usbManager.checkFlagEnabled(EnumSet.of(UsbFlags.NCM, UsbFlags.MTP)));
 
   usbManager.printUsbState();
@@ -673,7 +678,7 @@ public class UsbManager {
 }
 </code></pre>
 <p>输出为</p>
-<pre><code>Current usb state is []
+<pre class=" language-lang-txt"><code class="language-lang-txt">Current usb state is []
 After add flag CONNECTED, Now state is [CONNECTED]
 After add flags [ACCESSORY, ADB], Now state is [CONNECTED, ACCESSORY, ADB]
 mUsbState contains flag ACCESSORY: true
@@ -688,8 +693,9 @@ After remove flags [NCM, MTP], Now state is [CONNECTED, ADB]
 After remove flags [NCM, ADB], Now state is [CONNECTED]
 After add flags [ACCESSORY, ADB], Now state is [CONNECTED, ACCESSORY, ADB]
 After remove flags [ACCESSORY, ADB], Now state is [CONNECTED]
-</code></pre><p>综上，代码唯一要注意的是</p>
-<pre><code class="lang-java">public boolean checkFlagEnabled(Set&lt;UsbFlags&gt; flag)
+</code></pre>
+<p>综上，代码唯一要注意的是</p>
+<pre class=" language-lang-java"><code class="language-lang-java">public boolean checkFlagEnabled(Set<UsbFlags> flag)
 </code></pre>
 <p>传入参数使用了Set接口，这是考虑到可能会传入其他Set的实现类型，所以传入接口参数要好于实现类型参数。</p>
 <p>最后，EnumSet类集成了位域自身的简洁性和性能优势，又拥有枚举的所有优点，所以使用它代替位域是非常好的选择。</p>
@@ -973,7 +979,7 @@ gitment.render('gitment-content');
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            首先我不做AndroidTV，只是因为一些汽车的屏幕无法触摸，所以无法获得Touch事件，但是车机上有一些旋钮，可以拿到一些键盘事件，因此需要用这些键盘事件对系统（不是应用）进行交互。所以，为了解决这个问题，就需要先了解一下Android 
+                            因为一个需求，需要研究一下AndroidTV焦点切换原理。
                         
                     </div>
                     <div class="publish-info">
@@ -1030,8 +1036,7 @@ gitment.render('gitment-content');
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            之前分析过一篇:ActivityThread流程wossoneri.github.io，简单了解了从ActivityThread创建到Application的启动流程。
-但毕竟Android源码是个大工程，分析流程的时候很多地方不会特别去关
+                            你知道Activity是怎么被回收的吗
                         
                     </div>
                     <div class="publish-info">
@@ -1075,6 +1080,43 @@ gitment.render('gitment-content');
 
 </div>
 
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('120')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: wOw的博客<br />'
+            + '文章作者: Wossoneri<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
 
 
 <!-- 代码块功能依赖 -->
@@ -1128,7 +1170,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             contentSelector: '#articleContent',
             headingsOffset: -($(window).height() * 0.4 - 45),
             collapseDepth: Number('0'),
-            headingSelector: 'h2, h3, h4'
+            headingSelector: 'h1, h2, h3, h4, h5'
         });
 
         // modify the toc link href to support Chinese.
@@ -1140,7 +1182,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
 
         // modify the heading title id to support Chinese.
         i = 0;
-        $('#articleContent').children('h2, h3, h4').each(function () {
+        $('#articleContent').children('h1, h2, h3, h4, h5').each(function () {
             $(this).attr('id', tocHeading + (++i));
         });
 
@@ -1206,7 +1248,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
     <div class="container row center-align" style="margin-bottom: 15px !important;">
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
-            <span id="year">2016</span>
+            <span id="year">2014</span>
             <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
             |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
@@ -1239,7 +1281,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
                     var days = hours * 24;
                     var years = days * 365;
                     var today = new Date();
-                    var startYear = "2016";
+                    var startYear = "2014";
                     var startMonth = "1";
                     var startDate = "1";
                     var startHour = "0";

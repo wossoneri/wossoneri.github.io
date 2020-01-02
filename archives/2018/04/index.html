@@ -468,7 +468,7 @@
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    一个奇怪的Bug用Camera录制任意长度视频。进入Gallery，打开包含刚拍好的视频的相册，然后右上角选择展示“幻灯片”，发现，刚才的视频的Thumbnail出现倾斜，被分割成三段展示。当第一遍循环展示结束，再次展示这张图时，图片就正常
+                                    Gallery的幻灯片出现一个和Bitmap相关的很诡异的BUG
                                 
                             </div>
                             <div class="publish-info">
@@ -531,9 +531,7 @@
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    STK就是SIMToolKit。
-问题如图，STK一个case的输入框，不应该能输入+：
-这个界面从哪来的？实际上，我们插入SIM卡，手机就会显示SimToolKit，打开就能看到一些和运营商相关的菜单。换了不同的卡菜单也会变。所以大概可以
+                                    没做过STK，因为分析一个问题看到了，就记录一下，万一以后再遇到呢。
                                 
                             </div>
                             <div class="publish-info">
@@ -596,9 +594,7 @@
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    问题：无障碍快捷方式（Accessibility Shortcut）打开不生效。
-如图，打开功能后，长按power键会出现振动，震动后双指放在屏幕上会打开无障碍。
-无障碍的功能从来没有接触过，也不清楚在哪个模块修改，所以下面记录一下如何快速
+                                    遇到一个无障碍快捷方式（Accessibility Shortcut）打开不生效的问题。因为不太熟悉Accessibility相关功能，调试bug的时候简单梳理一下
                                 
                             </div>
                             <div class="publish-info">
@@ -661,9 +657,7 @@
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    BackgroundAndroid5.0以上提供了MediaProjection，方便截屏录屏等功能。
-详细代码参阅Github：https://github.com/wossoneri/ScreenCapture
-一个完整的创建Media
+                                    用MediaProjection实现Android快速截屏
                                 
                             </div>
                             <div class="publish-info">
@@ -710,7 +704,7 @@
     <div class="container row center-align" style="margin-bottom: 15px !important;">
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
-            <span id="year">2016</span>
+            <span id="year">2014</span>
             <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
             |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
@@ -743,7 +737,7 @@
                     var days = hours * 24;
                     var years = days * 365;
                     var today = new Date();
-                    var startYear = "2016";
+                    var startYear = "2014";
                     var startMonth = "1";
                     var startDate = "1";
                     var startHour = "0";

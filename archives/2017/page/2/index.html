@@ -468,8 +468,7 @@
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    定义为子系统中的一组接口提供一个一致的界面，此模式定义了一个高层接口，这个接口使得这一子系统更加容易使用。
-它有一点像代理模式，外观层就类似代理层。假设外界有很多接口，用户不需要了解这些接口调用顺序，用户只需要提出需求，外观层负责组织调用外
+                                    简单介绍外观模式
                                 
                             </div>
                             <div class="publish-info">
@@ -530,9 +529,7 @@
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    定义观察者模式又叫发布订阅模式(public/subscribe)，定义一种一对多的依赖关系，让多个观察者对象同时监听某一个主题对象。这个主题对象在状态发生变化时，会通知所有观察者对象，使它们能够自动更新自己。
-UML
-示例代码//抽象出N
+                                    简单介绍观察者模式
                                 
                             </div>
                             <div class="publish-info">
@@ -593,11 +590,7 @@ UML
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    定义讲一个复杂对象的构建与它的表示分离，使得同样的构建过程可以创建不同的表示
-建造者模式主要用于创建一些复杂的对象，这些对象内部构建的建造顺序一般是稳定的，但对象内部的构建通常面对复杂的变化。
-UML
-示例代码//产品
-public cla
+                                    简单介绍建造者模式
                                 
                             </div>
                             <div class="publish-info">
@@ -658,10 +651,7 @@ public cla
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    定义在不破坏封装性的前提下，捕获一个对象的内部状态，并在该状态之外保存这个状态。这样以后就可将该对象恢复到原先保存的状态。
-UML
-示例代码public class Originator {
-    private String state
+                                    简单介绍备忘录模式
                                 
                             </div>
                             <div class="publish-info">
@@ -722,8 +712,7 @@ UML
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    场景抽象工厂模式与工厂方法模式的最大区别就在于，工厂方法模式针对的是一个产品等级结构；而抽象工厂模式则需要面对多个产品等级结构。
-比如组装电脑这个例子，工厂方法可以创建不同CPU工厂，不同主板工厂。但是CPU和主板是有配套关系的，不匹配的是
+                                    简单介绍抽象工厂模式
                                 
                             </div>
                             <div class="publish-info">
@@ -784,8 +773,7 @@ UML
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    定义允许一个对象在其内部状态改变时改变它的行为，对象看起来似乎修改了它的类。
-场景在很多情况下，一个对象的行为取决于一个或多个动态变化的属性，这样的属性叫做状态，这样的对象叫做有状态的(stateful)对象，这样的对象状态是从事先定义好的
+                                    简单介绍状态模式
                                 
                             </div>
                             <div class="publish-info">
@@ -846,11 +834,7 @@ UML
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    定义将一个接口转换成客户希望的另一个接口，适配器模式使接口不兼容的那些类可以一起工作，其别名为包装器(Wrapper)。
-java不支持多重继承，故讨论对象适配器
-UML
-示例代码// 一个美国人，说英语
-public class Amer
+                                    简单介绍适配器模式
                                 
                             </div>
                             <div class="publish-info">
@@ -916,10 +900,7 @@ public class Amer
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    定义将对象组合成树形结构以表示“部分-整体”的层次结构。组合模式使得用户对单个对象和组合对象的使用具有一致性。
-UML
-示例代码// 声明组织具有的功能，所有子组织都要实现这些方法
-abstract public class Compone
+                                    简单介绍组合模式
                                 
                             </div>
                             <div class="publish-info">
@@ -980,11 +961,7 @@ abstract public class Compone
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    定义提供一种方法顺序访问一个聚合对象中各个元素，而又不暴露该对象的内部表示
-Java的for(Obj obj : Iterator)就是迭代器模式
-UML
-示例代码//创建聚集类 保存列表 获取列表属性
-public class Concr
+                                    简单介绍迭代器模式
                                 
                             </div>
                             <div class="publish-info">
@@ -1045,10 +1022,7 @@ public class Concr
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    定义用一个中介对象来封装一系列的对象交互。中介者使各对象不需要显式地相互引用，从而使其耦合松散，而且可以独立地改变它们之间的交互。
-UML
-示例代码// 比如两个同事分别熟悉CTS和SElinux的问题，现在要找他们协助，就需要找PM协调
-
+                                    简单介绍中介者模式
                                 
                             </div>
                             <div class="publish-info">
@@ -1109,8 +1083,7 @@ UML
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    定义将请求封装成一个对象，从而使你可用不同的请求对客户进行参数化；对请求排队或者请求日志，以及支持可撤销的操作。
-场景去饭馆吃饭，客人作为发起者点菜，厨师作为执行者做菜。但为了提高效率，分开职责，增加服务员的角色，服务员负责和客人与厨师交互
+                                    简单介绍命令模式
                                 
                             </div>
                             <div class="publish-info">
@@ -1171,10 +1144,7 @@ UML
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    合成/聚合复用原则CARP尽量使用合成/聚合，尽量不要使用类继承
-
-聚合Aggregation 表示一种弱的’拥有’关系，体现A对象可以包含B对象，但B对象不是A对象的一部分
-合成Composition 表示一种强的’拥有’关系，体现了严格
+                                    简单介绍桥接模式
                                 
                             </div>
                             <div class="publish-info">
@@ -1244,7 +1214,7 @@ UML
     <div class="container row center-align" style="margin-bottom: 15px !important;">
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
-            <span id="year">2016</span>
+            <span id="year">2014</span>
             <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
             |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
@@ -1277,7 +1247,7 @@ UML
                     var days = hours * 24;
                     var years = days * 365;
                     var today = new Date();
-                    var startYear = "2016";
+                    var startYear = "2014";
                     var startMonth = "1";
                     var startDate = "1";
                     var startHour = "0";

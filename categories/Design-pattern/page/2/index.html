@@ -495,11 +495,7 @@
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                定义提供一种方法顺序访问一个聚合对象中各个元素，而又不暴露该对象的内部表示
-Java的for(Obj obj : Iterator)就是迭代器模式
-UML
-示例代码//创建聚集类 保存列表 获取列表属性
-public class Concr
+                                简单介绍迭代器模式
                             
                         </div>
                         <div class="publish-info">
@@ -549,10 +545,7 @@ public class Concr
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                定义用一个中介对象来封装一系列的对象交互。中介者使各对象不需要显式地相互引用，从而使其耦合松散，而且可以独立地改变它们之间的交互。
-UML
-示例代码// 比如两个同事分别熟悉CTS和SElinux的问题，现在要找他们协助，就需要找PM协调
-
+                                简单介绍中介者模式
                             
                         </div>
                         <div class="publish-info">
@@ -602,8 +595,7 @@ UML
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                定义将请求封装成一个对象，从而使你可用不同的请求对客户进行参数化；对请求排队或者请求日志，以及支持可撤销的操作。
-场景去饭馆吃饭，客人作为发起者点菜，厨师作为执行者做菜。但为了提高效率，分开职责，增加服务员的角色，服务员负责和客人与厨师交互
+                                简单介绍命令模式
                             
                         </div>
                         <div class="publish-info">
@@ -653,10 +645,7 @@ UML
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                合成/聚合复用原则CARP尽量使用合成/聚合，尽量不要使用类继承
-
-聚合Aggregation 表示一种弱的’拥有’关系，体现A对象可以包含B对象，但B对象不是A对象的一部分
-合成Composition 表示一种强的’拥有’关系，体现了严格
+                                简单介绍桥接模式
                             
                         </div>
                         <div class="publish-info">
@@ -706,8 +695,7 @@ UML
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                定义使多个对象都有机会处理请求，从而避免请求的发送者和接收者之间的耦合关系。将这个对象连成一条链，并沿着这条链传递该请求，直到有一个对象处理它为止。
-场景需要层层审批的，直到某一层可以给出具体结果。比如离职申请，首先发给团队主管，然后团队主
+                                简单介绍职责链模式
                             
                         </div>
                         <div class="publish-info">
@@ -757,11 +745,7 @@ UML
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                设计模式系列目录
-之前有写过单例模式：[设计模式]之三:单例模式，可以通过链接回顾一下。然后这次再多聊聊这个设计模式。
-线程不安全的懒汉式可能一提到单例模式，大多数人都会想到这么写：
-public class Singleton {
-   
+                                单例其实能聊得挺多的
                             
                         </div>
                         <div class="publish-info">
@@ -811,12 +795,7 @@ public class Singleton {
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                定义定义一个操作中算法的骨架，将一些步骤延迟到子类中。模板方法使得子类可以不改变算法的结果即可重定义该算法的某些特定步骤。
-简单理解成
-同样一套代码，要有不同输出。
-UML
-示例代码abstract class Template {
-   
+                                简单介绍模板方法模式
                             
                         </div>
                         <div class="publish-info">
@@ -866,11 +845,7 @@ UML
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                设计模式系列目录
-单例进阶：[设计模式]之四:再谈单例模式
-吐槽一下，这两天练车又热又累…
-需求情景还是试想一个情景：现在有一个自定义对话框。当主界面上的按钮被点击后，弹出对话框。一般的设计思路是这样的：
-- (void)onBtnClic
+                                最近开始看设计模式，做一些笔记
                             
                         </div>
                         <div class="publish-info">
@@ -920,11 +895,7 @@ UML
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                设计模式系列目录
-需求情景比如现在需要做一个收银软件，要根据用户所买商品的单价和数量进行计算。
-很简单，用“单价 * 数量”即可。
-但如果某天需要打折呢？
-也很简单，同一个方法，把折扣作为一个参数，默认值为1，代码改为“单价  数量  折扣
+                                最近开始看设计模式，做一些笔记
                             
                         </div>
                         <div class="publish-info">
@@ -974,8 +945,7 @@ UML
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                设计模式系列目录
-系列前言最近思考了一下这两年的工作：做Android的时候一直看Android知识，做iOS的时候一直学iOS的东西。其实看起来感觉这样没什么问题，但仔细想想，我发现自己一直忽略了一大片知识点，那就是软件工程。不同的语言，
+                                最近开始看设计模式，做一些笔记
                             
                         </div>
                         <div class="publish-info">
@@ -1025,11 +995,7 @@ UML
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                设计模式系列目录
-单一职责原则 Single Responsibility Principle - SRP
-就一个类而言，应该仅有一个引起它变化的原因。
-
-假设现在要在iPhone上做一个图片编辑工具。功能有裁剪图片，旋转图片，缩放移动照片
+                                最近开始看设计模式，做一些笔记
                             
                         </div>
                         <div class="publish-info">
@@ -1100,7 +1066,7 @@ UML
     <div class="container row center-align" style="margin-bottom: 15px !important;">
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
-            <span id="year">2016</span>
+            <span id="year">2014</span>
             <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
             |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
@@ -1133,7 +1099,7 @@ UML
                     var days = hours * 24;
                     var years = days * 365;
                     var today = new Date();
-                    var startYear = "2016";
+                    var startYear = "2014";
                     var startMonth = "1";
                     var startDate = "1";
                     var startHour = "0";

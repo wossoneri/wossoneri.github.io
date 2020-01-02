@@ -495,9 +495,7 @@
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                tesseract 项目google的一个开源OCR项目，详情读项目README吧。
-https://github.com/tesseract-ocr/tesseract
-安装方法https://github.com/tesseract-o
+                                接到个调研OCR数字识别的任务，看到了tesseract项目，记录一下使用过程
                             
                         </div>
                         <div class="publish-info">
@@ -547,10 +545,7 @@ https://github.com/tesseract-ocr/tesseract
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                转载自http://blog.csdn.net/jerr__y/article/details/58598296
-@翻译：huangyongye
-原文链接： Understanding LSTM Networks
-1. 循环神经网络（RNN
+                                因为在看汉字识别，然后就看到RNN，再到LSTM。综合了一些文章，发现很多都是参考Understanding LSTM Networks这篇文章。看完原文感觉写的的确好，索性把这篇转载过来了。
                             
                         </div>
                         <div class="publish-info">
@@ -604,8 +599,7 @@ https://github.com/tesseract-ocr/tesseract
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                
-为什么需要激活函数神经网络中激活函数的主要作用是提供网络的非线性建模能力，如不特别说明，激活函数一般而言是非线性函数。假设一个示例神经网络中仅包含线性卷积和全连接运算，那么该网络仅能够表达线性映射，即便增加网络的深度也依旧还是线性映射，难
+                                简单总结一下激活函数的作用以及常见激活函数的作用
                             
                         </div>
                         <div class="publish-info">
@@ -663,10 +657,7 @@ https://github.com/tesseract-ocr/tesseract
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                卷积网络convolutional network,也叫做卷积神经网络convolutional neural network CNN专门用来处理类似网格结构数据的神经网络.比如
-
-时间序列,轴上的一维网格
-图像数据,二维像素网格我们把至少
+                                深度学习的读书笔记
                             
                         </div>
                         <div class="publish-info">
@@ -716,12 +707,7 @@ https://github.com/tesseract-ocr/tesseract
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                反向传播的理解
-知乎看到一个例子,的确有助于理解,摘抄整理下来.
-如何直观地解释 back propagation 算法？ - 胡逸夫的回答 - 知乎
-
-如图,我们尝试求$e=cd=(a+b)(b+1)$的偏导
-假设现在要求$a=2,b=1
+                                理解反向传播的理念以及算法
                             
                         </div>
                         <div class="publish-info">
@@ -771,11 +757,7 @@ https://github.com/tesseract-ocr/tesseract
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                What is the KNNKNN,全称K Nearest Neighbor.
-K最临近算法是机器学习中一个比较经典的算法.主要用来分类.
-用一张Wikipedia的图例展示KNN:
-
-图中已知两类:红色三角形和蓝色矩形的分布,现在图中心
+                                看CS231了解到KNN
                             
                         </div>
                         <div class="publish-info">
@@ -825,14 +807,7 @@ K最临近算法是机器学习中一个比较经典的算法.主要用来分类
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                Gardient Descent关于Gradient descent 算法,不打算细说概念,公式什么的.贴一张Andrew的PPT:
-
-图中有几点说明:
-
-:= 是赋值操作
-
-$J(\theta_{0},\theta_{1})$是代价函数
-
+                                在做实践的时候，我也遇到了Loss不下降的情况，于是开始着手调整参数。Learning Rate就是其中一个很有效的超参数
                             
                         </div>
                         <div class="publish-info">
@@ -890,8 +865,7 @@ $J(\theta_{0},\theta_{1})$是代价函数
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                Tensorflow convolutionCNNCNN对于学习深度学习的人来说应该是比较耳熟的名词了.但很多人只是听过,但不知道是什么.
-CNN全称是convolutional neural network,可以这么说,只要神经网络里有一
+                                这一段时间都在看机器学习相关内容，近期在用Tensorflow做一些实践，看了非常多的资料，慢慢整理出来。
                             
                         </div>
                         <div class="publish-info">
@@ -945,11 +919,7 @@ CNN全称是convolutional neural network,可以这么说,只要神经网络里�
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                Faster R-CNN 和自定义 VOC 数据集制作VOC数据修改文件名因为VOC文件名都是使用6位数字,为了适应代码,所以需要格式化文件名
-文件改名脚本:
-#!/bin/bash
-index=1000000;
-for f in *.pn
+                                尝试使用Faster R-CNN进行数据训练
                             
                         </div>
                         <div class="publish-info">
@@ -1003,7 +973,7 @@ for f in *.pn
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                使用SSD-MobileNet训练模型因为Android Demo里的模型是已经训练好的，模型保存的label都是固定的，所以我们在使用的时候会发现还有很多东西它识别不出来。那么我们就需要用它来训练我们自己的数据。下面就是使用SSD-Mob
+                                这一段时间都在看机器学习相关内容，近期在用Tensorflow做一些实践，看了非常多的资料，慢慢整理出来。
                             
                         </div>
                         <div class="publish-info">
@@ -1057,8 +1027,7 @@ for f in *.pn
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                以下代码来自于TensorFlowObjectDetectionAPIModel.java
-Android调用Tensorflow模型主要通过一个类：TensorFlowInferenceInterface通过传入assetManager(
+                                简单介绍如何在Android上运行训练好的TensorFlow模型
                             
                         </div>
                         <div class="publish-info">
@@ -1112,8 +1081,7 @@ Android调用Tensorflow模型主要通过一个类：TensorFlowInferenceInterfac
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                
-Tensor维度理解Tensor在Tensorflow中是N维矩阵，所以涉及到Tensor的方法，也都是对矩阵的处理。由于是多维，在Tensorflow中Tensor的流动过程就涉及到升维降维，这篇就通过一些接口的使用，来体会Tensor
+                                这一段时间都在看机器学习相关内容，近期在用Tensorflow做一些实践，看了非常多的资料，慢慢整理出来。
                             
                         </div>
                         <div class="publish-info">
@@ -1164,7 +1132,7 @@ Tensor维度理解Tensor在Tensorflow中是N维矩阵，所以涉及到Tensor的
     <div class="container row center-align" style="margin-bottom: 15px !important;">
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
-            <span id="year">2016</span>
+            <span id="year">2014</span>
             <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
             |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
@@ -1197,7 +1165,7 @@ Tensor维度理解Tensor在Tensorflow中是N维矩阵，所以涉及到Tensor的
                     var days = hours * 24;
                     var years = days * 365;
                     var today = new Date();
-                    var startYear = "2016";
+                    var startYear = "2014";
                     var startMonth = "1";
                     var startDate = "1";
                     var startHour = "0";

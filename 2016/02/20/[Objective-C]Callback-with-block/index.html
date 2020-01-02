@@ -5,9 +5,7 @@
 <head><meta name="generator" content="Hexo 3.9.0">
     <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
     <meta name="keywords" content="[Objective-C] Block实现回调和简单的学习思考, wOw的博客">
-    <meta name="description" content="关于Objective-C的回调，最常见的应该是用delegate代理实现。不过代理的实现比起Block要更基础，就不介绍了，下面总结一下Block回调的实现。
-就拿我昨天才写的博客为例：[iOS] 输入框高度随输入内容变化
-在昨天的例子中">
+    <meta name="description" content="初识Block的时候，总觉得其很可怕，因为看不懂其运行原理，所以用起来总是觉得不安全。关于Block的语法，等我把手里的资料全部看完，整理好再发出来。这次先看看用Block怎么实现回调。">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -833,9 +831,7 @@ gitment.render('gitment-content');
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            先看一下效果图首先看一下BiliBili客户端的视频浏览界面。默认界面Header完全展开，并且Header显示AV号（别乱想，就是视频编号了）以及播放按钮。滑动之后Header被压缩，按钮移到AV号左边。
-
-我就照着界面简单实现了主要功能
+                            平常遇到大多数的带有列表的应用都会遇到这个场景：在列表顶端有一个Header，当向上滑动列表时，压缩header，向下滑动列表到头时，展开header。这种样式在例如微博，twitter这些展示动态的界面里很常见。这种效果怎么实现呢？下面介绍我用的方法。
                         
                     </div>
                     <div class="publish-info">
@@ -888,7 +884,7 @@ gitment.render('gitment-content');
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            坏习惯的开端初写iOS时，我做的是把原项目从Android端移植到iOS端。因为涉及到不同语言，又因为不熟悉iOS，加上还要与用C写的网络库进行纠缠，我小心翼翼的用了基本数据类型完成大多数编码。能用int就坚决不用NSInteger，能用f
+                            在iOS开发过程中，我一直习惯于使用C语法里的基本类型，而很少用（除非必须使用）Foundation的数据类型。最近看了一些资料，发现自己这样写可能有风险，虽然目前没遇到过相关的问题，但这是非常需要注意的一点。
                         
                     </div>
                     <div class="publish-info">
@@ -928,6 +924,43 @@ gitment.render('gitment-content');
 
 </div>
 
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('120')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: wOw的博客<br />'
+            + '文章作者: Wossoneri<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
 
 
 <!-- 代码块功能依赖 -->
@@ -981,7 +1014,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             contentSelector: '#articleContent',
             headingsOffset: -($(window).height() * 0.4 - 45),
             collapseDepth: Number('0'),
-            headingSelector: 'h2, h3, h4'
+            headingSelector: 'h1, h2, h3, h4, h5'
         });
 
         // modify the toc link href to support Chinese.
@@ -993,7 +1026,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
 
         // modify the heading title id to support Chinese.
         i = 0;
-        $('#articleContent').children('h2, h3, h4').each(function () {
+        $('#articleContent').children('h1, h2, h3, h4, h5').each(function () {
             $(this).attr('id', tocHeading + (++i));
         });
 
@@ -1059,7 +1092,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
     <div class="container row center-align" style="margin-bottom: 15px !important;">
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
-            <span id="year">2016</span>
+            <span id="year">2014</span>
             <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
             |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
@@ -1092,7 +1125,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
                     var days = hours * 24;
                     var years = days * 365;
                     var today = new Date();
-                    var startYear = "2016";
+                    var startYear = "2014";
                     var startMonth = "1";
                     var startDate = "1";
                     var startHour = "0";

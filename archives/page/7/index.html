@@ -468,11 +468,7 @@
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    定义将一个接口转换成客户希望的另一个接口，适配器模式使接口不兼容的那些类可以一起工作，其别名为包装器(Wrapper)。
-java不支持多重继承，故讨论对象适配器
-UML
-示例代码// 一个美国人，说英语
-public class Amer
+                                    简单介绍适配器模式
                                 
                             </div>
                             <div class="publish-info">
@@ -538,10 +534,7 @@ public class Amer
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    定义将对象组合成树形结构以表示“部分-整体”的层次结构。组合模式使得用户对单个对象和组合对象的使用具有一致性。
-UML
-示例代码// 声明组织具有的功能，所有子组织都要实现这些方法
-abstract public class Compone
+                                    简单介绍组合模式
                                 
                             </div>
                             <div class="publish-info">
@@ -602,11 +595,7 @@ abstract public class Compone
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    定义提供一种方法顺序访问一个聚合对象中各个元素，而又不暴露该对象的内部表示
-Java的for(Obj obj : Iterator)就是迭代器模式
-UML
-示例代码//创建聚集类 保存列表 获取列表属性
-public class Concr
+                                    简单介绍迭代器模式
                                 
                             </div>
                             <div class="publish-info">
@@ -667,10 +656,7 @@ public class Concr
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    定义用一个中介对象来封装一系列的对象交互。中介者使各对象不需要显式地相互引用，从而使其耦合松散，而且可以独立地改变它们之间的交互。
-UML
-示例代码// 比如两个同事分别熟悉CTS和SElinux的问题，现在要找他们协助，就需要找PM协调
-
+                                    简单介绍中介者模式
                                 
                             </div>
                             <div class="publish-info">
@@ -731,8 +717,7 @@ UML
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    定义将请求封装成一个对象，从而使你可用不同的请求对客户进行参数化；对请求排队或者请求日志，以及支持可撤销的操作。
-场景去饭馆吃饭，客人作为发起者点菜，厨师作为执行者做菜。但为了提高效率，分开职责，增加服务员的角色，服务员负责和客人与厨师交互
+                                    简单介绍命令模式
                                 
                             </div>
                             <div class="publish-info">
@@ -793,10 +778,7 @@ UML
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    合成/聚合复用原则CARP尽量使用合成/聚合，尽量不要使用类继承
-
-聚合Aggregation 表示一种弱的’拥有’关系，体现A对象可以包含B对象，但B对象不是A对象的一部分
-合成Composition 表示一种强的’拥有’关系，体现了严格
+                                    简单介绍桥接模式
                                 
                             </div>
                             <div class="publish-info">
@@ -857,8 +839,7 @@ UML
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    定义使多个对象都有机会处理请求，从而避免请求的发送者和接收者之间的耦合关系。将这个对象连成一条链，并沿着这条链传递该请求，直到有一个对象处理它为止。
-场景需要层层审批的，直到某一层可以给出具体结果。比如离职申请，首先发给团队主管，然后团队主
+                                    简单介绍职责链模式
                                 
                             </div>
                             <div class="publish-info">
@@ -919,11 +900,7 @@ UML
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    设计模式系列目录
-之前有写过单例模式：[设计模式]之三:单例模式，可以通过链接回顾一下。然后这次再多聊聊这个设计模式。
-线程不安全的懒汉式可能一提到单例模式，大多数人都会想到这么写：
-public class Singleton {
-   
+                                    单例其实能聊得挺多的
                                 
                             </div>
                             <div class="publish-info">
@@ -984,12 +961,7 @@ public class Singleton {
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    定义定义一个操作中算法的骨架，将一些步骤延迟到子类中。模板方法使得子类可以不改变算法的结果即可重定义该算法的某些特定步骤。
-简单理解成
-同样一套代码，要有不同输出。
-UML
-示例代码abstract class Template {
-   
+                                    简单介绍模板方法模式
                                 
                             </div>
                             <div class="publish-info">
@@ -1060,9 +1032,7 @@ UML
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    Provision是什么？Provision的作用很简单，就是一个系统初始化引导程序，源生的Android里面Provision只做了一件事，就是写入一个DEVICE_PROVISIONED标记。
-
-这个标记作用很大，这个标记只会在系统 全
+                                    Android Provision介绍
                                 
                             </div>
                             <div class="publish-info">
@@ -1123,9 +1093,7 @@ UML
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    多媒体数据库
-以 root 权限进入 adb shell， /data/data/com.android.providers.media/databases 目录下就是存放数据库的地方。
-以 external 开头的数据库存储的是 SD 卡
+                                    做Gallery的时候经常会看图片数据库，随便整理了一些数据库表的含义
                                 
                             </div>
                             <div class="publish-info">
@@ -1191,7 +1159,7 @@ UML
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    看这篇博客时最快让你上手ReactiveCocoa之基础篇看到作者介绍链式编程那一块，发现自己的钻研精神不足。想想自己使用链式编程也有段时间了，对，就是 Masonry 库。自己一直享受点语法带来的效率提升，却没想过自己去照着实现一下，真是
+                                    记录一下怎么使用Block实现链式编程
                                 
                             </div>
                             <div class="publish-info">
@@ -1263,7 +1231,7 @@ UML
     <div class="container row center-align" style="margin-bottom: 15px !important;">
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
-            <span id="year">2016</span>
+            <span id="year">2014</span>
             <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
             |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
@@ -1296,7 +1264,7 @@ UML
                     var days = hours * 24;
                     var years = days * 365;
                     var today = new Date();
-                    var startYear = "2016";
+                    var startYear = "2014";
                     var startMonth = "1";
                     var startDate = "1";
                     var startHour = "0";

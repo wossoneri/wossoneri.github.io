@@ -495,8 +495,7 @@
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                我的博客即将搬运同步至腾讯云+社区，邀请大家一同入驻：https://cloud.tencent.com/developer/support-plan?invite_code=2m9rytyjmp6o0
-SystemServer服务裁剪有些
+                                有时候因为系统应用场景不同，需要的功能也不一样。所以就会有很多不需要的服务或者进程存在，因此将这些不需要的东西裁减掉也是必须面对的问题。本文就是对裁剪服务部分的一些简单整理。
                             
                         </div>
                         <div class="publish-info">
@@ -558,10 +557,7 @@ SystemServer服务裁剪有些
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                集成带有So文件的三方应用时，如果不处理so文件，会导致应用打不开的情况，所以针对这些so文件需要做一些额外的处理。
-方法一
-把解压的lib文件放在makefile 目录，通过遍历lib目录一个个编译到目标文件夹
-LOCAL_PATH :=
+                                集成三方应用的一些问题
                             
                         </div>
                         <div class="publish-info">
@@ -615,14 +611,7 @@ LOCAL_PATH :=
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                Mac安装Bootchart下载通过下面链接下载bootchart源码：bootchart-0.9.tar.bz2
-安装解压缩，因为是ant构建的，需要安装ant
-brew install ant
-
-进入源码目录，执行
-ant
-
-目录会生成
+                                介绍Mac系统bootchart的安装与使用，以及开机数据分析
                             
                         </div>
                         <div class="publish-info">
@@ -672,11 +661,7 @@ ant
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                PhoneWindowManager.java
-PhoneWindowManager在init的时候会监听系统手势：
-/** {@inheritDoc} */
-@Override
-public void init(Context conte
+                                沉浸模式下如何通过手势下拉出状态栏，顺便了解一下系统手势的定义和回调监听
                             
                         </div>
                         <div class="publish-info">
@@ -726,13 +711,7 @@ public void init(Context conte
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                今天客户邮件过来一段代码让我加一下，说是用暗码启动MainActivity。
-
-    
-    
-
-
-因为之前改过Dialer，定制过相关的暗码功能，所以没多想就直接把intent-filter加在MainActivity中了。然后测试告
+                                Android 暗码机制介绍
                             
                         </div>
                         <div class="publish-info">
@@ -782,10 +761,7 @@ public void init(Context conte
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                开始从Launcher点击一个App图标，会触发如下动作：
-LauncherActivity.java
-@Override
-protected void onListItemClick(ListView l, View v, int pos
+                                前面介绍了ActivityThread，就顺带提了一下Activity的启动流程。本来感觉之前的分析已经把启动流程分析了一大半，可结果发现并没有想象的那么简单。关于ActivityManagerService，也是一个庞大的家伙，看了很多资料，结合源码也还是比较困难。因为资料都是基于旧代码的分析，而我是跟着Andorid O的源码去看，所以很多代码对不上，无形中又增加了不少困难。不过这种困难都是小问题，只要耐心，都能跟的下去。因为工作原因，我手里会有很多网上没有的分析资料，涵盖了AMS大大小小的处理问题。所以会对问题做一些梳理，对照着源码加深理解。
                             
                         </div>
                         <div class="publish-info">
@@ -835,9 +811,7 @@ protected void onListItemClick(ListView l, View v, int pos
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                简介A/B系统就是指手机上有A，B两套可用的系统（userdata只有一份）。这两份系统同一时间只运行一个，另外一个作为备份。这两个系统的版本可能一样，也可能不一样。
-
-这里称为一套（slot）系统，是因为Android系统由多个分区组成。
+                                Android N 之后新增一个A/B系统升级的OTA方案，最近因为有这个定制需求，所以了解了一下。仅记录一些我认为比较重要的部分。更多内容可以参考底部链接。
                             
                         </div>
                         <div class="publish-info">
@@ -887,9 +861,7 @@ protected void onListItemClick(ListView l, View v, int pos
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                前面介绍Handler机制的时候，遗留了一个问题：
-创建ActivityThread的时候为主线程加入了Main Looper，那么主线程是怎么创建的呢？
-ActivityThread启动之前在介绍SystemServer启动的时候，在cr
+                                Android ActivityThread介绍
                             
                         </div>
                         <div class="publish-info">
@@ -939,9 +911,7 @@ ActivityThread启动之前在介绍SystemServer启动的时候，在cr
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                今天看文章的时候看到这么一句话：
-
-UI线程是从ActivityThread运行的，在该类的main()方法中已经使用了Looper.prepareMainLooper()为该线程添加了Looper对象，已经为该线程创建了消息队列，是自带秘
+                                今天看文章的时候看到一个对Android消息传递机制的描述，回想了一下这块的知识点，感觉有必要再细致地整理一番
                             
                         </div>
                         <div class="publish-info">
@@ -1003,7 +973,7 @@ UI线程是从ActivityThread运行的，在该类的main()方法中已经使用�
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                一个奇怪的Bug用Camera录制任意长度视频。进入Gallery，打开包含刚拍好的视频的相册，然后右上角选择展示“幻灯片”，发现，刚才的视频的Thumbnail出现倾斜，被分割成三段展示。当第一遍循环展示结束，再次展示这张图时，图片就正常
+                                Gallery的幻灯片出现一个和Bitmap相关的很诡异的BUG
                             
                         </div>
                         <div class="publish-info">
@@ -1057,9 +1027,7 @@ UI线程是从ActivityThread运行的，在该类的main()方法中已经使用�
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                STK就是SIMToolKit。
-问题如图，STK一个case的输入框，不应该能输入+：
-这个界面从哪来的？实际上，我们插入SIM卡，手机就会显示SimToolKit，打开就能看到一些和运营商相关的菜单。换了不同的卡菜单也会变。所以大概可以
+                                没做过STK，因为分析一个问题看到了，就记录一下，万一以后再遇到呢。
                             
                         </div>
                         <div class="publish-info">
@@ -1113,9 +1081,7 @@ UI线程是从ActivityThread运行的，在该类的main()方法中已经使用�
                     <div class="card-content article-content">
                         <div class="summary block-with-text">
                             
-                                问题：无障碍快捷方式（Accessibility Shortcut）打开不生效。
-如图，打开功能后，长按power键会出现振动，震动后双指放在屏幕上会打开无障碍。
-无障碍的功能从来没有接触过，也不清楚在哪个模块修改，所以下面记录一下如何快速
+                                遇到一个无障碍快捷方式（Accessibility Shortcut）打开不生效的问题。因为不太熟悉Accessibility相关功能，调试bug的时候简单梳理一下
                             
                         </div>
                         <div class="publish-info">
@@ -1191,7 +1157,7 @@ UI线程是从ActivityThread运行的，在该类的main()方法中已经使用�
     <div class="container row center-align" style="margin-bottom: 15px !important;">
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
-            <span id="year">2016</span>
+            <span id="year">2014</span>
             <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
             |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
@@ -1224,7 +1190,7 @@ UI线程是从ActivityThread运行的，在该类的main()方法中已经使用�
                     var days = hours * 24;
                     var years = days * 365;
                     var today = new Date();
-                    var startYear = "2016";
+                    var startYear = "2014";
                     var startMonth = "1";
                     var startDate = "1";
                     var startHour = "0";

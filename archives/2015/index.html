@@ -468,13 +468,7 @@
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    id类型id数据类型可以存储任何类型的对象。可以说，它是一般对象类型。例如可以声明一个为id类型的变量：
-id graphicObject
-
-也可声明方法使其具有id类型的返回值：
-- (id)newObject:(int)type;
-
-i
+                                    前些时间在源码里看到instancetype返回类型，一脸惊异，表示接触iOS不久没见过这东西，但发现跟id功能差不多。故查了一些资料，了解了两者之间的区别，故将资料简单翻译整理了一下，为博客充一个数 : )
                                 
                             </div>
                             <div class="publish-info">
@@ -537,11 +531,7 @@ i
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    
-原文链接:Mac-Yosemite10.10配置Apache-php-mysql因为我是10.11.2的系统，验证操作可用，故转载过来
-
-ApacheMac OS X Yosemite 10.10 是預裝了apache和php的。
-所以直
+                                    最近看《iOS网络高级编程》，发现书上的DEMO是PHP写的，所以就需要在Mac下配置web环境，搞起我早已生疏的PHP。配置环境的过程总是痛苦的，因为即使是按官方步骤去做，由于个人机器的其他配置不一样，配置过程中会经常蹦出奇怪的log，加上网上各种解决问题的博客描述的版本不尽相同，很难找到一个适合自己的配置步骤。这不，我好不容易找到一个博客，按照步骤配置成功，向博主请示后，就转载过来保存，以飨他人。
                                 
                             </div>
                             <div class="publish-info">
@@ -611,14 +601,7 @@ ApacheMac OS X Yosemite 10.10 是預裝了apache和php的。
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    
-完整代码可以看:Github。其实没什么难度，下面记录几个要点
-
-放个预览图
-
-
-画圆用的贝塞尔曲线UIBezierPath来画，这个类支持画很多种形状，可以单独去尝试。
-UIBezierPath *progress = [UIBezie
+                                    平时用战网安全令的时候很喜欢圆形倒计时的效果，然后简单看了一下Android的圆形进度条，后来又写了一个IOS的。整体界面参照IOS系统的倒计时功能，顺便熟悉了UIPickerView的一些特性的实现方法。
                                 
                             </div>
                             <div class="publish-info">
@@ -686,8 +669,7 @@ UIBezierPath *progress = [UIBezie
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    线程的概念和其他多数计算机语言不同，Java内置支持多线程编程（multithreaded programming）。
-多线程程序包含两条或两条以上并发运行的部分。程序中每个这样的部分都叫一个线程（thread），每个线程都有独立的执行路径
+                                    最近复习java，发现一本很好的资料，《J​a​v​a​2​参​考​大​全​ ​(​第​五​版​)​》 ​ ​H​e​r​b​e​r​t​.Schildt。书比较老了，06年的，一些内容有些旧了，翻译也不是太好，但这本书的知识覆盖面还是非常全面，讲述也是由浅入深，很值得参考的一本口碑非常好的书。我把一些内容加以整理，再配合着《think in Java》，把知识点梳理一遍。因为这本书的结构很好，所以目录就以这本书为主。后面看到更好的资料或有使用心得后会不断更新此文章。
                                 
                             </div>
                             <div class="publish-info">
@@ -753,7 +735,7 @@ UIBezierPath *progress = [UIBezie
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    &emsp;&emsp;近来因为需要做 iOS 的项目，所以需要多花一些时间看看敲敲代码。因为自己手头上并没有 Mac（过年为了闲的时候能玩玩游戏买了联想，唉），想想不能只靠每天在公司的时间练 demo 吧，那样学的太慢了，所以就想着在 W
+                                    近来因为需要做 iOS 的项目，所以需要多花一些时间看看敲敲代码。因为自己手头上并没有 Mac（过年为了闲的时候能玩玩游戏买了联想，唉），想想不能只靠每天在公司的时间练 demo 吧，那样学的太慢了，所以就想着在 Win8 下装个 Mac 试试。装 Mac 有两个选择，一个是双系统，这个我查了查，发现我的型号的笔记本驱动问题太多，再加上我已经装了 Ubuntu 双系统，怕自己搞出大问题来，所以放弃。如果你想装双系统的话，就别看下去了，赶快去找双系统的攻略吧。另一个选择就是装虚拟机里，我在网上找了找方法， 发现的确可以用，装完 Xcode 在模拟器里跑程序一点不卡，就是虚拟机的 Mac 显卡驱动有点老了，界面上稍微有一点的不流畅，当然完全不影响操作的！下面我就把安装配置过程记录下来。
                                 
                             </div>
                             <div class="publish-info">
@@ -816,7 +798,7 @@ UIBezierPath *progress = [UIBezie
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    &emsp;&emsp;在Android众多工具类app中，Last App Switcher绝对算是一个让人用过就不会卸载的工具。LAS这个应用，它的功能很简单，就是通过一个浮动按钮实现在两个应用之间一键切换，但是非常实用，尤其是在边玩边
+                                    在Android众多工具类app中，`Last App Switcher`绝对算是一个让人用过就不会卸载的工具。`LAS`这个应用，它的功能很简单，就是通过一个浮动按钮实现在两个应用之间一键切换，但是非常实用，尤其是在边玩边聊天需要频繁切换应用的时候。所以可以看出，想开发一款受欢迎的应用，一定要注重用户体验，只要用户用的爽，功能再再再简单，它也会受欢迎。那么这功能到底有多简单呢？跟我来实现一下就好了。
                                 
                             </div>
                             <div class="publish-info">
@@ -888,7 +870,7 @@ UIBezierPath *progress = [UIBezie
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    Services&emsp;&emsp;服务是一个应用程序组件,可以在后台执行长时间运行的操作,不提供用户界面。一个应用程序组件可以启动一个服务,它将继续在后台运行,即使用户切换到另一个应用程序。此外,一个组件可以绑定到一个服务与它交互,甚
+                                    简单说明Android的service的几种用法，并介绍一些让service不被杀死的办法。
                                 
                             </div>
                             <div class="publish-info">
@@ -954,9 +936,7 @@ UIBezierPath *progress = [UIBezie
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    特殊字符自动转换HTML中，&copy; 可以写成&amp;copy;也可以直接输 ©
-HTML中 &lt; 和 &amp; 都要转码  但markdown不必，输入&amp; 和 &amp;amp; 都显示 &amp;，&lt; 也一样
-
+                                    因为在弄github，要往readme里面写东西，发现是.md的格式，原来是要用markdown来写，索性看了看md的语法，发现蛮简单的，加上本来就会写html，所以理解起来很快，网上看了一点资料，就总结一下吧。我在ubuntu下使用的编辑器叫 haroopad，感觉不错。。这个也是我第一次用md写博客，排版渣就凑合看看吧。。另外上面的目录是js提的，下面的目录是md的。最后如果有错误的话给我指明一下，谢谢了。
                                 
                             </div>
                             <div class="publish-info">
@@ -1015,11 +995,7 @@ HTML中 &lt; 和 &amp; 都要转码  但markdown不必，输入&amp; 和 &amp;am
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    关于System Bars，之前写过几篇相关的文章：(链接等我把博客迁移好之后补上)
-
-[Android]获取系统顶部状态栏(Status Bar)与底部导航栏(Navigation Bar)的高度
-[Android]状态栏的一些认识
-[A
+                                    对Android的顶部状态栏，下方导航栏以及新的全屏沉浸模式的知识点进行最后一次总结。
                                 
                             </div>
                             <div class="publish-info">
@@ -1082,7 +1058,7 @@ HTML中 &lt; 和 &amp; 都要转码  但markdown不必，输入&amp; 和 &amp;am
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    　　之前遇到过一个问题，就是发现我在程序中生成一个新的 Bitmap 之后，当我打开系统的 Gallery 查看时，并没有看到新生成的图像。然而打开文件浏览器，找到保存 Bitmap 所在的文件夹下，还能看到程序生成的 Bitmap 文件。
+                                    之前遇到过一个问题，就是发现我在程序中生成一个新的 Bitmap 之后，当我打开系统的 Gallery 查看时，并没有看到新生成的图像。然而打开文件浏览器，找到保存 Bitmap 所在的文件夹下，还能看到程序生成的 Bitmap 文件。也就是说，文件其实存在，但 Gallery 似乎并没有刷新。
                                 
                             </div>
                             <div class="publish-info">
@@ -1148,7 +1124,7 @@ HTML中 &lt; 和 &amp; 都要转码  但markdown不必，输入&amp; 和 &amp;am
                         <div class="card-content article-content">
                             <div class="summary block-with-text">
                                 
-                                    因为现在在借着经典的书籍巩固一些基础知识，所以会经常跑一些简单的程序，可又不想开庞大的IDE。所以就想试着用Sublime-Text来编译程序，哦，当然如果习惯的话，用 terminal 也可以。其实Sublime-Text里有编译功能，c
+                                    简单探索了一下用Sublime Text编译java文件
                                 
                             </div>
                             <div class="publish-info">
@@ -1191,7 +1167,7 @@ HTML中 &lt; 和 &amp; 都要转码  但markdown不必，输入&amp; 和 &amp;am
     <div class="container row center-align" style="margin-bottom: 15px !important;">
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
-            <span id="year">2016</span>
+            <span id="year">2014</span>
             <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
             |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
@@ -1224,7 +1200,7 @@ HTML中 &lt; 和 &amp; 都要转码  但markdown不必，输入&amp; 和 &amp;am
                     var days = hours * 24;
                     var years = days * 365;
                     var today = new Date();
-                    var startYear = "2016";
+                    var startYear = "2014";
                     var startMonth = "1";
                     var startDate = "1";
                     var startHour = "0";

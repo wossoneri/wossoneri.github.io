@@ -5,8 +5,7 @@
 <head><meta name="generator" content="Hexo 3.9.0">
     <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
     <meta name="keywords" content="[转载][Linux]CentOS安装Darwin Streaming Server搭建RTSP流媒体服务器, wOw的博客">
-    <meta name="description" content="安装环境库yum -y install gcc gcc-c++ perl ld-linux.so.2 libstdc++.so.6
-下载Darwin Streaming Server v5.5.5 并安装ssh root@yourIpAdd">
+    <meta name="description" content="跟朋友聊天聊到现在直播，就想搞个相关的App玩玩，然后因为自己的服务器现在就跑着一个Jupyter，基本处于空闲状态，索性先把RTSP服务器搞起来">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -789,13 +788,7 @@ gitment.render('gitment-content');
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            今天客户邮件过来一段代码让我加一下，说是用暗码启动MainActivity。
-
-    
-    
-
-
-因为之前改过Dialer，定制过相关的暗码功能，所以没多想就直接把intent-filter加在MainActivity中了。然后测试告
+                            Android 暗码机制介绍
                         
                     </div>
                     <div class="publish-info">
@@ -848,10 +841,7 @@ gitment.render('gitment-content');
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            开始从Launcher点击一个App图标，会触发如下动作：
-LauncherActivity.java
-@Override
-protected void onListItemClick(ListView l, View v, int pos
+                            前面介绍了ActivityThread，就顺带提了一下Activity的启动流程。本来感觉之前的分析已经把启动流程分析了一大半，可结果发现并没有想象的那么简单。关于ActivityManagerService，也是一个庞大的家伙，看了很多资料，结合源码也还是比较困难。因为资料都是基于旧代码的分析，而我是跟着Andorid O的源码去看，所以很多代码对不上，无形中又增加了不少困难。不过这种困难都是小问题，只要耐心，都能跟的下去。因为工作原因，我手里会有很多网上没有的分析资料，涵盖了AMS大大小小的处理问题。所以会对问题做一些梳理，对照着源码加深理解。
                         
                     </div>
                     <div class="publish-info">
@@ -891,6 +881,43 @@ protected void onListItemClick(ListView l, View v, int pos
 
 </div>
 
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('120')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: wOw的博客<br />'
+            + '文章作者: Wossoneri<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
 
 
 <!-- 代码块功能依赖 -->
@@ -944,7 +971,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             contentSelector: '#articleContent',
             headingsOffset: -($(window).height() * 0.4 - 45),
             collapseDepth: Number('0'),
-            headingSelector: 'h2, h3, h4'
+            headingSelector: 'h1, h2, h3, h4, h5'
         });
 
         // modify the toc link href to support Chinese.
@@ -956,7 +983,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
 
         // modify the heading title id to support Chinese.
         i = 0;
-        $('#articleContent').children('h2, h3, h4').each(function () {
+        $('#articleContent').children('h1, h2, h3, h4, h5').each(function () {
             $(this).attr('id', tocHeading + (++i));
         });
 
@@ -1022,7 +1049,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
     <div class="container row center-align" style="margin-bottom: 15px !important;">
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
-            <span id="year">2016</span>
+            <span id="year">2014</span>
             <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
             |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
@@ -1055,7 +1082,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
                     var days = hours * 24;
                     var years = days * 365;
                     var today = new Date();
-                    var startYear = "2016";
+                    var startYear = "2014";
                     var startMonth = "1";
                     var startDate = "1";
                     var startHour = "0";

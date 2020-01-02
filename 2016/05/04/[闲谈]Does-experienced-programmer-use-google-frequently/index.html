@@ -5,8 +5,7 @@
 <head><meta name="generator" content="Hexo 3.9.0">
     <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
     <meta name="keywords" content="[闲谈] 有经验的程序员用Google用得多么？, wOw的博客">
-    <meta name="description" content="关于程序员有没有必要记一些API什么的讨论有很多，我个人觉得能Google到的就没必要刻意去记，可以简单的做个笔记，需要用的时候查一下就好了。真正有必要记的东西，用得多了自然也就能记住了。文章不难，不浪费时间翻译了。原文链接
-Softwar">
+    <meta name="description" content="看到一篇不错的博客，就转载过来了。">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -497,12 +496,12 @@ Softwar">
 </blockquote>
 <p>Aside from that, good programmers also know that they cannot be the first one to have encountered a problem. They use Google to <strong>research</strong> possible solutions, carefully evaluating the results and consciously separating the wheat from the chaff; they <strong>don’t blindly follow or copy-paste</strong> any solution they come across. Expert programmers are also paranoid, living in self-doubt and <a href="http://blog.valbonne-consulting.com/2014/08/16/the-imposter-syndrome-in-software-development/" target="_blank" rel="noopener">questioning their competence</a>. Whenever their spidey senses start tingling, they know they may be going the wrong hole; they rely on Google on validate their logic.<br>（不要盲目的复制粘贴代码，要去思考评估别人的代码，然后提炼出你需要的东西）</p>
 <p>Going by the definition, I would be considered an experienced programmer. Recently, I had to write web server using <a href="http://netty.io/" target="_blank" rel="noopener">Netty</a> in Java to handle persistent sockets from mobile games. I had never used Netty before. Here are my Google searches I did:</p>
-<pre><code class="lang-bash">1. netty tutorial 
+<pre class=" language-lang-bash"><code class="language-lang-bash">1. netty tutorial 
 2. netty maven dependency 
 3. netty bytebuf to string 
 4. netty bytebuf release 
 5. netty 4 changes 
-6. setOption(&quot;child.bufferFactory&quot;) netty 4 
+6. setOption("child.bufferFactory") netty 4 
 7. ByteBuf netty 
 8. opensource projects using netty framework 
 9. netty 4 examples 
@@ -798,9 +797,7 @@ gitment.render('gitment-content');
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            现在关注了一些微博，订阅号，博客。每天都能看到不少好文章。现在收藏夹里放了不少文章，我觉得是时候整理一下，把文章分各类，做个目录出来，方便以后查阅。
-编码规范Google开源项目风格指南—O-C风格指南
-MRC &amp; ARC &amp
+                            整理并分类一些比较好的技术文章
                         
                     </div>
                     <div class="publish-info">
@@ -853,7 +850,7 @@ MRC &amp; ARC &amp
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            KVC Key Value CodingKVC是一种用间接方式访问类的属性的机制。比如你要给一个类中的属性赋值或者取值，可以直接通过类和点运算符实现，当然也可以使用KVC。不过对于私有属性，点运算符就不起作用，因为私有属性不暴露给调用者，不
+                            开发iOS经常会看见KVO和KVC这两个概念，特地了解了一下。发现很简单。
                         
                     </div>
                     <div class="publish-info">
@@ -901,6 +898,43 @@ MRC &amp; ARC &amp
 
 </div>
 
+
+<script>
+    $('#articleContent').on('copy', function (e) {
+        // IE8 or earlier browser is 'undefined'
+        if (typeof window.getSelection === 'undefined') return;
+
+        var selection = window.getSelection();
+        // if the selection is short let's not annoy our users.
+        if (('' + selection).length < Number.parseInt('120')) {
+            return;
+        }
+
+        // create a div outside of the visible area and fill it with the selected text.
+        var bodyElement = document.getElementsByTagName('body')[0];
+        var newdiv = document.createElement('div');
+        newdiv.style.position = 'absolute';
+        newdiv.style.left = '-99999px';
+        bodyElement.appendChild(newdiv);
+        newdiv.appendChild(selection.getRangeAt(0).cloneContents());
+
+        // we need a <pre> tag workaround.
+        // otherwise the text inside "pre" loses all the line breaks!
+        if (selection.getRangeAt(0).commonAncestorContainer.nodeName === 'PRE') {
+            newdiv.innerHTML = "<pre>" + newdiv.innerHTML + "</pre>";
+        }
+
+        var url = document.location.href;
+        newdiv.innerHTML += '<br />'
+            + '来源: wOw的博客<br />'
+            + '文章作者: Wossoneri<br />'
+            + '文章链接: <a href="' + url + '">' + url + '</a><br />'
+            + '本文章著作权归作者所有，任何形式的转载都请注明出处。';
+
+        selection.selectAllChildren(newdiv);
+        window.setTimeout(function () {bodyElement.removeChild(newdiv);}, 200);
+    });
+</script>
 
 
 <!-- 代码块功能依赖 -->
@@ -954,7 +988,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
             contentSelector: '#articleContent',
             headingsOffset: -($(window).height() * 0.4 - 45),
             collapseDepth: Number('0'),
-            headingSelector: 'h2, h3, h4'
+            headingSelector: 'h1, h2, h3, h4, h5'
         });
 
         // modify the toc link href to support Chinese.
@@ -966,7 +1000,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
 
         // modify the heading title id to support Chinese.
         i = 0;
-        $('#articleContent').children('h2, h3, h4').each(function () {
+        $('#articleContent').children('h1, h2, h3, h4, h5').each(function () {
             $(this).attr('id', tocHeading + (++i));
         });
 
@@ -1032,7 +1066,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
     <div class="container row center-align" style="margin-bottom: 15px !important;">
         <div class="col s12 m8 l8 copy-right">
             Copyright&nbsp;&copy;
-            <span id="year">2016</span>
+            <span id="year">2014</span>
             <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
             |&nbsp;Powered by&nbsp;<a href="https://hexo.io/" target="_blank">Hexo</a>
             |&nbsp;Theme&nbsp;<a href="https://github.com/blinkfox/hexo-theme-matery" target="_blank">Matery</a>
@@ -1065,7 +1099,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
                     var days = hours * 24;
                     var years = days * 365;
                     var today = new Date();
-                    var startYear = "2016";
+                    var startYear = "2014";
                     var startMonth = "1";
                     var startDate = "1";
                     var startHour = "0";
