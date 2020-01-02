@@ -1,10 +1,10 @@
 <!DOCTYPE HTML>
-<html lang="zh-Hans">
+<html lang="zh-CN">
 
 
 <head><meta name="generator" content="Hexo 3.9.0">
-    <meta charset="utf-8">
-    <meta name="keywords" content="[Java] 使用EnumSet代替位运算简化代码逻辑, Wossoneri`s Blog">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    <meta name="keywords" content="[Java] 使用EnumSet代替位运算简化代码逻辑, wOw的博客">
     <meta name="description" content="位运算在Review代码时候，看到一段涉及到USB的逻辑代码，他是这样写的
 private boolean isUsbConnected;
 private boolean isUsbModeNCM;
@@ -16,7 +16,7 @@ private boolean isUs">
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>[Java] 使用EnumSet代替位运算简化代码逻辑 | Wossoneri`s Blog</title>
+    <title>[Java] 使用EnumSet代替位运算简化代码逻辑 | wOw的博客</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -29,11 +29,11 @@ private boolean isUs">
     
     <script src="/libs/jquery/jquery.min.js"></script>
     
-<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
-    <header class="navbar-fixed">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><header class="navbar-fixed">
     <nav id="headNav" class="bg-color nav-transparent">
         <div id="navContainer" class="nav-wrapper head-container">
             <div class="brand-logo">
@@ -41,7 +41,7 @@ private boolean isUs">
                     
                     <img src="/medias/logo.png" class="logo-img" alt="LOGO">
                     
-                    <span class="logo-span">Wossoneri`s Blog</span>
+                    <span class="logo-span">wOw的博客</span>
                 </a>
             </div>
             
@@ -55,7 +55,7 @@ private boolean isUs">
       
       <i class="fas fa-home" style="zoom: 0.6;"></i>
       
-      <span>Index</span>
+      <span>首页</span>
     </a>
     
   </li>
@@ -66,7 +66,7 @@ private boolean isUs">
       
       <i class="fas fa-tags" style="zoom: 0.6;"></i>
       
-      <span>Tags</span>
+      <span>标签</span>
     </a>
     
   </li>
@@ -77,7 +77,7 @@ private boolean isUs">
       
       <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
       
-      <span>Categories</span>
+      <span>分类</span>
     </a>
     
   </li>
@@ -88,7 +88,7 @@ private boolean isUs">
       
       <i class="fas fa-archive" style="zoom: 0.6;"></i>
       
-      <span>Archives</span>
+      <span>归档</span>
     </a>
     
   </li>
@@ -99,7 +99,7 @@ private boolean isUs">
       
       <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
       
-      <span>About</span>
+      <span>关于</span>
     </a>
     
   </li>
@@ -110,7 +110,7 @@ private boolean isUs">
       
       <i class="fas fa-comments" style="zoom: 0.6;"></i>
       
-      <span>Contact</span>
+      <span>留言板</span>
     </a>
     
   </li>
@@ -121,14 +121,14 @@ private boolean isUs">
       
       <i class="fas fa-address-book" style="zoom: 0.6;"></i>
       
-      <span>Friends</span>
+      <span>友情链接</span>
     </a>
     
   </li>
   
   <li>
     <a href="#searchModal" class="modal-trigger waves-effect waves-light">
-      <i id="searchIcon" class="fas fa-search" title="Search" style="zoom: 0.85;"></i>
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
     </a>
   </li>
 </ul>
@@ -139,7 +139,7 @@ private boolean isUs">
         
         <img src="/medias/logo.png" class="logo-img circle responsive-img">
         
-        <div class="logo-name">Wossoneri`s Blog</div>
+        <div class="logo-name">wOw的博客</div>
         <div class="logo-desc">
             
             就怕你一生碌碌无为，还安慰自己平凡可贵
@@ -157,7 +157,7 @@ private boolean isUs">
 			
 			    <i class="fa-fw fas fa-home"></i>
 			
-			Index
+			首页
 		</a>
           
         </li>
@@ -168,7 +168,7 @@ private boolean isUs">
 			
 			    <i class="fa-fw fas fa-tags"></i>
 			
-			Tags
+			标签
 		</a>
           
         </li>
@@ -179,7 +179,7 @@ private boolean isUs">
 			
 			    <i class="fa-fw fas fa-bookmark"></i>
 			
-			Categories
+			分类
 		</a>
           
         </li>
@@ -190,7 +190,7 @@ private boolean isUs">
 			
 			    <i class="fa-fw fas fa-archive"></i>
 			
-			Archives
+			归档
 		</a>
           
         </li>
@@ -201,7 +201,7 @@ private boolean isUs">
 			
 			    <i class="fa-fw fas fa-user-circle"></i>
 			
-			About
+			关于
 		</a>
           
         </li>
@@ -212,7 +212,7 @@ private boolean isUs">
 			
 			    <i class="fa-fw fas fa-comments"></i>
 			
-			Contact
+			留言板
 		</a>
           
         </li>
@@ -223,7 +223,7 @@ private boolean isUs">
 			
 			    <i class="fa-fw fas fa-address-book"></i>
 			
-			Friends
+			友情链接
 		</a>
           
         </li>
@@ -460,7 +460,7 @@ private boolean isUs">
             <div class="post-info">
                 
                 <div class="post-date info-break-policy">
-                    <i class="far fa-calendar-minus fa-fw"></i>Publish Date:&nbsp;&nbsp;
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
                     2019-12-09
                 </div>
                 
@@ -469,21 +469,21 @@ private boolean isUs">
 
                 
                 <div class="info-break-policy">
-                    <i class="far fa-file-word fa-fw"></i>Word Count:&nbsp;&nbsp;
-                    1,455
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
+                    1,508
                 </div>
                 
 
                 
                 <div class="info-break-policy">
-                    <i class="far fa-clock fa-fw"></i>Read Times:&nbsp;&nbsp;
-                    6 Min
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    7 分
                 </div>
                 
 
                 
                     <div id="busuanzi_container_page_pv" class="info-break-policy">
-                        <i class="far fa-eye fa-fw"></i>Read Count:&nbsp;&nbsp;
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
                         <span id="busuanzi_value_page_pv"></span>
                     </div>
 				
@@ -494,7 +494,7 @@ private boolean isUs">
         <div class="card-content article-card-content">
             <div id="articleContent">
                 <h2 id="位运算"><a href="#位运算" class="headerlink" title="位运算"></a>位运算</h2><p>在Review代码时候，看到一段涉及到USB的逻辑代码，他是这样写的</p>
-<pre class=" language-lang-java"><code class="language-lang-java">private boolean isUsbConnected;
+<pre><code class="lang-java">private boolean isUsbConnected;
 private boolean isUsbModeNCM;
 private boolean isUsbModeAccessory;
 private boolean isUsbModeAdb;
@@ -503,12 +503,12 @@ private boolean isUsbModeMTP;
 </code></pre>
 <p>然后代码逻辑里是大量的成员变量的判断，显得非常臃肿而且难读懂，大量的if-else判断让代码逻辑很脆弱，稍微一个情况没考虑好就会出现难以排查的bug。</p>
 <p>所以这种情况使用位掩码进行处理会更简单：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">// 博客地址：wossoneri.github.io
+<pre><code class="lang-java">// 博客地址：wossoneri.github.io
 private static final int FLAG_USB_CONNECTED = 0x1;
-private static final int FLAG_USB_MODE_NCM = 0x1 << 1;
-private static final int FLAG_USB_MODE_ACY = 0x1 << 2;
-private static final int FLAG_USB_MODE_ADB = 0x1 << 3;
-private static final int FLAG_USB_MODE_MTP = 0x1 << 4;
+private static final int FLAG_USB_MODE_NCM = 0x1 &lt;&lt; 1;
+private static final int FLAG_USB_MODE_ACY = 0x1 &lt;&lt; 2;
+private static final int FLAG_USB_MODE_ADB = 0x1 &lt;&lt; 3;
+private static final int FLAG_USB_MODE_MTP = 0x1 &lt;&lt; 4;
 ...
 private int mUsbState;
 
@@ -517,11 +517,11 @@ public void addUsbState(int flag) {
 }
 
 public void removeUsbState(int flag) {
-  mUsbState &= ~flag;
+  mUsbState &amp;= ~flag;
 }
 
 public boolean isUsbStateEnable(int flag) {
-  return (mUsbState & flag) == flag;
+  return (mUsbState &amp; flag) == flag;
 }
 </code></pre>
 <p>简单分析一下这样写的好处：</p>
@@ -533,7 +533,7 @@ public boolean isUsbStateEnable(int flag) {
 </blockquote>
 <p>通过移位，使得每一位都有独立的代表的意义，1代表enable，0代表disable。</p>
 <p>如果要<strong>添加状态</strong>（Java里int值默认赋值为0）：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">public void addUsbState(int flag) {
+<pre><code class="lang-java">public void addUsbState(int flag) {
      mUsbState |= flag; 
 }
 </code></pre>
@@ -551,8 +551,8 @@ public boolean isUsbStateEnable(int flag) {
 </code></pre><p>如果是原来的boolean变量，就需要单独为每一个变量设置，就会很麻烦。</p>
 <hr>
 <p>然后是<strong>移除状态</strong>：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">public void removeUsbState(int flag) {
-  mUsbState &= ~flag;
+<pre><code class="lang-java">public void removeUsbState(int flag) {
+  mUsbState &amp;= ~flag;
 }
 </code></pre>
 <p>比如接着上面移除FLAG_USB_MODE_ADB状态</p>
@@ -566,8 +566,8 @@ public boolean isUsbStateEnable(int flag) {
 </code></pre><p>可以看到并不会对当前状态造成任何影响。</p>
 <hr>
 <p>最后看一下<strong>检查状态</strong>：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">public boolean isUsbStateEnable(int flag) {
-  return (mUsbState & flag) == flag;
+<pre><code class="lang-java">public boolean isUsbStateEnable(int flag) {
+  return (mUsbState &amp; flag) == flag;
 }
 </code></pre>
 <p>首先检查一下当前拥有的状态：</p>
@@ -588,10 +588,10 @@ public boolean isUsbStateEnable(int flag) {
 <p>Java.util包提供了EnumSet类来有效地表示从单个枚举类型中提取的多个值的多个集合。这个类实现Set<strong>接口</strong>，提供丰富的功能、类型安全性以及可从其他Set实现中得到的互用性。</p>
 <p>内部实现上，每个EnumSet内容都表示为位矢量，一般（低于64个元素）整个EnumSet就是用一个long的位运算来表示的。也就是说它替你使用位算法实现了这一切，避免你自己写位运算导致代码难读懂的情况。</p>
 <p>下面是用EnumSet修改后的示例代码，它更加简短，清楚也更安全。</p>
-<pre class=" language-lang-java"><code class="language-lang-java">// 博客地址：wossoneri.github.io
+<pre><code class="lang-java">// 博客地址：wossoneri.github.io
 public class UsbManager {
 
-    private EnumSet<UsbFlags> mUsbState = EnumSet.noneOf(UsbFlags.class);
+    private EnumSet&lt;UsbFlags&gt; mUsbState = EnumSet.noneOf(UsbFlags.class);
 
     public enum UsbFlags {
         CONNECTED, NCM, ACCESSORY, ADB, MTP
@@ -599,39 +599,39 @@ public class UsbManager {
 
     public void addFlag(UsbFlags flag) {
         mUsbState.add(flag);
-        System.out.println("After add flag " + flag + ", Now state is " + this.mUsbState);
+        System.out.println(&quot;After add flag &quot; + flag + &quot;, Now state is &quot; + this.mUsbState);
     }
 
-    public void addFlag(Set<UsbFlags> flags) {
+    public void addFlag(Set&lt;UsbFlags&gt; flags) {
         mUsbState.addAll(flags);
-        System.out.println("After add flags " + flags + ", Now state is " + this.mUsbState);
+        System.out.println(&quot;After add flags &quot; + flags + &quot;, Now state is &quot; + this.mUsbState);
     }
 
     public void removeFlag(UsbFlags flag) {
         mUsbState.remove(flag);
-        System.out.println("After remove flag " + flag + ", Now state is " + this.mUsbState);
+        System.out.println(&quot;After remove flag &quot; + flag + &quot;, Now state is &quot; + this.mUsbState);
     }
 
-    public void removeFlag(Set<UsbFlags> flags) {
+    public void removeFlag(Set&lt;UsbFlags&gt; flags) {
         mUsbState.removeAll(flags);
-        System.out.println("After remove flags " + flags + ", Now state is " + this.mUsbState);
+        System.out.println(&quot;After remove flags &quot; + flags + &quot;, Now state is &quot; + this.mUsbState);
     }
 
     public boolean checkFlagEnabled(UsbFlags flag) {
         return mUsbState.contains(flag);
     }
 
-    public boolean checkFlagEnabled(Set<UsbFlags> flag) {
+    public boolean checkFlagEnabled(Set&lt;UsbFlags&gt; flag) {
         return mUsbState.containsAll(flag);
     }
 
     public void printUsbState() {
-        System.out.println("Current usb state is " + mUsbState);
+        System.out.println(&quot;Current usb state is &quot; + mUsbState);
     }
 }
 </code></pre>
 <p>测试用例以及输出</p>
-<pre class=" language-lang-java"><code class="language-lang-java">public static void main(String[] args) {
+<pre><code class="lang-java">public static void main(String[] args) {
   // 博客地址：wossoneri.github.io
   UsbManager usbManager = new UsbManager();
   usbManager.printUsbState();
@@ -641,19 +641,19 @@ public class UsbManager {
   usbManager.addFlag(EnumSet.of(UsbFlags.ACCESSORY, UsbFlags.ADB));
 
   // 检查存在的一个flag
-  System.out.println("mUsbState contains flag " + UsbFlags.ACCESSORY + ": " +
+  System.out.println(&quot;mUsbState contains flag &quot; + UsbFlags.ACCESSORY + &quot;: &quot; +
                      usbManager.checkFlagEnabled(UsbFlags.ACCESSORY));
   // 检查不存在的一个flag
-  System.out.println("mUsbState contains flag " + UsbFlags.MTP + ": " +
+  System.out.println(&quot;mUsbState contains flag &quot; + UsbFlags.MTP + &quot;: &quot; +
                      usbManager.checkFlagEnabled(UsbFlags.MTP));
   // 检查一组存在的flag
-  System.out.println("mUsbState contains flag " + EnumSet.of(UsbFlags.ACCESSORY, UsbFlags.ADB) + ": " +
+  System.out.println(&quot;mUsbState contains flag &quot; + EnumSet.of(UsbFlags.ACCESSORY, UsbFlags.ADB) + &quot;: &quot; +
                      usbManager.checkFlagEnabled(EnumSet.of(UsbFlags.ACCESSORY, UsbFlags.ADB)));
   // 检查一组包含不存在的flag
-  System.out.println("mUsbState contains flag " + EnumSet.of(UsbFlags.ACCESSORY, UsbFlags.MTP) + ": " +
+  System.out.println(&quot;mUsbState contains flag &quot; + EnumSet.of(UsbFlags.ACCESSORY, UsbFlags.MTP) + &quot;: &quot; +
                      usbManager.checkFlagEnabled(EnumSet.of(UsbFlags.ACCESSORY, UsbFlags.MTP)));
   // 检查一组都不存在的flag
-  System.out.println("mUsbState contains flag " + EnumSet.of(UsbFlags.NCM, UsbFlags.MTP) + ": " +
+  System.out.println(&quot;mUsbState contains flag &quot; + EnumSet.of(UsbFlags.NCM, UsbFlags.MTP) + &quot;: &quot; +
                      usbManager.checkFlagEnabled(EnumSet.of(UsbFlags.NCM, UsbFlags.MTP)));
 
   usbManager.printUsbState();
@@ -689,7 +689,7 @@ After remove flags [NCM, ADB], Now state is [CONNECTED]
 After add flags [ACCESSORY, ADB], Now state is [CONNECTED, ACCESSORY, ADB]
 After remove flags [ACCESSORY, ADB], Now state is [CONNECTED]
 </code></pre><p>综上，代码唯一要注意的是</p>
-<pre class=" language-lang-java"><code class="language-lang-java">public boolean checkFlagEnabled(Set<UsbFlags> flag)
+<pre><code class="lang-java">public boolean checkFlagEnabled(Set&lt;UsbFlags&gt; flag)
 </code></pre>
 <p>传入参数使用了Set接口，这是考虑到可能会传入其他Set的实现类型，所以传入接口参数要好于实现类型参数。</p>
 <p>最后，EnumSet类集成了位域自身的简洁性和性能优势，又拥有枚举的所有优点，所以使用它代替位域是非常好的选择。</p>
@@ -704,7 +704,7 @@ After remove flags [ACCESSORY, ADB], Now state is [CONNECTED]
             <div class="reprint__author">
                 <span class="reprint-meta" style="font-weight: bold;">
                     <i class="fas fa-user">
-                        Author:
+                        文章作者:
                     </i>
                 </span>
                 <span class="reprint-info">
@@ -714,7 +714,7 @@ After remove flags [ACCESSORY, ADB], Now state is [CONNECTED]
             <div class="reprint__type">
                 <span class="reprint-meta" style="font-weight: bold;">
                     <i class="fas fa-link">
-                        Link:
+                        文章链接:
                     </i>
                 </span>
                 <span class="reprint-info">
@@ -724,13 +724,13 @@ After remove flags [ACCESSORY, ADB], Now state is [CONNECTED]
             <div class="reprint__notice">
                 <span class="reprint-meta" style="font-weight: bold;">
                     <i class="fas fa-copyright">
-                        Reprint policy:
+                        版权声明:
                     </i>
                 </span>
                 <span class="reprint-info">
-                    All articles in this blog are used except for special statements
+                    本博客所有文章除特別声明外，均采用
                     <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY-NC 4.0</a>
-                    reprint polocy. If reproduced, please indicate source
+                    许可协议。转载请注明来源
                     <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
                     !
                 </span>
@@ -740,7 +740,7 @@ After remove flags [ACCESSORY, ADB], Now state is [CONNECTED]
 
     <script async defer>
       document.addEventListener("copy", function (e) {
-        let toastHTML = '<span>Copied successfully, please follow the reprint policy of this article</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">more</a>';
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
         M.toast({html: toastHTML})
       });
 
@@ -959,7 +959,7 @@ gitment.render('gitment-content');
         
         <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;Previous</div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
                 <a href="/2019/12/19/[Android][Framework]glance-of-androidTV/">
                     <div class="card-image">
@@ -1015,7 +1015,7 @@ gitment.render('gitment-content');
         
         <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge right-badge text-color">
-                Next&nbsp;<i class="fas fa-chevron-right"></i>
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
                 <a href="/2019/11/18/[Android][Framework]Something-about-activity-recycle/">
@@ -1105,7 +1105,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
     </div>
     <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
         <div class="toc-widget">
-            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;TOC</div>
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
             <div id="toc-content"></div>
         </div>
     </div>
@@ -1319,8 +1319,8 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
 <div id="searchModal" class="modal">
     <div class="modal-content">
         <div class="search-header">
-            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;Search</span>
-            <input type="search" id="searchInput" name="s" placeholder="Please enter a search keyword"
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
                    class="search-input">
         </div>
         <div id="searchResult"></div>
@@ -1396,7 +1396,24 @@ $(function () {
     
     
     
-    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    <script src="/libs/instantpage/instantpage.js" type="module"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
     
 
 </body>

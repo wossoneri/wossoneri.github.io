@@ -2,6 +2,188 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://wossoneri.github.io/2019/11/17/%5BAndroid%5D%5BFramework%5DAndroid-permission-2/</loc>
+    
+    <lastmod>2020-01-02T02:56:55.709Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/04/25/%5BAndroid%5D%5BFramework%5DGallery-slideshow/</loc>
+    
+    <lastmod>2020-01-02T02:56:51.953Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/04/09/%5BAndroid%5D%5BFramework%5DPackageManagerService-process-app-permission/</loc>
+    
+    <lastmod>2020-01-02T02:56:47.964Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/01/12/%5BJVM%5DNote-of-JVM-Charpter2/</loc>
+    
+    <lastmod>2020-01-02T02:56:30.285Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/12/15/%5BCS%5DTalk-about-char-encode/</loc>
+    
+    <lastmod>2020-01-02T02:56:26.451Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/04/02/%5BAndroid%5DMediaProjection-Screenshot/</loc>
+    
+    <lastmod>2020-01-02T02:56:21.932Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/07/16/%5BAndroid%5D%5BFramework%5Dembed-apk-with-so/</loc>
+    
+    <lastmod>2020-01-02T02:56:17.900Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/11/06/%5BAndroid%5DMTD-MMC-EMMC-partition-layout/</loc>
+    
+    <lastmod>2020-01-02T02:56:11.781Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/11/18/%5BAndroid%5D%5BFramework%5DSomething-about-activity-recycle/</loc>
+    
+    <lastmod>2020-01-02T02:56:07.711Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/12/19/%5BAndroid%5D%5BFramework%5Dglance-of-androidTV/</loc>
+    
+    <lastmod>2020-01-02T02:56:03.018Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2017/06/19/%5BAndroid%5D%5BFramework%5DPlayAutoInstall/</loc>
+    
+    <lastmod>2020-01-02T02:55:59.109Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/12/09/%5BAndroid%5D%5BFramework%5Dmastering-system-jar-and-sdk/</loc>
+    
+    <lastmod>2020-01-02T02:55:55.242Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/10/12/%5BAndroid%5D%5BSecurity%5DDecompile-xposed/</loc>
+    
+    <lastmod>2020-01-02T02:55:51.736Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/10/15/%5BAndroid%5D%5BSecurity%5DDefence-policy/</loc>
+    
+    <lastmod>2020-01-02T02:55:45.525Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/11/05/%5BAndroid%5D%5BFramework%5DHowDoesAndroidManifestWork/</loc>
+    
+    <lastmod>2020-01-02T02:55:41.546Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/01/04/%5BAndroid%5D%5BFramework%5DA-wired-bug-related-uri/</loc>
+    
+    <lastmod>2020-01-02T02:55:37.436Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/09/12/%5BAndroid%5D%5BSecurity%5DDecompile-smali/</loc>
+    
+    <lastmod>2020-01-02T02:55:33.417Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/04/03/%5BAndroid%5D%5BFramework%5DAccessibilityShortcut/</loc>
+    
+    <lastmod>2020-01-02T02:55:29.172Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/03/25/%5BAndroid%5D%5BFramework%5Dstart-of-SystemServer/</loc>
+    
+    <lastmod>2020-01-02T02:55:23.971Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/04/09/%5BAndroid%5D%5BFramework%5Da-issue-of-SIMToolKit/</loc>
+    
+    <lastmod>2020-01-02T02:55:16.405Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/01/11/%5BAndroid%5D%5BFramework%5DAndroid-permission-1/</loc>
+    
+    <lastmod>2020-01-02T02:55:11.986Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/09/15/%5BAndroid%5D%5BFramework%5Dcreate-system-service/</loc>
+    
+    <lastmod>2020-01-02T02:55:06.048Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/01/13/%5BJVM%5DNote-of-JVM-Charpter3/</loc>
+    
+    <lastmod>2020-01-02T02:55:00.177Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/04/09/%5BJVM%5Ddalvik-and-jvm/</loc>
+    
+    <lastmod>2020-01-02T02:54:54.233Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2018/11/02/%5BAndroid%5D%5BRecovery%5Drecovery-cannot-locate-sdcard/</loc>
+    
+    <lastmod>2020-01-02T02:54:47.671Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://wossoneri.github.io/2019/12/09/%5BJava%5DUse-Bit-mask-code-By-EnumSet/</loc>
+    
+    <lastmod>2020-01-02T02:54:17.258Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://wossoneri.github.io/tags/index.html</loc>
     
     <lastmod>2019-12-31T11:10:57.180Z</lastmod>
@@ -12,13 +194,6 @@
     <loc>http://wossoneri.github.io/2018/07/22/%5BProtocolBuffer%5DProtocol-Buffer-basics-java/</loc>
     
     <lastmod>2019-12-31T11:08:32.650Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2019/12/09/%5BJava%5DUse-Bit-mask-code-By-EnumSet/</loc>
-    
-    <lastmod>2019-12-31T11:07:00.207Z</lastmod>
     
   </url>
   
@@ -58,41 +233,6 @@
   </url>
   
   <url>
-    <loc>http://wossoneri.github.io/2019/04/09/%5BJVM%5Ddalvik-and-jvm/</loc>
-    
-    <lastmod>2019-12-31T07:27:32.075Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2019/12/19/%5BAndroid%5D%5BFramework%5Dglance-of-androidTV/</loc>
-    
-    <lastmod>2019-12-19T09:42:32.161Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2019/10/15/%5BAndroid%5D%5BSecurity%5DDefence-policy/</loc>
-    
-    <lastmod>2019-12-18T16:01:51.054Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2019/10/12/%5BAndroid%5D%5BSecurity%5DDecompile-xposed/</loc>
-    
-    <lastmod>2019-12-18T15:59:11.001Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2019/09/12/%5BAndroid%5D%5BSecurity%5DDecompile-smali/</loc>
-    
-    <lastmod>2019-12-18T08:46:36.599Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://wossoneri.github.io/2019/05/10/%5BAndroid%5Dwhy-Looper-loop-will-not-block-main-thread/</loc>
     
     <lastmod>2019-12-10T08:40:09.603Z</lastmod>
@@ -114,48 +254,6 @@
   </url>
   
   <url>
-    <loc>http://wossoneri.github.io/2019/11/18/%5BAndroid%5D%5BFramework%5DSomething-about-activity-recycle/</loc>
-    
-    <lastmod>2019-12-06T04:33:34.915Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/07/16/%5BAndroid%5D%5BFramework%5Dembed-apk-with-so/</loc>
-    
-    <lastmod>2019-12-02T08:12:06.366Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2019/04/09/%5BAndroid%5D%5BFramework%5DPackageManagerService-process-app-permission/</loc>
-    
-    <lastmod>2019-12-02T04:14:30.731Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2019/11/17/%5BAndroid%5D%5BFramework%5DAndroid-permission-2/</loc>
-    
-    <lastmod>2019-11-18T06:17:48.921Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2019/01/11/%5BAndroid%5D%5BFramework%5DAndroid-permission-1/</loc>
-    
-    <lastmod>2019-11-18T05:27:42.918Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2019/11/05/%5BAndroid%5D%5BFramework%5DHowDoesAndroidManifestWork/</loc>
-    
-    <lastmod>2019-11-15T03:52:30.394Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://wossoneri.github.io/2019/02/09/%5BAndroid%5DBackground-task-Jobscheduler/</loc>
     
     <lastmod>2019-11-13T09:39:10.858Z</lastmod>
@@ -166,27 +264,6 @@
     <loc>http://wossoneri.github.io/2019/02/08/%5BAndroid%5D%5BFramework%5DAndroidO-Broadcast-Limit/</loc>
     
     <lastmod>2019-11-12T17:00:26.988Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/09/15/%5BAndroid%5D%5BFramework%5Dcreate-system-service/</loc>
-    
-    <lastmod>2019-10-16T15:39:35.665Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/06/19/%5BAndroid%5D%5BFramework%5DPlayAutoInstall/</loc>
-    
-    <lastmod>2019-02-14T07:38:59.504Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2019/01/04/%5BAndroid%5D%5BFramework%5DA-wired-bug-related-uri/</loc>
-    
-    <lastmod>2019-01-10T10:53:01.376Z</lastmod>
     
   </url>
   
@@ -208,13 +285,6 @@
     <loc>http://wossoneri.github.io/2018/12/10/%5BAndroid%5D%5BFramework%5Dadd-system-jar/</loc>
     
     <lastmod>2018-12-09T18:33:38.785Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/12/09/%5BAndroid%5D%5BFramework%5Dmastering-system-jar-and-sdk/</loc>
-    
-    <lastmod>2018-12-09T18:06:52.501Z</lastmod>
     
   </url>
   
@@ -247,30 +317,9 @@
   </url>
   
   <url>
-    <loc>http://wossoneri.github.io/2018/11/06/%5BAndroid%5DMTD-MMC-EMMC-partition-layout/</loc>
-    
-    <lastmod>2018-11-06T11:01:16.203Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/11/02/%5BAndroid%5D%5BRecovery%5Drecovery-cannot-locate-sdcard/</loc>
-    
-    <lastmod>2018-11-02T02:40:43.331Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://wossoneri.github.io/2018/09/21/%5BAndroid%5D%5BFramework%5Dcreate-ota-update-zip/</loc>
     
     <lastmod>2018-09-21T11:12:58.753Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/04/09/%5BAndroid%5D%5BFramework%5Da-issue-of-SIMToolKit/</loc>
-    
-    <lastmod>2018-09-15T10:32:09.818Z</lastmod>
     
   </url>
   
@@ -341,13 +390,6 @@
     <loc>http://wossoneri.github.io/2018/05/08/%5BJava%5DCountDownLatch-and-CyclicBarrier/</loc>
     
     <lastmod>2018-05-09T09:33:06.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/03/25/%5BAndroid%5D%5BFramework%5Dstart-of-SystemServer/</loc>
-    
-    <lastmod>2018-05-02T17:57:31.000Z</lastmod>
     
   </url>
   
@@ -492,20 +534,6 @@
   </url>
   
   <url>
-    <loc>http://wossoneri.github.io/2018/04/25/%5BAndroid%5D%5BFramework%5DGallery-slideshow/</loc>
-    
-    <lastmod>2018-04-25T06:18:59.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/04/03/%5BAndroid%5D%5BFramework%5DAccessibilityShortcut/</loc>
-    
-    <lastmod>2018-04-03T18:49:14.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://wossoneri.github.io/2018/01/24/%5BMachineLearning%5DK-Nearest-Neighbor/</loc>
     
     <lastmod>2018-04-03T03:18:24.000Z</lastmod>
@@ -527,13 +555,6 @@
   </url>
   
   <url>
-    <loc>http://wossoneri.github.io/2018/04/02/%5BAndroid%5DMediaProjection-Screenshot/</loc>
-    
-    <lastmod>2018-04-02T07:55:41.000Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://wossoneri.github.io/2018/03/14/%5BMachingLearning%5D%5BRepost%5DUnderstanding-LSTM/</loc>
     
     <lastmod>2018-03-14T12:10:13.000Z</lastmod>
@@ -544,20 +565,6 @@
     <loc>http://wossoneri.github.io/2018/03/14/%5BMachineLearning%5DActivation-Function/</loc>
     
     <lastmod>2018-03-14T12:04:40.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/01/13/%5BJVM%5DNote-of-JVM-Charpter3/</loc>
-    
-    <lastmod>2018-02-14T04:23:56.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2018/01/12/%5BJVM%5DNote-of-JVM-Charpter2/</loc>
-    
-    <lastmod>2018-02-14T04:22:22.000Z</lastmod>
     
   </url>
   
@@ -579,13 +586,6 @@
     <loc>http://wossoneri.github.io/2017/12/16/%5BTensorflow%5DFasterRCNN_and_VOC_dataset/</loc>
     
     <lastmod>2017-12-26T16:22:13.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2017/12/15/%5BCS%5DTalk-about-char-encode/</loc>
-    
-    <lastmod>2017-12-16T07:04:40.000Z</lastmod>
     
   </url>
   

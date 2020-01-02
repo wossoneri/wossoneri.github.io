@@ -1,10 +1,10 @@
 <!DOCTYPE HTML>
-<html lang="zh-Hans">
+<html lang="zh-CN">
 
 
 <head><meta name="generator" content="Hexo 3.9.0">
-    <meta charset="utf-8">
-    <meta name="keywords" content="[Java] 多线程编程, Wossoneri`s Blog">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    <meta name="keywords" content="[Java] 多线程编程, wOw的博客">
     <meta name="description" content="线程的概念和其他多数计算机语言不同，Java内置支持多线程编程（multithreaded programming）。
 多线程程序包含两条或两条以上并发运行的部分。程序中每个这样的部分都叫一个线程（thread），每个线程都有独立的执行路径">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,7 +14,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>[Java] 多线程编程 | Wossoneri`s Blog</title>
+    <title>[Java] 多线程编程 | wOw的博客</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -27,11 +27,11 @@
     
     <script src="/libs/jquery/jquery.min.js"></script>
     
-<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"></head>
+<link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
 
 
 <body>
-    <header class="navbar-fixed">
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><header class="navbar-fixed">
     <nav id="headNav" class="bg-color nav-transparent">
         <div id="navContainer" class="nav-wrapper head-container">
             <div class="brand-logo">
@@ -39,7 +39,7 @@
                     
                     <img src="/medias/logo.png" class="logo-img" alt="LOGO">
                     
-                    <span class="logo-span">Wossoneri`s Blog</span>
+                    <span class="logo-span">wOw的博客</span>
                 </a>
             </div>
             
@@ -53,7 +53,7 @@
       
       <i class="fas fa-home" style="zoom: 0.6;"></i>
       
-      <span>Index</span>
+      <span>首页</span>
     </a>
     
   </li>
@@ -64,7 +64,7 @@
       
       <i class="fas fa-tags" style="zoom: 0.6;"></i>
       
-      <span>Tags</span>
+      <span>标签</span>
     </a>
     
   </li>
@@ -75,7 +75,7 @@
       
       <i class="fas fa-bookmark" style="zoom: 0.6;"></i>
       
-      <span>Categories</span>
+      <span>分类</span>
     </a>
     
   </li>
@@ -86,7 +86,7 @@
       
       <i class="fas fa-archive" style="zoom: 0.6;"></i>
       
-      <span>Archives</span>
+      <span>归档</span>
     </a>
     
   </li>
@@ -97,7 +97,7 @@
       
       <i class="fas fa-user-circle" style="zoom: 0.6;"></i>
       
-      <span>About</span>
+      <span>关于</span>
     </a>
     
   </li>
@@ -108,7 +108,7 @@
       
       <i class="fas fa-comments" style="zoom: 0.6;"></i>
       
-      <span>Contact</span>
+      <span>留言板</span>
     </a>
     
   </li>
@@ -119,14 +119,14 @@
       
       <i class="fas fa-address-book" style="zoom: 0.6;"></i>
       
-      <span>Friends</span>
+      <span>友情链接</span>
     </a>
     
   </li>
   
   <li>
     <a href="#searchModal" class="modal-trigger waves-effect waves-light">
-      <i id="searchIcon" class="fas fa-search" title="Search" style="zoom: 0.85;"></i>
+      <i id="searchIcon" class="fas fa-search" title="搜索" style="zoom: 0.85;"></i>
     </a>
   </li>
 </ul>
@@ -137,7 +137,7 @@
         
         <img src="/medias/logo.png" class="logo-img circle responsive-img">
         
-        <div class="logo-name">Wossoneri`s Blog</div>
+        <div class="logo-name">wOw的博客</div>
         <div class="logo-desc">
             
             就怕你一生碌碌无为，还安慰自己平凡可贵
@@ -155,7 +155,7 @@
 			
 			    <i class="fa-fw fas fa-home"></i>
 			
-			Index
+			首页
 		</a>
           
         </li>
@@ -166,7 +166,7 @@
 			
 			    <i class="fa-fw fas fa-tags"></i>
 			
-			Tags
+			标签
 		</a>
           
         </li>
@@ -177,7 +177,7 @@
 			
 			    <i class="fa-fw fas fa-bookmark"></i>
 			
-			Categories
+			分类
 		</a>
           
         </li>
@@ -188,7 +188,7 @@
 			
 			    <i class="fa-fw fas fa-archive"></i>
 			
-			Archives
+			归档
 		</a>
           
         </li>
@@ -199,7 +199,7 @@
 			
 			    <i class="fa-fw fas fa-user-circle"></i>
 			
-			About
+			关于
 		</a>
           
         </li>
@@ -210,7 +210,7 @@
 			
 			    <i class="fa-fw fas fa-comments"></i>
 			
-			Contact
+			留言板
 		</a>
           
         </li>
@@ -221,7 +221,7 @@
 			
 			    <i class="fa-fw fas fa-address-book"></i>
 			
-			Friends
+			友情链接
 		</a>
           
         </li>
@@ -454,7 +454,7 @@
             <div class="post-info">
                 
                 <div class="post-date info-break-policy">
-                    <i class="far fa-calendar-minus fa-fw"></i>Publish Date:&nbsp;&nbsp;
+                    <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
                     2015-09-29
                 </div>
                 
@@ -463,21 +463,21 @@
 
                 
                 <div class="info-break-policy">
-                    <i class="far fa-file-word fa-fw"></i>Word Count:&nbsp;&nbsp;
+                    <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
                     11,838
                 </div>
                 
 
                 
                 <div class="info-break-policy">
-                    <i class="far fa-clock fa-fw"></i>Read Times:&nbsp;&nbsp;
-                    47 Min
+                    <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
+                    47 分
                 </div>
                 
 
                 
                     <div id="busuanzi_container_page_pv" class="info-break-policy">
-                        <i class="far fa-eye fa-fw"></i>Read Count:&nbsp;&nbsp;
+                        <i class="far fa-eye fa-fw"></i>阅读次数:&nbsp;&nbsp;
                         <span id="busuanzi_value_page_pv"></span>
                     </div>
 				
@@ -523,24 +523,24 @@
 <li>通常它必须最后完成执行，因为它执行各种关闭动作</li>
 </ul>
 <p>尽管主线程在程序启动时自动创建，但它可以由一个Thread对象控制。为此，你必须调用方法currentThread()获得它的一个引用，currentThread()是Thread类的公有的静态方法。它的通常形式如下：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">static Thread currentThread( )
+<pre><code class="lang-java">static Thread currentThread( )
 </code></pre>
 <p>该方法返回一个调用它的线程的引用。一旦你获得主线程的引用，你就可以像控制其他线程那样控制主线程。</p>
 <p>让我们从复习下面例题开始：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">public class CurrentThreadDemo {
+<pre><code class="lang-java">public class CurrentThreadDemo {
     public static void main(String args[]) {
         Thread t = Thread.currentThread();
-        System.out.println("Current thread: " + t);
+        System.out.println(&quot;Current thread: &quot; + t);
         // change the name of the thread
-        t.setName("My Thread");
-        System.out.println("After name change: " + t);
+        t.setName(&quot;My Thread&quot;);
+        System.out.println(&quot;After name change: &quot; + t);
         try {
-            for (int n = 5; n > 0; n--) {
+            for (int n = 5; n &gt; 0; n--) {
                 System.out.println(n);
                 Thread.sleep(1000);
             }
         } catch (InterruptedException e) {
-            System.out.println("Main thread interrupted");
+            System.out.println(&quot;Main thread interrupted&quot;);
         }
     }
 }
@@ -552,14 +552,14 @@
 </blockquote>
 <p>注意<code>t</code>作为语句println()中参数运用时输出的产生。该显示顺序：线程名称，优先级以及组的名称。默认情况下，主线程的名称是main。它的优先级是5，这也是默认值，main也是所属线程组的名称。一个<code>线程组（thread group）</code>是一种将线程作为一个整体集合的状态控制的数据结构。这个过程由专有的运行时环境来处理，在此就不赘述了。线程名改变后，t又被输出。这次，显示了新的线程名。</p>
 <p>让我们更仔细的研究程序中Thread类定义的方法。sleep()方法按照毫秒级的时间指示使线程从被调用到挂起。它的通常形式如下：</p>
-<pre class=" language-lang-java"><code class="language-lang-java"> static void sleep(long milliseconds) throws InterruptedException
+<pre><code class="lang-java"> static void sleep(long milliseconds) throws InterruptedException
 </code></pre>
 <p>挂起的时间被明确定义为毫秒。该方法可能引发InterruptedException异常。</p>
 <p>sleep()方法还有第二种形式，显示如下，该方法允许你指定时间是以毫秒还是以纳秒为周期。</p>
-<pre class=" language-lang-java"><code class="language-lang-java">static void sleep(long milliseconds, int nanoseconds) throws InterruptedException
+<pre><code class="lang-java">static void sleep(long milliseconds, int nanoseconds) throws InterruptedException
 </code></pre>
 <p>第二种形式仅当允许以纳秒为时间周期时可用。如上述程序所示，你可以用setName()设置线程名称，用getName()来获得线程名称（该过程在程序中没有体现）。这些方法都是Thread 类的成员，声明如下：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">final void setName(String threadName)
+<pre><code class="lang-java">final void setName(String threadName)
 final String getName( )
 </code></pre>
 <p>这里，threadName 特指线程名称。</p>
@@ -570,39 +570,39 @@ final String getName( )
 <li>可以继承Thread类</li>
 </ul>
 <h3 id="实现Runnable接口"><a href="#实现Runnable接口" class="headerlink" title="实现Runnable接口"></a>实现Runnable接口</h3><p><font color="brown"><strong>创建线程的最简单的方法就是创建一个实现Runnable 接口的类。</strong></font>Runnable抽象了一个执行代码单元。你可以通过实现Runnable接口的方法创建每一个对象的线程。为实现Runnable 接口，一个类仅需实现一个run()的简单方法，该方法声明如下：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">public void run( )
+<pre><code class="lang-java">public void run( )
 </code></pre>
 <p>在run()中可以定义代码来构建新的线程。理解下面内容是至关重要的：run()方法能够像主线程那样调用其他方法，引用其他类，声明变量。仅有的不同是run()在程序中确立另一个并发的线程执行入口。当run()返回时，该线程结束。</p>
 <p>在你已经创建了实现Runnable接口的类以后，你要在类内部实例化一个Thread类的对象。Thread 类定义了好几种构造函数。我们会用到的如下：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">Thread(Runnable threadOb, String threadName)
+<pre><code class="lang-java">Thread(Runnable threadOb, String threadName)
 </code></pre>
 <p>该构造函数中，threadOb是一个实现Runnable接口类的实例。这定义了线程执行的起点。新线程的名称由threadName定义。</p>
 <p>建立新的线程后，它并不运行直到调用了它的start()方法，该方法在Thread 类中定义。本质上，start() 执行的是一个对run()的调用。Start()方法声明如下：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">void start( )
+<pre><code class="lang-java">void start( )
 </code></pre>
 <p>下面的例子是创建一个新的线程并启动它运行：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">// Create a second thread.
+<pre><code class="lang-java">// Create a second thread.
 class NewThread implements Runnable {
     Thread t;
 
     NewThread() {
         // Create a new, second thread
-        t = new Thread(this, "Demo Thread");
-        System.out.println("Child thread: " + t);
+        t = new Thread(this, &quot;Demo Thread&quot;);
+        System.out.println(&quot;Child thread: &quot; + t);
         t.start(); // Start the thread
     }
 
     // This is the entry point for the second thread.
     public void run() {
         try {
-            for (int i = 5; i > 0; i--) {
-                System.out.println("Child Thread: " + i);
+            for (int i = 5; i &gt; 0; i--) {
+                System.out.println(&quot;Child Thread: &quot; + i);
                 Thread.sleep(500);
             }
         } catch (InterruptedException e) {
-            System.out.println("Child interrupted.");
+            System.out.println(&quot;Child interrupted.&quot;);
         }
-        System.out.println("Exiting child thread.");
+        System.out.println(&quot;Exiting child thread.&quot;);
     }
 }
 
@@ -610,19 +610,19 @@ public class Demo {
     public static void main(String args[]) {
         new NewThread(); // create a new thread
         try {
-            for (int i = 5; i > 0; i--) {
-                System.out.println("Main Thread: " + i);
+            for (int i = 5; i &gt; 0; i--) {
+                System.out.println(&quot;Main Thread: &quot; + i);
                 Thread.sleep(1000);
             }
         } catch (InterruptedException e) {
-            System.out.println("Main thread interrupted.");
+            System.out.println(&quot;Main thread interrupted.&quot;);
         }
-        System.out.println("Main thread exiting.");
+        System.out.println(&quot;Main thread exiting.&quot;);
     }
 }
 </code></pre>
 <p>在NewThread 构造函数中，新的Thread对象由下面的语句创建：:</p>
-<pre class=" language-lang-java"><code class="language-lang-java">t = new Thread(this, "Demo Thread");
+<pre><code class="lang-java">t = new Thread(this, &quot;Demo Thread&quot;);
 </code></pre>
 <p>通过前面的语句this 表明在this对象中你想要新的线程调用run()方法。然后，start() 被调用，以run()方法为开始启动了线程的执行。这使子线程for 循环开始执行。调用start()之后，NewThread 的构造函数返回到main()。当主线程被恢复，它到达for 循环。两个线程继续运行，共享CPU，直到它们的循环结束。该程序的输出如下：</p>
 <blockquote>
@@ -630,26 +630,26 @@ public class Demo {
 </blockquote>
 <p>如前面提到的，在多线程程序中，通常主线程必须是结束运行的最后一个线程。实际上，一些老的JVM，如果主线程先于子线程结束，Java的运行时间系统就可能“挂起”。前述程序保证了主线程最后结束，因为主线程沉睡周期1000毫秒，而子线程仅为500毫秒。这就使子线程在主线程结束之前先结束。简而言之，你将看到等待线程结束的更好途径。</p>
 <h3 id="扩展Thread"><a href="#扩展Thread" class="headerlink" title="扩展Thread"></a>扩展Thread</h3><p><font color="brown"><strong>创建线程的另一个途径是创建一个新类来扩展Thread类，然后创建该类的实例。</strong></font>当一个类继承Thread时，它必须重载run()方法，这个run()方法是新线程的入口。它也必须调用start()方法去启动新线程执行。下面用扩展thread类重写前面的程序：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">// Create a second thread by extending Thread
+<pre><code class="lang-java">// Create a second thread by extending Thread
 class NewThread extends Thread {
     NewThread() {
         // Create a new, second thread
-        super("Demo Thread");
-        System.out.println("Child thread: " + this);
+        super(&quot;Demo Thread&quot;);
+        System.out.println(&quot;Child thread: &quot; + this);
         start(); // Start the thread
     }
 
     // This is the entry point for the second thread.
     public void run() {
         try {
-            for (int i = 5; i > 0; i--) {
-                System.out.println("Child Thread: " + i);
+            for (int i = 5; i &gt; 0; i--) {
+                System.out.println(&quot;Child Thread: &quot; + i);
                 Thread.sleep(500);
             }
         } catch (InterruptedException e) {
-            System.out.println("Child interrupted.");
+            System.out.println(&quot;Child interrupted.&quot;);
         }
-        System.out.println("Exiting child thread.");
+        System.out.println(&quot;Exiting child thread.&quot;);
     }
 }
 
@@ -657,19 +657,19 @@ public class Demo {
     public static void main(String args[]) {
         new NewThread(); // create a new thread
         try {
-            for (int i = 5; i > 0; i--) {
-                System.out.println("Main Thread: " + i);
+            for (int i = 5; i &gt; 0; i--) {
+                System.out.println(&quot;Main Thread: &quot; + i);
                 Thread.sleep(1000);
             }
         } catch (InterruptedException e) {
-            System.out.println("Main thread interrupted.");
+            System.out.println(&quot;Main thread interrupted.&quot;);
         }
-        System.out.println("Main thread exiting.");
+        System.out.println(&quot;Main thread exiting.&quot;);
     }
 }
 </code></pre>
 <p>该程序生成和前述版本相同的输出。子线程是由实例化NewThread对象生成的，该对象从Thread类派生。注意NewThread 中super()的调用。该方法调用了下列形式的Thread构造函数：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">public Thread(String threadName)
+<pre><code class="lang-java">public Thread(String threadName)
 </code></pre>
 <p>这里，threadName指定线程名称。</p>
 <blockquote>
@@ -677,7 +677,7 @@ public class Demo {
 </blockquote>
 <hr>
 <h2 id="创建多线程"><a href="#创建多线程" class="headerlink" title="创建多线程"></a>创建多线程</h2><p>到目前为止，我们仅用到两个线程：主线程和一个子线程。然而，你的程序可以创建所需的更多线程。例如，下面的程序创建了三个子线程：<br>到目前为止，我们仅用到两个线程：主线程和一个子线程。然而，你的程序可以创建所需的更多线程。例如，下面的程序创建了三个子线程：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">// Create multiple threads.
+<pre><code class="lang-java">// Create multiple threads.
 class NewThread implements Runnable {
     String name; // name of thread
     Thread t;
@@ -685,36 +685,36 @@ class NewThread implements Runnable {
     NewThread(String threadname) {
         name = threadname;
         t = new Thread(this, name);
-        System.out.println("New thread: " + t);
+        System.out.println(&quot;New thread: &quot; + t);
         t.start(); // Start the thread
     }
 
     // This is the entry point for thread.
     public void run() {
         try {
-            for (int i = 5; i > 0; i--) {
-                System.out.println(name + ": " + i);
+            for (int i = 5; i &gt; 0; i--) {
+                System.out.println(name + &quot;: &quot; + i);
                 Thread.sleep(1000);
             }
         } catch (InterruptedException e) {
-            System.out.println(name + "Interrupted");
+            System.out.println(name + &quot;Interrupted&quot;);
         }
-        System.out.println(name + " exiting.");
+        System.out.println(name + &quot; exiting.&quot;);
     }
 }
 
 public class Demo {
     public static void main(String args[]) {
-        new NewThread("One"); // start threads
-        new NewThread("Two");
-        new NewThread("Three");
+        new NewThread(&quot;One&quot;); // start threads
+        new NewThread(&quot;Two&quot;);
+        new NewThread(&quot;Three&quot;);
         try {
             // wait for other threads to end
             Thread.sleep(10000);
         } catch (InterruptedException e) {
-            System.out.println("Main thread Interrupted");
+            System.out.println(&quot;Main thread Interrupted&quot;);
         }
-        System.out.println("Main thread exiting.");
+        System.out.println(&quot;Main thread exiting.&quot;);
     }
 }
 </code></pre>
@@ -726,13 +726,13 @@ public class Demo {
 <hr>
 <h2 id="使用-isAlive-和-join"><a href="#使用-isAlive-和-join" class="headerlink" title="使用 isAlive() 和 join()"></a>使用 isAlive() 和 join()</h2><p>如前所述，通常你希望主线程最后结束。在前面的例子中，这点是通过在main()中调用sleep()来实现的，经过足够长时间的延迟以确保所有子线程都先于主线程结束。然而，这不是一个令人满意的解决方法，它也带来一个大问题：一个线程如何知道另一线程已经结束？幸运的是，Thread类提供了回答此问题的方法。</p>
 <p>有两种方法可以判定一个线程是否结束。第一，可以在线程中调用isAlive()。这种方法由Thread定义，它的通常形式如下：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">final boolean isAlive( )
+<pre><code class="lang-java">final boolean isAlive( )
 </code></pre>
 <p>如果所调用线程仍在运行，isAlive()方法返回true，如果不是则返回false。但isAlive（）很少用到，等待线程结束的更常用的方法是调用join()，描述如下：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">final void join( ) throws InterruptedException
+<pre><code class="lang-java">final void join( ) throws InterruptedException
 </code></pre>
 <p>该方法等待所调用线程结束。该名字来自于要求线程等待直到指定线程参与的概念。join()的附加形式允许给等待指定线程结束定义一个最大时间。下面是前面例子的改进版本。运用join()以确保主线程最后结束。同样，它也演示了isAlive()方法。</p>
-<pre class=" language-lang-java"><code class="language-lang-java">// Using join() to wait for threads to finish.
+<pre><code class="lang-java">// Using join() to wait for threads to finish.
 class NewThread implements Runnable {
     String name; // name of thread
     Thread t;
@@ -740,45 +740,45 @@ class NewThread implements Runnable {
     NewThread(String threadname) {
         name = threadname;
         t = new Thread(this, name);
-        System.out.println("New thread: " + t);
+        System.out.println(&quot;New thread: &quot; + t);
         t.start(); // Start the thread
     }
 
     // This is the entry point for thread.
     public void run() {
         try {
-            for (int i = 5; i > 0; i--) {
-                System.out.println(name + ": " + i);
+            for (int i = 5; i &gt; 0; i--) {
+                System.out.println(name + &quot;: &quot; + i);
                 Thread.sleep(1000);
             }
         } catch (InterruptedException e) {
-            System.out.println(name + " interrupted.");
+            System.out.println(name + &quot; interrupted.&quot;);
         }
-        System.out.println(name + " exiting.");
+        System.out.println(name + &quot; exiting.&quot;);
     }
 }
 
 class DemoJoin {
     public static void main(String args[]) {
-        NewThread ob1 = new NewThread("One");
-        NewThread ob2 = new NewThread("Two");
-        NewThread ob3 = new NewThread("Three");
-        System.out.println("Thread One is alive: " + ob1.t.isAlive());
-        System.out.println("Thread Two is alive: " + ob2.t.isAlive());
-        System.out.println("Thread Three is alive: " + ob3.t.isAlive());
+        NewThread ob1 = new NewThread(&quot;One&quot;);
+        NewThread ob2 = new NewThread(&quot;Two&quot;);
+        NewThread ob3 = new NewThread(&quot;Three&quot;);
+        System.out.println(&quot;Thread One is alive: &quot; + ob1.t.isAlive());
+        System.out.println(&quot;Thread Two is alive: &quot; + ob2.t.isAlive());
+        System.out.println(&quot;Thread Three is alive: &quot; + ob3.t.isAlive());
         // wait for threads to finish
         try {
-            System.out.println("Waiting for threads to finish.");
+            System.out.println(&quot;Waiting for threads to finish.&quot;);
             ob1.t.join();
             ob2.t.join();
             ob3.t.join();
         } catch (InterruptedException e) {
-            System.out.println("Main thread Interrupted");
+            System.out.println(&quot;Main thread Interrupted&quot;);
         }
-        System.out.println("Thread One is alive: " + ob1.t.isAlive());
-        System.out.println("Thread Two is alive: " + ob2.t.isAlive());
-        System.out.println("Thread Three is alive: " + ob3.t.isAlive());
-        System.out.println("Main thread exiting.");
+        System.out.println(&quot;Thread One is alive: &quot; + ob1.t.isAlive());
+        System.out.println(&quot;Thread Two is alive: &quot; + ob2.t.isAlive());
+        System.out.println(&quot;Thread Three is alive: &quot; + ob3.t.isAlive());
+        System.out.println(&quot;Main thread exiting.&quot;);
     }
 }
 </code></pre>
@@ -791,15 +791,15 @@ class DemoJoin {
 <h2 id="线程优先级-1"><a href="#线程优先级-1" class="headerlink" title="线程优先级"></a>线程优先级</h2><p>线程优先级<strong>被线程调度</strong>用来<strong>判定何时每个线程允许运行</strong>。理论上，优先级高的线程比优先级低的线程获得更多的CPU时间。实际上，线程获得的CPU时间通常由包括优先级在内的多个因素决定（例如，一个实行多任务处理的操作系统如何更有效的利用CPU时间）。一个优先级高的线程自然比优先级低的线程优先。举例来说，当低优先级线程正在运行，而一个高优先级的线程被恢复（例如从沉睡中或等待I/O中），它将抢占低优先级线程所使用的CPU。</p>
 <p>理论上，等优先级线程有同等的权利使用CPU。但你必须小心了。记住，Java是被设计成能在很多环境下工作的。一些环境下实现多任务处理从本质上与其他环境不同。为安全起见，等优先级线程偶尔也受控制。这保证了所有线程在无优先级的操作系统下都有机会运行。实际上，在无优先级的环境下，多数线程仍然有机会运行，因为很多线程不可避免的会遭遇阻塞，例如等待输入输出。遇到这种情形，阻塞的线程挂起，其他线程运行。但是如果你希望多线程执行的顺利的话，最好不要采用这种方法。同样，有些类型的任务是占CPU的。对于这些支配CPU类型的线程，有时你希望能够支配它们，以便使其他线程可以运行。</p>
 <p>设置线程的优先级，用setPriority()方法，该方法也是Tread 的成员。它的通常形式为：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">final void setPriority(int level)
+<pre><code class="lang-java">final void setPriority(int level)
 </code></pre>
 <p>这 里 ， level 指 定了对所调用的线程的新的优先权的设置。Level的值必须在MIN_PRIORITY到MAX_PRIORITY范围内。通常，它们的值分别是1和10。要返回一个线程为默认的优先级，指定NORM_PRIORITY，通常值为5。这些优先级在Thread中都被定义为final型变量。</p>
 <p>你可以通过调用Thread的getPriority()方法来获得当前的优先级设置。该方法如下：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">final int getPriority( )
+<pre><code class="lang-java">final int getPriority( )
 </code></pre>
 <p>当涉及调度时，Java的执行可以有本质上不同的行为。Windows 95/98/NT/2000 的工作或多或少如你所愿。但其他版本可能工作的完全不同。大多数矛盾发生在你使用有优先级行为的线程，而不是协同的腾出CPU时间。最安全的办法是获得可预先性的优先权，Java获得跨平台的线程行为的方法是自动放弃对CPU的控制。</p>
 <p>下面的例子阐述了两个不同优先级的线程，运行于具有优先权的平台，这与运行于无优先级的平台不同。一个线程通过Thread.NORM_PRIORITY设置了高于普通优先级两级的级数，另一线程设置的优先级则低于普通级两级。两线程被启动并允许运行10秒。每个线程执行一个循环，记录反复的次数。10秒后，主线程终止了两线程。每个线程经过循环的次数被显示。</p>
-<pre class=" language-lang-java"><code class="language-lang-java">// Demonstrate thread priorities.
+<pre><code class="lang-java">// Demonstrate thread priorities.
 class clicker implements Runnable {
      int click = 0;
     Thread t;
@@ -834,7 +834,7 @@ class Demo {
         try {
             Thread.sleep(10000);
         } catch (InterruptedException e) {
-            System.out.println("Main thread interrupted.");
+            System.out.println(&quot;Main thread interrupted.&quot;);
         }
         lo.stop();
         hi.stop();
@@ -843,11 +843,11 @@ class Demo {
             hi.t.join();
             lo.t.join();
         } catch (InterruptedException e) {
-            System.out.println("InterruptedException caught");
+            System.out.println(&quot;InterruptedException caught&quot;);
         }
 
-        System.out.println("Low-priority thread: " + lo.click);
-        System.out.println("High-priority thread: " + hi.click);
+        System.out.println(&quot;Low-priority thread: &quot; + lo.click);
+        System.out.println(&quot;High-priority thread: &quot; + hi.click);
     }
 }
 </code></pre>
@@ -861,7 +861,7 @@ class Demo {
 </blockquote>
 <p>当然，该程序的精确的输出结果依赖于你的CPU的速度和运行的其他任务的数量。当同样的程序运行于无优先级的系统，将会有不同的结果。</p>
 <p>上述程序还有个值得注意的地方。注意running前的关键字volatile。尽管volatile 在下章会被很仔细的讨论，用在此处以确保running的值在下面的循环中每次都得到验证。</p>
-<pre class=" language-lang-java"><code class="language-lang-java">while (running) {
+<pre><code class="lang-java">while (running) {
     click++;
 }
 </code></pre>
@@ -873,16 +873,16 @@ class Demo {
 <h3 id="使用同步方法"><a href="#使用同步方法" class="headerlink" title="使用同步方法"></a>使用同步方法</h3><p>Java中同步是简单的，因为所有对象都有它们与之对应的隐式管程。进入某一对象的管程，就是调用被synchronized关键字修饰的方法。当一个线程在一个同步方法内部，所有试图调用该方法（或其他同步方法）的同实例的其他线程必须等待。为了退出管程，并放弃对对象的控制权给其他等待的线程，拥有管程的线程仅需从同步方法中返回。</p>
 <p>为理解同步的必要性，让我们从一个应该使用同步却没有用的简单例子开始。下面的程序有三个简单类。首先是Callme，它有一个简单的方法call( )。call( )方法有一个名为msg的String参数。该方法试图在方括号内打印msg 字符串。有趣的事是在调用call( ) 打印左括号和msg字符串后，调用Thread.sleep(1000)，该方法使当前线程暂停1秒。</p>
 <p>下一个类的构造函数Caller，引用了Callme的一个实例以及一个String，它们被分别存在target 和 msg 中。构造函数也创建了一个调用该对象的run( )方法的新线程。该线程立即启动。Caller类的run( )方法通过参数msg字符串调用Callme实例target的call( ) 方法。最后，Synch类由创建Callme的一个简单实例和Caller的三个具有不同消息字符串的实例开始。Callme的同一实例传给每个Caller实例。</p>
-<pre class=" language-lang-java"><code class="language-lang-java">// This program is not synchronized.
+<pre><code class="lang-java">// This program is not synchronized.
 class Callme {
     void call(String msg) {
-        System.out.print("[" + msg);
+        System.out.print(&quot;[&quot; + msg);
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
-            System.out.println("Interrupted");
+            System.out.println(&quot;Interrupted&quot;);
         }
-        System.out.println("]");
+        System.out.println(&quot;]&quot;);
     }
 }
 
@@ -906,16 +906,16 @@ class Caller implements Runnable {
 class Synch {
     public static void main(String args[]) {
         Callme target = new Callme();
-        Caller ob1 = new Caller(target, "Hello");
-        Caller ob2 = new Caller(target, "Synchronized");
-        Caller ob3 = new Caller(target, "World");
+        Caller ob1 = new Caller(target, &quot;Hello&quot;);
+        Caller ob2 = new Caller(target, &quot;Synchronized&quot;);
+        Caller ob3 = new Caller(target, &quot;World&quot;);
         // wait for threads to end
         try {
             ob1.t.join();
             ob2.t.join();
             ob3.t.join();
         } catch (InterruptedException e) {
-            System.out.println("Interrupted");
+            System.out.println(&quot;Interrupted&quot;);
         }
     }
 }
@@ -926,7 +926,7 @@ class Synch {
 </blockquote>
 <p>在本例中，通过调用sleep( )，call( )方法允许执行转换到另一个线程。该结果是三个消息字符串的混合输出。该程序中，没有阻止三个线程同时调用同一对象的同一方法的方法存在。这是一种竞争，因为三个线程争着完成方法。例题用sleep( )使该影响重复和明显。在大多数情况，竞争是更为复杂和不可预知的，因为你不能确定何时上下文转换会发生。这使程序时而运行正常时而出错。</p>
 <p>为达到上例所想达到的目的，必须有权连续的使用call( )。也就是说，在某一时刻，必须限制只有一个线程可以支配它。为此，你只需在call( ) 定义前加上关键字synchronized，如下：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">class Callme {
+<pre><code class="lang-java">class Callme {
     synchronized void call(String msg) {
         ...
     }
@@ -939,12 +939,12 @@ class Synch {
 <p>任何时候在多线程情况下，你有一个方法或多个方法操纵对象的内部状态，都必须用synchronized 关键字来防止状态出现竞争。记住，一旦线程进入实例的同步方法，没有其他线程可以进入相同实例的同步方法。然而，该实例的其他不同步方法却仍然可以被调用。</p>
 <h3 id="同步语句"><a href="#同步语句" class="headerlink" title="同步语句"></a>同步语句</h3><p>尽管在创建的类的内部创建同步方法是获得同步的简单和有效的方法，但它并非在任何时候都有效。这其中的原因，请跟着思考。假设你想获得不为多线程访问设计的类对象的同步访问，也就是，该类没有用到synchronized方法。而且，该类不是你自己，而是第三方创建的，你不能获得它的源代码。这样，你不能在相关方法前加synchronized修饰符。怎样才能使该类的一个对象同步化呢？很幸运，解决方法很简单：你只需将对这个类定义的方法的调用放入一个synchronized块内就可以了。</p>
 <p>下面是synchronized语句的普通形式：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">synchronized(object) {
+<pre><code class="lang-java">synchronized(object) {
     // statements to be synchronized
 }
 </code></pre>
 <p>其中，object是被同步对象的引用。如果你想要同步的只是一个语句，那么不需要花括号。一个同步块确保对object成员方法的调用仅在当前线程成功进入object管程后发生。<br>下面是前面程序的修改版本，在run( )方法内用了同步块：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">// synchronize calls to call()
+<pre><code class="lang-java">// synchronize calls to call()
     public void run() {
         synchronized (target) { // synchronized block
             target.call(msg);
@@ -962,24 +962,24 @@ class Synch {
 <li>notifyAll( ) 恢复相同对象中所有调用 wait( ) 的线程。具有最高优先级的线程最先运行。</li>
 </ul>
 <p>这些方法在Object中被声明，如下所示：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">final void wait( ) throws InterruptedException
+<pre><code class="lang-java">final void wait( ) throws InterruptedException
 final void notify( )
 final void notifyAll( )
 </code></pre>
 <p>wait( )存在的另外的形式允许你定义等待时间。</p>
 <p>下面的例子程序错误的实行了一个简单生产者/消费者的问题。它由四个类组成：Q，设法获得同步的序列；Producer，产生排队的线程对象；Consumer，消费序列的线程对象；以及PC，创建单个Q，Producer，和Consumer的小类。</p>
-<pre class=" language-lang-java"><code class="language-lang-java">// An incorrect implementation of a producer and consumer.
+<pre><code class="lang-java">// An incorrect implementation of a producer and consumer.
 class Q {
     int n;
 
     synchronized int get() {
-        System.out.println("Got: " + n);
+        System.out.println(&quot;Got: &quot; + n);
         return n;
     }
 
     synchronized void put(int n) {
         this.n = n;
-        System.out.println("Put: " + n);
+        System.out.println(&quot;Put: &quot; + n);
     }
 }
 
@@ -988,7 +988,7 @@ class Producer implements Runnable {
 
     Producer(Q q) {
         this.q = q;
-        new Thread(this, "Producer").start();
+        new Thread(this, &quot;Producer&quot;).start();
     }
 
     public void run() {
@@ -1004,7 +1004,7 @@ class Consumer implements Runnable {
 
     Consumer(Q q) {
         this.q = q;
-        new Thread(this, "Consumer").start();
+        new Thread(this, &quot;Consumer&quot;).start();
     }
 
     public void run() {
@@ -1036,7 +1036,7 @@ class PC {
 </blockquote>
 <p>生产者生成1后，消费者依次获得同样的1五次。生产者在继续生成2到7，消费者没有机会获得它们。</p>
 <p>用Java正确的编写该程序是用wait( )和notify( )来对两个方向进行标志，如下所示：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">// A correct implementation of a producer and consumer.
+<pre><code class="lang-java">// A correct implementation of a producer and consumer.
 class Q {
     int n;
     boolean valueSet = false;
@@ -1046,9 +1046,9 @@ class Q {
             try {
                 wait();
             } catch (InterruptedException e) {
-                System.out.println("InterruptedException caught");
+                System.out.println(&quot;InterruptedException caught&quot;);
             }
-        System.out.println("Got: " + n);
+        System.out.println(&quot;Got: &quot; + n);
         valueSet = false;
         notify();
         return n;
@@ -1059,11 +1059,11 @@ class Q {
             try {
                 wait();
             } catch (InterruptedException e) {
-                System.out.println("InterruptedException caught");
+                System.out.println(&quot;InterruptedException caught&quot;);
             }
         this.n = n;
         valueSet = true;
-        System.out.println("Put: " + n);
+        System.out.println(&quot;Put: &quot; + n);
         notify();
     }
 }
@@ -1079,40 +1079,40 @@ class Q {
 <li>它可能包含多于两个的线程和同步对象（也就是说，死锁在比刚讲述的例子有更多复杂的事件序列的时候可以发生）。</li>
 </ul>
 <p>为充分理解死锁，观察它的行为是很有用的。下面的例子生成了两个类，A和B，分别有foo( )和bar( )方法。这两种方法在调用其他类的方法前有一个短暂的停顿。主类，名为Deadlock，创建了A和B的实例，然后启动第二个线程去设置死锁环境。foo( )和bar( )方法使用sleep( )强迫死锁现象发生。</p>
-<pre class=" language-lang-java"><code class="language-lang-java">// An example of deadlock.
+<pre><code class="lang-java">// An example of deadlock.
 class A {
     synchronized void foo(B b) {
         String name = Thread.currentThread().getName();
-        System.out.println(name + " entered A.foo");
+        System.out.println(name + &quot; entered A.foo&quot;);
         try {
             Thread.sleep(1000);
         } catch (Exception e) {
-            System.out.println("A Interrupted");
+            System.out.println(&quot;A Interrupted&quot;);
         }
-        System.out.println(name + " trying to call B.last()");
+        System.out.println(name + &quot; trying to call B.last()&quot;);
         b.last();
     }
 
     synchronized void last() {
-        System.out.println("Inside A.last");
+        System.out.println(&quot;Inside A.last&quot;);
     }
 }
 
 class B {
     synchronized void bar(A a) {
         String name = Thread.currentThread().getName();
-        System.out.println(name + " entered B.bar");
+        System.out.println(name + &quot; entered B.bar&quot;);
         try {
             Thread.sleep(1000);
         } catch (Exception e) {
-            System.out.println("B Interrupted");
+            System.out.println(&quot;B Interrupted&quot;);
         }
-        System.out.println(name + " trying to call A.last()");
+        System.out.println(name + &quot; trying to call A.last()&quot;);
         a.last();
     }
 
     synchronized void last() {
-        System.out.println("Inside A.last");
+        System.out.println(&quot;Inside A.last&quot;);
     }
 }
 
@@ -1121,16 +1121,16 @@ class Deadlock implements Runnable {
     B b = new B();
 
     Deadlock() {
-        Thread.currentThread().setName("MainThread");
-        Thread t = new Thread(this, "RacingThread");
+        Thread.currentThread().setName(&quot;MainThread&quot;);
+        Thread t = new Thread(this, &quot;RacingThread&quot;);
         t.start();
         a.foo(b); // get lock on a in this thread.
-        System.out.println("Back in main thread");
+        System.out.println(&quot;Back in main thread&quot;);
     }
 
     public void run() {
         b.bar(a); // get lock on b in other thread.
-        System.out.println("Back in other thread");
+        System.out.println(&quot;Back in other thread&quot;);
     }
 
     public static void main(String args[]) {
@@ -1147,11 +1147,11 @@ class Deadlock implements Runnable {
 <h2 id="挂起、恢复和终止线程"><a href="#挂起、恢复和终止线程" class="headerlink" title="挂起、恢复和终止线程"></a>挂起、恢复和终止线程</h2><p>有时，线程的挂起是很有用的。例如，一个独立的线程可以用来显示当日的时间。如果用户不希望用时钟，线程被挂起。在任何情形下，挂起线程是很简单的，一旦挂起，重新启动线程也是一件简单的事。</p>
 <p>挂起，终止和恢复线程机制在Java 2和早期版本中有所不同。尽管你运用Java 2的途径编写代码，你仍需了解这些操作在早期Java环境下是如何完成的。例如，你也许需要更新或维护老的代码。你也需要了解为什么Java 2会有这样的变化。因为这些原因，下面内容描述了执行线程控制的原始方法，接着是Java 2的方法。</p>
 <h3 id="Java-1-1或更早版本的线程的挂起、恢复和终止"><a href="#Java-1-1或更早版本的线程的挂起、恢复和终止" class="headerlink" title="Java 1.1或更早版本的线程的挂起、恢复和终止"></a>Java 1.1或更早版本的线程的挂起、恢复和终止</h3><p>先于Java2的版本，程序用Thread 定义的suspend() 和 resume() 来暂停和再启动线程。它们的形式如下：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">final void suspend( )
+<pre><code class="lang-java">final void suspend( )
 final void resume( )
 </code></pre>
 <p>下面的程序描述了这些方法：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">// Using suspend() and resume().
+<pre><code class="lang-java">// Using suspend() and resume().
 class NewThread implements Runnable {
     String name; // name of thread
     Thread t;
@@ -1159,52 +1159,52 @@ class NewThread implements Runnable {
     NewThread(String threadname) {
         name = threadname;
         t = new Thread(this, name);
-        System.out.println("New thread: " + t);
+        System.out.println(&quot;New thread: &quot; + t);
         t.start(); // Start the thread
     }
 
     // This is the entry point for thread.
     public void run() {
         try {
-            for (int i = 15; i > 0; i--) {
-                System.out.println(name + ": " + i);
+            for (int i = 15; i &gt; 0; i--) {
+                System.out.println(name + &quot;: &quot; + i);
                 Thread.sleep(200);
             }
         } catch (InterruptedException e) {
-            System.out.println(name + " interrupted.");
+            System.out.println(name + &quot; interrupted.&quot;);
         }
-        System.out.println(name + " exiting.");
+        System.out.println(name + &quot; exiting.&quot;);
     }
 }
 
 class SuspendResume {
     public static void main(String args[]) {
-        NewThread ob1 = new NewThread("One");
-        NewThread ob2 = new NewThread("Two");
+        NewThread ob1 = new NewThread(&quot;One&quot;);
+        NewThread ob2 = new NewThread(&quot;Two&quot;);
         try {
             Thread.sleep(1000);
             ob1.t.suspend();
-            System.out.println("Suspending thread One");
+            System.out.println(&quot;Suspending thread One&quot;);
             Thread.sleep(1000);
             ob1.t.resume();
-            System.out.println("Resuming thread One");
+            System.out.println(&quot;Resuming thread One&quot;);
             ob2.t.suspend();
-            System.out.println("Suspending thread Two");
+            System.out.println(&quot;Suspending thread Two&quot;);
             Thread.sleep(1000);
             ob2.t.resume();
-            System.out.println("Resuming thread Two");
+            System.out.println(&quot;Resuming thread Two&quot;);
         } catch (InterruptedException e) {
-            System.out.println("Main thread Interrupted");
+            System.out.println(&quot;Main thread Interrupted&quot;);
         }
         // wait for threads to finish
         try {
-            System.out.println("Waiting for threads to finish.");
+            System.out.println(&quot;Waiting for threads to finish.&quot;);
             ob1.t.join();
             ob2.t.join();
         } catch (InterruptedException e) {
-            System.out.println("Main thread Interrupted");
+            System.out.println(&quot;Main thread Interrupted&quot;);
         }
-        System.out.println("Main thread exiting.");
+        System.out.println(&quot;Main thread exiting.&quot;);
     }
 }
 </code></pre>
@@ -1213,7 +1213,7 @@ class SuspendResume {
 <p>New thread: Thread[One,5,main]<br>New thread: Thread[Two,5,main]<br>One: 15<br>Two: 15<br>Two: 14<br>One: 14<br>Two: 13<br>One: 13<br>Two: 12<br>One: 12<br>Two: 11<br>One: 11<br>Suspending thread One<br>Two: 10<br>Two: 9<br>Two: 8<br>Two: 7<br>Two: 6<br>Resuming thread One<br>Suspending thread Two<br>One: 10<br>One: 9<br>One: 8<br>One: 7<br>One: 6<br>Resuming thread Two<br>Waiting for threads to finish.<br>Two: 5<br>One: 5<br>Two: 4<br>One: 4<br>Two: 3<br>One: 3<br>Two: 2<br>One: 2<br>Two: 1<br>One: 1<br>Two exiting.<br>One exiting.<br>Main thread exiting.</p>
 </blockquote>
 <p>Thread类同样定义了stop() 来终止线程。它的形式如下：</p>
-<pre class=" language-lang-java"><code class="language-lang-java">void stop( )
+<pre><code class="lang-java">void stop( )
 </code></pre>
 <p>一旦线程被终止，它不能被resume() 恢复继续运行。</p>
 <h3 id="Java-2中挂起、恢复和终止线程"><a href="#Java-2中挂起、恢复和终止线程" class="headerlink" title="Java 2中挂起、恢复和终止线程"></a>Java 2中挂起、恢复和终止线程</h3><p>Thread定义的suspend()，resume()和stop()方法看起来是管理线程的完美的和方便的方法，它们不能用于新Java版本的程序。下面是其中的原因。Thread类的suspend()方法在Java2中不被赞成，因为suspend()有时会造成严重的系统故障。假定对关键的数据结构的一个线程被锁定的情况，如果该线程在那里挂起，这些锁定的线程并没有放弃对资源的控制。其他的等待这些资源的线程可能死锁。</p>
@@ -1222,7 +1222,7 @@ class SuspendResume {
 <p>当然，编写这样的代码有很多方法，但中心主题对所有的程序应该是相同的。</p>
 <p>下面的例题阐述了从Object继承的wait()和notify()方法怎样控制线程的执行。该例与前面讲过的程序很像。然而，不被赞同的方法都没有用到。让我们思考程序的执行。</p>
 <p>NewTread 类包含了用来控制线程执行的布尔型的实例变量suspendFlag。它被构造函数初始化为false。Run()方法包含一个监测suspendFlag 的同步声明的块。如果变量是true，wait()方法被调用以挂起线程。Mysuspend()方法设置suspendFlag为true。Myresume()方法设置suspendFlag为false并且调用notify()方法来唤起线程。最后，main()方法被修改以调用mysuspend()和myresume()方法。</p>
-<pre class=" language-lang-java"><code class="language-lang-java">// Suspending and resuming a thread for Java2
+<pre><code class="lang-java">// Suspending and resuming a thread for Java2
 class NewThread implements Runnable {
     String name; // name of thread
     Thread t;
@@ -1231,7 +1231,7 @@ class NewThread implements Runnable {
     NewThread(String threadname) {
         name = threadname;
         t = new Thread(this, name);
-        System.out.println("New thread: " + t);
+        System.out.println(&quot;New thread: &quot; + t);
         suspendFlag = false;
         t.start(); // Start the thread
     }
@@ -1239,8 +1239,8 @@ class NewThread implements Runnable {
     // This is the entry point for thread.
     public void run() {
         try {
-            for (int i = 15; i > 0; i--) {
-                System.out.println(name + ": " + i);
+            for (int i = 15; i &gt; 0; i--) {
+                System.out.println(name + &quot;: &quot; + i);
                 Thread.sleep(200);
                 synchronized (this) {
                     while (suspendFlag) {
@@ -1249,9 +1249,9 @@ class NewThread implements Runnable {
                 }
             }
         } catch (InterruptedException e) {
-            System.out.println(name + " interrupted.");
+            System.out.println(name + &quot; interrupted.&quot;);
         }
-        System.out.println(name + " exiting.");
+        System.out.println(name + &quot; exiting.&quot;);
     }
 
     void mysuspend() {
@@ -1266,32 +1266,32 @@ class NewThread implements Runnable {
 
 class SuspendResume {
     public static void main(String args[]) {
-        NewThread ob1 = new NewThread("One");
-        NewThread ob2 = new NewThread("Two");
+        NewThread ob1 = new NewThread(&quot;One&quot;);
+        NewThread ob2 = new NewThread(&quot;Two&quot;);
         try {
             Thread.sleep(1000);
             ob1.mysuspend();
-            System.out.println("Suspending thread One");
+            System.out.println(&quot;Suspending thread One&quot;);
             Thread.sleep(1000);
             ob1.myresume();
-            System.out.println("Resuming thread One");
+            System.out.println(&quot;Resuming thread One&quot;);
             ob2.mysuspend();
-            System.out.println("Suspending thread Two");
+            System.out.println(&quot;Suspending thread Two&quot;);
             Thread.sleep(1000);
             ob2.myresume();
-            System.out.println("Resuming thread Two");
+            System.out.println(&quot;Resuming thread Two&quot;);
         } catch (InterruptedException e) {
-            System.out.println("Main thread Interrupted");
+            System.out.println(&quot;Main thread Interrupted&quot;);
         }
         // wait for threads to finish
         try {
-            System.out.println("Waiting for threads to finish.");
+            System.out.println(&quot;Waiting for threads to finish.&quot;);
             ob1.t.join();
             ob2.t.join();
         } catch (InterruptedException e) {
-            System.out.println("Main thread Interrupted");
+            System.out.println(&quot;Main thread Interrupted&quot;);
         }
-        System.out.println("Main thread exiting.");
+        System.out.println(&quot;Main thread exiting.&quot;);
     }
 }
 </code></pre>
@@ -1312,7 +1312,7 @@ class SuspendResume {
             <div class="reprint__author">
                 <span class="reprint-meta" style="font-weight: bold;">
                     <i class="fas fa-user">
-                        Author:
+                        文章作者:
                     </i>
                 </span>
                 <span class="reprint-info">
@@ -1322,7 +1322,7 @@ class SuspendResume {
             <div class="reprint__type">
                 <span class="reprint-meta" style="font-weight: bold;">
                     <i class="fas fa-link">
-                        Link:
+                        文章链接:
                     </i>
                 </span>
                 <span class="reprint-info">
@@ -1332,13 +1332,13 @@ class SuspendResume {
             <div class="reprint__notice">
                 <span class="reprint-meta" style="font-weight: bold;">
                     <i class="fas fa-copyright">
-                        Reprint policy:
+                        版权声明:
                     </i>
                 </span>
                 <span class="reprint-info">
-                    All articles in this blog are used except for special statements
+                    本博客所有文章除特別声明外，均采用
                     <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" rel="external nofollow noreferrer" target="_blank">CC BY-NC 4.0</a>
-                    reprint polocy. If reproduced, please indicate source
+                    许可协议。转载请注明来源
                     <a href="http://wossoneri.github.io" target="_blank">Wossoneri</a>
                     !
                 </span>
@@ -1348,7 +1348,7 @@ class SuspendResume {
 
     <script async defer>
       document.addEventListener("copy", function (e) {
-        let toastHTML = '<span>Copied successfully, please follow the reprint policy of this article</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">more</a>';
+        let toastHTML = '<span>复制成功，请遵循本文的转载规则</span><button class="btn-flat toast-action" onclick="navToReprintStatement()" style="font-size: smaller">查看</a>';
         M.toast({html: toastHTML})
       });
 
@@ -1563,7 +1563,7 @@ gitment.render('gitment-content');
         
         <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;Previous</div>
+                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
             <div class="card">
                 <a href="/2015/10/11/[iOS]Circle-Progress-Bar/">
                     <div class="card-image">
@@ -1626,7 +1626,7 @@ UIBezierPath *progress = [UIBezie
         
         <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge right-badge text-color">
-                Next&nbsp;<i class="fas fa-chevron-right"></i>
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
             </div>
             <div class="card">
                 <a href="/2015/06/22/[iOS]Install-OSX-in-Vmware-under-Win8/">
@@ -1715,7 +1715,7 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
     </div>
     <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
         <div class="toc-widget">
-            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;TOC</div>
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
             <div id="toc-content"></div>
         </div>
     </div>
@@ -1929,8 +1929,8 @@ code[class*="language-"], pre[class*="language-"] { white-space: pre !important;
 <div id="searchModal" class="modal">
     <div class="modal-content">
         <div class="search-header">
-            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;Search</span>
-            <input type="search" id="searchInput" name="s" placeholder="Please enter a search keyword"
+            <span class="title"><i class="fas fa-search"></i>&nbsp;&nbsp;搜索</span>
+            <input type="search" id="searchInput" name="s" placeholder="请输入搜索的关键字"
                    class="search-input">
         </div>
         <div id="searchResult"></div>
@@ -2006,7 +2006,24 @@ $(function () {
     
     
     
-    <script src="/libs/instantpage/instantpage.js" type="module"></script>
+    <script src="/libs/instantpage/instantpage.js" type="module"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="custom_mathjax_source">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
     
 
 </body>
