@@ -1442,6 +1442,33 @@
     
     
     <entry>
+      <title>[MachineLearning] K最邻近算法</title>
+      <link href="/2018/01/24/%5BMachineLearning%5DK-Nearest-Neighbor/"/>
+      <url>/2018/01/24/%5BMachineLearning%5DK-Nearest-Neighbor/</url>
+      
+        <content type="html"><![CDATA[<h3 id="What-is-the-KNN"><a href="#What-is-the-KNN" class="headerlink" title="What is the KNN"></a>What is the KNN</h3><p><code>KNN</code>,全称K Nearest Neighbor.</p><p>K最临近算法是机器学习中一个比较经典的算法.主要用来分类.</p><p>用一张Wikipedia的图例展示<code>KNN</code>:</p><p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/KNN-1.png?raw=true" alt="knn"></p><p>图中已知两类:红色三角形和蓝色矩形的分布,现在图中心有一个未知的类别,如果要将其归类,它应该是哪一类?(请不要说绿色圆形…)</p><p>使用<code>KNN</code>算法:</p><ul><li><code>k=3</code>,选取离其最近的3个点:两个红色一个蓝色.选取其中出现最多的红色三角,推断中心也是一个红色三角形.</li><li><code>k=5</code>,选取离其最近的5个点:两个红色三个蓝色.根据周围的类别比例,推断中心是蓝色矩形.</li></ul><p>这就是<code>KNN</code>算法,一个基于一种数据统计的方法.这里的K是选取附近的点的个数.通过计算方式可以知道,K必须取奇数,避免平票的情况.</p><blockquote><p>可以理解为,KNN是由待分类数据由其附近的数据投票决定其类别.</p></blockquote><h3 id="How-to-use-KNN"><a href="#How-to-use-KNN" class="headerlink" title="How to use KNN"></a>How to use KNN</h3><p>拿西瓜书上面一些数据举个例子:</p><div class="table-container"><table><thead><tr><th>密度</th><th>含糖率</th><th>好瓜</th></tr></thead><tbody><tr><td>0.774</td><td>0.376</td><td>是</td></tr><tr><td>0.697</td><td>0.460</td><td>是</td></tr><tr><td>0.666</td><td>0.091</td><td>否</td></tr><tr><td>0.243</td><td>0.267</td><td>否</td></tr></tbody></table></div><p>问:如果现在有一个瓜的密度:0.657,含糖率:0.198,那么它是好瓜吗?</p><p>用<code>KNN</code>计算:</p><div class="table-container"><table><thead><tr><th>密度</th><th>含糖率</th><th>距离</th><th>K=1</th><th>K=3</th></tr></thead><tbody><tr><td>0.774</td><td>0.376</td><td>$(0.774-0.657)^{2}$+$(0.376-0.198)^{2}$=0.045373</td><td>不投票</td><td>是</td></tr><tr><td>0.697</td><td>0.460</td><td>$(0.697-0.657)^{2}$+$(0.460-0.198)^{2}$=0.070244</td><td>不投票</td><td>是</td></tr><tr><td>0.666</td><td>0.091</td><td>$(0.666-0.657)^{2}$+$(0.091-0.198)^{2}$=0.01153</td><td>否</td><td>否</td></tr><tr><td>0.243</td><td>0.267</td><td>$(0.243-0.657)^{2}$+$(0.267-0.198)^{2}$=0.176157</td><td>不投票</td><td>不投票</td></tr></tbody></table></div><p>通过计算距离,可以知道:</p><ul><li>K=1,不是好瓜</li><li>K=3,是好瓜</li></ul><p>其实,通过含糖率数据可以知道,预测的这个瓜不是好瓜.</p><p>所以通过这个结果可以看到,最终预测的准确性和K的数量关系不大.比较关键的是选取判断属性,如果选取含糖率计算的话,准确率会变好.</p><p>上面并不是一个严谨的推论,但可以看出,面对线性变化的某些属性,用<code>KNN</code>还是有一些准确性的.也正因此,<code>KNN</code>还可以做一些插值操作,可以平滑曲线.</p><h3 id="L1-amp-L2-distance"><a href="#L1-amp-L2-distance" class="headerlink" title="L1 &amp; L2 distance"></a>L1 &amp; L2 distance</h3><ul><li><p>L1 distance:</p><script type="math/tex; mode=display">d_{1}(I_{1}, I_{2})=\sum_{p}|I_{1}^{p} - I_{2}^{p}|</script></li><li><p>L2 distance:</p><script type="math/tex; mode=display">d_{2}(I_{1}, I_{2}) = \sqrt{\sum_p(I_{1}^{p} - I_{2}^{p})^2}</script></li></ul><p><a href="http://blog.csdn.net/zhangxb35/article/details/55223825" target="_blank" rel="noopener">http://blog.csdn.net/zhangxb35/article/details/55223825</a></p><p><a href="http://blog.csdn.net/kangroger/article/details/52338344" target="_blank" rel="noopener">http://blog.csdn.net/kangroger/article/details/52338344</a></p><p><a href="http://cs231n.github.io/classification/" target="_blank" rel="noopener">http://cs231n.github.io/classification/</a></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> Machine Learning </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Machine Learning </tag>
+            
+            <tag> KNN </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>[MachineLearning] 超参数之LearningRate</title>
       <link href="/2018/01/24/%5BMachineLearning%5DHyperparameters-learning-rate/"/>
       <url>/2018/01/24/%5BMachineLearning%5DHyperparameters-learning-rate/</url>
@@ -1465,33 +1492,6 @@
             <tag> Tensorflow </tag>
             
             <tag> Hyperparameter </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>[MachineLearning] K最邻近算法</title>
-      <link href="/2018/01/24/%5BMachineLearning%5DK-Nearest-Neighbor/"/>
-      <url>/2018/01/24/%5BMachineLearning%5DK-Nearest-Neighbor/</url>
-      
-        <content type="html"><![CDATA[<h3 id="What-is-the-KNN"><a href="#What-is-the-KNN" class="headerlink" title="What is the KNN"></a>What is the KNN</h3><p><code>KNN</code>,全称K Nearest Neighbor.</p><p>K最临近算法是机器学习中一个比较经典的算法.主要用来分类.</p><p>用一张Wikipedia的图例展示<code>KNN</code>:</p><p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/KNN-1.png?raw=true" alt="knn"></p><p>图中已知两类:红色三角形和蓝色矩形的分布,现在图中心有一个未知的类别,如果要将其归类,它应该是哪一类?(请不要说绿色圆形…)</p><p>使用<code>KNN</code>算法:</p><ul><li><code>k=3</code>,选取离其最近的3个点:两个红色一个蓝色.选取其中出现最多的红色三角,推断中心也是一个红色三角形.</li><li><code>k=5</code>,选取离其最近的5个点:两个红色三个蓝色.根据周围的类别比例,推断中心是蓝色矩形.</li></ul><p>这就是<code>KNN</code>算法,一个基于一种数据统计的方法.这里的K是选取附近的点的个数.通过计算方式可以知道,K必须取奇数,避免平票的情况.</p><blockquote><p>可以理解为,KNN是由待分类数据由其附近的数据投票决定其类别.</p></blockquote><h3 id="How-to-use-KNN"><a href="#How-to-use-KNN" class="headerlink" title="How to use KNN"></a>How to use KNN</h3><p>拿西瓜书上面一些数据举个例子:</p><div class="table-container"><table><thead><tr><th>密度</th><th>含糖率</th><th>好瓜</th></tr></thead><tbody><tr><td>0.774</td><td>0.376</td><td>是</td></tr><tr><td>0.697</td><td>0.460</td><td>是</td></tr><tr><td>0.666</td><td>0.091</td><td>否</td></tr><tr><td>0.243</td><td>0.267</td><td>否</td></tr></tbody></table></div><p>问:如果现在有一个瓜的密度:0.657,含糖率:0.198,那么它是好瓜吗?</p><p>用<code>KNN</code>计算:</p><div class="table-container"><table><thead><tr><th>密度</th><th>含糖率</th><th>距离</th><th>K=1</th><th>K=3</th></tr></thead><tbody><tr><td>0.774</td><td>0.376</td><td>$(0.774-0.657)^{2}$+$(0.376-0.198)^{2}$=0.045373</td><td>不投票</td><td>是</td></tr><tr><td>0.697</td><td>0.460</td><td>$(0.697-0.657)^{2}$+$(0.460-0.198)^{2}$=0.070244</td><td>不投票</td><td>是</td></tr><tr><td>0.666</td><td>0.091</td><td>$(0.666-0.657)^{2}$+$(0.091-0.198)^{2}$=0.01153</td><td>否</td><td>否</td></tr><tr><td>0.243</td><td>0.267</td><td>$(0.243-0.657)^{2}$+$(0.267-0.198)^{2}$=0.176157</td><td>不投票</td><td>不投票</td></tr></tbody></table></div><p>通过计算距离,可以知道:</p><ul><li>K=1,不是好瓜</li><li>K=3,是好瓜</li></ul><p>其实,通过含糖率数据可以知道,预测的这个瓜不是好瓜.</p><p>所以通过这个结果可以看到,最终预测的准确性和K的数量关系不大.比较关键的是选取判断属性,如果选取含糖率计算的话,准确率会变好.</p><p>上面并不是一个严谨的推论,但可以看出,面对线性变化的某些属性,用<code>KNN</code>还是有一些准确性的.也正因此,<code>KNN</code>还可以做一些插值操作,可以平滑曲线.</p><h3 id="L1-amp-L2-distance"><a href="#L1-amp-L2-distance" class="headerlink" title="L1 &amp; L2 distance"></a>L1 &amp; L2 distance</h3><ul><li><p>L1 distance:</p><script type="math/tex; mode=display">d_{1}(I_{1}, I_{2})=\sum_{p}|I_{1}^{p} - I_{2}^{p}|</script></li><li><p>L2 distance:</p><script type="math/tex; mode=display">d_{2}(I_{1}, I_{2}) = \sqrt{\sum_p(I_{1}^{p} - I_{2}^{p})^2}</script></li></ul><p><a href="http://blog.csdn.net/zhangxb35/article/details/55223825" target="_blank" rel="noopener">http://blog.csdn.net/zhangxb35/article/details/55223825</a></p><p><a href="http://blog.csdn.net/kangroger/article/details/52338344" target="_blank" rel="noopener">http://blog.csdn.net/kangroger/article/details/52338344</a></p><p><a href="http://cs231n.github.io/classification/" target="_blank" rel="noopener">http://cs231n.github.io/classification/</a></p>]]></content>
-      
-      
-      <categories>
-          
-          <category> Machine Learning </category>
-          
-      </categories>
-      
-      
-        <tags>
-            
-            <tag> Machine Learning </tag>
-            
-            <tag> KNN </tag>
             
         </tags>
       
