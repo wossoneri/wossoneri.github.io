@@ -2,9 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://wossoneri.github.io/2019/10/12/%5BAndroid%5D%5BSecurity%5DDecompile-xposed/</loc>
+    
+    <lastmod>2020-01-06T07:27:14.768Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://wossoneri.github.io/2019/12/09/%5BJava%5DUse-Bit-mask-code-By-EnumSet/</loc>
     
-    <lastmod>2020-01-02T05:25:27.601Z</lastmod>
+    <lastmod>2020-01-03T05:01:52.945Z</lastmod>
     
   </url>
   
@@ -572,13 +579,6 @@
     <loc>http://wossoneri.github.io/2019/10/15/%5BAndroid%5D%5BSecurity%5DDefence-policy/</loc>
     
     <lastmod>2020-01-02T03:51:19.348Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://wossoneri.github.io/2019/10/12/%5BAndroid%5D%5BSecurity%5DDecompile-xposed/</loc>
-    
-    <lastmod>2020-01-02T03:51:18.821Z</lastmod>
     
   </url>
   
