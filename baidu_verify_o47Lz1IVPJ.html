@@ -5,8 +5,8 @@
 <head><meta name="generator" content="Hexo 3.9.0">
     <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta name="baidu-site-verification" content="o47Lz1IVPJ">
     <meta charset="utf-8">
-    <meta name="keywords" content="[设计模式]之二:策略模式, wOw的博客">
-    <meta name="description" content="最近开始看设计模式，做一些笔记">
+    <meta name="keywords" content="wOw的博客">
+    <meta name="description" content="wOw的博客">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="renderer" content="webkit|ie-stand|ie-comp">
@@ -14,7 +14,7 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>[设计模式]之二:策略模式 | wOw的博客</title>
+    <title>wOw的博客</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -304,12 +304,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/13.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/0.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">[设计模式]之二:策略模式</h1>
+                    <h1 class="description center-align post-title"></h1>
                 </div>
             </div>
         </div>
@@ -424,29 +424,12 @@
             <div class="row tag-cate">
                 <div class="col s7">
                     
-                    <div class="article-tag">
-                        
-                            <a href="/tags/Design-pattern/">
-                                <span class="chip bg-color">Design pattern</span>
-                            </a>
-                        
-                            <a href="/tags/iOS/">
-                                <span class="chip bg-color">iOS</span>
-                            </a>
-                        
-                    </div>
+                          <div class="article-tag">
+                            <span class="chip bg-color">无标签</span>
+                          </div>
                     
                 </div>
                 <div class="col s5 right-align">
-                    
-                    <div class="post-cate">
-                        <i class="fas fa-bookmark fa-fw icon-category"></i>
-                        
-                            <a href="/categories/Design-pattern/" class="post-category">
-                                Design pattern
-                            </a>
-                        
-                    </div>
                     
                 </div>
             </div>
@@ -455,7 +438,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2016-05-15
+                    2020-01-07
                 </div>
                 
 
@@ -464,14 +447,14 @@
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1,639
+                    1
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    6 分
+                    1 分
                 </div>
                 
 
@@ -487,162 +470,7 @@
         <hr class="clearfix">
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p><strong><a href="http://wossoneri.github.io/categories/Design-pattern/">设计模式系列目录</a></strong></p>
-<h3 id="需求情景"><a href="#需求情景" class="headerlink" title="需求情景"></a>需求情景</h3><p>比如现在需要做一个收银软件，要根据用户所买商品的单价和数量进行计算。</p>
-<p>很简单，用“单价 * 数量”即可。</p>
-<p>但如果某天需要打折呢？</p>
-<p>也很简单，同一个方法，把折扣作为一个参数，默认值为1，代码改为“单价 <em> 数量 </em> 折扣”即可。</p>
-<p>恩，看起来都很美好。现在又要加需求，我要满300减100，我还要满200送50…</p>
-<p>OK，现在就得回到面向对象上来了。向上次简单工厂一样，把所有计算价格可能的方法封装成一个个类。比如一个打一折类，一个打两折类…唉等等，这可不对。上次加、减、乘、除分别封装是因为他们属于同一种类型，但是有不同的实现方法。而这次，对于打折来说，不论打几折，打折的计算方式都是一样的，只是形式不同，但本质是一样的。同理，满减和返利也是两种类型，但各自有多种实现。</p>
-<blockquote>
-<p>面向对象的编程，并不是类越多越好，类的划分是为了封装，但分类的基础是抽象，具有相同属性和功能的对象的抽象集合才是类</p>
-</blockquote>
-<p>所以可以开始编码，先抽象一个计算收款的类，抽象一个收钱的方法，然后根据不同打折类型实现不同的收钱方法。</p>
-<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">@interface Cash : NSObject
-
-- (CGFloat)acceptOriginCash: (CGFloat)money;
-
-@end
-@implementation Cash
-
-- (CGFloat)acceptOriginCash: (CGFloat)money {
-    return money;
-}
-
-@end
-///正常价钱
-@implementation CashNormal
-
-- (CGFloat)acceptOriginCash:(CGFloat)money {
-    return money;
-}
-
-@end
-///折扣
-@interface CashRebate : Cash
-
-@property (nonatomic, assign) CGFloat rebate;
-
-@end
-@implementation CashRebate
-
-- (instancetype)init {
-    self = [super init];
-    if (self) {
-        _rebate = 1.0; //默认不打折
-    }
-    return self;
-}
-
-- (CGFloat)acceptOriginCash:(CGFloat)money {
-    return money * _rebate;
-}
-
-@end
-///满返
-@interface CashReturn : Cash
-
-@property (nonatomic, assign) CGFloat moneyCondition;
-@property (nonatomic, assign) CGFloat moneyReturn;
-
-@end
-@implementation CashReturn
-
-- (instancetype)init {
-    self = [super init];
-    if (self) {
-        _moneyReturn = 0;
-        _moneyCondition = 0;
-    }
-    return self;
-}
-
-- (CGFloat)acceptOriginCash:(CGFloat)money {
-
-    if (_moneyCondition == 0 || _moneyReturn == 0 || money < _moneyCondition) {
-        return money; //没有返现
-    } else {
-        int returnCount = floorf(money / _moneyCondition);
-        money -= returnCount * _moneyReturn;
-        return money;
-    }
-
-}
-@end
-</code></pre>
-<p>创建好以上几种收费类型，设想一下，一般打折时都会列出相应的打折商品，也就是说平时不是所有的商品都打折，这时候假设我们专门写好一个折扣日的类，类中包含了打折商品列表，当然也包含了打折的方式等其他信息。继续用面向对象的思想去思考，折扣日应该也分好几种，比如周末，五一，工作日等等，所以折扣日也可以抽象一个基类出来，这个基类就应该包含<strong>返回折扣结果的抽象方法</strong>。</p>
-<p>OK，到这里问题就来了，不同的折扣日都有相同的获取最终价钱的方法，而对于价钱的计算策略却完全不同，也就是每个具体的折扣日实现这个<strong>返回折扣结果的抽象方法</strong>都不一样。那该怎么做？</p>
-<blockquote>
-<p>设计原则：找到系统中变化的部分，将变化的部分同其它稳定的部分隔开。换句话说就是：”找到变化并且把它封装起来，稍后你就可以在不影响其它部分的情况下修改或扩展被封装的变化部分。”尽管这个概念很简单，但是它几乎是所有设计模式的基础，所有模式都提供了使系统里变化的部分独立于其它部分的方法。</p>
-</blockquote>
-<p>可以看出，每个折扣日都要实现基类返回折扣结果的方法，但实现的方法不一样。而计算方法都是经过了封装的，保证计算方法不被改变，也保证改变一个不会影响到其他计算方法。在这种情况下，就可以考虑使用策略模式。</p>
-<hr>
-<h3 id="策略模式"><a href="#策略模式" class="headerlink" title="策略模式"></a>策略模式</h3><p>策略模式定义了算法家族，分别封装起来，让他们之间可以互相替换，此模式让算法的变化不会影响到使用算法的客户。</p>
-<p>以上几种收钱方式都是一些算法，算法本身只是一种策略，最重要的是这些算法是随时都可能且可以互相替换的，这就是变化点，而<strong>封装变化点</strong>是我们面向对象很重要的思维方式。</p>
-<p>所以这里的思路是创建一个上下文类，用策略对象作为构造参数，来维护一个对策略对象的引用。同时这样也不会受到拓展的影响。</p>
-<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">@interface CashContext : NSObject
-
-- (instancetype)initWithCash: (Cash *)cash;
-- (CGFloat)getResult: (CGFloat)money;
-
-@end
-///
-@interface CashContext()
-{
-    Cash *_cash;
-}
-@end
-
-@implementation CashContext
-
-- (instancetype)initWithCash: (Cash *)cash {
-    self = [super init];
-    if (self) {
-        _cash = cash;
-    }
-    return self;
-}
-
-- (CGFloat)getResult: (CGFloat)money {
-    return [_cash acceptOriginCash:money];
-}
-
-@end
-</code></pre>
-<p>创建好Context类，就可以通过构造方法选择不同的策略来实现计算：</p>
-<pre class=" language-lang-objectivec"><code class="language-lang-objectivec">CashContext *context = [[CashContext alloc] initWithCash:[[CashRebate alloc] initWithRebate:0.8]];//打8折
-CGFloat value = [context getResult:400]]//原价400
-</code></pre>
-<hr>
-<h3 id="UML类图"><a href="#UML类图" class="headerlink" title="UML类图"></a>UML类图</h3><p><img src="https://github.com/wossoneri/wossoneri.github.io/blob/master/articleImage/UML-strategy.png?raw=true" alt="UML"></p>
-<hr>
-<h3 id="应用场景和优缺点"><a href="#应用场景和优缺点" class="headerlink" title="应用场景和优缺点"></a>应用场景和优缺点</h3><p>应用</p>
-<ul>
-<li>多个类只区别在表现行为不同，可以使用Strategy模式，在运行时动态选择具体要执行的行为。</li>
-<li>需要在不同情况下使用不同的策略(算法)，或者策略还可能在未来用其它方式来实现。</li>
-<li>对客户隐藏具体策略(算法)的实现细节，彼此完全独立。(你只要知道Context类的接口，不必知道折扣算法内部是怎么实现的)</li>
-</ul>
-<p>实际上，一些平时常见的方法就是用的策略模式，比如说Swift(很多其他语言也是)里的数组的<code>Sort</code>函数</p>
-<pre class=" language-lang-swift"><code class="language-lang-swift">func biggerNumberFirst( a: Int, _ b: Int ) -> Bool {
-    return a > b
-}
-arr.sort(biggerNumberFirst)
-</code></pre>
-<p><code>Sort</code>函数可以添加参数，上面代码中是我们自己定制一个策略，然后作为参数传给<code>Sort</code>去处理。当然也可以定制其他策略或者使用系统默认的一些策略去进行排序工作。这就是策略模式一个很典型的应用。</p>
-<p>优点</p>
-<ul>
-<li>提供了一种替代继承的方法，而且既保持了继承的优点(代码重用)还比继承更灵活(算法独立，可以任意扩展)。</li>
-<li>避免程序中使用多重条件转移语句，使系统更灵活，并易于扩展。</li>
-<li>遵守大部分GRASP原则和常用设计原则，高内聚、低偶合。</li>
-</ul>
-<p>缺点</p>
-<ul>
-<li>因为每个具体策略类都会产生一个新类，所以会增加系统需要维护的类的数量。</li>
-</ul>
-<blockquote>
-<p>参考<br><a href="http://www.cnblogs.com/justinw/archive/2007/02/06/641414.html" target="_blank" rel="noopener">鸭子-策略模式（Strategy）</a><br>这篇文章更深入形象，推荐阅读</p>
-</blockquote>
-
+                o47Lz1IVPJ
             </div>
             <hr/>
 
@@ -667,7 +495,7 @@ arr.sort(biggerNumberFirst)
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="http://wossoneri.github.io/2016/05/15/[Design-Pattern]Strategy/">http://wossoneri.github.io/2016/05/15/[Design-Pattern]Strategy/</a>
+                    <a href="http://wossoneri.github.io/baidu_verify_o47Lz1IVPJ.html">http://wossoneri.github.io/baidu_verify_o47Lz1IVPJ.html</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -704,15 +532,7 @@ arr.sort(biggerNumberFirst)
                 <div class="post-meta__tag-list" style="display: inline-block;">
                     
                         <div class="article-tag">
-                            
-                                <a href="/tags/Design-pattern/">
-                                    <span class="chip bg-color">Design pattern</span>
-                                </a>
-                            
-                                <a href="/tags/iOS/">
-                                    <span class="chip bg-color">iOS</span>
-                                </a>
-                            
+                            <span class="chip bg-color">无标签</span>
                         </div>
                     
                 </div>
@@ -878,7 +698,7 @@ arr.sort(biggerNumberFirst)
 <script src="/libs/gitment/gitment.js"></script>
 <script>
 var gitment = new Gitment({
-    id: 'Sun May 15 2016 21:44:50 GMT+0800',
+    id: 'Tue Jan 07 2020 14:42:05 GMT+0800',
     owner: 'wossoneri',
     repo: 'wossoneri.github.io',
     oauth: {
@@ -902,61 +722,39 @@ gitment.render('gitment-content');
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
             <div class="card">
-                <a href="/2016/05/19/[Objective-C]Create-Constants/">
+                <a href="/baidu_verify_o47Lz1IVPJ.html">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/18.jpg" class="responsive-img" alt="[Objective-C] 常量和枚举">
+                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="">
                         
-                        <span class="card-title">[Objective-C] 常量和枚举</span>
+                        <span class="card-title"></span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            网上看了一些讨论，简单整理记录一下
+                            o47Lz1IVPJ
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2016-05-19
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-01-07
+                            </span>
                         <span class="publish-author">
                             
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/Syntax/" class="post-category">
-                                    Syntax
-                                </a>
-                            
+                            <i class="fas fa-user fa-fw"></i>
+                            Wossoneri
                             
                         </span>
                     </div>
                 </div>
-                
-                <div class="card-action article-tags">
-                    
-                    <a href="/tags/Objective-C/">
-                        <span class="chip bg-color">Objective-C</span>
-                    </a>
-                    
-                    <a href="/tags/define/">
-                        <span class="chip bg-color">define</span>
-                    </a>
-                    
-                    <a href="/tags/const/">
-                        <span class="chip bg-color">const</span>
-                    </a>
-                    
-                    <a href="/tags/enum/">
-                        <span class="chip bg-color">enum</span>
-                    </a>
-                    
-                </div>
+
                 
             </div>
         </div>
@@ -964,52 +762,37 @@ gitment.render('gitment-content');
         
         <div class="article col s12 m6" data-aos="fade-up">
             <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+                本篇&nbsp;<i class="far fa-dot-circle"></i>
             </div>
             <div class="card">
-                <a href="/2016/05/13/[Design-Pattern]Simple-Factory/">
+                <a href="/baidu_verify_o47Lz1IVPJ.html">
                     <div class="card-image">
                         
                         
-                        <img src="/medias/featureimages/12.jpg" class="responsive-img" alt="[设计模式]之一:简单工厂模式">
+                        <img src="/medias/featureimages/0.jpg" class="responsive-img" alt="">
                         
-                        <span class="card-title">[设计模式]之一:简单工厂模式</span>
+                        <span class="card-title"></span>
                     </div>
                 </a>
                 <div class="card-content article-content">
                     <div class="summary block-with-text">
                         
-                            最近开始看设计模式，做一些笔记
+                            o47Lz1IVPJ
                         
                     </div>
                     <div class="publish-info">
                             <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2016-05-13
+                                <i class="far fa-clock fa-fw icon-date"></i>2020-01-07
                             </span>
                         <span class="publish-author">
                             
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/Design-pattern/" class="post-category">
-                                    Design pattern
-                                </a>
-                            
+                            <i class="fas fa-user fa-fw"></i>
+                            Wossoneri
                             
                         </span>
                     </div>
                 </div>
-                
-                <div class="card-action article-tags">
-                    
-                    <a href="/tags/Design-pattern/">
-                        <span class="chip bg-color">Design pattern</span>
-                    </a>
-                    
-                    <a href="/tags/iOS/">
-                        <span class="chip bg-color">iOS</span>
-                    </a>
-                    
-                </div>
+
                 
             </div>
         </div>
